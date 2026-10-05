@@ -1,0 +1,10 @@
+# macOS
+.DS_Store
+
+# Local env and build output (frontend/.gitignore covers the rest)
+.env*
+!.env.example
+node_modules/
+
+# Reference screenshots: kept on this computer only, not part of the project
+/Снимок экрана*.png

@@ -1,0 +1,1516 @@
+{
+  "Metadata": {
+    "title": "GEO — ChatGPT’da brendingiz koʻrinishi",
+    "description": "ChatGPT mijozlaringiz savollariga javob berganda brendingizni qanchalik koʻp tilga olishini oʻlchang."
+  },
+  "Common": {
+    "loading": "Yuklanmoqda…",
+    "error": "Xatolik yuz berdi",
+    "retry": "Qayta urinish",
+    "logout": "Chiqish",
+    "home": "GEO — bosh sahifa",
+    "about": "Bu nima?"
+  },
+  "Filters": {
+    "label": "Filtrlar",
+    "language": "Savol tili",
+    "allLanguages": "Barcha tillar",
+    "topic": "Mavzu",
+    "allTopics": "Barcha mavzular",
+    "reset": "Tozalash",
+    "emptyTitle": "Bu filtrlarga mos natija yoʻq",
+    "emptyText": "Tanlangan til va mavzu boʻyicha ChatGPT’ga berilgan savol topilmadi."
+  },
+  "Locales": {
+    "uz": "Oʻzbekcha",
+    "ru": "Русский",
+    "en": "English"
+  },
+  "Method": {
+    "label": "{engine} · {webSearch, select, yes {API + veb-qidiruv} other {API}} · {model} · har savolga {samples} ta javob · {date}",
+    "title": "Usul"
+  },
+  "Tone": {
+    "positive": "Ijobiy",
+    "neutral": "Neytral",
+    "negative": "Salbiy"
+  },
+  "Categories": {
+    "dental_clinic": "Stomatologiya klinikasi",
+    "medical_clinic": "Tibbiyot klinikasi",
+    "beauty_salon": "Goʻzallik saloni",
+    "restaurant": "Restoran",
+    "learning_center": "Oʻquv markazi",
+    "furniture_store": "Mebel doʻkoni"
+  },
+  "Cities": {
+    "tashkent": "Toshkent",
+    "samarkand": "Samarqand",
+    "bukhara": "Buxoro",
+    "andijan": "Andijon",
+    "namangan": "Namangan",
+    "fergana": "Fargʻona"
+  },
+  "LocaleSwitcher": {
+    "label": "Til"
+  },
+  "NotFound": {
+    "title": "Sahifa topilmadi",
+    "description": "Bunday sahifa yoki loyiha mavjud emas.",
+    "home": "Bosh sahifa"
+  },
+  "Report": {
+    "metaTitle": "{brand} — ChatGPT’dagi koʻrinish hisoboti",
+    "weekly": "Haftalik hisobot"
+  },
+  "Headline": {
+    "title": "ChatGPT sizni qanchalik koʻp tilga oladi",
+    "you": "Siz",
+    "topCompetitor": "Asosiy raqobatchi",
+    "summary": "ChatGPT har 10 ta javobdan {you} tasida sizni tilga oladi ({percent}). Asosiy raqobatchingiz {competitor} — {them} tasida.",
+    "summaryAlone": "ChatGPT har 10 ta javobdan {you} tasida sizni tilga oladi ({percent}).",
+    "trendUp": "Oʻtgan haftaga nisbatan +{points} punkt",
+    "trendDown": "Oʻtgan haftaga nisbatan −{points} punkt",
+    "trendFlat": "Oʻtgan haftadagidek",
+    "shareOfVoice": "Ovoz ulushi",
+    "avgPosition": "Oʻrtacha oʻrin",
+    "avgPositionHint": "1 = birinchi boʻlib tilga olingan",
+    "notNamed": "Tilga olinmagan"
+  },
+  "MetricChart": {
+    "metricLabel": "Koʻrsatkich",
+    "viewLabel": "Grafik turi",
+    "line": "Chiziqli grafik",
+    "bar": "Ustunli grafik",
+    "metrics": {
+      "visibility": "Koʻrinish",
+      "sentiment": "Ohang",
+      "position": "Oʻrin",
+      "shareOfVoice": "Ovoz ulushi"
+    },
+    "hints": {
+      "visibility": "ChatGPT javoblarining necha foizida brend tilga olingani — 100 balldan.",
+      "sentiment": "ChatGPT brend haqida qanchalik ijobiy gapirgani: 0 — salbiy, 100 — ijobiy.",
+      "position": "Brend javobda nechanchi boʻlib tilga olingani. 1 — birinchi; son qancha kichik boʻlsa, shuncha yaxshi.",
+      "shareOfVoice": "Barcha kuzatilayotgan brendlarning tilga olinishidan brendning ulushi, foizda."
+    },
+    "you": "{name} (siz)",
+    "date": "Sana",
+    "chartLabel": "{metric}: {brands} ta brend, {weeks} ta haftalik tekshiruv. Haftalarni chap va oʻng strelkalar bilan koʻring.",
+    "firstRun": "Hozircha bitta tekshiruv oʻtkazildi. Dinamika keyingi haftalik tekshiruvdan keyin koʻrinadi.",
+    "weeks": "{weeks} ta haftalik tekshiruv."
+  },
+  "BrandTable": {
+    "title": "{brand} va raqobatchilari",
+    "description": "Toʻrt koʻrsatkich boʻyicha taqqoslash va oʻtgan haftaga nisbatan oʻzgarish.",
+    "descriptionFirst": "Toʻrt koʻrsatkich boʻyicha taqqoslash.",
+    "rank": "Reyting",
+    "brand": "Brend",
+    "visibility": "Koʻrinish",
+    "sentiment": "Ohang",
+    "position": "Oʻrin",
+    "you": "(siz)",
+    "sortBy": "{metric} boʻyicha saralash",
+    "notNamed": "Tilga olinmagan",
+    "better": "oʻtgan haftadan {amount} ga yaxshiroq",
+    "worse": "oʻtgan haftadan {amount} ga yomonroq",
+    "shareOfVoice": "Ovoz ulushi",
+    "titleShort": "Brendlar reytingi"
+  },
+  "SourcesTable": {
+    "title": "ChatGPT tayangan manbalar",
+    "viewLabel": "Manbalar roʻyxati turi",
+    "domains": "Saytlar",
+    "pages": "Sahifalar",
+    "rank": "Reyting",
+    "domain": "Sayt",
+    "page": "Sahifa",
+    "type": "Turi",
+    "used": "Ishlatilgan",
+    "usedHint": "Javoblarning necha foizida shu manbaga havola berilgani",
+    "citations": "Oʻrt. havola",
+    "citationsHint": "Manbaga tayangan bitta javobdagi oʻrtacha havolalar soni",
+    "empty": "ChatGPT javoblarida havolalar yoʻq.",
+    "mentioned": "Siz",
+    "mentionedHint": "Sahifada brendingiz tilga olinganmi",
+    "mentionedYes": "Bor",
+    "mentionedNo": "Yoʻq",
+    "mentionedUnknown": "Oʻqilmadi",
+    "hint": "Javoblarning necha foizida shu sayt yoki sahifaga havola berilgan. Nuqta saytning turini koʻrsatadi."
+  },
+  "SourceTypes": {
+    "title": "Manbalar turi boʻyicha",
+    "description": "ChatGPT qaysi turdagi saytlarga koʻproq tayanadi.",
+    "own": "Sizning saytingiz",
+    "competitor": "Raqobatchilar saytlari",
+    "directory": "Xarita va kataloglar",
+    "news": "Yangiliklar",
+    "social": "Ijtimoiy tarmoqlar",
+    "other": "Boshqa",
+    "short": {
+      "own": "Siz",
+      "competitor": "Raqobatchi",
+      "directory": "Katalog",
+      "news": "Yangiliklar",
+      "social": "Ijtimoiy",
+      "other": "Boshqa"
+    },
+    "total": "Jami {count} ta havola"
+  },
+  "Actions": {
+    "planTitle": "ChatGPT javoblarida koʻproq chiqish uchun 4 yoʻl",
+    "intro": "Eng katta taʼsir qiladiganlari birinchi. Roʻyxat har haftalik tekshiruvdan keyin yangilanadi.",
+    "progress": "{total} ta harakatdan {done} tasi bajarildi",
+    "progressLabel": "Bajarilgan harakatlar",
+    "status": {
+      "new": "Yangi",
+      "in_progress": "Jarayonda",
+      "done": "Bajarildi",
+      "declined": "Rad etilgan"
+    },
+    "impact": {
+      "high": "Taʼsiri yuqori",
+      "medium": "Taʼsiri oʻrtacha",
+      "low": "Taʼsiri past"
+    },
+    "titles": {
+      "directory": "{domain} katalogiga qoʻshiling",
+      "news": "{domain}’da tilga olinishga erishing",
+      "social": "{domain}’da sahifangizni yuriting",
+      "other": "{domain}’da paydo boʻling",
+      "fact": "ChatGPT’dagi notoʻgʻri faktni tuzating",
+      "content": "“{topic}” haqida sahifa yozing",
+      "ai_bots_blocked": "AI qidiruv botlariga saytni oching",
+      "prices_as_images": "Narxlarni rasm emas, matn qilib yozing",
+      "no_business_markup": "Saytga biznes maʼlumotlari belgisini qoʻshing",
+      "contacts_missing": "Manzil, telefon va ish vaqtini matn qilib yozing"
+    },
+    "why": {
+      "listing": "ChatGPT {answers} ta javobda {domain} saytiga tayangan. Bu javoblarda {competitors} tilga olingan, siz esa u yerda yoʻqsiz.",
+      "listingAlone": "ChatGPT {answers} ta javobda {domain} saytiga tayangan, siz esa u yerda yoʻqsiz.",
+      "factSaid": "ChatGPT aytmoqda",
+      "factCorrect": "Toʻgʻrisi",
+      "content": "{count} ta savolda ChatGPT raqobatchilarni aytdi, sizni emas.",
+      "ai_bots_blocked": "Saytingizning robots.txt fayli ChatGPT qidiruv botini (OAI-SearchBot) toʻsib qoʻygan, shuning uchun u sahifalaringizni oʻqiy olmaydi.",
+      "prices_as_images": "Narxlaringiz rasmda — ChatGPT ularni oʻqiy olmaydi va narxni boshqa saytlardan oladi.",
+      "no_business_markup": "Saytingizda biznes belgisi (schema.org) topilmadi. U AI’ga manzil, ish vaqti va xizmatlaringizni aniq oʻqishga yordam beradi.",
+      "contacts_missing": "Saytingizda manzil, telefon yoki ish vaqti matn sifatida topilmadi."
+    },
+    "how": "Qanday qilinadi",
+    "steps": {
+      "directory": {
+        "s1": "{domain} saytida kompaniyangiz kartochkasini oching yoki egaligingizni tasdiqlang.",
+        "s2": "Manzil, telefon, ish vaqti, narxlar va rasmlarni toʻliq toʻldiring.",
+        "s3": "Mamnun mijozlardan u yerda sharh qoldirishni soʻrang."
+      },
+      "news": {
+        "s1": "{domain} tahririyatiga yangi xizmat, narxlar yoki foydali maslahat haqida qisqa maʼlumot yuboring.",
+        "s2": "Narxlar sharhlari va reytinglarga kiritishlarini soʻrang.",
+        "s3": "Chiqqan maqolani saytingiz va ijtimoiy sahifalaringizda ulashing."
+      },
+      "social": {
+        "s1": "{domain}’da rasmiy sahifa oching yoki uni yangilang.",
+        "s2": "Profilga manzil, ish vaqti va narxlarni yozing.",
+        "s3": "Haftasiga 1–2 marta xizmatlaringiz haqida foydali post joylang."
+      },
+      "other": {
+        "s1": "{domain} saytini oching va kompaniyalar u yerga qanday qoʻshilishini bilib oling.",
+        "s2": "Toʻgʻri va toʻliq maʼlumot bilan qoʻshiling.",
+        "s3": "Kartochkada saytingizga havola qoldiring."
+      },
+      "fact": {
+        "s1": "Toʻgʻri maʼlumotni saytingizga matn qilib yozing.",
+        "s2": "Xuddi shu maʼlumotni 2GIS va boshqa kataloglardagi kartochkangizda yangilang.",
+        "s3": "Eski maʼlumot qolgan sahifa va postlarni toping va tuzating."
+      },
+      "content": {
+        "s1": "Saytingizda shu savollarga javob beradigan sahifa yozing — oʻzbek va rus tillarida.",
+        "s2": "Narxlar, manzil va ish vaqtini sahifaga matn qilib qoʻshing.",
+        "s3": "Sahifani sayt menyusidan bogʻlang, toki uni topish oson boʻlsin."
+      },
+      "ai_bots_blocked": {
+        "s1": "robots.txt faylidan OAI-SearchBot va GPTBot uchun Disallow qatorlarini olib tashlang.",
+        "s2": "Oʻzgarishdan keyin saytingiz.uz/robots.txt manzilini ochib tekshiring.",
+        "s3": "Keyingi haftalik tekshiruvda saytingiz manbalar orasida paydo boʻlishini kuzating."
+      },
+      "prices_as_images": {
+        "s1": "Narxlar jadvalini sahifaga matn sifatida yozing.",
+        "s2": "Rasmni qoldirmoqchi boʻlsangiz, uning yoniga matnli jadval qoʻshing.",
+        "s3": "Narxlar oʻzgarganda matnni ham yangilang."
+      },
+      "no_business_markup": {
+        "s1": "Sayt kodiga LocalBusiness belgisini qoʻshing: nom, manzil, telefon, ish vaqti, narxlar.",
+        "s2": "Google’ning Rich Results Test vositasi bilan tekshiring.",
+        "s3": "Ish vaqti yoki manzil oʻzgarsa, belgini ham yangilang."
+      },
+      "contacts_missing": {
+        "s1": "Har sahifaning pastki qismiga manzil, telefon va ish vaqtini matn qilib yozing.",
+        "s2": "Aloqa sahifasiga xarita va moʻljalni qoʻshing.",
+        "s3": "Xuddi shu maʼlumotlar 2GIS va boshqa kataloglarda ham bir xil boʻlsin."
+      }
+    },
+    "questions": "Taʼsir qiladigan savollar",
+    "start": "Boshlash",
+    "markDone": "Bajarildi",
+    "decline": "Rad etish",
+    "reopen": "Qayta ochish",
+    "restore": "Qaytarish",
+    "doneOn": "{date} kuni bajarildi",
+    "proof": "Shu savollarda koʻrinishingiz: {before} → {after}",
+    "proofRuns": "{runs} ta tekshiruvdan keyin",
+    "proofPending": "Natija keyingi tekshiruvdan keyin koʻrinadi.",
+    "proofPendingDate": "Natija keyingi tekshiruvdan keyin koʻrinadi: {date}.",
+    "changed": "{title}: {status}",
+    "saveFailed": "Holatni saqlab boʻlmadi. Qayta urinib koʻring.",
+    "emptyTodo": "Hozircha qiladigan ish yoʻq.",
+    "noneTitle": "Harakatlar yoʻq",
+    "noneText": "ChatGPT savollaringizning hammasida sizni tilga oladi va muhim saytlarning hammasida borsiz.",
+    "managedTitle": "Buni oʻzingiz qilishni xohlamaysizmi?",
+    "managedText": "Managed GEO tarifida bu ishlarni jamoamiz bajaradi, natijasi esa haftalik hisobotda koʻrinadi.",
+    "managedAction": "Batafsil",
+    "cardTitle": "Tavsiya etilgan harakatlar",
+    "cardDescription": "{total} ta harakatdan {done} tasi bajarildi. Eng katta taʼsir qiladiganlari:",
+    "cardEmpty": "Hozircha qiladigan ish yoʻq.",
+    "goalsLabel": "Yoʻnalish boʻyicha saralash",
+    "goals": {
+      "fact": "Xato faktlarni tuzatish",
+      "listing": "Boshqa saytlarga chiqish",
+      "content": "Saytga sahifa yozish",
+      "technical": "Saytni AI uchun sozlash"
+    },
+    "goalCounts": {
+      "fact": "{count} ta xato",
+      "listing": "{count} ta sayt",
+      "content": "{count} ta sahifa",
+      "technical": "{count} ta tuzatish"
+    },
+    "goalHint": "Hali bajarilmagan harakatlar. Bosing — roʻyxatda faqat shular qoladi.",
+    "showAll": "Hammasini koʻrsatish ({count})",
+    "showLess": "Kamroq koʻrsatish",
+    "questionCount": "{count} ta savol",
+    "stepsCount": "Qadamlar: {done}/{total}",
+    "stepsProgress": "{total} ta qadamdan {done} tasi bajarildi",
+    "allStepsDone": "Hamma qadamlar bajarildi — harakatni “Bajarildi” deb belgilang.",
+    "stepSaved": "{title}: {done}/{total} qadam",
+    "whyTitle": "Nima uchun",
+    "close": "Yopish",
+    "emptyGoal": "Bu yoʻnalishda bajarilmagan harakat yoʻq.",
+    "csv": "Eksport",
+    "csvHint": "Harakatlarni CSV faylda yuklab olish",
+    "csvHeaders": {
+      "action": "Harakat",
+      "goal": "Yoʻnalish",
+      "impact": "Taʼsiri",
+      "status": "Holat",
+      "steps": "Qadamlar",
+      "questions": "Savollar soni",
+      "doneAt": "Bajarilgan sana"
+    }
+  },
+  "ShareOfVoice": {
+    "title": "Ovoz ulushi",
+    "description": "Kuzatilayotgan klinikalarning barcha tilga olinishlari ichida har birining ulushi.",
+    "you": "{name} (siz)",
+    "brand": "Brend",
+    "share": "Ulush"
+  },
+  "WrongFacts": {
+    "title": "Siz haqingizdagi notoʻgʻri maʼlumotlar",
+    "description": "ChatGPT javoblaridagi haqiqatga toʻgʻri kelmaydigan daʼvolar.",
+    "says": "ChatGPT aytadi",
+    "correct": "Aslida",
+    "prompt": "Savol",
+    "empty": "Notoʻgʻri maʼlumot topilmadi.",
+    "foundAt": "Birinchi marta topilgan: {date}"
+  },
+  "Sources": {
+    "title": "ChatGPT tayangan manbalar",
+    "description": "Javoblarda keltirilgan saytlar — nechta javobda keltirilgani boʻyicha.",
+    "missing": "Bu manbalarning {count} tasida siz yoʻqsiz.",
+    "answers": "{count} ta javob",
+    "listed": "Siz bor",
+    "notListed": "Siz yoʻq",
+    "competitorSite": "Raqobatchi sayti"
+  },
+  "SourcesPage": {
+    "typeLabel": "Manba turi",
+    "allTypes": "Barcha turlar",
+    "types": {
+      "directory": "Xarita va kataloglar",
+      "news": "Yangiliklar",
+      "social": "Ijtimoiy tarmoq va Telegram",
+      "competitor": "Raqobatchi sayti",
+      "own": "Sizning saytingiz",
+      "other": "Boshqa"
+    },
+    "isListed": "Siz bor",
+    "notListed": "Siz yoʻq",
+    "outreachNobody": "kuzatilayotgan brendlardan hech biri yoʻq",
+    "outreachProfile": "Raqobatchi sahifasi",
+    "outreachEmpty": "ChatGPT tayangan hamma sahifalarda siz borsiz.",
+    "csv": "CSV yuklab olish",
+    "csvHint": "Shu jadvalni CSV faylda yuklab olish",
+    "csvHeaders": {
+      "page": "Sahifa",
+      "site": "Sayt",
+      "type": "Turi",
+      "answers": "Javoblar",
+      "share": "Javoblar ulushi, %",
+      "named": "Sahifadagi raqobatchilar",
+      "citations": "Oʻrtacha havola",
+      "listed": "Siz bormisiz",
+      "you": "Sizni aytadimi"
+    },
+    "pageYou": "Siz bor",
+    "pageNotYou": "Siz yoʻq",
+    "pageUnknown": "Oʻqib boʻlmadi",
+    "kpi": {
+      "sites": "Keltirilgan saytlar",
+      "sitesHint": "ChatGPT javoblarida havola berilgan saytlar soni.",
+      "pages": "Keltirilgan sahifalar",
+      "pagesHint": "Shu saytlardagi aniq sahifalar soni.",
+      "citations": "Javobdagi havolalar",
+      "citationsHint": "Bitta javobdagi oʻrtacha havolalar (sahifalar) soni.",
+      "own": "Saytingiz manba sifatida",
+      "ownHint": "Javoblarning necha foizida ChatGPT sizning saytingizga havola bergan.",
+      "missing": "Siz yoʻq saytlar",
+      "missingHint": "ChatGPT tayangan, lekin sizning kartochka yoki sahifangiz boʻlmagan saytlar (raqobatchilar saytlaridan tashqari)."
+    },
+    "tabsLabel": "Manbalar koʻrinishi",
+    "tabs": {
+      "sites": "Saytlar",
+      "pages": "Sahifalar",
+      "gaps": "Boʻshliqlar"
+    },
+    "gapsIntro": "ChatGPT shu sahifalarga tayanadi, lekin ularda siz yoʻqsiz. Maqola va reytinglar mualliflariga yozib, sizni ham qoʻshishni soʻrang; raqobatchining kartochkasi boʻlsa, oʻzingiznikini undan yaxshiroq toʻldiring.",
+    "search": "Sayt yoki sahifani qidirish…",
+    "columns": {
+      "rank": "Reyting",
+      "site": "Sayt",
+      "page": "Sahifa",
+      "type": "Turi",
+      "named": "Tilga olinganlar",
+      "used": "Ishlatilgan",
+      "citations": "Oʻrt. havola",
+      "listed": "Siz bormisiz?",
+      "pages": "Sahifalar",
+      "you": "Sizni aytadimi",
+      "competitors": "Sahifadagi raqobatchilar"
+    },
+    "usedHint": "Javoblarning necha foizida shu manbaga havola berilgan",
+    "citationsHint": "Manbaga tayangan bitta javobdagi oʻrtacha havolalar soni",
+    "pagesCount": "{count} ta sahifa",
+    "emptyFiltered": "Bu filtrga mos manba yoʻq."
+  },
+  "Prompts": {
+    "title": "Savollar va javoblar",
+    "description": "{count} ta savol, har biriga {samples} tadan javob. Javoblarni oʻqish uchun savolni bosing.",
+    "filterLabel": "Savollarni saralash",
+    "all": "Hammasi",
+    "missing": "Siz yoʻq",
+    "youNamed": "{total} ta javobdan {count} tasida siz tilga olingansiz",
+    "nobody": "Kuzatilayotgan klinikalar tilga olinmagan",
+    "toneLegend": "Ohang"
+  },
+  "Answer": {
+    "sample": "{n}-javob",
+    "named": "Tilga olinganlar (tartib boʻyicha)",
+    "none": "Bu javobda kuzatilayotgan klinikalar tilga olinmagan.",
+    "sources": "Manbalar"
+  },
+  "App": {
+    "name": "GEO"
+  },
+  "Topics": {
+    "best": "Eng yaxshisi",
+    "implants": "Implantlar",
+    "kids": "Bolalar",
+    "emergency": "Shoshilinch yordam",
+    "braces": "Breketlar",
+    "whitening": "Oqartirish",
+    "location": "Joylashuv",
+    "installment": "Boʻlib toʻlash",
+    "prices": "Narxlar",
+    "painless": "Ogʻriqsiz davolash",
+    "veneers": "Vinirlar",
+    "root_canal": "Kanal davolash",
+    "other": "Boshqa"
+  },
+  "Dashboard": {
+    "title": "Loyihalar",
+    "description": "ChatGPT’da kuzatilayotgan brendlar",
+    "newProject": "Yangi loyiha",
+    "empty": "Hali loyiha yoʻq",
+    "emptyHint": "Birinchi brendni qoʻshing — ChatGPT uni qanchalik koʻp tilga olishini oʻlchaymiz.",
+    "noData": "Hali oʻlchov yoʻq",
+    "promptCount": "{count} ta savol",
+    "rival": "{name}: {score}/100",
+    "visibility": "ChatGPT’dagi koʻrinish",
+    "openReport": "Hisobot"
+  },
+  "Overview": {
+    "noDataTitle": "Hali oʻlchov yoʻq",
+    "noDataDescription": "Savollarni qoʻshing — ChatGPT’ga navbatdagi soʻrovdan keyin natijalar shu yerda paydo boʻladi.",
+    "noDataAction": "Savollarga oʻtish",
+    "you": "(siz)",
+    "heroLabel": "ChatGPT’dagi koʻrinishingiz",
+    "queuedTitle": "Birinchi oʻlchov navbatda",
+    "queuedDescription": "{count} ta savolni ChatGPT’ga beramiz. Natijalar tayyor boʻlishi bilan shu yerda chiqadi.",
+    "queuedAction": "Savollarni koʻrish",
+    "missingTitle": "Sizni aytmagan savollar",
+    "missingDescription": "{total} ta savoldan {count} tasida ChatGPT raqobatchilarni aytdi, sizni emas.",
+    "missingNone": "ChatGPT raqobatchilarni aytgan har bir savolda sizni ham tilga oldi.",
+    "missingMore": "Yana {count} ta savol — Javoblar sahifasida.",
+    "wrongFacts": "ChatGPT siz haqingizda {count} ta notoʻgʻri fakt aytmoqda",
+    "wrongFactsAction": "Koʻrib chiqish",
+    "export": "CSV yuklab olish",
+    "nextRun": "Keyingi haftalik tekshiruv: {date}",
+    "nextRunHint": "Savollaringiz har hafta dushanba kuni ertalab ChatGPT’ga qayta beriladi.",
+    "csv": {
+      "date": "Sana",
+      "brand": "Brend",
+      "visibility": "Koʻrinish (100 dan)",
+      "shareOfVoice": "Ovoz ulushi, %",
+      "sentiment": "Ohang (100 dan)",
+      "position": "Oʻrtacha oʻrin"
+    },
+    "trendTitle": "Haftalik dinamika",
+    "trendHint": "Har bir brendning soʻnggi haftalik tekshiruvlardagi koʻrsatkichi. Koʻrsatkichni yuqoridagi tugmalar bilan almashtiring.",
+    "share": "Ulashish",
+    "copyLink": "Hisobot havolasini nusxalash",
+    "openReport": "Hisobotni ochish",
+    "copied": "Havola nusxalandi",
+    "recent": {
+      "title": "Soʻnggi javoblar",
+      "hint": "ChatGPT oxirgi tekshiruvda savollaringizga bergan javoblar, har savoldan bittadan.",
+      "all": "Barcha javoblar",
+      "answer": "Javob",
+      "brands": "Tilga olinganlar",
+      "sources": "Manbalar",
+      "position": "Oʻrningiz",
+      "date": "Sana",
+      "notNamed": "Tilga olinmagan"
+    }
+  },
+  "Competitors": {
+    "aheadTitle": "Raqobatchilar qayerda oldinda",
+    "aheadDescription": "ChatGPT raqobatchini aytgan, sizni esa aytmagan savollar.",
+    "aheadCount": "{count} ta savolda u bor, siz yoʻq",
+    "aheadNone": "Uni aytgan har bir savolda siz ham borsiz.",
+    "namedIn": "{total} ta javobdan {count} tasida tilga olingan",
+    "more": "Yana {count} ta savol",
+    "readAnswers": "Javoblarni oʻqish",
+    "untrackedTitle": "ChatGPT yana {count} ta brendni tilga olmoqda",
+    "untrackedText": "Siz ularni hali kuzatmayapsiz. Javoblarda koʻp uchrayotganlari yangi raqobatchilaringiz boʻlishi mumkin.",
+    "untrackedAnswers": "{total} ta javobdan {count} tasida",
+    "topics": {
+      "title": "Mavzular boʻyicha oʻrinlar",
+      "hint": "Har bir mavzu savollarida ChatGPT brendlarni qanchalik koʻp tilga olishi boʻyicha tartib.",
+      "topic": "Mavzu",
+      "you": "(siz)",
+      "empty": "Hech kim"
+    },
+    "untrackedSoon": "Kuzatishga qoʻshish — tez orada"
+  },
+  "PromptManager": {
+    "description": "Mijozlaringiz ChatGPT’ga beradigan savollar. Har bir savol har hafta oʻlchanadi.",
+    "count": "{count} ta savol",
+    "recommended": "Tavsiya: 20–50 ta",
+    "schedule": "Har hafta tekshiriladi, keyingisi: {date}",
+    "belowMin": "Ishonchli natija uchun kamida 20 ta savol qoʻshing.",
+    "aboveMax": "50 tadan koʻp savol MVP chegarasidan oshadi.",
+    "add": "Savol qoʻshish",
+    "edit": "Tahrirlash",
+    "empty": "Hali savol yoʻq",
+    "emptyHint": "Mijozlaringiz ChatGPT’dan nima soʻrashini yozing, masalan: “Toshkentdagi eng yaxshi stomatologiya qaysi?”",
+    "columns": {
+      "question": "Savol",
+      "topic": "Mavzu",
+      "visibility": "Koʻrinish",
+      "position": "Oʻrin",
+      "tone": "Ohang",
+      "leader": "Yetakchi",
+      "lastRun": "Tekshirilgan",
+      "actions": "Amallar",
+      "named": "Tilga olinganlar"
+    },
+    "queued": "Navbatda",
+    "you": "Siz",
+    "nobody": "Hech kim",
+    "openAnswers": "Javoblarni ochish",
+    "noMatch": "Bu filtrlarga mos savol yoʻq.",
+    "visibilityHint": "{total} ta javobdan {count} tasida tilga olingansiz",
+    "tabsLabel": "Savollar roʻyxati",
+    "tabActive": "Kuzatilayotgan",
+    "tabSuggested": "Tavsiyalar",
+    "suggestedIntro": "Mijozlar sohangizda soʻraydigan, lekin siz hali kuzatmayotgan savollar. Qoʻshilgan savol keyingi haftalik tekshiruvdan boshlab oʻlchanadi.",
+    "accept": "Qoʻshish",
+    "reject": "Rad etish",
+    "acceptLabel": "Savollarga qoʻshish: {text}",
+    "rejectLabel": "Rad etish: {text}",
+    "accepted": "Savollarga qoʻshildi: {text}",
+    "rejected": "Rad etildi: {text}",
+    "suggestionFailed": "Saqlab boʻlmadi. Qayta urinib koʻring.",
+    "suggestedEmpty": "Hozircha yangi tavsiya yoʻq.",
+    "csv": "Eksport",
+    "csvHint": "Savollar va natijalarini CSV faylda yuklab olish",
+    "csvHeaders": {
+      "question": "Savol",
+      "language": "Til",
+      "topic": "Mavzu",
+      "visibility": "Koʻrinish, %",
+      "named": "Tilga olingan javoblar",
+      "total": "Jami javoblar",
+      "position": "Oʻrtacha oʻrin",
+      "tones": "Ohang",
+      "leader": "Yetakchi",
+      "lastRun": "Tekshirilgan"
+    },
+    "topics": "Mavzular",
+    "allTopics": "Barcha mavzular",
+    "usedHint": "Tarifingizdagi {max} ta savoldan nechtasi ishlatilgan"
+  },
+  "PromptForm": {
+    "addTitle": "Yangi savol",
+    "editTitle": "Savolni tahrirlash",
+    "text": "Savol",
+    "textPlaceholder": "Toshkentdagi eng yaxshi stomatologiya qaysi?",
+    "language": "Savol tili",
+    "topic": "Mavzu",
+    "topicPlaceholder": "masalan, narxlar",
+    "save": "Saqlash",
+    "saving": "Saqlanmoqda…",
+    "cancel": "Bekor qilish",
+    "editHint": "Oʻzgarish keyingi oʻlchovdan boshlab hisobga olinadi.",
+    "textShort": "Savol kamida 5 ta belgidan iborat boʻlsin.",
+    "textDuplicate": "Bunday savol allaqachon bor.",
+    "topicRequired": "Mavzuni kiriting.",
+    "saveFailed": "Saqlab boʻlmadi. Qayta urinib koʻring."
+  },
+  "NewProject": {
+    "title": "Yangi loyiha",
+    "description": "Brendingiz va raqobatchilaringiz haqida maʼlumot kiriting.",
+    "brandSection": "Brend",
+    "competitorsSection": "Raqobatchilar",
+    "competitorsHint": "3 tagacha asosiy raqobatchi. ChatGPT javoblarida sizni ular bilan solishtiramiz.",
+    "name": "Brend nomi",
+    "namePlaceholder": "Oq Tabassum",
+    "aliases": "Boshqa yozilishlar",
+    "aliasesHint": "Lotin va kirill yozuvlari, vergul bilan ajrating.",
+    "aliasesPlaceholder": "Ok Tabassum, Ок Табассум",
+    "domain": "Sayt manzili",
+    "domainPlaceholder": "oqtabassum.uz",
+    "category": "Soha",
+    "city": "Shahar",
+    "competitor": "{n}-raqobatchi",
+    "competitorNamePlaceholder": "Raqobatchi nomi",
+    "optional": "ixtiyoriy",
+    "submit": "Loyihani yaratish",
+    "submitting": "Yaratilmoqda…",
+    "cancel": "Bekor qilish",
+    "nameRequired": "Brend nomini kiriting.",
+    "domainInvalid": "Sayt manzilini toʻgʻri kiriting, masalan: misol.uz",
+    "competitorRequired": "Kamida bitta raqobatchini kiriting.",
+    "competitorName": "Raqobatchi nomini kiriting.",
+    "saveFailed": "Loyihani yaratib boʻlmadi. Qayta urinib koʻring."
+  },
+  "Landing": {
+    "metaTitle": "ChatGPT mijozlaringizga kimni tavsiya qilyapti? — GEO",
+    "metaDescription": "Mijozlaringiz ChatGPT’dan soʻrayotgan savollarni oʻzbek va rus tillarida tekshiramiz va sizni raqobatchilar bilan solishtiramiz. Bepul tekshiruv 2 daqiqada.",
+    "siteLabel": "Sayt manzili",
+    "sitePlaceholder": "saytingiz.uz",
+    "submit": "Bepul tekshirish",
+    "siteInvalid": "Sayt manzilini toʻgʻri kiriting, masalan: saytingiz.uz",
+    "siteExamples": {
+      "e1": "klinikangiz.uz",
+      "e2": "dokoningiz.uz",
+      "e3": "maktabingiz.uz",
+      "e4": "restoraningiz.uz"
+    },
+    "nav": {
+      "label": "Asosiy menyu",
+      "openMenu": "Menyuni ochish",
+      "menu": "Menyu",
+      "close": "Menyuni yopish",
+      "login": "Kirish",
+      "cta": "Bepul tekshirish",
+      "product": "Mahsulot",
+      "pricing": "Narxlar",
+      "resources": "Resurslar",
+      "agencies": "Agentliklar uchun",
+      "items": {
+        "visibility": {
+          "title": "AI koʻrinish",
+          "text": "ChatGPT sizni qanday koʻradi"
+        },
+        "features": {
+          "title": "Imkoniyatlar",
+          "text": "Savollar, raqobatchilar, manbalar"
+        },
+        "reports": {
+          "title": "Hisobotlar",
+          "text": "PDF, Telegram va ulashiladigan havola"
+        },
+        "telegram": {
+          "title": "Telegram hisobot",
+          "text": "Har hafta botda"
+        },
+        "check": {
+          "title": "Bepul tekshiruv",
+          "text": "2 daqiqada natija"
+        },
+        "method": {
+          "title": "Usulimiz",
+          "text": "Qanday oʻlchaymiz"
+        },
+        "faq": {
+          "title": "Savol-javob",
+          "text": "Koʻp beriladigan savollar"
+        },
+        "demo": {
+          "title": "Demo",
+          "text": "Biznesingiz misolida koʻrsatamiz"
+        }
+      }
+    },
+    "hero": {
+      "pill": "Oʻzbek va rus tillarida ishlaydi",
+      "title": "Brendingiz AI javoblarida",
+      "titleMuted": "qanday koʻrinadi?",
+      "subtitle": "ChatGPT mijozlaringizga kimni tavsiya qilishini kuzating va oʻrningizni yaxshilang. Asosiy koʻrsatkichlar: <visibility>Koʻrinish</visibility>, <position>Oʻrin</position> va <tone>Ohang</tone>.",
+      "demo": "Demo soʻrash",
+      "start": "Bepul tekshirish",
+      "checkTitle": "Saytingizni bepul tekshiring",
+      "micro": "Karta kerak emas · 2 daqiqada natija"
+    },
+    "preview": {
+      "label": "Boshqaruv paneli: {brand} klinikasining namunaviy hisoboti",
+      "range": "Oxirgi {weeks} hafta",
+      "allTopics": "Barcha mavzular",
+      "sample": "Namuna maʼlumotlari"
+    },
+    "metrics": {
+      "pill": "AI koʻrsatkichlari",
+      "title": "AI brendingizni qanday koʻrishini biling",
+      "sub": "Har bir javobda uchta narsani oʻlchaymiz.",
+      "tabsLabel": "Koʻrsatkichlar",
+      "tabs": {
+        "visibility": {
+          "title": "Koʻrinish",
+          "text": "ChatGPT javoblarining nechtasida tilga olinasiz. Bu asosiy ballingiz — 100 dan."
+        },
+        "position": {
+          "title": "Oʻrin",
+          "text": "Javobda nechanchi boʻlib tilga olinasiz. Birinchi aytilgan brendni koʻproq tanlashadi."
+        },
+        "tone": {
+          "title": "Ohang",
+          "text": "ChatGPT siz haqingizda qanday gapiradi: ijobiy, neytral yoki salbiy."
+        }
+      },
+      "question": "Toshkentdagi eng yaxshi stomatologiya klinikasi qaysi?",
+      "intro": "Sharh va reytinglarga koʻra, Toshkentda quyidagi klinikalar eng koʻp tavsiya qilinadi:",
+      "clinics": {
+        "first": {
+          "name": "Samo Dent",
+          "text": "Zamonaviy uskunalar va tajribali shifokorlar; 2GIS’da reytingi yuqori."
+        },
+        "you": {
+          "name": "Oq Tabassum",
+          "text": "Implant va breketlar boʻyicha yaxshi sharhlar, ikki filiali bor."
+        },
+        "third": {
+          "name": "Nur Stomatologiya",
+          "text": "Implantatsiyaga ixtisoslashgan, narxlari hamyonbop."
+        }
+      },
+      "yourScore": "Ball: {score}/100",
+      "yourPosition": "Oʻrtacha oʻrin: {position}",
+      "yourTone": "Ohang: ijobiy"
+    },
+    "features": {
+      "pill": "Asosiy imkoniyatlar",
+      "title": "Savoldan natijagacha — bitta panelda",
+      "sub": "Mijozlar nimani soʻrashini, ChatGPT kimni aytishini va nimani tuzatish kerakligini koʻring.",
+      "items": {
+        "prompts": {
+          "title": "Savollarni sozlang",
+          "text": "Mijozlaringiz ChatGPT’dan nima soʻraydi? Oʻzbek va rus tillaridagi savollarni qoʻshing va mavzular boʻyicha tartiblang."
+        },
+        "suggested": {
+          "title": "Tayyor savollar bilan boshlang",
+          "text": "Sayt manzilini kiritasiz — sohangizga mos 20 ta savolni oʻzimiz taklif qilamiz."
+        },
+        "brands": {
+          "title": "Raqobatchilarni qoʻshing",
+          "text": "Bozoringizdagi asosiy oʻyinchilar bilan solishtiring. ChatGPT yangi nomni aytsa, xabar beramiz."
+        },
+        "engines": {
+          "title": "AI tizimlarni tanlang",
+          "text": "Hozir ChatGPT’ni veb-qidiruv bilan tekshiramiz. Gemini va Yandex tez orada qoʻshiladi."
+        },
+        "sources": {
+          "title": "Asosiy manbalarni toping",
+          "text": "ChatGPT qaysi saytlarga tayanishini va ularning qaysi birida yoʻqligingizni koʻring."
+        },
+        "facts": {
+          "title": "Notoʻgʻri faktlarni toping",
+          "text": "Eski narx, notoʻgʻri manzil yoki ish vaqti — ChatGPT siz haqingizda xato aytsa, koʻrsatamiz."
+        }
+      },
+      "mock": {
+        "tracked": "Kuzatilayotgan savollar",
+        "add": "Savol qoʻshish",
+        "fromSite": "Saytingiz boʻyicha {count} ta savol",
+        "tracking": "Kuzatilmoqda",
+        "track": "Kuzatish",
+        "named": "{count} ta javobda tilga olingan",
+        "engines": "AI tizimlar",
+        "weekly": "Har hafta",
+        "recent": "Soʻnggi javoblar",
+        "site": "Sayt",
+        "type": "Tur",
+        "share": "Ulush",
+        "factsFound": "{count} ta notoʻgʻri fakt topildi"
+      }
+    },
+    "method": {
+      "pill": "Usulimiz",
+      "text": "Biz taxmin qilmaymiz: har bir ball ortida ChatGPT’ning haqiqiy javoblari turadi va ularning har birini oʻzingiz oʻqishingiz mumkin.",
+      "f1": "Veb-qidiruv yoqilgan ChatGPT",
+      "f2": "Har savolga 3 ta javob",
+      "f3": "Har hisobotda model va sana"
+    },
+    "telegram": {
+      "title": "Hisobot har hafta Telegram’da.",
+      "text": "Ball, raqobatchilar va yangi notoʻgʻri faktlar — panelga kirmasdan, toʻgʻridan-toʻgʻri Telegram’da.",
+      "cta": "Demo soʻrash",
+      "bot": "GEO hisobot",
+      "heading": "{brand} · haftalik hisobot",
+      "score": "Ballingiz",
+      "change": "(+{points})",
+      "facts": "Notoʻgʻri faktlar",
+      "open": "Hisobotni ochish",
+      "time": "Dushanba, 09:00"
+    },
+    "reports": {
+      "pill": "Hisobotlar",
+      "title": "Bir qarashda tushunarli hisobotlar",
+      "sub": "Raqamlarni rahbar ham, mijoz ham darhol tushunadigan qilib beramiz.",
+      "chartLabel": "Brendlar: ball va ijobiy ohang ulushi boʻyicha joylashuvi",
+      "xAxis": "Ball (100 dan)",
+      "yAxis": "Ijobiy ohang ulushi",
+      "sample": "Namuna: Toshkentdagi stomatologiya klinikalari",
+      "quadrants": {
+        "leaders": "Yetakchilar",
+        "niche": "Kam, lekin ijobiy",
+        "behind": "Ortda qolganlar",
+        "mixed": "Koʻp, lekin bahsli"
+      },
+      "items": {
+        "pdf": {
+          "title": "PDF hisobot",
+          "text": "Rahbarga yoki mijozga yuborish uchun tayyor fayl."
+        },
+        "telegram": {
+          "title": "Telegram",
+          "text": "Haftalik natija va ogohlantirishlar botda."
+        },
+        "link": {
+          "title": "Ulashiladigan havola",
+          "text": "Hisobotni roʻyxatdan oʻtmasdan ochiladigan havola orqali ulashing."
+        }
+      }
+    },
+    "local": {
+      "pill": "Mahalliy bozor",
+      "title": "Markaziy Osiyo uchun qurilgan",
+      "sub": "Xalqaro vositalarda yoʻq narsalar.",
+      "items": {
+        "languages": {
+          "title": "Oʻzbek va rus tillari",
+          "text": "Savollar va javoblar oʻzbek (lotin va kirill) hamda rus tillarida — mijozlaringiz qanday soʻrasa, shunday."
+        },
+        "sources": {
+          "title": "Mahalliy manbalar",
+          "text": "2GIS, yangilik saytlari, kataloglar va Telegram kanallar — ChatGPT bu yerda nimaga tayanishini koʻrsatamiz."
+        },
+        "facts": {
+          "title": "Notoʻgʻri faktlar",
+          "text": "Eski narx yoki yopilgan filial haqidagi xatolarni topamiz va toʻgʻrisini koʻrsatamiz."
+        },
+        "telegram": {
+          "title": "Telegram hisobotlar",
+          "text": "Haftalik natija oʻzingiz har kuni ishlatadigan ilovada."
+        },
+        "price": {
+          "title": "Soʻmda va hamyonbop",
+          "text": "Oyiga 199 000 soʻmdan. Haftalik tekshiruv narxni past ushlab turadi."
+        },
+        "managed": {
+          "title": "Biz bajarib beramiz",
+          "text": "Vaqtingiz boʻlmasa, tuzatishlarni jamoamiz amalga oshiradi."
+        }
+      }
+    },
+    "pricing": {
+      "pill": "Narxlar",
+      "title": "Oddiy va ochiq narxlar",
+      "sub": "Bepul tekshiruvdan boshlang, keyin kerakli tarifni tanlang.",
+      "recommended": "Tavsiya qilamiz",
+      "price": "{amount, number} soʻm",
+      "month": "/ oy",
+      "perMonth": "oyiga",
+      "includes": "Tarifga kiradi:",
+      "managedTitle": "Tuzatishlarni biz bajaraylikmi?",
+      "managed": "Managed GEO — oyiga {amount, number} soʻmdan: Biznes tarifi va tuzatishlar jamoamizdan.",
+      "managedCta": "Bogʻlanish",
+      "users": "Har bir tarifda foydalanuvchilar soni cheklanmagan.",
+      "note": "Savol — mijoz ChatGPT’ga beradigan bitta soʻrov, masalan: “Toshkentdagi eng yaxshi stomatologiya qaysi?” Har savolni 3 marta beramiz, chunki ChatGPT har safar biroz boshqacha javob beradi.",
+      "tiers": {
+        "free": {
+          "name": "Bepul tekshiruv",
+          "for": "Natijani koʻrish uchun",
+          "cta": "Bepul tekshirish",
+          "f1": "10 ta savol, bir marta",
+          "f2": "Siz va 3 ta raqobatchi",
+          "f3": "Natija 2 daqiqada",
+          "f4": "Roʻyxatdan oʻtish shart emas"
+        },
+        "start": {
+          "name": "Start",
+          "for": "Kichik biznes uchun",
+          "cta": "Boshlash",
+          "f1": "25 ta savol, har hafta",
+          "f2": "ChatGPT va 3 ta raqobatchi",
+          "f3": "Haftalik hisobot Telegram’da",
+          "f4": "Dinamika va manbalar tahlili"
+        },
+        "business": {
+          "name": "Biznes",
+          "for": "Oʻsishni istaganlar uchun",
+          "cta": "Biznesni ulash",
+          "f1": "75 ta savol, har hafta",
+          "f2": "5 ta raqobatchi",
+          "f3": "Notoʻgʻri faktlar",
+          "f4": "Tavsiyalar va sayt auditi — tez orada"
+        },
+        "agency": {
+          "name": "Agentlik",
+          "for": "Bir nechta mijoz va brend",
+          "cta": "Bogʻlanish",
+          "f1": "300 ta savol, 5 tagacha brend",
+          "f2": "Har brend uchun alohida hisobot",
+          "f3": "Oʻz logotipingiz bilan hisobotlar",
+          "f4": "Biznes tarifining barcha imkoniyatlari"
+        }
+      },
+      "compare": {
+        "title": "Tariflarni solishtiring",
+        "feature": "Imkoniyat",
+        "yes": "Bor",
+        "no": "Yoʻq",
+        "soon": "tez orada",
+        "groups": {
+          "coverage": "Kuzatuv qamrovi",
+          "discover": "Sozlash",
+          "measure": "Oʻlchash",
+          "act": "Harakat",
+          "report": "Hisobot va yordam"
+        },
+        "rows": {
+          "engines": "AI tizimlar",
+          "prompts": "Savollar",
+          "frequency": "Tekshiruv chastotasi",
+          "answers": "Oyiga AI javoblari",
+          "brands": "Brendlar",
+          "competitors": "Raqobatchilar",
+          "languages": "Savol tillari",
+          "users": "Foydalanuvchilar",
+          "siteAnalysis": "Saytni avtomatik tahlil qilish",
+          "competitorSuggestions": "Raqobatchilar tavsiyasi",
+          "promptSuggestions": "Savollar tavsiyasi",
+          "ownPrompts": "Oʻz savollaringiz",
+          "score": "Koʻrinish balli va reyting",
+          "trend": "Haftalik dinamika",
+          "allAnswers": "Barcha javoblarni oʻqish",
+          "sources": "Manbalar tahlili",
+          "newCompetitors": "Yangi raqobatchilar haqida xabar",
+          "wrongFacts": "Notoʻgʻri faktlar",
+          "actions": "Tavsiya etilgan harakatlar",
+          "audit": "Sayt auditi",
+          "link": "Ulashiladigan hisobot",
+          "telegram": "Telegram hisobot",
+          "pdf": "PDF hisobot",
+          "whiteLabel": "Oʻz logotipingiz bilan hisobotlar",
+          "support": "Yordam"
+        },
+        "values": {
+          "chatgpt": "ChatGPT",
+          "once": "Bir marta",
+          "weekly": "Har hafta",
+          "uzRu": "Oʻzbek, rus",
+          "unlimited": "Cheklanmagan",
+          "top3": "Asosiy 3 tasi",
+          "telegram": "Telegram"
+        }
+      }
+    },
+    "faq": {
+      "title": "Koʻp beriladigan savollar.",
+      "muted": "GEO haqida bilishingiz kerak boʻlgan asosiy maʼlumotlar.",
+      "items": {
+        "what": {
+          "q": "GEO nima?",
+          "a": "GEO (Generative Engine Optimization) — brendingiz ChatGPT kabi AI yordamchilar javoblarida qanchalik koʻrinishi. Mijoz “Toshkentdagi eng yaxshi klinika qaysi?” deb soʻrasa, AI bir nechta nomni aytadi. GEO — shu nomlar orasida boʻlish ustida ishlash."
+        },
+        "seo": {
+          "q": "Bu SEO’dan qanday farq qiladi?",
+          "a": "SEO — Google’dagi 10 ta havola orasida yuqorida boʻlish. ChatGPT esa havolalar roʻyxatini emas, 2–3 ta nomli tayyor javob beradi. Unga kirish uchun ChatGPT tayanadigan sayt va kataloglarda toʻgʻri maʼlumot boʻlishi kerak. SEO yordam beradi, lekin yetarli emas."
+        },
+        "notMentioned": {
+          "q": "ChatGPT meni umuman tilga olmasa-chi?",
+          "a": "Kichik va yangi bizneslarda bu eng koʻp uchraydigan holat — va aynan shu yerdan boshlash kerak. Tekshiruv sizning oʻrningizga kimlar tavsiya qilinayotganini va ChatGPT qaysi sayt va kataloglarga tayanayotganini koʻrsatadi. Birinchi qadam — oʻsha joylarda toʻgʻri maʼlumot bilan paydo boʻlish. Buni oʻzingiz qilishni istamasangiz, Managed GEO tarifida biz bajaramiz."
+        },
+        "engines": {
+          "q": "Qaysi AI tizimlarni tekshirasiz?",
+          "a": "Hozir ChatGPT’ni: OpenAI API orqali, veb-qidiruv yoqilgan holda — bu mijozlar koʻradigan javobga eng yaqin usul. Yandex va Gemini tez orada qoʻshiladi."
+        },
+        "accuracy": {
+          "q": "Natijalar qanchalik aniq?",
+          "a": "ChatGPT bir xil savolga har safar biroz boshqacha javob beradi. Shuning uchun har savolni 3 marta beramiz va ulushni hisoblaymiz. Har hisobotda model va sana yozilgan, har bir javobni oʻzingiz oʻqishingiz mumkin."
+        },
+        "install": {
+          "q": "Saytimga nimadir oʻrnatish kerakmi?",
+          "a": "Yoʻq. Bizga faqat sayt manzilingiz kerak. Hech qanday kod, plagin yoki parol soʻramaymiz."
+        },
+        "time": {
+          "q": "Qancha vaqtda natija koʻrinadi?",
+          "a": "Bepul tekshiruv natijasi taxminan 2 daqiqada tayyor boʻladi. Monitoringda hisobot har hafta keladi. Sayt va kataloglardagi oʻzgarishlar ChatGPT javoblarida odatda bir necha haftada aks etadi."
+        }
+      }
+    },
+    "demo": {
+      "title": "Biznesingiz uchun bepul demo",
+      "text": "Anketani toʻldiring — biznesingiz boʻyicha ChatGPT natijalarini koʻrsatamiz va savollaringizga javob beramiz.",
+      "b1": "Sohangiz boʻyicha haqiqiy ChatGPT javoblari",
+      "b2": "Raqobatchilar bilan solishtirish",
+      "b3": "Hech qanday majburiyat yoʻq",
+      "name": "Ismingiz",
+      "namePlaceholder": "Ism va familiya",
+      "phone": "Telefon raqam",
+      "sector": "Biznes sohasi",
+      "sectors": {
+        "clinic": "Klinika",
+        "real_estate": "Koʻchmas mulk",
+        "education": "Taʼlim",
+        "retail": "Savdo",
+        "other": "Boshqa"
+      },
+      "submit": "Demoga yozilish",
+      "sending": "Yuborilmoqda…",
+      "note": "Telegram yoki telefon orqali bogʻlanamiz.",
+      "nameRequired": "Ismingizni kiriting.",
+      "phoneInvalid": "Raqamni toʻliq kiriting, masalan: 90 123 45 67",
+      "sectorRequired": "Sohani tanlang.",
+      "failed": "Yuborib boʻlmadi. Qayta urinib koʻring.",
+      "successTitle": "Rahmat, {name}!",
+      "successText": "Arizangiz qabul qilindi. Tez orada bogʻlanamiz."
+    },
+    "cta": {
+      "eyebrow": "Karta kerak emas",
+      "title": "ChatGPT sizni tavsiya qilyaptimi? 2 daqiqada bilib oling.",
+      "text": "Sayt manzilini kiriting — ChatGPT’ga mijozlaringizning 10 ta savolini beramiz va natijani darhol koʻrsatamiz.",
+      "button": "Bepul tekshirish",
+      "demo": "Demo soʻrash"
+    },
+    "footer": {
+      "tagline": "Brendingiz AI javoblarida",
+      "taglineMuted": "qanday koʻrinadi?",
+      "description": "Brendingiz ChatGPT javoblarida qanchalik koʻrinishini oʻlchaymiz — oʻzbek va rus tillarida.",
+      "soon": "tez orada",
+      "madeIn": "Toshkentda yaratilgan",
+      "rights": "© 2026 GEO",
+      "columns": {
+        "product": "Mahsulot",
+        "resources": "Resurslar",
+        "company": "Kompaniya",
+        "contact": "Aloqa",
+        "legal": "Huquqiy"
+      },
+      "links": {
+        "metrics": "Koʻrsatkichlar",
+        "features": "Imkoniyatlar",
+        "reports": "Hisobotlar",
+        "pricing": "Narxlar",
+        "check": "Bepul tekshiruv",
+        "method": "Usulimiz",
+        "faq": "Savol-javob",
+        "local": "Nega biz",
+        "demo": "Demo soʻrash",
+        "login": "Kirish",
+        "privacy": "Maxfiylik siyosati",
+        "terms": "Foydalanish shartlari"
+      }
+    }
+  },
+  "Sidebar": {
+    "label": "Asosiy menyu",
+    "openMenu": "Menyuni ochish",
+    "menu": "Menyu",
+    "projects": "Loyihalar",
+    "selectProject": "Loyihani tanlang",
+    "allProjects": "Barcha loyihalar",
+    "newProject": "Yangi loyiha",
+    "overview": "Umumiy koʻrinish",
+    "prompts": "Savollar",
+    "answers": "Javoblar",
+    "competitors": "Raqobatchilar",
+    "sources": "Manbalar",
+    "wrongFacts": "Notoʻgʻri faktlar",
+    "actions": "Harakatlar",
+    "reports": "Hisobotlar",
+    "settings": "Sozlamalar",
+    "help": "Yordam",
+    "collapse": "Menyuni yigʻish",
+    "expand": "Menyuni yoyish",
+    "groups": {
+      "home": "Asosiy",
+      "monitor": "Kuzatuv",
+      "improve": "Yaxshilash",
+      "share": "Ulashish"
+    },
+    "start": {
+      "title": "Birinchi qadamlar",
+      "doneText": "Tayyor! Asosiy sahifalarni koʻrib chiqdingiz.",
+      "progress": "{total} ta qadamdan {done} tasi bajarildi",
+      "minimize": "Roʻyxatni yigʻish",
+      "expand": "Roʻyxatni ochish",
+      "dismiss": "Yopish",
+      "steps": {
+        "project": "Loyiha yaratildi",
+        "overview": "Holatingizni tekshiring",
+        "answers": "ChatGPT javobini oʻqing",
+        "sources": "ChatGPT manbalarini koʻring",
+        "actions": "Birinchi harakatni tanlang"
+      },
+      "left": "Qolgan qadamlar"
+    }
+  },
+  "Placeholder": {
+    "comingSoon": "Tez orada",
+    "reports": "Haftalik hisobotlar tarixi, PDF va Telegram orqali yuborish.",
+    "openReport": "Joriy hisobotni ochish"
+  },
+  "Settings": {
+    "languageTitle": "Interfeys tili",
+    "languageDescription": "Menyu va sahifalar shu tilda koʻrsatiladi.",
+    "profileTitle": "Brend profili",
+    "profileText": "Loyihani sozlashda saqlangan maʼlumotlar. Tahrirlash tez orada.",
+    "profileFields": {
+      "name": "Brend nomi",
+      "domain": "Sayt",
+      "description": "Tavsif",
+      "category": "Soha",
+      "city": "Shahar",
+      "aliases": "Boshqa yozilishlar",
+      "services": "Xizmatlar",
+      "competitors": "Raqobatchilar"
+    },
+    "nav": {
+      "label": "Sozlamalar boʻlimlari",
+      "project": "Loyiha",
+      "account": "Hisob",
+      "profile": "Brend profili",
+      "brands": "Brendlar",
+      "facts": "Faktlar",
+      "language": "Interfeys tili",
+      "members": "Aʼzolar",
+      "billing": "Toʻlov",
+      "soon": "tez orada"
+    },
+    "brands": {
+      "title": "Kuzatilayotgan brendlar · {count}",
+      "hint": "Har bir brendning grafiklardagi rangi, javoblarda qidiriladigan yozilishlari, sayti va oxirgi tekshiruvda nechta javobda tilga olingani.",
+      "soon": "Tahrirlash tez orada",
+      "color": "Rang",
+      "name": "Brend",
+      "aliases": "Qidiriladigan yozilishlar",
+      "domain": "Sayt",
+      "mentions": "Javoblarda",
+      "you": "Siz"
+    }
+  },
+  "Check": {
+    "metaTitle": "{site} — bepul tekshiruv",
+    "running": "{site} tekshirilmoqda",
+    "hint": "Bu bir daqiqagacha vaqt olishi mumkin. Sahifani yopmang.",
+    "stepSite": "Sayt ochilmoqda",
+    "stepQuestions": "ChatGPT’ga 10 ta savol berilmoqda",
+    "stepAnswers": "Javoblar tahlil qilinmoqda",
+    "stepResult": "Natija tayyorlanmoqda",
+    "failed": "Tekshirib boʻlmadi. Birozdan soʻng qayta urinib koʻring.",
+    "retry": "Qayta urinish",
+    "askTitle": "Qaysi saytni tekshiramiz?",
+    "resultTitle": "{site} uchun natija",
+    "detected": "Aniqlangan soha: {category} · {city}",
+    "instead": "Sizning oʻrningizga tavsiya qilinganlar",
+    "insteadDescription": "ChatGPT sizni tilga olmagan savollar:",
+    "sourcesMissing": "ChatGPT tayangan {count} ta saytda siz yoʻqsiz: {domains}.",
+    "fullTitle": "Toʻliq hisobotda",
+    "fullReport": "20–50 ta savol, haftalik kuzatuv, siz haqingizdagi notoʻgʻri maʼlumotlar va qaysi saytlarda boʻlish kerakligi.",
+    "save": "Saqlash va toʻliq hisobotni koʻrish",
+    "again": "Boshqa saytni tekshirish",
+    "auditTitle": "ChatGPT saytingizni toʻgʻri oʻqiy oladimi?",
+    "auditFound": "{count} ta narsani tuzatish kerak",
+    "auditOk": "Muammo topilmadi",
+    "auditUnreadable": "Saytingizni ochib boʻlmadi, shuning uchun uni tekshira olmadik.",
+    "checks": {
+      "ai_bots_blocked": {
+        "ok": "AI qidiruv botlari saytingizni oʻqiy oladi",
+        "bad": "robots.txt ChatGPT qidiruv botini toʻsib qoʻygan",
+        "fix": "robots.txt faylidan OAI-SearchBot va GPTBot uchun Disallow qatorlarini olib tashlang."
+      },
+      "prices_as_images": {
+        "ok": "Narxlar matn qilib yozilgan",
+        "bad": "Narxlar faqat rasmda — ChatGPT ularni oʻqiy olmaydi",
+        "fix": "Narxlar jadvalini sahifaga matn qilib yozing."
+      },
+      "no_business_markup": {
+        "ok": "Biznes belgisi (schema.org) bor",
+        "bad": "Biznes belgisi (schema.org) yoʻq",
+        "fix": "Saytga LocalBusiness belgisini qoʻshing: nom, manzil, telefon, ish vaqti."
+      },
+      "contacts_missing": {
+        "ok": "Manzil, telefon va ish vaqti matn qilib yozilgan",
+        "bad": "Manzil, telefon yoki ish vaqti matnda yoʻq",
+        "fix": "Ularni har sahifaning pastki qismiga matn qilib yozing."
+      }
+    },
+    "directory": {
+      "ok": "{domain} katalogida borsiz",
+      "bad": "{domain} katalogida yoʻqsiz",
+      "fix": "U yerda kartochka oching: ChatGPT bu katalogga {count} ta javobda tayandi."
+    }
+  },
+  "Login": {
+    "title": "Kirish",
+    "descriptionCheck": "Kiring: bepul tekshiruv natijasi saqlanadi va undan loyihangizni sozlaymiz.",
+    "telegram": "Telegram orqali kirish",
+    "telegramPending": "Telegram bilan bogʻlanmoqda…",
+    "telegramFailed": "Telegram orqali kirib boʻlmadi. Telefon raqam bilan kiring.",
+    "or": "yoki",
+    "phone": "Telefon raqami",
+    "phoneInvalid": "Raqamni toʻliq kiriting, masalan: 90 123 45 67",
+    "sendCode": "SMS kod olish",
+    "sending": "Yuborilmoqda…",
+    "sendFailed": "Kodni yuborib boʻlmadi. Qayta urinib koʻring.",
+    "codeSent": "Kod <b>{phone}</b> raqamiga SMS orqali yuborildi.",
+    "code": "SMS kod",
+    "codeInvalid": "6 xonali kodni kiriting.",
+    "codeWrong": "Kod notoʻgʻri yoki eskirgan. Tekshirib, qayta kiriting.",
+    "verifyFailed": "Kirib boʻlmadi. Qayta urinib koʻring.",
+    "verify": "Kirish",
+    "verifying": "Kirilmoqda…",
+    "changeNumber": "Raqamni oʻzgartirish",
+    "resend": "Kodni qayta yuborish",
+    "resendIn": "Qayta yuborish: {time}",
+    "mockHint": "Test rejimi: istalgan 6 xonali kod mos keladi. Maʼlumotlari bor demo kabinet: {phone}.",
+    "heading": "Hisobingizga kiring",
+    "noAccount": "Hisobingiz yoʻqmi?",
+    "startFree": "Bepul tekshiruvdan boshlang",
+    "panel": {
+      "title": "ChatGPT sizni tavsiya qilyaptimi — har hafta bilib turing.",
+      "items": {
+        "real": {
+          "title": "Haqiqiy ChatGPT javoblari",
+          "text": "Oʻzbek va rus tillarida, har savolga 3 ta javob."
+        },
+        "competitors": {
+          "title": "Raqobatchilar bilan solishtirish",
+          "text": "Kim koʻproq tilga olinadi va kim birinchi."
+        },
+        "telegram": {
+          "title": "Hisobotlar Telegram’da",
+          "text": "Har hafta qisqa hisobot va PDF."
+        }
+      }
+    }
+  },
+  "Onboarding": {
+    "metaTitle": "Loyihani sozlash",
+    "fromCheck": "Bepul tekshiruvdagi {site} saytini kiritdik — davom eting.",
+    "website": "Sayt manzili",
+    "websitePlaceholder": "misol.uz",
+    "websiteRequired": "Sayt manzilini kiriting.",
+    "websiteInvalid": "Bu sayt manziliga oʻxshamaydi. Masalan: misol.uz",
+    "analyzing": "Sayt tahlil qilinmoqda…",
+    "analyzeFailed": "Saytni tahlil qilib boʻlmadi. Qayta urinib koʻring.",
+    "name": "Brend nomi",
+    "nameRequired": "Brend nomini kiriting.",
+    "category": "Soha",
+    "city": "Shahar",
+    "aliases": "Boshqa yozilishlar",
+    "aliasesHint": "ChatGPT brendingizni boshqacha yozsa ham topamiz: lotin va kirill yozuvida.",
+    "competitorsFull": "Koʻpi bilan {max} ta. Boshqasini tanlash uchun bittasini olib tashlang.",
+    "competitorRequired": "Kamida bitta raqobatchini tanlang.",
+    "competitorsMax": "Koʻpi bilan {max} ta raqobatchi tanlash mumkin.",
+    "addManually": "Qoʻlda qoʻshish",
+    "manualTitle": "Roʻyxatda yoʻq raqobatchi",
+    "manualName": "Nomi",
+    "manualDomain": "Sayt manzili (ixtiyoriy)",
+    "removeManual": "Olib tashlash",
+    "manualNameRequired": "Raqobatchi nomini kiriting.",
+    "manualDomainInvalid": "Sayt manzilini toʻgʻri kiriting, masalan: misol.uz",
+    "manualDuplicate": "Bu raqobatchi roʻyxatda bor.",
+    "loadingCompetitors": "Raqobatchilar qidirilmoqda…",
+    "competitorsFailed": "Raqobatchilarni topib boʻlmadi. Qayta urinib koʻring.",
+    "historyNote": "Kuzatuv bugundan boshlanadi: oʻtgan haftalar uchun maʼlumot boʻlmaydi. Birinchi natijalar bir necha daqiqada chiqadi, dinamika esa keyingi dushanbadagi tekshiruvdan keyin koʻrinadi.",
+    "questionsRequired": "Kamida bitta savolni tanlang.",
+    "questionsMax": "Koʻpi bilan {max} ta savol qoʻshish mumkin.",
+    "noQuestions": "Hali savol yoʻq. Mijozlaringiz ChatGPT’dan soʻraydigan savollarni qoʻshing.",
+    "addQuestion": "Oʻz savolingizni qoʻshing",
+    "questionPlaceholder": "Masalan: Toshkentda qaysi klinika yaxshi?",
+    "language": "Til",
+    "add": "Qoʻshish",
+    "questionShort": "Savol juda qisqa.",
+    "questionDuplicate": "Bu savol roʻyxatda bor.",
+    "loadingQuestions": "Savollar tayyorlanmoqda…",
+    "questionsFailed": "Savollarni tayyorlab boʻlmadi. Qayta urinib koʻring.",
+    "back": "Orqaga",
+    "next": "Keyingi",
+    "finish": "Tekshiruvni boshlash",
+    "creating": "Yaratilmoqda…",
+    "saveFailed": "Loyihani yaratib boʻlmadi. Qayta urinib koʻring.",
+    "stepLabel": "Qadam",
+    "steps": {
+      "website": {
+        "title": "Saytingizdan boshlaymiz",
+        "description": "Sayt manzilini kiriting — brend nomi, soha, shahar va xizmatlaringizni saytdan oʻqib, oʻzimiz toʻldiramiz.",
+        "greeting": "Xush kelibsiz, {name}! Sayt manzilini kiriting — brend nomi, soha, shahar va xizmatlaringizni saytdan oʻqib, oʻzimiz toʻldiramiz."
+      },
+      "profile": {
+        "title": "Brend profilini tekshiring",
+        "description": "Saytingizdan topganlarimiz. Kerak boʻlsa tuzating — raqobatchilar va savollar shunga qarab tanlanadi."
+      },
+      "competitors": {
+        "title": "Kim bilan solishtiramiz?",
+        "description": "Sohangiz va shahringizda ChatGPT tilga oladigan bizneslar. {max} tagacha tanlang."
+      },
+      "topics": {
+        "title": "Mavzularni koʻrib chiqing",
+        "description": "Har bir mavzu boʻyicha mijozlar ChatGPT’dan soʻraydigan savollarni tayyorladik. Keraksizini olib tashlang yoki oʻz mavzuingizni qoʻshing — keyin ham oʻzgartirish mumkin."
+      },
+      "questions": {
+        "title": "Savollarni koʻrib chiqing",
+        "description": "Shu savollarni har hafta ChatGPT’ga beramiz va javoblarda kim tilga olinganini oʻlchaymiz. Keyin “Savollar” boʻlimida oʻzgartirish mumkin."
+      }
+    },
+    "websiteHint": "Bosh sahifa manzili kifoya.",
+    "nameHint": "ChatGPT javoblarida shu nomni qidiramiz.",
+    "description": "Tavsif",
+    "descriptionHint": "Biznesingiz haqida 1–2 gap: nima qilasiz va kimlar uchun.",
+    "categoryHint": "Qaysi sohada ishlaysiz.",
+    "services": "Xizmatlar",
+    "servicesHint": "Nimalarni taklif qilasiz. Mijozlar beradigan savollarni shularga qarab tanlaymiz.",
+    "cityHint": "Mijozlaringiz qaysi shaharda. Savollar shu shahar uchun beriladi.",
+    "addChip": "Qoʻshish",
+    "removeChip": "Olib tashlash: {value}",
+    "competitorsPick": "Raqobatchilarni tanlang",
+    "topicsPick": "Mavzularni tanlang",
+    "topicQuestions": "{count} ta savol",
+    "topicOwn": "Oʻz mavzuingiz",
+    "addTopic": "Oʻz mavzuingizni qoʻshing",
+    "topicPlaceholder": "Masalan: Ortodontiya",
+    "topicDuplicate": "Bu mavzu roʻyxatda bor.",
+    "topicsRequired": "Kamida bitta mavzuni tanlang.",
+    "questionsPick": "Savollarni tanlang",
+    "recommended": "Tavsiya: {min}–{max} ta",
+    "topicFilter": "Qaysi mavzu savollari koʻrsatilsin",
+    "allTopics": "Barcha mavzular · {count}",
+    "loggedInAs": "Kirgan: {who}",
+    "copyright": "© {year} GEO",
+    "preview": {
+      "yourBrand": "Brendingiz",
+      "site": "saytingiz.uz",
+      "profileTitle": "Brend profili",
+      "profileText": "Brendingiz, sohangiz va xizmatlaringiz.",
+      "topics": "Mavzular",
+      "allTopics": "Barcha mavzular",
+      "addTopic": "Mavzu qoʻshish",
+      "search": "Savollarni qidirish",
+      "question": "Savol"
+    }
+  },
+  "RunProgress": {
+    "metaTitle": "Tekshiruv",
+    "title": "ChatGPT’dan soʻrayapmiz",
+    "doneTitle": "Tayyor!",
+    "failedTitle": "Tekshiruvni yakunlab boʻlmadi",
+    "failedText": "Savollaringiz saqlangan — keyingi tekshiruv avtomatik boshlanadi.",
+    "description": "Har bir savolni ChatGPT’ga bir necha marta beramiz va javoblarda kim, qaysi oʻrinda tilga olinganini hisoblaymiz.",
+    "progressLabel": "Tekshiruv jarayoni",
+    "answered": "{total} ta javobdan {answered} tasi olindi",
+    "steps": {
+      "queued": "Navbatga qoʻyish",
+      "running": "ChatGPT’dan javob olish",
+      "analyzing": "Javoblarni tahlil qilish"
+    },
+    "status": {
+      "queued": "Navbatda",
+      "running": "ChatGPT javob bermoqda",
+      "analyzing": "Javoblar tahlil qilinmoqda",
+      "done": "Tayyor, natijalarga oʻtilmoqda",
+      "failed": "Tekshiruv yakunlanmadi"
+    },
+    "note": "Bir necha daqiqa olishi mumkin. Sahifani yopsangiz ham tekshiruv davom etadi.",
+    "skip": "Loyihaga oʻtish",
+    "loadFailed": "Holatni yangilab boʻlmadi, qayta urinyapmiz…"
+  },
+  "Engines": {
+    "label": "AI tizimi",
+    "soon": "tez orada",
+    "chatgpt": "ChatGPT",
+    "gemini": "Gemini",
+    "yandex": "Yandex"
+  },
+  "Assistant": {
+    "label": "GEO AI yordamchi",
+    "close": "Yopish",
+    "new": "Yangi suhbat",
+    "newChat": "Yangi suhbat",
+    "expand": "Kengaytirish",
+    "shrink": "Kichraytirish",
+    "hello": "Salom! Men GEO AI",
+    "intro": "Natijalaringiz, raqobatchilar, manbalar va notoʻgʻri faktlar boʻyicha yordam beraman. Soʻrang yoki misollardan birini tanlang:",
+    "placeholder": "Biror narsa soʻrang…",
+    "send": "Yuborish",
+    "demoReply": "Bu hozircha dizayn namunasi: GEO AI hali ulanmagan. Tez orada hisobotingiz maʼlumotlari asosida javob beradi.",
+    "suggestions": {
+      "s1": "Bu hafta koʻrinishim qanday oʻzgardi?",
+      "s2": "Qaysi savollarda raqobatchilar oldinda?",
+      "s3": "ChatGPT qaysi saytlarga tayanadi?",
+      "s4": "Notoʻgʻri faktlarni qanday tuzataman?",
+      "s5": "Qaysi katalogga birinchi qoʻshilay?"
+    }
+  },
+  "Support": {
+    "title": "GEO qoʻllab-quvvatlash",
+    "subtitle": "GEO boʻyicha savollar, muammolar va takliflar",
+    "heading": "Qanday yordam bera olamiz?",
+    "text": "GEO qanday ishlashini soʻrang, nosozlik haqida xabar bering yoki funksiya taklif qiling. Jamoamiz javob beradi.",
+    "examples": "Masalan",
+    "items": {
+      "e1": "ChatGPT natijalari qachon yangilanadi?",
+      "e2": "Qanday savollarni qoʻshish kerak?",
+      "e3": "Yangi funksiya taklif qilmoqchiman"
+    },
+    "placeholder": "Savol yoki gʻoyangizni yozing…",
+    "send": "Yuborish",
+    "hint": "Enter — yuborish, Shift+Enter — yangi qator",
+    "sentTitle": "Xabaringiz yuborildi",
+    "sentText": "Rahmat! Jamoamiz Telegram yoki telefon orqali javob beradi.",
+    "again": "Yana yozish",
+    "failed": "Yuborib boʻlmadi. Qayta urinib koʻring."
+  },
+  "AnswersPage": {
+    "search": "Savollar boʻyicha qidirish…",
+    "analyze": "Tahlil qilish",
+    "analyzeQuestion": "Javoblarimni tahlil qiling: qayerda raqobatchilar oldinda?",
+    "emptyTitle": "Hech narsa topilmadi",
+    "emptyText": "Soʻrovni oʻzgartiring yoki filtrni tozalang",
+    "kpi": {
+      "total": "Jami javoblar",
+      "totalHint": "Oxirgi tekshiruvda ChatGPT bergan javoblar: har savolga {samples} tadan.",
+      "named": "Sizni tilga olgan",
+      "namedHint": "Siz tilga olingan javoblar soni va ulushi.",
+      "citing": "Saytingizga havola",
+      "citingHint": "ChatGPT sizning saytingizga havola bergan javoblar.",
+      "citations": "Oʻrtacha havola",
+      "citationsHint": "Bitta javobdagi oʻrtacha havolalar (sahifalar) soni.",
+      "top": "Eng koʻp tilga olingan",
+      "topHint": "Eng koʻp javobda tilga olingan kuzatilayotgan brend."
+    },
+    "table": {
+      "title": "Barcha javoblar",
+      "hint": "Har bir javob — alohida qator. Javobni chat koʻrinishida ochish uchun ustiga bosing.",
+      "brandFilter": "Brend",
+      "allBrands": "Barcha brendlar",
+      "you": "{name} (siz)",
+      "noBrand": "Hech biri tilga olinmagan",
+      "statusFilter": "Holat",
+      "status": {
+        "all": "Barcha javoblar",
+        "missing": "Sizni aytmagan",
+        "negative": "Siz haqingizda salbiy"
+      },
+      "count": "{count} ta javob",
+      "columns": {
+        "answer": "Javob",
+        "brands": "Tilga olinganlar",
+        "sources": "Manbalar",
+        "position": "Oʻrningiz",
+        "tone": "Ohang",
+        "date": "Sana"
+      },
+      "sample": "{n}-javob",
+      "notNamed": "Tilga olinmagan",
+      "more": "Yana {count} tasini koʻrsatish"
+    },
+    "dialog": {
+      "close": "Yopish",
+      "openQuestion": "Savollar sahifasida",
+      "previous": "Oldingi",
+      "next": "Keyingi",
+      "counter": "{index} / {total}",
+      "details": "Tafsilotlar",
+      "named": "Tilga olinganlar",
+      "noneNamed": "Kuzatilayotgan brendlar tilga olinmagan.",
+      "you": "siz",
+      "sources": "Manbalar",
+      "noSources": "Havola berilmagan.",
+      "topic": "Mavzu",
+      "sample": "Javob",
+      "date": "Sana"
+    }
+  },
+  "Kpi": {
+    "about": "{label} haqida",
+    "better": "oʻtgan haftadan {amount} ga yaxshiroq",
+    "worse": "oʻtgan haftadan {amount} ga yomonroq",
+    "labels": {
+      "visibility": "Koʻrinish",
+      "shareOfVoice": "Ovoz ulushi",
+      "sentiment": "Ohang",
+      "position": "Oʻrin",
+      "usedAsSource": "Manba sifatida"
+    },
+    "hints": {
+      "visibility": "ChatGPT javoblarining necha foizida tilga olindingiz — 100 balldan.",
+      "shareOfVoice": "Javoblarda kuzatilayotgan brendlar necha marta tilga olingan boʻlsa, shundan necha foizi sizniki.",
+      "sentiment": "ChatGPT siz haqingizda qanchalik ijobiy gapiradi: 0 — salbiy, 100 — ijobiy.",
+      "position": "Javobda nechanchi boʻlib tilga olinasiz. 1 — birinchi; son kichikroq boʻlsa, yaxshiroq.",
+      "usedAsSource": "Javoblarning necha foizida ChatGPT sizning saytingizga havola bergan."
+    }
+  },
+  "WrongFactsPage": {
+    "kpi": {
+      "count": "Notoʻgʻri faktlar",
+      "countHint": "ChatGPT javoblaridagi siz haqingizda haqiqatga toʻgʻri kelmaydigan daʼvolar.",
+      "questions": "Taʼsirlangan savollar",
+      "questionsHint": "Notoʻgʻri fakt chiqqan savollar soni.",
+      "since": "Birinchi topilgan",
+      "sinceHint": "Eng eski notoʻgʻri fakt birinchi marta qachon topilgani."
+    },
+    "table": {
+      "title": "Siz haqingizdagi notoʻgʻri maʼlumotlar",
+      "hint": "ChatGPT nima deyapti, aslida qanday, qaysi savolda chiqdi va qachon topildi.",
+      "says": "ChatGPT aytadi",
+      "correct": "Aslida",
+      "question": "Savol",
+      "found": "Topilgan"
+    },
+    "fix": "Tuzatish rejasi",
+    "empty": "Notoʻgʻri maʼlumot topilmadi."
+  }
+}

@@ -1,0 +1,1516 @@
+{
+  "Metadata": {
+    "title": "GEO — your brand’s visibility in ChatGPT",
+    "description": "Measure how often ChatGPT names your brand when it answers your customers’ questions."
+  },
+  "Common": {
+    "loading": "Loading…",
+    "error": "Something went wrong",
+    "retry": "Try again",
+    "logout": "Log out",
+    "home": "GEO — home",
+    "about": "What is this?"
+  },
+  "Filters": {
+    "label": "Filters",
+    "language": "Question language",
+    "allLanguages": "All languages",
+    "topic": "Topic",
+    "allTopics": "All topics",
+    "reset": "Reset",
+    "emptyTitle": "Nothing matches these filters",
+    "emptyText": "No question asked to ChatGPT matches the selected language and topic."
+  },
+  "Locales": {
+    "uz": "Oʻzbekcha",
+    "ru": "Русский",
+    "en": "English"
+  },
+  "Method": {
+    "label": "{engine} · {webSearch, select, yes {API + web search} other {API}} · {model} · {samples, plural, one {# answer} other {# answers}} per prompt · {date}",
+    "title": "Method"
+  },
+  "Tone": {
+    "positive": "Positive",
+    "neutral": "Neutral",
+    "negative": "Negative"
+  },
+  "Categories": {
+    "dental_clinic": "Dental clinic",
+    "medical_clinic": "Medical clinic",
+    "beauty_salon": "Beauty salon",
+    "restaurant": "Restaurant",
+    "learning_center": "Learning center",
+    "furniture_store": "Furniture store"
+  },
+  "Cities": {
+    "tashkent": "Tashkent",
+    "samarkand": "Samarkand",
+    "bukhara": "Bukhara",
+    "andijan": "Andijan",
+    "namangan": "Namangan",
+    "fergana": "Fergana"
+  },
+  "LocaleSwitcher": {
+    "label": "Language"
+  },
+  "NotFound": {
+    "title": "Page not found",
+    "description": "This page or project doesn’t exist.",
+    "home": "Home"
+  },
+  "Report": {
+    "metaTitle": "{brand} — ChatGPT visibility report",
+    "weekly": "Weekly report"
+  },
+  "Headline": {
+    "title": "How often ChatGPT names you",
+    "you": "You",
+    "topCompetitor": "Top competitor",
+    "summary": "ChatGPT names you in {you} of every 10 answers ({percent}). Your top competitor, {competitor}, is named in {them}.",
+    "summaryAlone": "ChatGPT names you in {you} of every 10 answers ({percent}).",
+    "trendUp": "+{points} pts vs last week",
+    "trendDown": "−{points} pts vs last week",
+    "trendFlat": "No change vs last week",
+    "shareOfVoice": "Share of voice",
+    "avgPosition": "Average position",
+    "avgPositionHint": "1 = named first",
+    "notNamed": "Not named"
+  },
+  "MetricChart": {
+    "metricLabel": "Metric",
+    "viewLabel": "Chart type",
+    "line": "Line chart",
+    "bar": "Bar chart",
+    "metrics": {
+      "visibility": "Visibility",
+      "sentiment": "Tone",
+      "position": "Position",
+      "shareOfVoice": "Share of voice"
+    },
+    "hints": {
+      "visibility": "The share of ChatGPT answers that name the brand, as a score out of 100.",
+      "sentiment": "How positively ChatGPT talks about the brand: 0 is negative, 100 is positive.",
+      "position": "Where in the answer the brand is named. 1 is first; the smaller the number, the better.",
+      "shareOfVoice": "The brand’s share of all mentions of the tracked brands, in percent."
+    },
+    "you": "{name} (you)",
+    "date": "Date",
+    "chartLabel": "{metric}: {brands} brands over {weeks} weekly checks. Use the left and right arrow keys to move between weeks.",
+    "firstRun": "Only one check so far. The trend appears after next week’s check.",
+    "weeks": "{weeks, plural, one {# weekly check} other {# weekly checks}}."
+  },
+  "BrandTable": {
+    "title": "{brand} and its competitors",
+    "description": "Compared on four numbers, with the change since last week.",
+    "descriptionFirst": "Compared on four numbers.",
+    "rank": "Rank",
+    "brand": "Brand",
+    "visibility": "Visibility",
+    "sentiment": "Tone",
+    "position": "Position",
+    "you": "(you)",
+    "sortBy": "Sort by {metric}",
+    "notNamed": "Not named",
+    "better": "{amount} better than last week",
+    "worse": "{amount} worse than last week",
+    "shareOfVoice": "Share of voice",
+    "titleShort": "Brand ranking"
+  },
+  "SourcesTable": {
+    "title": "Sources ChatGPT cites",
+    "viewLabel": "Source list view",
+    "domains": "Sites",
+    "pages": "Pages",
+    "rank": "Rank",
+    "domain": "Site",
+    "page": "Page",
+    "type": "Type",
+    "used": "Used",
+    "usedHint": "The share of answers that cite this source",
+    "citations": "Avg. citations",
+    "citationsHint": "Citations of the source per answer that cites it",
+    "empty": "ChatGPT’s answers cite no sources.",
+    "mentioned": "You",
+    "mentionedHint": "Whether the page names your brand",
+    "mentionedYes": "Yes",
+    "mentionedNo": "No",
+    "mentionedUnknown": "Not read",
+    "hint": "The share of answers that link to this site or page. The dot shows the kind of site."
+  },
+  "SourceTypes": {
+    "title": "Sources by type",
+    "description": "The kinds of sites ChatGPT relies on most.",
+    "own": "Your site",
+    "competitor": "Competitors’ sites",
+    "directory": "Maps & directories",
+    "news": "News",
+    "social": "Social networks",
+    "other": "Other",
+    "short": {
+      "own": "You",
+      "competitor": "Competitor",
+      "directory": "Directory",
+      "news": "News",
+      "social": "Social",
+      "other": "Other"
+    },
+    "total": "{count} citations in all"
+  },
+  "Actions": {
+    "planTitle": "Four ways to show up more in ChatGPT’s answers",
+    "intro": "Most important first. The list is updated after every weekly check.",
+    "progress": "{done} of {total} done",
+    "progressLabel": "Actions done",
+    "status": {
+      "new": "New",
+      "in_progress": "In progress",
+      "done": "Done",
+      "declined": "Declined"
+    },
+    "impact": {
+      "high": "High impact",
+      "medium": "Medium impact",
+      "low": "Low impact"
+    },
+    "titles": {
+      "directory": "Get listed in the {domain} directory",
+      "news": "Get covered on {domain}",
+      "social": "Keep up a page on {domain}",
+      "other": "Appear on {domain}",
+      "fact": "Correct a wrong fact in ChatGPT’s answers",
+      "content": "Write a page about “{topic}”",
+      "ai_bots_blocked": "Open your site to AI search bots",
+      "prices_as_images": "Write prices as text, not images",
+      "no_business_markup": "Add business markup to your site",
+      "contacts_missing": "Write your address, phone and hours as text"
+    },
+    "why": {
+      "listing": "ChatGPT relied on {domain} in {answers} answers. They name {competitors}, and you aren’t there.",
+      "listingAlone": "ChatGPT relied on {domain} in {answers} answers, and you aren’t there.",
+      "factSaid": "ChatGPT says",
+      "factCorrect": "Correct",
+      "content": "{count, plural, one {In # question} other {In # questions}} ChatGPT named competitors and not you.",
+      "ai_bots_blocked": "Your site’s robots.txt blocks ChatGPT’s search bot (OAI-SearchBot), so it can’t read your pages.",
+      "prices_as_images": "Your prices are in an image: ChatGPT can’t read them and takes prices from other sites.",
+      "no_business_markup": "No business markup (schema.org) was found on your site. It helps AI read your address, hours and services exactly.",
+      "contacts_missing": "Your address, phone or opening hours weren’t found on your site as text."
+    },
+    "how": "How to do it",
+    "steps": {
+      "directory": {
+        "s1": "Create your business listing on {domain}, or claim the existing one.",
+        "s2": "Fill in the address, phone, opening hours, prices and photos.",
+        "s3": "Ask happy customers to leave a review there."
+      },
+      "news": {
+        "s1": "Send {domain}’s editors a short note: a new service, prices or a useful tip.",
+        "s2": "Ask to be included in price round-ups and rankings.",
+        "s3": "Share the article on your site and social pages once it’s out."
+      },
+      "social": {
+        "s1": "Create or update your official page on {domain}.",
+        "s2": "Put your address, opening hours and prices in the profile.",
+        "s3": "Post something useful about your services once or twice a week."
+      },
+      "other": {
+        "s1": "Open {domain} and find out how businesses get added.",
+        "s2": "Get added with accurate, complete details.",
+        "s3": "Add a link to your website in the listing."
+      },
+      "fact": {
+        "s1": "Write the correct information on your website, as text.",
+        "s2": "Update the same details on your 2GIS listing and other directories.",
+        "s3": "Find and fix pages and posts that still show the old details."
+      },
+      "content": {
+        "s1": "Write a page on your site that answers these questions, in Uzbek and Russian.",
+        "s2": "Add prices, address and opening hours to it as text.",
+        "s3": "Link it from your site’s menu so it’s easy to find."
+      },
+      "ai_bots_blocked": {
+        "s1": "Remove the Disallow lines for OAI-SearchBot and GPTBot from robots.txt.",
+        "s2": "After the change, open yoursite.uz/robots.txt to check.",
+        "s3": "Watch for your site among the sources after the next weekly check."
+      },
+      "prices_as_images": {
+        "s1": "Write the price list on the page as text.",
+        "s2": "If you keep the image, add a text table next to it.",
+        "s3": "Update the text whenever prices change."
+      },
+      "no_business_markup": {
+        "s1": "Add LocalBusiness markup to your site’s code: name, address, phone, opening hours, prices.",
+        "s2": "Check it with Google’s Rich Results Test.",
+        "s3": "Update the markup when your hours or address change."
+      },
+      "contacts_missing": {
+        "s1": "Write your address, phone and opening hours as text at the bottom of every page.",
+        "s2": "Add a map and a landmark to the contact page.",
+        "s3": "Make sure 2GIS and other directories show the same details."
+      }
+    },
+    "questions": "Questions it should move",
+    "start": "Start",
+    "markDone": "Mark done",
+    "decline": "Decline",
+    "reopen": "Reopen",
+    "restore": "Restore",
+    "doneOn": "Done on {date}",
+    "proof": "Your visibility on these questions: {before} → {after}",
+    "proofRuns": "{runs, plural, one {after # check} other {after # checks}}",
+    "proofPending": "The result shows after the next check.",
+    "proofPendingDate": "The result shows after the next check: {date}.",
+    "changed": "{title}: {status}",
+    "saveFailed": "Couldn’t save the status. Try again.",
+    "emptyTodo": "Nothing to do for now.",
+    "noneTitle": "No actions",
+    "noneText": "ChatGPT names you in all your questions, and you’re on every site that matters.",
+    "managedTitle": "Rather not do it yourself?",
+    "managedText": "On the Managed GEO plan our team does this work, and the result shows in your weekly report.",
+    "managedAction": "Learn more",
+    "cardTitle": "Recommended actions",
+    "cardDescription": "{done} of {total} done. The most useful ones:",
+    "cardEmpty": "Nothing to do for now.",
+    "goalsLabel": "Filter by goal",
+    "goals": {
+      "fact": "Correct wrong facts",
+      "listing": "Get onto other sites",
+      "content": "Write pages on your site",
+      "technical": "Make your site readable to AI"
+    },
+    "goalCounts": {
+      "fact": "{count, plural, one {# wrong fact} other {# wrong facts}}",
+      "listing": "{count, plural, one {# site} other {# sites}}",
+      "content": "{count, plural, one {# page} other {# pages}}",
+      "technical": "{count, plural, one {# fix} other {# fixes}}"
+    },
+    "goalHint": "Actions still to do. Click to show only these.",
+    "showAll": "Show all {count}",
+    "showLess": "Show fewer",
+    "questionCount": "{count, plural, one {# question} other {# questions}}",
+    "stepsCount": "Steps: {done}/{total}",
+    "stepsProgress": "{done} of {total} steps done",
+    "allStepsDone": "All steps are done — mark the action as done.",
+    "stepSaved": "{title}: {done}/{total} steps",
+    "whyTitle": "Why",
+    "close": "Close",
+    "emptyGoal": "Nothing left to do for this goal.",
+    "csv": "Export",
+    "csvHint": "Download the actions as a CSV file",
+    "csvHeaders": {
+      "action": "Action",
+      "goal": "Goal",
+      "impact": "Impact",
+      "status": "Status",
+      "steps": "Steps",
+      "questions": "Questions",
+      "doneAt": "Done on"
+    }
+  },
+  "ShareOfVoice": {
+    "title": "Share of voice",
+    "description": "Each brand’s share of all mentions of the tracked clinics.",
+    "you": "{name} (you)",
+    "brand": "Brand",
+    "share": "Share"
+  },
+  "WrongFacts": {
+    "title": "Wrong facts about you",
+    "description": "Claims in ChatGPT’s answers that don’t match reality.",
+    "says": "ChatGPT says",
+    "correct": "Correct",
+    "prompt": "Question",
+    "empty": "No wrong facts found.",
+    "foundAt": "First found: {date}"
+  },
+  "Sources": {
+    "title": "Sources ChatGPT cites",
+    "description": "Sites cited in ChatGPT’s answers, by number of answers citing them.",
+    "missing": "You’re not listed on {count} of these sources.",
+    "answers": "{count, plural, one {# answer} other {# answers}}",
+    "listed": "Listed",
+    "notListed": "Not listed",
+    "competitorSite": "Competitor’s site"
+  },
+  "SourcesPage": {
+    "typeLabel": "Source type",
+    "allTypes": "All kinds",
+    "types": {
+      "directory": "Maps & directories",
+      "news": "News",
+      "social": "Social & Telegram",
+      "competitor": "Competitor’s site",
+      "own": "Your site",
+      "other": "Other"
+    },
+    "isListed": "Listed",
+    "notListed": "Not listed",
+    "outreachNobody": "none of the tracked brands",
+    "outreachProfile": "Competitor’s page",
+    "outreachEmpty": "You’re on every page ChatGPT relies on.",
+    "csv": "Download CSV",
+    "csvHint": "Download this table as a CSV file",
+    "csvHeaders": {
+      "page": "Page",
+      "site": "Site",
+      "type": "Kind",
+      "answers": "Answers",
+      "share": "Share of answers, %",
+      "named": "Competitors on the page",
+      "citations": "Citations on average",
+      "listed": "Listed",
+      "you": "Names you"
+    },
+    "pageYou": "You’re named",
+    "pageNotYou": "You’re not named",
+    "pageUnknown": "Couldn’t be read",
+    "kpi": {
+      "sites": "Sites cited",
+      "sitesHint": "How many sites ChatGPT links to in its answers.",
+      "pages": "Pages cited",
+      "pagesHint": "How many exact pages on those sites.",
+      "citations": "Citations per answer",
+      "citationsHint": "The average number of pages an answer cites.",
+      "own": "Your site as a source",
+      "ownHint": "The share of answers in which ChatGPT links to your website.",
+      "missing": "Sites without you",
+      "missingHint": "Sites ChatGPT relies on where you have no listing or page (competitors’ own sites aside)."
+    },
+    "tabsLabel": "Sources view",
+    "tabs": {
+      "sites": "Sites",
+      "pages": "Pages",
+      "gaps": "Gaps"
+    },
+    "gapsIntro": "ChatGPT relies on these pages, but you’re not on them. Write to the authors of articles and rankings and ask to be included; if it’s a competitor’s listing, fill in yours better.",
+    "search": "Search sites or pages…",
+    "columns": {
+      "rank": "Rank",
+      "site": "Site",
+      "page": "Page",
+      "type": "Kind",
+      "named": "Brands named",
+      "used": "Used",
+      "citations": "Citations",
+      "listed": "Are you listed?",
+      "pages": "Pages",
+      "you": "Names you",
+      "competitors": "Competitors on the page"
+    },
+    "usedHint": "The share of answers that link to this source",
+    "citationsHint": "Average citations in an answer that relies on the source",
+    "pagesCount": "{count, plural, one {# page} other {# pages}}",
+    "emptyFiltered": "No sources match this filter."
+  },
+  "Prompts": {
+    "title": "Questions and answers",
+    "description": "{count} questions, {samples, plural, one {# answer} other {# answers}} each. Tap a question to read the answers.",
+    "filterLabel": "Filter questions",
+    "all": "All",
+    "missing": "You’re missing",
+    "youNamed": "You were named in {count} of {total} answers",
+    "nobody": "No tracked clinic named",
+    "toneLegend": "Tone"
+  },
+  "Answer": {
+    "sample": "Answer {n}",
+    "named": "Named, in order",
+    "none": "No tracked clinic named in this answer.",
+    "sources": "Sources"
+  },
+  "App": {
+    "name": "GEO"
+  },
+  "Topics": {
+    "best": "Best overall",
+    "implants": "Implants",
+    "kids": "Kids",
+    "emergency": "Emergency",
+    "braces": "Braces",
+    "whitening": "Whitening",
+    "location": "Location",
+    "installment": "Installments",
+    "prices": "Prices",
+    "painless": "Painless",
+    "veneers": "Veneers",
+    "root_canal": "Root canal",
+    "other": "Other"
+  },
+  "Dashboard": {
+    "title": "Projects",
+    "description": "Brands we track in ChatGPT",
+    "newProject": "New project",
+    "empty": "No projects yet",
+    "emptyHint": "Add your first brand — we’ll measure how often ChatGPT names it.",
+    "noData": "No measurements yet",
+    "promptCount": "{count, plural, one {# question} other {# questions}}",
+    "rival": "{name}: {score}/100",
+    "visibility": "ChatGPT visibility",
+    "openReport": "Report"
+  },
+  "Overview": {
+    "noDataTitle": "No measurements yet",
+    "noDataDescription": "Add questions — results appear here after the next ChatGPT run.",
+    "noDataAction": "Go to questions",
+    "you": "(you)",
+    "heroLabel": "Your visibility in ChatGPT",
+    "queuedTitle": "First measurement is queued",
+    "queuedDescription": "We’ll ask ChatGPT {count, plural, one {# question} other {# questions}}. Results will show up here as soon as they’re ready.",
+    "queuedAction": "View questions",
+    "missingTitle": "Questions without you",
+    "missingDescription": "In {count} of {total} questions, ChatGPT named competitors but not you.",
+    "missingNone": "Whenever ChatGPT named a competitor, it named you too.",
+    "missingMore": "{count, plural, one {# more question} other {# more questions}} on the Answers page.",
+    "wrongFacts": "ChatGPT states {count, plural, one {# wrong fact} other {# wrong facts}} about you",
+    "wrongFactsAction": "Review",
+    "export": "Download CSV",
+    "nextRun": "Next weekly check: {date}",
+    "nextRunHint": "Your questions are asked to ChatGPT again every Monday morning.",
+    "csv": {
+      "date": "Date",
+      "brand": "Brand",
+      "visibility": "Visibility (out of 100)",
+      "shareOfVoice": "Share of voice, %",
+      "sentiment": "Tone (out of 100)",
+      "position": "Average position"
+    },
+    "trendTitle": "Week by week",
+    "trendHint": "Each brand’s number in the latest weekly checks. Switch the number with the buttons above the chart.",
+    "share": "Share",
+    "copyLink": "Copy the report link",
+    "openReport": "Open the report",
+    "copied": "Link copied",
+    "recent": {
+      "title": "Latest answers",
+      "hint": "ChatGPT’s answers to your questions in the latest check, one per question.",
+      "all": "All answers",
+      "answer": "Answer",
+      "brands": "Brands named",
+      "sources": "Sources",
+      "position": "Your place",
+      "date": "Date",
+      "notNamed": "Not named"
+    }
+  },
+  "Competitors": {
+    "aheadTitle": "Where competitors are ahead",
+    "aheadDescription": "Questions where ChatGPT named a competitor and not you.",
+    "aheadCount": "{count, plural, one {# question} other {# questions}} where they’re named and you aren’t",
+    "aheadNone": "Wherever they’re named, you are too.",
+    "namedIn": "Named in {count} of {total} answers",
+    "more": "{count, plural, one {# more question} other {# more questions}}",
+    "readAnswers": "Read the answers",
+    "untrackedTitle": "ChatGPT also names {count, plural, one {# other brand} other {# other brands}}",
+    "untrackedText": "You don’t track them yet. The ones named often may be your new competitors.",
+    "untrackedAnswers": "in {count} of {total} answers",
+    "topics": {
+      "title": "Places by topic",
+      "hint": "The brands in order of how often ChatGPT names them on each topic’s questions.",
+      "topic": "Topic",
+      "you": "(you)",
+      "empty": "Nobody"
+    },
+    "untrackedSoon": "Tracking them is coming soon"
+  },
+  "PromptManager": {
+    "description": "Questions your customers ask ChatGPT. Each one is measured every week.",
+    "count": "{count, plural, one {# question} other {# questions}}",
+    "recommended": "Recommended: 20–50",
+    "schedule": "Checked every week, next on {date}",
+    "belowMin": "Add at least 20 questions for a reliable result.",
+    "aboveMax": "More than 50 questions is above the MVP limit.",
+    "add": "Add question",
+    "edit": "Edit",
+    "empty": "No questions yet",
+    "emptyHint": "Write what your customers ask ChatGPT, e.g. “What’s the best dental clinic in Tashkent?”",
+    "columns": {
+      "question": "Question",
+      "topic": "Topic",
+      "visibility": "Visibility",
+      "position": "Position",
+      "tone": "Tone",
+      "leader": "Leader",
+      "lastRun": "Checked",
+      "actions": "Actions",
+      "named": "Brands named"
+    },
+    "queued": "Queued",
+    "you": "You",
+    "nobody": "Nobody",
+    "openAnswers": "Open the answers",
+    "noMatch": "No questions match these filters.",
+    "visibilityHint": "You’re named in {count} of {total} answers",
+    "tabsLabel": "Question list",
+    "tabActive": "Tracked",
+    "tabSuggested": "Suggested",
+    "suggestedIntro": "Questions buyers ask in your field that you don’t track yet. An added question is checked from the next weekly run.",
+    "accept": "Add",
+    "reject": "Reject",
+    "acceptLabel": "Add to questions: {text}",
+    "rejectLabel": "Reject: {text}",
+    "accepted": "Added to questions: {text}",
+    "rejected": "Rejected: {text}",
+    "suggestionFailed": "Couldn’t save. Try again.",
+    "suggestedEmpty": "No new suggestions for now.",
+    "csv": "Export",
+    "csvHint": "Download the questions and results as a CSV file",
+    "csvHeaders": {
+      "question": "Question",
+      "language": "Language",
+      "topic": "Topic",
+      "visibility": "Visibility, %",
+      "named": "Answers naming you",
+      "total": "Answers",
+      "position": "Average position",
+      "tones": "Tone",
+      "leader": "Leader",
+      "lastRun": "Checked"
+    },
+    "topics": "Topics",
+    "allTopics": "All topics",
+    "usedHint": "How many of your plan’s {max} questions are in use"
+  },
+  "PromptForm": {
+    "addTitle": "New question",
+    "editTitle": "Edit question",
+    "text": "Question",
+    "textPlaceholder": "Toshkentdagi eng yaxshi stomatologiya qaysi?",
+    "language": "Question language",
+    "topic": "Topic",
+    "topicPlaceholder": "e.g. prices",
+    "save": "Save",
+    "saving": "Saving…",
+    "cancel": "Cancel",
+    "editHint": "The change applies from the next measurement.",
+    "textShort": "The question needs at least 5 characters.",
+    "textDuplicate": "This question already exists.",
+    "topicRequired": "Enter a topic.",
+    "saveFailed": "Couldn’t save. Please try again."
+  },
+  "NewProject": {
+    "title": "New project",
+    "description": "Tell us about your brand and your competitors.",
+    "brandSection": "Brand",
+    "competitorsSection": "Competitors",
+    "competitorsHint": "Up to 3 main competitors. We compare you with them in ChatGPT’s answers.",
+    "name": "Brand name",
+    "namePlaceholder": "Oq Tabassum",
+    "aliases": "Other spellings",
+    "aliasesHint": "Latin and Cyrillic spellings, separated by commas.",
+    "aliasesPlaceholder": "Ok Tabassum, Ок Табассум",
+    "domain": "Website",
+    "domainPlaceholder": "oqtabassum.uz",
+    "category": "Category",
+    "city": "City",
+    "competitor": "Competitor {n}",
+    "competitorNamePlaceholder": "Competitor name",
+    "optional": "optional",
+    "submit": "Create project",
+    "submitting": "Creating…",
+    "cancel": "Cancel",
+    "nameRequired": "Enter the brand name.",
+    "domainInvalid": "Enter a valid website, e.g. example.uz",
+    "competitorRequired": "Add at least one competitor.",
+    "competitorName": "Enter the competitor’s name.",
+    "saveFailed": "Couldn’t create the project. Please try again."
+  },
+  "Landing": {
+    "metaTitle": "Who does ChatGPT recommend to your customers? — GEO",
+    "metaDescription": "We check the questions your customers ask ChatGPT in Uzbek and Russian and compare you with your competitors. Free check in 2 minutes.",
+    "siteLabel": "Website address",
+    "sitePlaceholder": "yoursite.uz",
+    "submit": "Check for free",
+    "siteInvalid": "Enter a valid website address, e.g. yoursite.uz",
+    "siteExamples": {
+      "e1": "yourclinic.uz",
+      "e2": "yourshop.uz",
+      "e3": "yourschool.uz",
+      "e4": "yourrestaurant.uz"
+    },
+    "nav": {
+      "label": "Main menu",
+      "openMenu": "Open menu",
+      "menu": "Menu",
+      "close": "Close menu",
+      "login": "Log in",
+      "cta": "Check for free",
+      "product": "Product",
+      "pricing": "Pricing",
+      "resources": "Resources",
+      "agencies": "For agencies",
+      "items": {
+        "visibility": {
+          "title": "AI visibility",
+          "text": "How ChatGPT sees you"
+        },
+        "features": {
+          "title": "Features",
+          "text": "Questions, competitors, sources"
+        },
+        "reports": {
+          "title": "Reports",
+          "text": "PDF, Telegram and a shareable link"
+        },
+        "telegram": {
+          "title": "Telegram report",
+          "text": "In the bot every week"
+        },
+        "check": {
+          "title": "Free check",
+          "text": "Results in 2 minutes"
+        },
+        "method": {
+          "title": "Our method",
+          "text": "How we measure"
+        },
+        "faq": {
+          "title": "FAQ",
+          "text": "Common questions"
+        },
+        "demo": {
+          "title": "Demo",
+          "text": "We show it on your own business"
+        }
+      }
+    },
+    "hero": {
+      "pill": "Works in Uzbek and Russian",
+      "title": "How your brand shows up",
+      "titleMuted": "in AI answers",
+      "subtitle": "Watch who ChatGPT recommends to your customers, and improve your place. The key metrics: <visibility>Visibility</visibility>, <position>Position</position> and <tone>Tone</tone>.",
+      "demo": "Book a demo",
+      "start": "Check for free",
+      "checkTitle": "Check your website for free",
+      "micro": "No card needed · Results in 2 minutes"
+    },
+    "preview": {
+      "label": "The dashboard: a sample report for the {brand} clinic",
+      "range": "Last {weeks} weeks",
+      "allTopics": "All topics",
+      "sample": "Sample data"
+    },
+    "metrics": {
+      "pill": "AI metrics",
+      "title": "See how AI sees your brand",
+      "sub": "We measure three things in every answer.",
+      "tabsLabel": "Metrics",
+      "tabs": {
+        "visibility": {
+          "title": "Visibility",
+          "text": "The share of ChatGPT’s answers that name you. This is your main score, out of 100."
+        },
+        "position": {
+          "title": "Position",
+          "text": "Where in the answer you are named. The brand named first gets chosen more often."
+        },
+        "tone": {
+          "title": "Tone",
+          "text": "How ChatGPT talks about you: positively, neutrally or negatively."
+        }
+      },
+      "question": "What is the best dental clinic in Tashkent?",
+      "intro": "Based on reviews and ratings, these clinics are recommended most often in Tashkent:",
+      "clinics": {
+        "first": {
+          "name": "Samo Dent",
+          "text": "Modern equipment and experienced doctors; highly rated on 2GIS."
+        },
+        "you": {
+          "name": "Oq Tabassum",
+          "text": "Good reviews for implants and braces, with two branches."
+        },
+        "third": {
+          "name": "Nur Stomatologiya",
+          "text": "Specializes in implants, with affordable prices."
+        }
+      },
+      "yourScore": "Score: {score}/100",
+      "yourPosition": "Average position: {position}",
+      "yourTone": "Tone: positive"
+    },
+    "features": {
+      "pill": "Key features",
+      "title": "From question to result, in one dashboard",
+      "sub": "See what customers ask, who ChatGPT names, and what needs fixing.",
+      "items": {
+        "prompts": {
+          "title": "Set up your questions",
+          "text": "What do your customers ask ChatGPT? Add questions in Uzbek and Russian and organize them by topic."
+        },
+        "suggested": {
+          "title": "Start with ready questions",
+          "text": "Enter your website and we suggest 20 questions for your industry."
+        },
+        "brands": {
+          "title": "Add your competitors",
+          "text": "Compare yourself with the main players in your market. When ChatGPT names a new one, we tell you."
+        },
+        "engines": {
+          "title": "Choose AI engines",
+          "text": "Today we check ChatGPT with web search. Gemini and Yandex are coming soon."
+        },
+        "sources": {
+          "title": "Find the key sources",
+          "text": "See which sites ChatGPT relies on, and which of them don’t list you."
+        },
+        "facts": {
+          "title": "Find wrong facts",
+          "text": "An old price, a wrong address or opening hours: we show you when ChatGPT gets you wrong."
+        }
+      },
+      "mock": {
+        "tracked": "Tracked questions",
+        "add": "Add question",
+        "fromSite": "{count, plural, one {# question} other {# questions}} from your website",
+        "tracking": "Tracking",
+        "track": "Track",
+        "named": "named in {count, plural, one {# answer} other {# answers}}",
+        "engines": "AI engines",
+        "weekly": "Weekly",
+        "recent": "Latest answers",
+        "site": "Site",
+        "type": "Type",
+        "share": "Share",
+        "factsFound": "{count, plural, one {# wrong fact found} other {# wrong facts found}}"
+      }
+    },
+    "method": {
+      "pill": "Our method",
+      "text": "We don’t guess: behind every score are ChatGPT’s real answers, and you can read each one yourself.",
+      "f1": "ChatGPT with web search on",
+      "f2": "3 answers per question",
+      "f3": "Model and date on every report"
+    },
+    "telegram": {
+      "title": "Your report, every week in Telegram.",
+      "text": "Your score, your competitors and any new wrong facts, straight in Telegram without opening the dashboard.",
+      "cta": "Book a demo",
+      "bot": "GEO report",
+      "heading": "{brand} · weekly report",
+      "score": "Your score",
+      "change": "(+{points})",
+      "facts": "Wrong facts",
+      "open": "Open the report",
+      "time": "Monday, 09:00"
+    },
+    "reports": {
+      "pill": "Reports",
+      "title": "Reports that read at a glance",
+      "sub": "We present the numbers so a manager and a client both get them right away.",
+      "chartLabel": "Brands placed by score and share of positive tone",
+      "xAxis": "Score (out of 100)",
+      "yAxis": "Share of positive tone",
+      "sample": "Sample: dental clinics in Tashkent",
+      "quadrants": {
+        "leaders": "Leaders",
+        "niche": "Rare but positive",
+        "behind": "Behind",
+        "mixed": "Frequent but mixed"
+      },
+      "items": {
+        "pdf": {
+          "title": "PDF report",
+          "text": "A file ready to send to a manager or a client."
+        },
+        "telegram": {
+          "title": "Telegram",
+          "text": "The week’s result and alerts in the bot."
+        },
+        "link": {
+          "title": "Shareable link",
+          "text": "Share the report through a link that opens without signing up."
+        }
+      }
+    },
+    "local": {
+      "pill": "Local market",
+      "title": "Built for Central Asia",
+      "sub": "What international tools don’t have.",
+      "items": {
+        "languages": {
+          "title": "Uzbek and Russian",
+          "text": "Questions and answers in Uzbek (Latin and Cyrillic) and Russian, the way your customers ask."
+        },
+        "sources": {
+          "title": "Local sources",
+          "text": "2GIS, news sites, directories and Telegram channels: we show what ChatGPT relies on here."
+        },
+        "facts": {
+          "title": "Wrong facts",
+          "text": "We find mistakes such as an old price or a closed branch and show the correct value."
+        },
+        "telegram": {
+          "title": "Telegram reports",
+          "text": "The week’s result in the app you use every day."
+        },
+        "price": {
+          "title": "Priced in soʻm",
+          "text": "From 199,000 soʻm a month. Checking weekly keeps the price low."
+        },
+        "managed": {
+          "title": "We do it for you",
+          "text": "No time? Our team applies the fixes."
+        }
+      }
+    },
+    "pricing": {
+      "pill": "Pricing",
+      "title": "Simple, open pricing",
+      "sub": "Start with the free check, then pick the plan you need.",
+      "recommended": "Recommended",
+      "price": "UZS {amount, number}",
+      "month": "/ month",
+      "perMonth": "per month",
+      "includes": "This includes:",
+      "managedTitle": "Want us to apply the fixes?",
+      "managed": "Managed GEO — from UZS {amount, number} a month: the Business plan, with the fixes done by our team.",
+      "managedCta": "Contact us",
+      "users": "Unlimited users on every plan.",
+      "note": "A question is one request a customer sends ChatGPT, e.g. “What’s the best dental clinic in Tashkent?” We ask each question 3 times, because ChatGPT answers a little differently every time.",
+      "tiers": {
+        "free": {
+          "name": "Free check",
+          "for": "To see where you stand",
+          "cta": "Check for free",
+          "f1": "10 questions, once",
+          "f2": "You and 3 competitors",
+          "f3": "Results in 2 minutes",
+          "f4": "No sign-up needed"
+        },
+        "start": {
+          "name": "Start",
+          "for": "For small businesses",
+          "cta": "Get started",
+          "f1": "25 questions every week",
+          "f2": "ChatGPT and 3 competitors",
+          "f3": "Weekly report in Telegram",
+          "f4": "Trend and source analysis"
+        },
+        "business": {
+          "name": "Business",
+          "for": "For those who want to grow",
+          "cta": "Get Business",
+          "f1": "75 questions every week",
+          "f2": "5 competitors",
+          "f3": "Wrong facts",
+          "f4": "Recommendations and site audit — coming soon"
+        },
+        "agency": {
+          "name": "Agency",
+          "for": "Several clients and brands",
+          "cta": "Contact us",
+          "f1": "300 questions, up to 5 brands",
+          "f2": "A separate report for each brand",
+          "f3": "Reports with your logo",
+          "f4": "Everything in Business"
+        }
+      },
+      "compare": {
+        "title": "Compare the plans",
+        "feature": "Feature",
+        "yes": "Included",
+        "no": "Not included",
+        "soon": "soon",
+        "groups": {
+          "coverage": "Tracking coverage",
+          "discover": "Setup",
+          "measure": "Measure",
+          "act": "Act",
+          "report": "Reports and support"
+        },
+        "rows": {
+          "engines": "AI engines",
+          "prompts": "Questions",
+          "frequency": "Check frequency",
+          "answers": "AI answers per month",
+          "brands": "Brands",
+          "competitors": "Competitors",
+          "languages": "Question languages",
+          "users": "Users",
+          "siteAnalysis": "Automatic website analysis",
+          "competitorSuggestions": "Competitor suggestions",
+          "promptSuggestions": "Question suggestions",
+          "ownPrompts": "Your own questions",
+          "score": "Visibility score and ranking",
+          "trend": "Weekly trend",
+          "allAnswers": "Read every answer",
+          "sources": "Source analysis",
+          "newCompetitors": "New-competitor notices",
+          "wrongFacts": "Wrong facts",
+          "actions": "Recommended actions",
+          "audit": "Site audit",
+          "link": "Shareable report",
+          "telegram": "Telegram report",
+          "pdf": "PDF report",
+          "whiteLabel": "Reports with your logo",
+          "support": "Support"
+        },
+        "values": {
+          "chatgpt": "ChatGPT",
+          "once": "Once",
+          "weekly": "Weekly",
+          "uzRu": "Uzbek, Russian",
+          "unlimited": "Unlimited",
+          "top3": "Top 3",
+          "telegram": "Telegram"
+        }
+      }
+    },
+    "faq": {
+      "title": "Frequently asked questions.",
+      "muted": "The essentials about GEO.",
+      "items": {
+        "what": {
+          "q": "What is GEO?",
+          "a": "GEO (Generative Engine Optimization) is how visible your brand is in the answers of AI assistants like ChatGPT. When a customer asks “What’s the best clinic in Tashkent?”, the AI names a few places. GEO is the work of being one of them."
+        },
+        "seo": {
+          "q": "How is this different from SEO?",
+          "a": "SEO is about ranking among Google’s 10 links. ChatGPT gives a ready answer with 2–3 names instead of a list of links. To be in it, the sites and directories ChatGPT relies on need correct information about you. SEO helps, but it isn’t enough."
+        },
+        "notMentioned": {
+          "q": "What if ChatGPT doesn’t mention me at all?",
+          "a": "For a small or new business that’s the most common case, and it’s exactly where to start. The check shows who ChatGPT recommends instead of you and which sites and directories it relies on. The first step is to appear there with the right details. If you’d rather not do it yourself, we do it on the Managed GEO plan."
+        },
+        "engines": {
+          "q": "Which AI engines do you check?",
+          "a": "ChatGPT for now: through the OpenAI API with web search on, the closest method to what customers see. Yandex and Gemini are coming soon."
+        },
+        "accuracy": {
+          "q": "How accurate are the results?",
+          "a": "ChatGPT answers the same question a little differently each time. That’s why we ask every question 3 times and count the share. Every report states the model and date, and you can read every answer yourself."
+        },
+        "install": {
+          "q": "Do I need to install anything on my site?",
+          "a": "No. All we need is your website address. No code, plugins or passwords."
+        },
+        "time": {
+          "q": "How soon will I see results?",
+          "a": "The free check is ready in about 2 minutes. With monitoring, a report arrives every week. Changes to your site and directory listings usually show up in ChatGPT’s answers within a few weeks."
+        }
+      }
+    },
+    "demo": {
+      "title": "A free demo for your business",
+      "text": "Fill in the form — we’ll show ChatGPT’s results for your business and answer your questions.",
+      "b1": "Real ChatGPT answers for your industry",
+      "b2": "Comparison with your competitors",
+      "b3": "No commitment",
+      "name": "Your name",
+      "namePlaceholder": "First and last name",
+      "phone": "Phone number",
+      "sector": "Industry",
+      "sectors": {
+        "clinic": "Clinic",
+        "real_estate": "Real estate",
+        "education": "Education",
+        "retail": "Retail",
+        "other": "Other"
+      },
+      "submit": "Book a demo",
+      "sending": "Sending…",
+      "note": "We’ll reach you on Telegram or by phone.",
+      "nameRequired": "Enter your name.",
+      "phoneInvalid": "Enter the full number, e.g. 90 123 45 67",
+      "sectorRequired": "Choose your industry.",
+      "failed": "Couldn’t send. Try again.",
+      "successTitle": "Thank you, {name}!",
+      "successText": "We’ve got your request and will be in touch soon."
+    },
+    "cta": {
+      "eyebrow": "No card needed",
+      "title": "Does ChatGPT recommend you? Find out in 2 minutes.",
+      "text": "Enter your website — we’ll ask ChatGPT 10 of your customers’ questions and show you the result right away.",
+      "button": "Check for free",
+      "demo": "Book a demo"
+    },
+    "footer": {
+      "tagline": "How your brand shows up",
+      "taglineMuted": "in AI answers",
+      "description": "We measure how visible your brand is in ChatGPT’s answers — in Uzbek and Russian.",
+      "soon": "soon",
+      "madeIn": "Made in Tashkent",
+      "rights": "© 2026 GEO",
+      "columns": {
+        "product": "Product",
+        "resources": "Resources",
+        "company": "Company",
+        "contact": "Contact",
+        "legal": "Legal"
+      },
+      "links": {
+        "metrics": "Metrics",
+        "features": "Features",
+        "reports": "Reports",
+        "pricing": "Pricing",
+        "check": "Free check",
+        "method": "Our method",
+        "faq": "FAQ",
+        "local": "Why us",
+        "demo": "Book a demo",
+        "login": "Log in",
+        "privacy": "Privacy policy",
+        "terms": "Terms of use"
+      }
+    }
+  },
+  "Sidebar": {
+    "label": "Main menu",
+    "openMenu": "Open menu",
+    "menu": "Menu",
+    "projects": "Projects",
+    "selectProject": "Select a project",
+    "allProjects": "All projects",
+    "newProject": "New project",
+    "overview": "Overview",
+    "prompts": "Questions",
+    "answers": "Answers",
+    "competitors": "Competitors",
+    "sources": "Sources",
+    "wrongFacts": "Wrong facts",
+    "actions": "Actions",
+    "reports": "Reports",
+    "settings": "Settings",
+    "help": "Help",
+    "collapse": "Collapse menu",
+    "expand": "Expand menu",
+    "groups": {
+      "home": "Home",
+      "monitor": "Monitor",
+      "improve": "Improve",
+      "share": "Share"
+    },
+    "start": {
+      "title": "Getting started",
+      "doneText": "All set! You’ve seen the main pages.",
+      "progress": "{done} of {total} done",
+      "minimize": "Collapse the list",
+      "expand": "Expand the list",
+      "dismiss": "Close",
+      "steps": {
+        "project": "Project created",
+        "overview": "Check your standing",
+        "answers": "Read a ChatGPT answer",
+        "sources": "See ChatGPT’s sources",
+        "actions": "Choose your first fix"
+      },
+      "left": "Steps left"
+    }
+  },
+  "Placeholder": {
+    "comingSoon": "Coming soon",
+    "reports": "Weekly report history, PDF export and Telegram delivery.",
+    "openReport": "Open the current report"
+  },
+  "Settings": {
+    "languageTitle": "Interface language",
+    "languageDescription": "Menus and pages are shown in this language.",
+    "profileTitle": "Brand profile",
+    "profileText": "What was saved when the project was set up. Editing is coming soon.",
+    "profileFields": {
+      "name": "Brand name",
+      "domain": "Website",
+      "description": "Description",
+      "category": "Field",
+      "city": "City",
+      "aliases": "Other spellings",
+      "services": "Services",
+      "competitors": "Competitors"
+    },
+    "nav": {
+      "label": "Settings sections",
+      "project": "Project",
+      "account": "Account",
+      "profile": "Brand profile",
+      "brands": "Brands",
+      "facts": "Facts",
+      "language": "Interface language",
+      "members": "Members",
+      "billing": "Billing",
+      "soon": "soon"
+    },
+    "brands": {
+      "title": "Tracked brands · {count}",
+      "hint": "Each brand’s color in the charts, the spellings the answers are searched for, its website, and how many answers of the latest check name it.",
+      "soon": "Editing is coming soon",
+      "color": "Color",
+      "name": "Brand",
+      "aliases": "Spellings searched for",
+      "domain": "Website",
+      "mentions": "In answers",
+      "you": "You"
+    }
+  },
+  "Check": {
+    "metaTitle": "{site} — free check",
+    "running": "Checking {site}",
+    "hint": "This can take up to a minute. Keep this page open.",
+    "stepSite": "Opening the website",
+    "stepQuestions": "Asking ChatGPT 10 questions",
+    "stepAnswers": "Analyzing the answers",
+    "stepResult": "Preparing the result",
+    "failed": "The check didn’t work. Please try again in a moment.",
+    "retry": "Try again",
+    "askTitle": "Which website should we check?",
+    "resultTitle": "Result for {site}",
+    "detected": "Detected: {category} · {city}",
+    "instead": "Recommended instead of you",
+    "insteadDescription": "Questions where ChatGPT didn’t name you:",
+    "sourcesMissing": "You’re not on {count, plural, one {# site} other {# sites}} ChatGPT relies on: {domains}.",
+    "fullTitle": "In the full report",
+    "fullReport": "20–50 questions, weekly tracking, wrong facts about you, and the sites you need to be on.",
+    "save": "Save and see the full report",
+    "again": "Check another website",
+    "auditTitle": "Can ChatGPT read your site properly?",
+    "auditFound": "{count, plural, one {# thing to fix} other {# things to fix}}",
+    "auditOk": "No problems found",
+    "auditUnreadable": "We couldn’t open your site, so we couldn’t check it.",
+    "checks": {
+      "ai_bots_blocked": {
+        "ok": "AI search bots can read your site",
+        "bad": "robots.txt blocks ChatGPT’s search bot",
+        "fix": "Remove the Disallow lines for OAI-SearchBot and GPTBot from robots.txt."
+      },
+      "prices_as_images": {
+        "ok": "Prices are written as text",
+        "bad": "Prices are only in images, which ChatGPT can’t read",
+        "fix": "Write the price list on the page as text."
+      },
+      "no_business_markup": {
+        "ok": "Business markup (schema.org) is in place",
+        "bad": "No business markup (schema.org)",
+        "fix": "Add LocalBusiness markup: name, address, phone, opening hours."
+      },
+      "contacts_missing": {
+        "ok": "Address, phone and opening hours are written as text",
+        "bad": "Address, phone or opening hours are missing from the text",
+        "fix": "Write them as text at the bottom of every page."
+      }
+    },
+    "directory": {
+      "ok": "You’re listed on {domain}",
+      "bad": "You’re not listed on {domain}",
+      "fix": "Create a listing there: ChatGPT relied on this directory {count, plural, one {in # answer} other {in # answers}}."
+    }
+  },
+  "Login": {
+    "title": "Log in",
+    "descriptionCheck": "Log in: we’ll save your free check and use it to set up your project.",
+    "telegram": "Log in with Telegram",
+    "telegramPending": "Connecting to Telegram…",
+    "telegramFailed": "Couldn’t log in with Telegram. Use your phone number instead.",
+    "or": "or",
+    "phone": "Phone number",
+    "phoneInvalid": "Enter the full number, e.g. 90 123 45 67",
+    "sendCode": "Get SMS code",
+    "sending": "Sending…",
+    "sendFailed": "Couldn’t send the code. Try again.",
+    "codeSent": "We sent a code by SMS to <b>{phone}</b>.",
+    "code": "SMS code",
+    "codeInvalid": "Enter the 6-digit code.",
+    "codeWrong": "The code is wrong or expired. Check it and enter it again.",
+    "verifyFailed": "Couldn’t log in. Try again.",
+    "verify": "Log in",
+    "verifying": "Logging in…",
+    "changeNumber": "Change number",
+    "resend": "Resend code",
+    "resendIn": "Resend in {time}",
+    "mockHint": "Test mode: any 6-digit code works. Demo account with data: {phone}.",
+    "heading": "Log in to your account",
+    "noAccount": "No account yet?",
+    "startFree": "Start with a free check",
+    "panel": {
+      "title": "Does ChatGPT recommend you? Know every week.",
+      "items": {
+        "real": {
+          "title": "Real ChatGPT answers",
+          "text": "In Uzbek and Russian, 3 answers per question."
+        },
+        "competitors": {
+          "title": "Competitor comparison",
+          "text": "Who gets mentioned more, and who comes first."
+        },
+        "telegram": {
+          "title": "Reports in Telegram",
+          "text": "A short report and a PDF every week."
+        }
+      }
+    }
+  },
+  "Onboarding": {
+    "metaTitle": "Project setup",
+    "fromCheck": "We entered {site} from your free check — just continue.",
+    "website": "Website",
+    "websitePlaceholder": "example.uz",
+    "websiteRequired": "Enter your website.",
+    "websiteInvalid": "That doesn’t look like a website address. For example: example.uz",
+    "analyzing": "Analyzing the website…",
+    "analyzeFailed": "We couldn’t analyze the website. Please try again.",
+    "name": "Brand name",
+    "nameRequired": "Enter the brand name.",
+    "category": "Industry",
+    "city": "City",
+    "aliases": "Other spellings",
+    "aliasesHint": "We find your brand even when ChatGPT spells it differently, in Latin or Cyrillic letters.",
+    "competitorsFull": "{max} at most. Untick one to choose another.",
+    "competitorRequired": "Choose at least one competitor.",
+    "competitorsMax": "You can choose up to {max} competitors.",
+    "addManually": "Add manually",
+    "manualTitle": "A competitor not on the list",
+    "manualName": "Name",
+    "manualDomain": "Website (optional)",
+    "removeManual": "Remove",
+    "manualNameRequired": "Enter the competitor’s name.",
+    "manualDomainInvalid": "Enter a valid website, e.g. example.uz",
+    "manualDuplicate": "This competitor is already on the list.",
+    "loadingCompetitors": "Finding competitors…",
+    "competitorsFailed": "We couldn’t find competitors. Please try again.",
+    "historyNote": "Tracking starts today: there’s no data for the weeks before. The first results arrive in a few minutes, and the trend after next Monday’s check.",
+    "questionsRequired": "Choose at least one question.",
+    "questionsMax": "You can add up to {max} questions.",
+    "noQuestions": "No questions yet. Add the questions your customers ask ChatGPT.",
+    "addQuestion": "Add your own question",
+    "questionPlaceholder": "e.g. Which clinic in Tashkent is the best?",
+    "language": "Language",
+    "add": "Add",
+    "questionShort": "The question is too short.",
+    "questionDuplicate": "This question is already in the list.",
+    "loadingQuestions": "Preparing questions…",
+    "questionsFailed": "We couldn’t prepare questions. Please try again.",
+    "back": "Back",
+    "next": "Next",
+    "finish": "Start the check",
+    "creating": "Creating…",
+    "saveFailed": "We couldn’t create the project. Please try again.",
+    "stepLabel": "Step",
+    "steps": {
+      "website": {
+        "title": "Let’s start with your website",
+        "description": "Enter your website. We read your name, field, city and services from it.",
+        "greeting": "Welcome, {name}! Enter your website. We read your name, field, city and services from it."
+      },
+      "profile": {
+        "title": "Check your brand profile",
+        "description": "Here’s what we found on your site. Fix anything that’s off: competitors and questions are picked from it."
+      },
+      "competitors": {
+        "title": "Who should we compare you with?",
+        "description": "Businesses in your field and city that ChatGPT names. Pick up to {max}."
+      },
+      "topics": {
+        "title": "Review the topics",
+        "description": "For each topic we prepared the questions customers ask ChatGPT. Drop what doesn’t fit or add your own topic; you can change them later too."
+      },
+      "questions": {
+        "title": "Review the questions",
+        "description": "We’ll ask ChatGPT these questions every week and count who it names. You can change them later under Questions."
+      }
+    },
+    "websiteHint": "The home page address is enough.",
+    "nameHint": "The name we look for in ChatGPT’s answers.",
+    "description": "Description",
+    "descriptionHint": "One or two sentences on what you do and for whom.",
+    "categoryHint": "The field you work in.",
+    "services": "Services",
+    "servicesHint": "What you offer. We pick the questions customers ask from these.",
+    "cityHint": "Where your customers are. Questions are asked for this city.",
+    "addChip": "Add",
+    "removeChip": "Remove {value}",
+    "competitorsPick": "Choose competitors",
+    "topicsPick": "Choose topics",
+    "topicQuestions": "{count, plural, one {# question} other {# questions}}",
+    "topicOwn": "Your own",
+    "addTopic": "Add your own topic",
+    "topicPlaceholder": "For example: orthodontics",
+    "topicDuplicate": "This topic is already on the list.",
+    "topicsRequired": "Choose at least one topic.",
+    "questionsPick": "Choose questions",
+    "recommended": "Recommended: {min}–{max}",
+    "topicFilter": "Topic to show",
+    "allTopics": "All topics · {count}",
+    "loggedInAs": "Logged in as {who}",
+    "copyright": "© {year} GEO",
+    "preview": {
+      "yourBrand": "Your brand",
+      "site": "yoursite.uz",
+      "profileTitle": "Brand profile",
+      "profileText": "Your brand, field and services.",
+      "topics": "Topics",
+      "allTopics": "All topics",
+      "addTopic": "Add topic",
+      "search": "Search questions",
+      "question": "Question"
+    }
+  },
+  "RunProgress": {
+    "metaTitle": "Check",
+    "title": "Asking ChatGPT",
+    "doneTitle": "Done!",
+    "failedTitle": "The check couldn’t finish",
+    "failedText": "Your questions are saved — the next check starts automatically.",
+    "description": "We ask ChatGPT each question several times and count who it names, and in what position.",
+    "progressLabel": "Check progress",
+    "answered": "{answered} of {total} answers collected",
+    "steps": {
+      "queued": "Queueing",
+      "running": "Collecting ChatGPT’s answers",
+      "analyzing": "Analyzing the answers"
+    },
+    "status": {
+      "queued": "Queued",
+      "running": "ChatGPT is answering",
+      "analyzing": "Analyzing the answers",
+      "done": "Done, opening the results",
+      "failed": "The check didn’t finish"
+    },
+    "note": "This can take a few minutes. You can close the page — the check keeps running.",
+    "skip": "Go to the project",
+    "loadFailed": "Couldn’t refresh the status, retrying…"
+  },
+  "Engines": {
+    "label": "AI engine",
+    "soon": "soon",
+    "chatgpt": "ChatGPT",
+    "gemini": "Gemini",
+    "yandex": "Yandex"
+  },
+  "Assistant": {
+    "label": "GEO AI assistant",
+    "close": "Close",
+    "new": "New chat",
+    "newChat": "New chat",
+    "expand": "Expand",
+    "shrink": "Shrink",
+    "hello": "Hi! I’m GEO AI",
+    "intro": "I help with your results, competitors, sources and wrong facts. Ask anything or pick an example:",
+    "placeholder": "Ask anything…",
+    "send": "Send",
+    "demoReply": "This is a design preview: GEO AI isn’t connected yet. Soon it will answer from your report data.",
+    "suggestions": {
+      "s1": "How did my visibility change this week?",
+      "s2": "Where are competitors ahead of me?",
+      "s3": "Which sites does ChatGPT rely on?",
+      "s4": "How do I fix wrong facts?",
+      "s5": "Which directory should I join first?"
+    }
+  },
+  "Support": {
+    "title": "GEO support",
+    "subtitle": "Questions, problems and ideas about GEO",
+    "heading": "How can we help?",
+    "text": "Ask how GEO works, report a problem or suggest a feature. Our team will reply.",
+    "examples": "For example",
+    "items": {
+      "e1": "When do ChatGPT results update?",
+      "e2": "Which questions should I add?",
+      "e3": "I’d like to suggest a feature"
+    },
+    "placeholder": "Write your question or idea…",
+    "send": "Send",
+    "hint": "Enter — send, Shift+Enter — new line",
+    "sentTitle": "Message sent",
+    "sentText": "Thank you! Our team will reply on Telegram or by phone.",
+    "again": "Write again",
+    "failed": "Couldn’t send. Try again."
+  },
+  "AnswersPage": {
+    "search": "Search questions…",
+    "analyze": "Analyze",
+    "analyzeQuestion": "Analyze my answers: where are competitors ahead?",
+    "emptyTitle": "Nothing found",
+    "emptyText": "Change the search or clear the filter",
+    "kpi": {
+      "total": "Answers",
+      "totalHint": "ChatGPT’s answers in the latest check: {samples} per question.",
+      "named": "Named you",
+      "namedHint": "How many answers named you, and their share.",
+      "citing": "Linked your site",
+      "citingHint": "Answers in which ChatGPT links to your website.",
+      "citations": "Citations per answer",
+      "citationsHint": "The average number of pages an answer cites.",
+      "top": "Named most",
+      "topHint": "The tracked brand named in the most answers."
+    },
+    "table": {
+      "title": "All answers",
+      "hint": "Every answer is a row. Click one to open it as a chat.",
+      "brandFilter": "Brand",
+      "allBrands": "All brands",
+      "you": "{name} (you)",
+      "noBrand": "No tracked brand named",
+      "statusFilter": "Status",
+      "status": {
+        "all": "All answers",
+        "missing": "Without you",
+        "negative": "Negative about you"
+      },
+      "count": "{count, plural, one {# answer} other {# answers}}",
+      "columns": {
+        "answer": "Answer",
+        "brands": "Brands named",
+        "sources": "Sources",
+        "position": "Your place",
+        "tone": "Tone",
+        "date": "Date"
+      },
+      "sample": "Answer {n}",
+      "notNamed": "Not named",
+      "more": "Show {count} more"
+    },
+    "dialog": {
+      "close": "Close",
+      "openQuestion": "On the Questions page",
+      "previous": "Previous",
+      "next": "Next",
+      "counter": "{index} of {total}",
+      "details": "Details",
+      "named": "Brands named",
+      "noneNamed": "No tracked brand is named.",
+      "you": "you",
+      "sources": "Sources",
+      "noSources": "No links.",
+      "topic": "Topic",
+      "sample": "Answer",
+      "date": "Date"
+    }
+  },
+  "Kpi": {
+    "about": "About {label}",
+    "better": "{amount} better than last week",
+    "worse": "{amount} worse than last week",
+    "labels": {
+      "visibility": "Visibility",
+      "shareOfVoice": "Share of voice",
+      "sentiment": "Tone",
+      "position": "Position",
+      "usedAsSource": "Used as a source"
+    },
+    "hints": {
+      "visibility": "The share of ChatGPT’s answers that name you, out of 100.",
+      "shareOfVoice": "Your share of all mentions of the tracked brands in the answers, in percent.",
+      "sentiment": "How positively ChatGPT talks about you: 0 negative, 100 positive.",
+      "position": "Where you come in the answer. 1 is first; the smaller, the better.",
+      "usedAsSource": "The share of answers in which ChatGPT links to your website."
+    }
+  },
+  "WrongFactsPage": {
+    "kpi": {
+      "count": "Wrong facts",
+      "countHint": "Claims about you in ChatGPT’s answers that aren’t true.",
+      "questions": "Questions affected",
+      "questionsHint": "How many questions a wrong fact came up in.",
+      "since": "First found",
+      "sinceHint": "When the oldest wrong fact was first found."
+    },
+    "table": {
+      "title": "Wrong facts about you",
+      "hint": "What ChatGPT says, what’s true, the question it came up in and when it was found.",
+      "says": "ChatGPT says",
+      "correct": "In fact",
+      "question": "Question",
+      "found": "Found"
+    },
+    "fix": "Plan the fixes",
+    "empty": "No wrong facts found."
+  }
+}
