@@ -1,20 +1,31 @@
 "use client";
 
-import { ChartColumn, ChartLine, Eye, ListOrdered, PieChart, Smile, type LucideIcon } from "lucide-react";
+import { ChartColumn, ChartLine } from "lucide-react";
 import { useLocale, useTimeZone, useTranslations } from "next-intl";
-import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
+import { useState, type KeyboardEvent, type PointerEvent } from "react";
 import { Segmented, SegmentedButton } from "@/shared/components/segmented";
 import { TIME_ZONE } from "@/shared/constants";
-import { formatLongDate, formatShortDate } from "@/shared/helpers/dates";
+import { formatLongDate, formatMonth, formatShortDate } from "@/shared/helpers/dates";
+import type { Grain } from "@/shared/helpers/history";
 import { formatDecimal } from "@/shared/helpers/numbers";
-import { byMetric, METRICS, metricUnit, metricValue, scoreOf } from "@/shared/helpers/scores";
+import { byMetric, metricUnit, metricValue, scoreOf } from "@/shared/helpers/scores";
 import { cn } from "@/shared/helpers/utils";
-import { useInView } from "@/shared/hooks/use-in-view";
-import { useReducedMotion } from "@/shared/hooks/use-reduced-motion";
 import type { HistoryPoint } from "@/shared/types/api";
 import type { Metric, SeriesBrand } from "@/shared/types/scores";
+import { GrainSwitch } from "./grain-switch";
+import { MetricTabs } from "./metric-tabs";
 
-type Mode = "line" | "bar";
+export type Mode = "line" | "bar";
+
+/**
+ * What the chart shows: one of the four metrics, as lines over time or as bars of the latest point, with
+ * the checks grouped by day, week or month.
+ */
+export interface ChartView {
+  metric: Metric;
+  mode: Mode;
+  grain: Grain;
+}
 
 interface Series extends SeriesBrand {
   /** One value per run; null where the brand was never named. */
@@ -29,108 +40,116 @@ interface Scale {
   flipped: boolean;
 }
 
-const ICONS: Record<Metric, LucideIcon> = { visibility: Eye, shareOfVoice: PieChart, sentiment: Smile, position: ListOrdered };
+/** The plot's height in a card and in the large view; the labels at the lines' ends are spaced by it. */
+const PLOT = { card: { box: "h-56", px: 224 }, large: { box: "h-72", px: 288 } } as const;
 
-/** How long the crosshair of the landing page's chart rests on each week. */
-const AUTOPLAY_MS = 1400;
+type PlotSize = (typeof PLOT)[keyof typeof PLOT];
+
+/** With more runs than this, a dot on every run would crowd the lines: only the week being read keeps its dots. */
+const DOTTED_RUNS = 26;
+
+/** The numbers at the lines' ends keep at least this much room each. */
+const LABEL_GAP_PX = 15;
 
 /**
- * Every tracked brand over the past weekly runs, on one of the four metrics, as lines or as bars of the
- * latest run. Tabs on top pick the metric (the chosen one shows its name, the others their icon); the
- * footer says what the metric means and switches lines and bars. Hovering (or the arrow keys) reads out
- * a week for all brands at once. `autoplay` is for the landing page: the crosshair walks through the
- * weeks and metrics by itself.
+ * The plot of the chart card (TrendPanel): every tracked brand over time on one metric. `history` is the
+ * chart's points, already grouped by day, week or month. Lines with a dot on every point and each
+ * brand's latest number at the line's end, over dashed gridlines and a y-axis that ends just above the
+ * largest value; or one bar per brand for the latest point. Hovering (or the arrow keys) reads out a
+ * point for all brands at once. The footer says what the metric means and switches lines and bars.
+ * `readout` is for the landing page: the chart reads out that point by itself and can't be hovered.
+ * `large` is the card opened in a window: a taller plot, the metric tabs and the day/week/month switch
+ * above it, and the numbers as a table under it.
  */
 export function MetricChart({
   history,
+  runs,
   brands,
-  autoplay = false,
+  view,
+  onView,
+  large = false,
+  readout,
   className,
 }: {
   history: HistoryPoint[];
+  /** How many checks the points were made from. */
+  runs: number;
   brands: SeriesBrand[];
-  autoplay?: boolean;
+  /** The metric, chart type and grouping: the card and its large view show the same, so their parent keeps them. */
+  view: ChartView;
+  onView: (view: ChartView) => void;
+  large?: boolean;
+  /** A point (by index) to read out without the pointer. */
+  readout?: number;
   className?: string;
 }) {
   const t = useTranslations("MetricChart");
   const locale = useLocale();
   const timeZone = useTimeZone() ?? TIME_ZONE;
-  const root = useRef<HTMLDivElement>(null);
-  const inView = useInView(root);
-  const reducedMotion = useReducedMotion();
-  const [chosen, setChosen] = useState<Metric>("visibility");
-  const [chosenMode, setChosenMode] = useState<Mode>("line");
   const [hovered, setHovered] = useState<number | null>(null);
-  // Autoplay: null until it starts, then one step per week shown
-  const [tick, setTick] = useState<number | null>(null);
 
-  const weeks = history.length;
-  const last = weeks - 1;
-  const playing = autoplay && inView && !reducedMotion && weeks > 1;
-
-  useEffect(() => {
-    if (!playing) return;
-    const timer = setInterval(() => setTick((current) => (current ?? -1) + 1), AUTOPLAY_MS);
-    return () => clearInterval(timer);
-  }, [playing]);
-
-  const metric = autoplay && tick !== null ? (METRICS[Math.floor(tick / weeks) % METRICS.length] ?? chosen) : chosen;
-  // A single run can't make a line
-  const mode: Mode = weeks > 1 ? chosenMode : "bar";
-  // The landing page's chart always reads out a week: the latest until autoplay starts
-  const active = autoplay ? (tick === null ? last : tick % weeks) : hovered;
+  const { metric, mode, grain } = view;
+  const last = history.length - 1;
+  // A month is named; a day or a week is dated by its check
+  const tick = (iso: string) => (grain === "month" ? formatMonth(iso, locale, timeZone, "short") : formatShortDate(iso, locale, timeZone));
+  const heading = (iso: string) => (grain === "month" ? formatMonth(iso, locale, timeZone, "long") : formatLongDate(iso, locale, timeZone));
+  const interactive = readout === undefined;
+  const active = interactive ? hovered : readout;
+  const size = large ? PLOT.large : PLOT.card;
 
   const series: Series[] = brands.map((brand) => ({
     ...brand,
     values: history.map((point) => metricValue(scoreOf(point.scores, brand.id), metric)),
   }));
-  const scale = scaleOf(metric, series);
   const text = (value: number | null) => (value === null ? "—" : `${formatDecimal(value, locale)}${metricUnit(metric)}`);
   const ranked = (index: number) =>
     [...series].sort((a, b) => byMetric(a.values[index] ?? null, b.values[index] ?? null, metric));
+  // The large view lists the latest week first; the screen reader's table follows the chart, oldest first
+  const tableRows = history.map((_, index) => (large ? last - index : index));
+  const viewSwitch = (
+    <Segmented label={t("viewLabel")} className="ml-auto shrink-0">
+      <SegmentedButton pressed={mode === "line"} onClick={() => onView({ ...view, mode: "line" })} label={t("line")}>
+        <ChartLine aria-hidden className="size-4" />
+      </SegmentedButton>
+      <SegmentedButton pressed={mode === "bar"} onClick={() => onView({ ...view, mode: "bar" })} label={t("bar")}>
+        <ChartColumn aria-hidden className="size-4" />
+      </SegmentedButton>
+    </Segmented>
+  );
 
   return (
-    <div ref={root} className={cn("@container flex flex-col", className)}>
-      <div className="flex flex-col gap-4 p-4">
-        <Segmented label={t("metricLabel")}>
-          {METRICS.map((option) => {
-            const Icon = ICONS[option];
-            const pressed = metric === option;
-            return (
-              <SegmentedButton key={option} pressed={pressed} onClick={() => setChosen(option)} label={pressed ? undefined : t(`metrics.${option}`)}>
-                <Icon aria-hidden className="size-4" />
-                {pressed && t(`metrics.${option}`)}
-              </SegmentedButton>
-            );
-          })}
-        </Segmented>
+    <div className={cn("@container flex flex-1 flex-col", className)}>
+      <div className={cn("flex flex-1 flex-col gap-3 p-4", large && "sm:px-5")}>
+        {/* The card has these in its header; the large view has them here, written out */}
+        {large && (
+          <div className="flex flex-wrap items-center gap-2">
+            <MetricTabs named metric={metric} onChange={(next) => onView({ ...view, metric: next })} />
+            <GrainSwitch named grain={grain} onChange={(next) => onView({ ...view, grain: next })} />
+            {viewSwitch}
+          </div>
+        )}
 
         {mode === "line" ? (
           <>
-            <ul className="flex flex-wrap gap-x-4 gap-y-1 text-xs">
-              {series.map((line) => (
-                <li key={line.id} className="flex items-center gap-1.5">
-                  <span aria-hidden className="h-0.5 w-4 rounded-full" style={{ background: line.color }} />
-                  {line.isYou ? t("you", { name: line.name }) : line.name}
-                </li>
-              ))}
-            </ul>
             <LinePlot
-              // Lines draw again when the metric changes
-              key={metric}
+              // Lines draw again when the metric or the grouping changes
+              key={`${metric}-${grain}`}
               series={series}
-              scale={scale}
+              scale={lineScale(metric, series)}
+              unit={metricUnit(metric)}
+              size={size}
               active={active}
-              interactive={!autoplay}
+              interactive={interactive}
               onActive={setHovered}
-              label={t("chartLabel", { metric: t(`metrics.${metric}`), weeks, brands: series.length })}
-              ticks={history.map((point) => formatShortDate(point.collectedAt, locale, timeZone))}
+              label={t("chartLabel", { metric: t(`metrics.${metric}`), weeks: runs, brands: series.length })}
+              ticks={history.map((point) => tick(point.collectedAt))}
+              text={text}
               tooltip={(index) => (
                 <>
-                  <p className="font-medium">{formatLongDate(history[index]?.collectedAt ?? "", locale, timeZone)}</p>
+                  <p className="font-medium">{heading(history[index]?.collectedAt ?? "")}</p>
                   {ranked(index).map((line) => (
                     <p key={line.id} className="flex items-center gap-2">
-                      <span aria-hidden className="h-0.5 w-3 shrink-0 rounded-full" style={{ background: line.color }} />
+                      <span aria-hidden className="size-2 shrink-0 rounded-full" style={{ background: line.color }} />
                       <span className="min-w-0 flex-1 truncate text-background/75">{line.name}</span>
                       <span className="font-semibold tabular-nums">{text(line.values[index] ?? null)}</span>
                     </p>
@@ -138,68 +157,116 @@ export function MetricChart({
                 </>
               )}
             />
+            <ul className="flex flex-wrap gap-x-4 gap-y-1 text-xs">
+              {series.map((line) => (
+                <li key={line.id} className="flex items-center gap-1.5">
+                  <span aria-hidden className="size-2 rounded-full" style={{ background: line.color }} />
+                  {line.isYou ? t("you", { name: line.name }) : line.name}
+                </li>
+              ))}
+            </ul>
           </>
         ) : (
-          <BarList key={metric} series={ranked(last)} index={last} scale={scale} text={text} youLabel={(name) => t("you", { name })} />
+          <BarList key={metric} series={ranked(last)} index={last} max={barMax(metric, series)} size={size} text={text} youLabel={(name) => t("you", { name })} />
         )}
 
-        {weeks === 1 && <p className="text-xs text-pretty text-muted-foreground">{t("firstRun")}</p>}
+        {runs === 1 && <p className="text-xs text-pretty text-muted-foreground">{t("firstRun")}</p>}
       </div>
 
-      <div className="flex items-center justify-between gap-3 border-t px-4 py-2">
-        {/* The landing page's chart drops the explanation on a phone, to keep the lines in view */}
-        <p className={cn("min-w-0 text-xs text-pretty text-muted-foreground", autoplay && "hidden @md:block")}>
-          {t(`hints.${metric}`)} {t("weeks", { weeks })}
-        </p>
-        {weeks > 1 && (
-          <Segmented label={t("viewLabel")} className="ml-auto shrink-0">
-            <SegmentedButton pressed={mode === "line"} onClick={() => setChosenMode("line")} label={t("line")}>
-              <ChartLine aria-hidden className="size-4" />
-            </SegmentedButton>
-            <SegmentedButton pressed={mode === "bar"} onClick={() => setChosenMode("bar")} label={t("bar")}>
-              <ChartColumn aria-hidden className="size-4" />
-            </SegmentedButton>
-          </Segmented>
+      {/* The large view explains itself in its window: the takeaway above, how to read it below */}
+      {!large && (
+        <div className="flex items-center justify-between gap-3 border-t px-4 py-2">
+          {/* The landing page's chart drops the explanation on a phone, to keep the lines in view */}
+          <p className={cn("min-w-0 text-xs text-pretty text-muted-foreground", !interactive && "hidden @md:block")}>
+            {t(`hints.${metric}`)} {t("weeks", { weeks: runs })}
+            {/* Fewer points than checks: some points stand for several checks */}
+            {runs > history.length && ` ${t("averaged")}`}
+          </p>
+          {viewSwitch}
+        </div>
+      )}
+
+      {/*
+        The chart's numbers as a table: on screen in the large view, otherwise the chart's text twin for
+        screen readers (in a wrapper: a table itself can't be clipped to 1px).
+      */}
+      <div className={large ? "flex flex-col gap-2.5 border-t p-4 sm:px-5" : "sr-only"}>
+        {large && (
+          <p aria-hidden className="text-sm font-medium">
+            {t("table", { metric: t(`metrics.${metric}`) })}
+          </p>
         )}
-      </div>
-
-      {/* Text twin of the chart for screen readers. In a wrapper: a table itself can't be clipped to 1px */}
-      <div className="sr-only">
-        <table>
-          <caption>{t(`metrics.${metric}`)}</caption>
-          <thead>
-            <tr>
-              <th scope="col">{t("date")}</th>
-              {series.map((line) => (
-                <th key={line.id} scope="col">
-                  {line.name}
+        {/* relative + min-w-0: with many brands the table scrolls here, not the window */}
+        <div className={large ? "relative min-w-0 overflow-x-auto rounded-lg ring-1 ring-foreground/10" : undefined}>
+          <table className={large ? "w-full table-fixed text-sm" : undefined} style={large ? { minWidth: `${11 + series.length * 8}rem` } : undefined}>
+            <caption className="sr-only">{t(`metrics.${metric}`)}</caption>
+            <thead>
+              <tr className={large ? "border-b text-left text-xs text-muted-foreground [&>th]:px-3 [&>th]:py-2.5 [&>th]:font-medium" : undefined}>
+                <th scope="col" className={large ? "w-44" : undefined}>
+                  {t("date")}
                 </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {history.map((point, index) => (
-              <tr key={point.collectedAt}>
-                <th scope="row">{formatLongDate(point.collectedAt, locale, timeZone)}</th>
                 {series.map((line) => (
-                  <td key={line.id}>{text(line.values[index] ?? null)}</td>
+                  <th key={line.id} scope="col">
+                    <span className="flex items-center gap-1.5">
+                      {large && <span aria-hidden className="size-2.5 shrink-0 rounded-[3px]" style={{ background: line.color }} />}
+                      <span className="truncate">{large && line.isYou ? t("you", { name: line.name }) : line.name}</span>
+                    </span>
+                  </th>
                 ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className={large ? "divide-y" : undefined}>
+              {tableRows.map((index) => (
+                <tr key={history[index]?.collectedAt ?? index}>
+                  <th scope="row" className={large ? "px-3 py-2.5 text-left font-normal whitespace-nowrap text-muted-foreground" : undefined}>
+                    {heading(history[index]?.collectedAt ?? "")}
+                  </th>
+                  {series.map((line) => (
+                    <td key={line.id} className={large ? cn("px-3 py-2.5 tabular-nums", line.isYou && "bg-you-soft/25 font-semibold") : undefined}>
+                      {text(line.values[index] ?? null)}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
 }
 
-/** Scores and tone run 0–100; position starts at 1 and grows down the chart. */
-function scaleOf(metric: Metric, series: Series[]): Scale {
-  if (metric !== "position") return { min: 0, max: 100, ticks: [0, 25, 50, 75, 100], flipped: false };
+/** Round steps an axis can count in. */
+const AXIS_STEPS = [1, 2, 5, 10, 15, 20, 25];
+
+/**
+ * The y-axis of the lines. Scores, shares and tone start at zero and end on a round number just above the
+ * largest value (never past 100), so low numbers aren't pressed flat against the bottom. Position starts
+ * at 1 and grows down the chart.
+ */
+function lineScale(metric: Metric, series: Series[]): Scale {
   const values = series.flatMap((line) => line.values).filter((value) => value !== null);
-  const max = Math.max(3, Math.ceil(Math.max(1, ...values)));
-  const step = Math.ceil((max - 1) / 4);
-  return { min: 1, max, ticks: Array.from({ length: Math.floor((max - 1) / step) + 1 }, (_, i) => 1 + i * step), flipped: true };
+  if (metric === "position") {
+    const max = Math.max(3, Math.ceil(Math.max(1, ...values)));
+    const step = Math.ceil((max - 1) / 4);
+    return { min: 1, max, ticks: Array.from({ length: Math.floor((max - 1) / step) + 1 }, (_, i) => 1 + i * step), flipped: true };
+  }
+  // A little air over the top line
+  const reach = Math.min(100, Math.max(1, ...values) * 1.05);
+  let best = { max: 100, step: 25 };
+  for (const step of AXIS_STEPS) {
+    for (const count of [4, 5]) {
+      if (step * count >= reach && step * count < best.max) best = { max: step * count, step };
+    }
+  }
+  return { min: 0, max: best.max, ticks: Array.from({ length: best.max / best.step + 1 }, (_, i) => i * best.step), flipped: false };
+}
+
+/** Bars have no axis: a score's bar is drawn against the whole scale, a position's against the last place named. */
+function barMax(metric: Metric, series: Series[]): number {
+  if (metric !== "position") return 100;
+  const values = series.flatMap((line) => line.values).filter((value) => value !== null);
+  return Math.max(3, Math.ceil(Math.max(1, ...values)));
 }
 
 /** Distance from the top of the plot, 0–100. */
@@ -209,31 +276,6 @@ function yOf(value: number, { min, max, flipped }: Scale) {
 }
 
 const point = (value: number) => Math.round(value * 100) / 100;
-
-/** A smooth path through the points that never overshoots them (monotone cubic). */
-function smoothPath(points: [number, number][]): string {
-  const [first, ...rest] = points;
-  if (!first) return "";
-  if (rest.length < 2) return [first, ...rest].map(([x, y], i) => `${i ? "L" : "M"}${point(x)},${point(y)}`).join("");
-  const slopes = rest.map(([x, y], i) => {
-    const [px, py] = points[i] ?? first;
-    return (y - py) / (x - px);
-  });
-  const tangents = points.map((_, i) => {
-    const before = slopes[i - 1];
-    const after = slopes[i];
-    if (before === undefined) return after ?? 0;
-    if (after === undefined) return before;
-    return before * after <= 0 ? 0 : (2 * before * after) / (before + after);
-  });
-  return rest.reduce((path, [x, y], i) => {
-    const [px, py] = points[i] ?? first;
-    const third = (x - px) / 3;
-    const c1 = `${point(px + third)},${point(py + (tangents[i] ?? 0) * third)}`;
-    const c2 = `${point(x - third)},${point(y - (tangents[i + 1] ?? 0) * third)}`;
-    return `${path}C${c1} ${c2} ${point(x)},${point(y)}`;
-  }, `M${point(first[0])},${point(first[1])}`);
-}
 
 /** Runs of consecutive weeks with a value: a brand that wasn't named leaves a gap in its line. */
 function segments(values: (number | null)[], x: (index: number) => number, scale: Scale): [number, number][][] {
@@ -249,30 +291,56 @@ function segments(values: (number | null)[], x: (index: number) => number, scale
   return runs;
 }
 
+/**
+ * Where each brand's latest number goes beside its line's end: at the line's height, moved down (then
+ * back up from the bottom) where two lines end too close for both numbers to be read.
+ */
+function endLabels(series: Series[], index: number, scale: Scale, height: number) {
+  const gap = (LABEL_GAP_PX / height) * 100;
+  const tops = series
+    .flatMap((line) => {
+      const value = line.values[index] ?? null;
+      return value === null ? [] : [{ id: line.id, value, top: yOf(value, scale) }];
+    })
+    .sort((a, b) => a.top - b.top);
+  const down = tops.reduce<number[]>((placed, { top }) => [...placed, Math.max(top, (placed.at(-1) ?? -Infinity) + gap)], []);
+  const up = down.reduceRight<number[]>((placed, top) => [Math.min(top, (placed[0] ?? 100 + gap) - gap), ...placed], []);
+  return tops.map((label, i) => ({ ...label, top: up[i] ?? label.top }));
+}
+
 function LinePlot({
   series,
   scale,
+  unit,
+  size,
   active,
   interactive,
   onActive,
   label,
   ticks,
+  text,
   tooltip,
 }: {
   series: Series[];
   scale: Scale;
+  /** After each number on the y-axis, e.g. "%". */
+  unit: string;
+  size: PlotSize;
   /** The week being read out. */
   active: number | null;
   interactive: boolean;
   onActive: (index: number | null) => void;
   label: string;
   ticks: string[];
+  text: (value: number | null) => string;
   tooltip: (index: number) => React.ReactNode;
 }) {
   const last = ticks.length - 1;
-  const x = (index: number) => (index / Math.max(1, last)) * 100;
+  // A single run sits in the middle of the plot
+  const x = (index: number) => (last === 0 ? 50 : (index / last) * 100);
   // Without a week being read, the latest one still shows its dots
   const marked = active ?? last;
+  const dotted = ticks.length <= DOTTED_RUNS;
 
   function onPointerMove(event: PointerEvent<HTMLDivElement>) {
     const box = event.currentTarget.getBoundingClientRect();
@@ -290,10 +358,11 @@ function LinePlot({
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex gap-2">
-        <div aria-hidden className="relative h-52 w-6 shrink-0 text-xs text-muted-foreground tabular-nums">
+        <div aria-hidden className={cn("relative w-8 shrink-0 text-xs text-muted-foreground tabular-nums", size.box)}>
           {scale.ticks.map((tick) => (
             <span key={tick} className="absolute right-0 -translate-y-1/2" style={{ top: `${yOf(tick, scale)}%` }}>
               {tick}
+              {unit}
             </span>
           ))}
         </div>
@@ -306,48 +375,52 @@ function LinePlot({
           onFocus={interactive ? () => onActive(active ?? last) : undefined}
           onBlur={interactive ? () => onActive(null) : undefined}
           onKeyDown={interactive ? onKeyDown : undefined}
-          // The dots at both ends stick out by their radius
-          className="relative mr-1.5 h-52 min-w-0 flex-1 touch-pan-y rounded-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+          // The right margin holds the numbers at the lines' ends
+          className={cn("relative mr-10 min-w-0 flex-1 touch-pan-y rounded-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50", size.box)}
         >
-          <svg aria-hidden viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 size-full overflow-visible">
-            {scale.ticks.map((tick) => (
-              <line
-                key={tick}
-                x1="0"
-                x2="100"
-                y1={yOf(tick, scale)}
-                y2={yOf(tick, scale)}
-                stroke="var(--color-border)"
-                vectorEffect="non-scaling-stroke"
-              />
-            ))}
-          </svg>
-          <svg
-            aria-hidden
-            viewBox="0 0 100 100"
-            preserveAspectRatio="none"
-            className="absolute inset-0 size-full overflow-visible motion-safe:animate-chart-draw"
-          >
-            {series.map((line) =>
-              segments(line.values, x, scale).map((run, index) => (
-                <path
-                  key={`${line.id}-${index}`}
-                  d={smoothPath(run)}
-                  fill="none"
-                  stroke={line.color}
-                  strokeWidth={line.isYou ? 2.5 : 2}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  vectorEffect="non-scaling-stroke"
-                />
-              )),
-            )}
-          </svg>
+          {scale.ticks.map((tick) => (
+            <span key={tick} aria-hidden className="absolute inset-x-0 border-t border-dashed border-foreground/15" style={{ top: `${yOf(tick, scale)}%` }} />
+          ))}
+
+          {/* The lines and their dots appear from left to right */}
+          <div aria-hidden className="absolute inset-0 motion-safe:animate-chart-draw">
+            <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 size-full overflow-visible">
+              {series.map((line) =>
+                segments(line.values, x, scale).map((run, index) => (
+                  <path
+                    key={`${line.id}-${index}`}
+                    // Straight from run to run: a curve would suggest values between two weekly checks
+                    d={run.map(([px, py], i) => `${i ? "L" : "M"}${point(px)},${point(py)}`).join("")}
+                    fill="none"
+                    stroke={line.color}
+                    strokeWidth={line.isYou ? 2.5 : 2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    vectorEffect="non-scaling-stroke"
+                  />
+                )),
+              )}
+            </svg>
+            {dotted &&
+              series.flatMap((line) =>
+                line.values.map(
+                  (value, index) =>
+                    value !== null &&
+                    index !== marked && (
+                      <span
+                        key={`${line.id}-${index}`}
+                        className="absolute size-1.5 -translate-1/2 rounded-full ring-[1.5px] ring-card"
+                        style={{ left: `${x(index)}%`, top: `${yOf(value, scale)}%`, background: line.color }}
+                      />
+                    ),
+                ),
+              )}
+          </div>
 
           {active !== null && (
             <span
               aria-hidden
-              className="absolute inset-y-0 w-px bg-foreground/25 transition-[left] duration-300 ease-out motion-reduce:transition-none"
+              className="absolute inset-y-0 w-0 border-l border-dashed border-foreground/40 transition-[left] duration-300 ease-out motion-reduce:transition-none"
               style={{ left: `${x(active)}%` }}
             />
           )}
@@ -364,6 +437,17 @@ function LinePlot({
               )
             );
           })}
+          {/* Each brand's latest number, where its line ends (beside its dot, when there is one run) */}
+          {endLabels(series, last, scale, size.px).map(({ id, value, top }) => (
+            <span
+              key={id}
+              aria-hidden
+              className="absolute ml-2.5 -translate-y-1/2 text-xs font-medium whitespace-nowrap tabular-nums"
+              style={{ left: `${x(last)}%`, top: `${top}%` }}
+            >
+              {text(value)}
+            </span>
+          ))}
           {active !== null && (
             <div
               // Beside the crosshair, on the side with more room, and never past the plot's edges
@@ -380,18 +464,20 @@ function LinePlot({
           )}
         </div>
       </div>
-      <div aria-hidden className="relative mr-1.5 ml-8 h-4 text-xs text-muted-foreground">
+      <div aria-hidden className="relative mr-10 ml-10 h-4 text-xs text-muted-foreground">
         {ticks.map((tick, index) => {
-          // Counting back from the latest week: every third on a phone, every other on a narrow chart
+          // Counting back from the latest point: every third on a phone, every other on a narrow chart.
+          // A few points (two months, say) all keep their dates
           const back = last - index;
+          const few = ticks.length <= 4;
           return (
             <span
               key={index}
               className={cn(
                 "absolute whitespace-nowrap @xl:block",
-                index === 0 ? "" : index === last ? "-translate-x-full" : "-translate-x-1/2",
-                back % 3 !== 0 && "hidden",
-                back % 2 === 0 ? "@md:block" : "@md:hidden",
+                last === 0 ? "-translate-x-1/2" : index === 0 ? "" : index === last ? "-translate-x-full" : "-translate-x-1/2",
+                !few && back % 3 !== 0 && "hidden",
+                !few && (back % 2 === 0 ? "@md:block" : "@md:hidden"),
               )}
               style={{ left: `${x(index)}%` }}
             >
@@ -408,18 +494,22 @@ function LinePlot({
 function BarList({
   series,
   index,
-  scale,
+  max,
+  size,
   text,
   youLabel,
 }: {
   series: Series[];
   index: number;
-  scale: Scale;
+  /** The value a full-length bar stands for. */
+  max: number;
+  size: PlotSize;
   text: (value: number | null) => string;
   youLabel: (name: string) => string;
 }) {
   return (
-    <ul className="flex min-h-[13.5rem] flex-col justify-center gap-3 text-sm">
+    // As tall as the lines with their dates, so switching the chart type doesn't move the card
+    <ul className="flex flex-col justify-center gap-3 text-sm" style={{ minHeight: size.px + 22 }}>
       {series.map((bar) => {
         const value = bar.values[index] ?? null;
         return (
@@ -430,7 +520,7 @@ function BarList({
                 <span
                   aria-hidden
                   className="h-3 origin-left rounded-r motion-safe:animate-bar-grow"
-                  style={{ width: `calc((100% - 3rem) * ${point(value / scale.max)})`, background: bar.color }}
+                  style={{ width: `calc((100% - 3rem) * ${point(value / max)})`, background: bar.color }}
                 />
               )}
               <span className={cn("tabular-nums", value === null ? "pl-2 text-muted-foreground" : "font-semibold")}>

@@ -5,7 +5,7 @@ import { cn } from "@/shared/helpers/utils";
 import type { Brand, BrandScore } from "@/shared/types/api";
 import { Trend } from "./trend";
 
-/** "You: 42/100, Samo Dent: 72/100", plus the client's share of voice and average position. */
+/** "You: 42%, Samo Dent: 72%", plus the client's share of voice and average position. */
 export function HeadlineScore({
   brand,
   competitors,
@@ -98,7 +98,7 @@ function ScoreTile({
       </p>
       <p className="text-4xl font-semibold tracking-tight sm:text-5xl">
         {outOf100(score.visibility)}
-        <span className="text-xl text-muted-foreground sm:text-2xl">/100</span>
+        <span className="text-xl text-muted-foreground sm:text-2xl">%</span>
       </p>
       {showTrend && <Trend trend={score.trend} goodWhenUp={highlight} />}
     </div>

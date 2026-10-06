@@ -374,7 +374,7 @@ export function PromptManager({
                   <dl className="flex flex-wrap items-center gap-x-4 gap-y-1 text-muted-foreground">
                     <div className="flex items-center gap-1.5">
                       <dt>{t("columns.visibility")}</dt>
-                      <dd className="font-semibold text-foreground tabular-nums">{summary.visibility ?? "—"}</dd>
+                      <dd className="font-semibold text-foreground tabular-nums">{summary.visibility !== null ? `${summary.visibility}%` : "—"}</dd>
                     </div>
                     <div className="flex items-center gap-1.5">
                       <dt>{t("columns.tone")}</dt>

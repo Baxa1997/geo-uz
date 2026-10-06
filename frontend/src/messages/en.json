@@ -9,7 +9,11 @@
     "retry": "Try again",
     "logout": "Log out",
     "home": "GEO — home",
-    "about": "What is this?"
+    "about": "What is this?",
+    "expand": "Expand",
+    "close": "Close",
+    "takeaway": "Takeaway",
+    "howToRead": "How to read this"
   },
   "Filters": {
     "label": "Filters",
@@ -89,7 +93,7 @@
       "shareOfVoice": "Share of voice"
     },
     "hints": {
-      "visibility": "The share of ChatGPT answers that name the brand, as a score out of 100.",
+      "visibility": "The share of ChatGPT’s answers that name the brand.",
       "sentiment": "How positively ChatGPT talks about the brand: 0 is negative, 100 is positive.",
       "position": "Where in the answer the brand is named. 1 is first; the smaller the number, the better.",
       "shareOfVoice": "The brand’s share of all mentions of the tracked brands, in percent."
@@ -98,7 +102,31 @@
     "date": "Date",
     "chartLabel": "{metric}: {brands} brands over {weeks} weekly checks. Use the left and right arrow keys to move between weeks.",
     "firstRun": "Only one check so far. The trend appears after next week’s check.",
-    "weeks": "{weeks, plural, one {# weekly check} other {# weekly checks}}."
+    "weeks": "{weeks, plural, one {# weekly check} other {# weekly checks}}.",
+    "table": "{metric} in numbers",
+    "guide": {
+      "line": "Each line is one brand and each point is one period. The higher the line, the better the result. Point at the chart or tap it to see that period’s numbers.",
+      "bar": "Each bar is one brand’s result in the latest check. The best result is on top; the longer the bar, the better.",
+      "barPosition": "Each bar is a brand’s average position in the answers. The best result is on top; here a shorter bar is better.",
+      "grain": "Day, Week and Month set the period each point stands for. When a period has several checks, the point shows their average."
+    },
+    "grainLabel": "Period of the points",
+    "grains": {
+      "day": "Day",
+      "week": "Week",
+      "month": "Month"
+    },
+    "grainShort": {
+      "day": "D",
+      "week": "W",
+      "month": "M"
+    },
+    "grainBy": {
+      "day": "By day",
+      "week": "By week",
+      "month": "By month"
+    },
+    "averaged": "Each point is the average of the checks in that period."
   },
   "BrandTable": {
     "title": "{brand} and its competitors",
@@ -115,7 +143,8 @@
     "better": "{amount} better than last week",
     "worse": "{amount} worse than last week",
     "shareOfVoice": "Share of voice",
-    "titleShort": "Brand ranking"
+    "titleShort": "Brand ranking",
+    "guide": "Each row is one brand. Click a column heading to sort the table by that number. The arrow beside a number is the change since last week."
   },
   "SourcesTable": {
     "title": "Sources ChatGPT cites",
@@ -136,7 +165,16 @@
     "mentionedYes": "Yes",
     "mentionedNo": "No",
     "mentionedUnknown": "Not read",
-    "hint": "The share of answers that link to this site or page. The dot shows the kind of site."
+    "hint": "The share of answers that link to this site or page. The dot shows the kind of site.",
+    "listed": "Your brand on this site",
+    "shown": "{count} in all",
+    "takeawayTop": "The site ChatGPT cites most is {domain}, in {share} of answers.",
+    "takeawayMissing": "{count, plural, one {# site ChatGPT relies on doesn’t} other {# sites ChatGPT relies on don’t}} list your brand yet. The most cited: {sites}.",
+    "takeawayListed": "Your brand is on every directory, news and other site in the list.",
+    "guide": "The percentage is the part of answers that link to the source. The longer the bar, the more ChatGPT relies on it.",
+    "legendYes": "lists your brand",
+    "legendNo": "doesn’t list your brand",
+    "legendUnknown": "page couldn’t be read"
   },
   "SourceTypes": {
     "title": "Sources by type",
@@ -155,7 +193,21 @@
       "social": "Social",
       "other": "Other"
     },
-    "total": "{count} citations in all"
+    "total": "{count} citations in all",
+    "takeaway": "The most cited kind is {type}, with {share} of all citations.",
+    "takeawayOwn": "Your own site gets {share}.",
+    "takeawayNoOwn": "ChatGPT doesn’t cite your own site yet.",
+    "guide": "The percentage is the part of all citations that goes to sites of this kind. The longer the bar, the more ChatGPT relies on that kind.",
+    "count": "{count, plural, one {# citation} other {# citations}}",
+    "top": "Most cited: {sites}.",
+    "about": {
+      "own": "Your brand’s own website.",
+      "competitor": "Websites of the competitors you track.",
+      "directory": "Maps, catalogs and review sites, such as 2GIS, Yandex Maps and Google Maps.",
+      "news": "News sites and online media.",
+      "social": "Social networks and Telegram channels.",
+      "other": "Sites that fit none of the kinds above."
+    }
   },
   "Actions": {
     "planTitle": "Four ways to show up more in ChatGPT’s answers",
@@ -444,7 +496,7 @@
     "emptyHint": "Add your first brand — we’ll measure how often ChatGPT names it.",
     "noData": "No measurements yet",
     "promptCount": "{count, plural, one {# question} other {# questions}}",
-    "rival": "{name}: {score}/100",
+    "rival": "{name}: {score}",
     "visibility": "ChatGPT visibility",
     "openReport": "Report"
   },
@@ -469,13 +521,13 @@
     "csv": {
       "date": "Date",
       "brand": "Brand",
-      "visibility": "Visibility (out of 100)",
+      "visibility": "Visibility, %",
       "shareOfVoice": "Share of voice, %",
       "sentiment": "Tone (out of 100)",
       "position": "Average position"
     },
-    "trendTitle": "Week by week",
-    "trendHint": "Each brand’s number in the latest weekly checks. Switch the number with the buttons above the chart.",
+    "trendTitle": "Trend",
+    "trendHint": "Each brand’s number over the checks. The buttons beside the title switch the metric; D, W, M show it by day, week or month.",
     "share": "Share",
     "copyLink": "Copy the report link",
     "openReport": "Open the report",
@@ -490,6 +542,25 @@
       "position": "Your place",
       "date": "Date",
       "notNamed": "Not named"
+    },
+    "breakdown": {
+      "title": "Visibility by topic and language",
+      "hint": "The share of ChatGPT’s answers that name you on each topic’s questions and in each language. Beside it: the brand named most on those questions.",
+      "topics": "Topics",
+      "languages": "Question language",
+      "leader": "Leader",
+      "you": "You",
+      "nobody": "Nobody",
+      "lang": {
+        "uz": "Questions in Uzbek",
+        "ru": "Questions in Russian"
+      },
+      "takeawayTopics": "Your strongest topic is {best}, at {bestValue}. Your weakest is {worst}, at {worstValue}.",
+      "takeawayLanguages": "On questions in Uzbek your visibility is {uz}; in Russian it is {ru}.",
+      "detail": "{prompts, plural, one {# question} other {# questions}}, {answers, plural, one {# answer} other {# answers}}: {named} name you.",
+      "guide": "The percentage is the share of answers to those questions that name you. The longer the bar, the more visible you are on that topic or in that language. “Leader” is the brand named most on those questions, with its share. Click a topic or a language to open its questions.",
+      "detailLeader": "{leader} leads with {value}.",
+      "detailYouLead": "You lead here."
     }
   },
   "Competitors": {
@@ -697,7 +768,7 @@
       "tabs": {
         "visibility": {
           "title": "Visibility",
-          "text": "The share of ChatGPT’s answers that name you. This is your main score, out of 100."
+          "text": "The share of ChatGPT’s answers that name you. This is your main number."
         },
         "position": {
           "title": "Position",
@@ -724,7 +795,7 @@
           "text": "Specializes in implants, with affordable prices."
         }
       },
-      "yourScore": "Score: {score}/100",
+      "yourScore": "Visibility: {score}%",
       "yourPosition": "Average position: {position}",
       "yourTone": "Tone: positive"
     },
@@ -787,7 +858,7 @@
       "cta": "Book a demo",
       "bot": "GEO report",
       "heading": "{brand} · weekly report",
-      "score": "Your score",
+      "score": "Your visibility",
       "change": "(+{points})",
       "facts": "Wrong facts",
       "open": "Open the report",
@@ -798,7 +869,7 @@
       "title": "Reports that read at a glance",
       "sub": "We present the numbers so a manager and a client both get them right away.",
       "chartLabel": "Brands placed by score and share of positive tone",
-      "xAxis": "Score (out of 100)",
+      "xAxis": "Visibility, %",
       "yAxis": "Share of positive tone",
       "sample": "Sample: dental clinics in Tashkent",
       "quadrants": {
@@ -1486,7 +1557,7 @@
       "usedAsSource": "Used as a source"
     },
     "hints": {
-      "visibility": "The share of ChatGPT’s answers that name you, out of 100.",
+      "visibility": "The share of ChatGPT’s answers that name you.",
       "shareOfVoice": "Your share of all mentions of the tracked brands in the answers, in percent.",
       "sentiment": "How positively ChatGPT talks about you: 0 negative, 100 positive.",
       "position": "Where you come in the answer. 1 is first; the smaller, the better.",
@@ -1512,5 +1583,15 @@
     },
     "fix": "Plan the fixes",
     "empty": "No wrong facts found."
+  },
+  "Standing": {
+    "behind": "{metric}: you rank {rank} of {of} brands with {value}. {leader} leads with {leaderValue}.",
+    "first": "{metric}: you lead {of} brands with {value}. Next is {next} with {nextValue}.",
+    "only": "{metric}: you score {value}.",
+    "unnamed": "{metric}: ChatGPT’s answers don’t name you yet. {leader} leads with {leaderValue}.",
+    "nobody": "ChatGPT’s answers don’t name any of the tracked brands yet.",
+    "better": "That is {amount} better than last week.",
+    "worse": "That is {amount} worse than last week.",
+    "same": "No change since last week."
   }
 }

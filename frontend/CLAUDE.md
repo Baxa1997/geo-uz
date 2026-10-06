@@ -26,13 +26,17 @@ NOT in MVP: other engines (Yandex, Gemini), billing, self-serve signup, CMS plug
 ## Product roadmap
 Two documents in the repository root hold the reasoning: "GEO Competitor Teardown & Our Feature List.md"
 and "Peec AI Teardown & Our Plan for Central Asia.md" (every Peec feature, our status, our local version).
-Read them before adding a feature or a pricing claim.
+Read them before adding a feature or a pricing claim. `backend/PLAN.md` holds the backend plan made from the
+pages built so far (tables, the weekly run, how each number is calculated, what each page needs, cost per plan,
+open questions): add to it each time a page is finished.
 
 - Built in the frontend (mock data), every page laid out like Peec's app: onboarding (5 steps: website, brand
   profile, competitors, topics, questions; the form on the left, a live picture of the app on the right); the
-  Overview (five numbers with their weekly change, every brand over time on four metrics, brands table, the
-  sites cited and their kinds as bar lists, latest answers, a share menu with the public report's link and
-  CSV); Questions (topics column, tracked and suggested tabs, plan usage, the client's numbers, CSV); Answers
+  Overview (one sentence on where the client stands, then the numbers and charts first: five numbers with
+  their weekly change, every brand over time on four metrics by day, week or month, brands table, the sites cited and their kinds as
+  bar lists, visibility by topic and by question language; then recommended actions and questions without
+  the client, latest answers, a share menu with the public report's link and CSV; the cards of numbers open
+  large with ⤢: a takeaway sentence, every row, the numbers as a table and how to read them); Questions (topics column, tracked and suggested tabs, plan usage, the client's numbers, CSV); Answers
   (the answers in numbers, a table of every answer that opens like a chat, Previous/Next); Competitors
   (brands table, who leads each topic, untracked brands, questions each competitor wins); Sources (numbers,
   then sites, pages and gaps: pages that name competitors and not the client); Wrong facts (numbers and a
@@ -64,7 +68,7 @@ screens are ours. Never add customer quotes, logos or ratings we haven't earned,
 aren't built yet "tez orada" wherever they appear.
 
 The hero's dashboard is the app's Overview built from the same shared components (`shared/components/scores`:
-HeadlineKpis, MetricChart in a Panel, BrandTable, TopDomains, SourceTypesChart) with `mocks/demo.ts`, so the
+HeadlineKpis, TrendPanel, BrandTable, TopDomains, SourceTypesChart) with `mocks/demo.ts`, so the
 two can't drift apart. It plays by itself (`autoplay`: the chart reads out week
 after week and switches metric) and is labelled as sample data. All motion on the page is CSS or a small
 client component, stops under `prefers-reduced-motion`, and pauses off screen. The headline is never animated.
@@ -120,9 +124,11 @@ frontend/src/
                           #   → topics → questions; form left, live preview of the app right from lg) and the first
                           #   run's progress screen (the engines in a ring that fills with the answers)
     settings/             # Settings: sections (brand profile, tracked brands, interface language; more "coming soon")
-    overview/             # project home: five numbers, weekly trend beside the brands table, top sites beside their
-                          #   kinds, latest answers, then recommended actions and questions without you; share menu
-                          #   (public link, CSV), next weekly check date
+    overview/             # project home: a sentence on where the client stands (Verdict), five numbers, weekly trend
+                          #   beside the brands table, top sites beside their kinds, visibility by topic and by question
+                          #   language (BreakdownCard; these five cards open large, ⤢), then recommended actions and
+                          #   questions without you, latest answers; share menu (public link, CSV), next weekly check
+                          #   date. Numbers and charts come right after the sentence (the user's order, Oct 5)
     prompts/              # Questions: topics column, tracked / suggested tabs, plan usage, the client's numbers over
                           #   the list, table with each question's visibility, tone, position, brands named, leader;
                           #   add/edit; accept / reject suggestions; CSV; footer with the weekly check
@@ -130,10 +136,13 @@ frontend/src/
   shared/                 # used by 2+ features
     api/                  # client.ts (switches mocks/backend), session.ts (requireUser), query-keys.ts, errors.ts,
                           #   load-report.ts (the report under the URL's filters, for every data page)
-    components/           # ui/ (shadcn), scores/ (HeadlineKpis + KpiStrip, MetricChart, BrandTable, TopDomains,
-                          #   SourceTypesChart, BarRows: the Overview's parts, also the landing hero's; HeadlineScore,
-                          #   SourcesList, WrongFacts, AnswerViewer, …), Panel (a data page's card: title, ⓘ hint, tools,
-                          #   footer), InfoTip, FilterMenu (a dropdown filter chip), ReportFilterBar (language + topic
+    components/           # ui/ (shadcn), scores/ (HeadlineKpis + KpiStrip, TrendPanel (the chart card: MetricTabs in
+                          #   its header, MetricChart as its plot, its large view), BrandTable, TopDomains,
+                          #   SourceTypesChart, BarRows: the Overview's parts, also the landing hero's; StandingLine
+                          #   (where the client stands, in words);
+                          #   HeadlineScore, SourcesList, WrongFacts, AnswerViewer, …), Panel (a data page's card: title,
+                          #   ⓘ hint, tools, footer, and `expand` for ⤢), ExpandButton + ExpandWindow (a card opened in a
+                          #   large window), InfoTip, FilterMenu (a dropdown filter chip), ReportFilterBar (language + topic
                           #   chips, kept in the URL: ?lang=&topic=),
                           #   Page (title bar + engine switcher + body of a workspace page), EmptyState, Logo, …
     hooks/                # use-assistant (open GEO AI from any page), use-logout, use-in-view, use-reduced-motion
@@ -234,7 +243,7 @@ Types:
 
 ## Scores
 Four numbers per brand, shown side by side (the Overview's numbers, its chart tabs, the brands table):
-- Visibility = answers naming the brand / all answers; shown as the headline score out of 100
+- Visibility = answers naming the brand / all answers; shown in percent, as Peec shows it (the user's choice, Oct 6)
 - Share of voice = mentions of the brand / mentions of all tracked brands; shown in percent
 - Average position = mean position, only over answers where the brand appears (1 = first)
 - Sentiment ("Ohang") = mean tone of the brand's mentions, 0–100 (positive 100, neutral 50, negative 0)
@@ -249,12 +258,36 @@ Four numbers per brand, shown side by side (the Overview's numbers, its chart ta
 - Where one brand is the story (headline score, share of voice, the public report), the client is `--you`
   and competitors are gray.
 - Kinds of cited sites have fixed colors too (`SOURCE_TYPE_COLORS`). Good/bad uses `--positive`/`--negative`
-  with an arrow or icon, never color alone, and only the client's own change is colored.
+  with an arrow or icon, never color alone. A change since last week is an arrow with its number, both green
+  (`--better`) when the number got better and red (`--worse`) when it got worse; for position, better means a
+  smaller number, and the arrow still points up. Only the client's own change is colored; competitors' stay gray.
+- The chart card (TrendPanel) follows Peec's: title and metric tabs in the header, the plot, a footer line that
+  explains the metric and switches lines and bars. The plot has dashed gridlines, straight lines with a dot on
+  every run (no curves: they would suggest values between two weekly checks), each brand's latest number at its
+  line's end, and a y-axis from zero to a round number just above the largest value (position: 1 at the top).
+  One run shows as dots with their numbers; lines appear from the second run.
+- The chart's K / H / O switch (day, week, month; Peec's "D W M") groups the checks into points in the frontend
+  (`helpers/history.ts`): a period with several checks becomes one point with the mean of their numbers, and the
+  footer then says so. Checks are weekly, so day and week both give a point per check and month gives each
+  month's average; day only differs once checks run more than once a week, and daily checks are not offered
+  for now (the user's decision, Oct 6; `backend/PLAN.md`). The numbers above the chart and the takeaway always compare the latest check with the one before.
 - Every chart has a text twin for screen readers and shows its values on hover and on keyboard focus.
 - Rankings of sites and kinds are bar lists (`BarRows`): light bars behind the labels, the number at the end
   of each row carries the value. One y-axis per chart; Peec's two-axis "own source impact" is left out.
 - A table with a minimum width scrolls inside its card: give the scroll box `relative` and `min-w-0`, or its
   positioned screen-reader labels and the flex parent stretch the page sideways.
+- A card that opens large (`expand` on Panel; `expandable` on BrandTable, TopDomains, SourceTypesChart; TrendPanel
+  for the chart) shows three things in its window: a takeaway written from the data (who leads, where the client
+  stands, what is missing), the block with everything in it (all rows, the chart's numbers as a table), and how to
+  read it. A card and its window share their state (metric, chart type, sorting, sites or pages). ExpandWindow
+  loads on the first click, so the landing page's preview, which never opens a card, stays free of the dialog library.
+- Places among brands are compared on the numbers as shown (one decimal): two brands at "#1,8" share a place.
+- Visibility, share of voice and "used as a source" are percentages ("42%"); tone is a score out of 100 and says so
+  beside the number ("78 /100"); an axis in percent shows the sign on its ticks.
+- A bar that shows visibility (by topic or language) is drawn against the whole scale, 0–100%, not against the
+  longest row: 20% must not look like a full bar. Bars that rank sites or kinds stay relative to the largest.
+- Peec's topics × tags heat map is replaced by two bar lists (by topic, by question language), each row with the
+  brand that leads there. No heat maps: a cell's shade can't be read as a number.
 
 ## Commands (frontend, from `frontend/`)
 - `npm run dev`

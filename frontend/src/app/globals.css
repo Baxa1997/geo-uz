@@ -22,6 +22,8 @@
   --color-source-social: var(--source-social);
   --color-positive: var(--positive);
   --color-negative: var(--negative);
+  --color-better: var(--better);
+  --color-worse: var(--worse);
   --color-telegram: var(--telegram);
   --color-brand: var(--brand);
   --color-brand-hover: var(--brand-hover);
@@ -119,6 +121,10 @@
   /* Tone: status colors, always paired with an icon and a label */
   --positive: #0ca30c;
   --negative: #d03b3b;
+  /* A change since last week, as an arrow with its number: up and green for better, down and red for
+     worse. Darker than the two above, so the small number passes 4.5:1 on white (5.3:1 both) */
+  --better: #0a7d0a;
+  --worse: #c93030;
   /* Marketing accent; white text on it passes 4.5:1 (6.7:1) */
   --brand: #1d4ed8;
   --brand-hover: #1e40af;
@@ -153,6 +159,8 @@
   --source-social: #008300;
   --positive: #0ca30c;
   --negative: #d03b3b;
+  --better: #2fbf2f;
+  --worse: #f07070;
   --telegram: #1979bc;
   --telegram-hover: #1873b3;
   --brand: #3b6fe0;

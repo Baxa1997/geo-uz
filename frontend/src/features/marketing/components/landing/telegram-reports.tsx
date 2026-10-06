@@ -42,8 +42,8 @@ export function TelegramReports() {
             <p className="font-semibold">{t("heading", { brand: brand.name })}</p>
             {you && (
               <dl className="flex flex-col gap-1.5">
-                <Row label={t("score")} value={`${outOf100(you.visibility)}/100`} extra={you.trend > 0 ? t("change", { points: Math.round(you.trend * 100) }) : undefined} />
-                {rival && <Row label={rival.brand.name} value={`${outOf100(rival.score.visibility)}/100`} />}
+                <Row label={t("score")} value={`${outOf100(you.visibility)}%`} extra={you.trend > 0 ? t("change", { points: Math.round(you.trend * 100) }) : undefined} />
+                {rival && <Row label={rival.brand.name} value={`${outOf100(rival.score.visibility)}%`} />}
                 <Row label={t("facts")} value={String(DEMO_REPORT.wrongFacts.length)} />
               </dl>
             )}

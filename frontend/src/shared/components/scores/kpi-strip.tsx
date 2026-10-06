@@ -28,8 +28,9 @@ const lastSpan = (count: number) => cn(SPAN_2[count % 2], SPAN_3[count % 3], SPA
 
 /**
  * A row of the client's numbers, each with its change since the previous run, side by side with thin
- * dividers (two per line on phones). The changes are the client's own, so their arrows are colored good
- * or bad, with words for screen readers.
+ * dividers (two per line on phones). The changes are the client's own, so they are judged: an arrow up
+ * and green when the number got better, an arrow down and red when it got worse, with words for screen
+ * readers.
  */
 export function KpiStrip({ items, className }: { items: Kpi[]; className?: string }) {
   const t = useTranslations("Kpi");
@@ -53,13 +54,9 @@ export function KpiStrip({ items, className }: { items: Kpi[]; className?: strin
               </span>
               {note && <span className="text-sm text-muted-foreground tabular-nums">{note}</span>}
               {change && change.amount !== "0" && (
-                // The arrow carries the color: green text this small would be too faint to read
-                <span className="inline-flex items-center gap-0.5 text-sm font-medium text-foreground/75 tabular-nums">
-                  {change.better ? (
-                    <ArrowUp aria-hidden className="size-3.5 text-positive" />
-                  ) : (
-                    <ArrowDown aria-hidden className="size-3.5 text-negative" />
-                  )}
+                // Never color alone: the arrow says the same as the green or red
+                <span className={cn("inline-flex items-center gap-0.5 text-sm font-medium tabular-nums", change.better ? "text-better" : "text-worse")}>
+                  {change.better ? <ArrowUp aria-hidden className="size-3.5" /> : <ArrowDown aria-hidden className="size-3.5" />}
                   <span aria-hidden>{change.amount}</span>
                   <span className="sr-only">{t(change.better ? "better" : "worse", { amount: change.amount })}</span>
                 </span>

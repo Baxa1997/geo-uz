@@ -9,6 +9,7 @@ import { byMetric, lowerIsBetter, METRICS, metricUnit, metricValue, scoreOf, ton
 import { cn } from "@/shared/helpers/utils";
 import type { HistoryPoint } from "@/shared/types/api";
 import type { Metric, SeriesBrand } from "@/shared/types/scores";
+import { StandingLine } from "./standing-line";
 import { ToneIcon } from "./tone-icon";
 
 /**
@@ -31,6 +32,8 @@ const HIDDEN_CELLS: Partial<Record<Metric, string>> = {
 /**
  * The tracked brands side by side on the four metrics, each with its change since the previous
  * run. A column's heading sorts by it, best first; a second click turns the order around.
+ * `expandable` adds ⤢: the table in a large window with every column, where the client stands on the
+ * sorted metric in words, and what each of the four numbers means.
  */
 export function BrandTable({
   history,
@@ -38,6 +41,7 @@ export function BrandTable({
   title,
   description,
   action,
+  expandable = false,
   className,
 }: {
   history: HistoryPoint[];
@@ -45,9 +49,11 @@ export function BrandTable({
   title: string;
   description: string;
   action?: React.ReactNode;
+  expandable?: boolean;
   className?: string;
 }) {
   const t = useTranslations("BrandTable");
+  const metrics = useTranslations("MetricChart");
   const locale = useLocale();
   const [sort, setSort] = useState<{ metric: Metric; reversed: boolean }>({ metric: "visibility", reversed: false });
   const latest = history.at(-1)?.scores ?? [];
@@ -67,8 +73,9 @@ export function BrandTable({
       return byMetric(value(a), value(b), sort.metric) * (sort.reversed ? -1 : 1);
     });
 
-  return (
-    <Panel title={title} hint={description} actions={action} className={cn("@container", className)}>
+  // Drawn in the card and again in its large view; both follow the same sorting
+  const table = (
+    <>
       {/* Fixed columns: the numbers keep their width and the brand's name takes the rest */}
       <table className="w-full table-fixed text-sm">
         <thead>
@@ -101,7 +108,8 @@ export function BrandTable({
                       sorted && "text-foreground",
                     )}
                   >
-                    <span className="truncate">{t(metric)}</span>
+                    {/* Two short words may take two lines: a cut-off heading explains nothing */}
+                    <span className="min-w-0 text-left leading-tight text-balance">{t(metric)}</span>
                     <Icon aria-hidden className="hidden size-3.5 shrink-0 @lg:block" />
                   </button>
                 </th>
@@ -147,13 +155,46 @@ export function BrandTable({
           ))}
         </tbody>
       </table>
+    </>
+  );
+
+  return (
+    <Panel
+      title={title}
+      hint={description}
+      actions={action}
+      className={cn("@container", className)}
+      expand={
+        expandable
+          ? {
+              takeaway: <StandingLine history={history} brands={brands} metric={sort.metric} />,
+              guide: (
+                <>
+                  <p>{t("guide")}</p>
+                  <dl className="mt-1 grid gap-x-4 gap-y-1.5 sm:grid-cols-[auto_minmax(0,1fr)]">
+                    {METRICS.map((metric) => (
+                      <div key={metric} className="contents">
+                        <dt className="font-medium text-foreground">{t(metric)}</dt>
+                        <dd>{metrics(`hints.${metric}`)}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </>
+              ),
+              // Its own container: the columns follow the window's width, not the card's
+              content: <div className="@container mt-4 border-t">{table}</div>,
+            }
+          : undefined
+      }
+    >
+      {table}
     </Panel>
   );
 }
 
 /**
  * Change since the previous run. The arrow points up when the brand did better, which for
- * position means a smaller number. Only the client's own change is colored good or bad.
+ * position means a smaller number. Only the client's own change is judged: green when up, red when down.
  */
 function Change({ metric, change, judged }: { metric: Metric; change: number; judged: boolean }) {
   const t = useTranslations("BrandTable");
@@ -163,8 +204,13 @@ function Change({ metric, change, judged }: { metric: Metric; change: number; ju
   const better = lowerIsBetter(metric) ? change < 0 : change > 0;
   const Icon = better ? ArrowUp : ArrowDown;
   return (
-    <span className="hidden items-center gap-0.5 text-xs text-muted-foreground tabular-nums @md:inline-flex">
-      <Icon aria-hidden className={cn("size-3", judged && (better ? "text-positive" : "text-negative"))} />
+    <span
+      className={cn(
+        "hidden items-center gap-0.5 text-xs tabular-nums @md:inline-flex",
+        !judged ? "text-muted-foreground" : better ? "font-medium text-better" : "font-medium text-worse",
+      )}
+    >
+      <Icon aria-hidden className="size-3" />
       <span aria-hidden>{amount}</span>
       <span className="sr-only">{t(better ? "better" : "worse", { amount })}</span>
     </span>

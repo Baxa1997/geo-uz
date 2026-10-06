@@ -18,6 +18,18 @@ export function formatLongDate(iso: string, locale: string, timeZone: string): s
   return `${part("day")}-${UZ_MONTHS[part("month") - 1]}, ${part("year")}`;
 }
 
+/** A month for chart axes ("sen") or with its year for headings ("Sentabr, 2026"), the same on the server and in every browser. */
+export function formatMonth(iso: string, locale: string, timeZone: string, style: "short" | "long"): string {
+  const date = new Date(iso);
+  if (locale !== "uz") {
+    return new Intl.DateTimeFormat(locale, style === "short" ? { month: "short", timeZone } : { month: "long", year: "numeric", timeZone }).format(date);
+  }
+  const parts = new Intl.DateTimeFormat("en-US", { month: "numeric", year: "numeric", timeZone }).formatToParts(date);
+  const part = (type: Intl.DateTimeFormatPartTypes) => Number(parts.find((p) => p.type === type)?.value);
+  const month = UZ_MONTHS[part("month") - 1] ?? "";
+  return style === "short" ? month.slice(0, 3) : `${month.charAt(0).toUpperCase()}${month.slice(1)}, ${part("year")}`;
+}
+
 /** "2026-09-28" in the given time zone: the date spreadsheets sort and read the same everywhere. */
 export const formatIsoDay = (iso: string, timeZone: string) =>
   new Intl.DateTimeFormat("en-CA", { timeZone }).format(new Date(iso));

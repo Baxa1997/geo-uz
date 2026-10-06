@@ -27,6 +27,8 @@ export function HeadlineKpis({ report, className }: { report: Report; className?
             ? `#${formatDecimal(value, locale)}`
             : `${formatDecimal(value, locale)}${metricUnit(metric)}`,
       lead: metric === "sentiment" && value !== null ? <ToneIcon tone={toneOf(value)} className="size-4" /> : undefined,
+      // Tone is a score out of 100 and says so: beside "20%" and "#1,8", a bare "75" reads as a count
+      note: value !== null && metric === "sentiment" ? "/100" : undefined,
       change:
         change === null
           ? null

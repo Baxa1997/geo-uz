@@ -9,7 +9,11 @@
     "retry": "Qayta urinish",
     "logout": "Chiqish",
     "home": "GEO — bosh sahifa",
-    "about": "Bu nima?"
+    "about": "Bu nima?",
+    "expand": "Kattalashtirish",
+    "close": "Yopish",
+    "takeaway": "Xulosa",
+    "howToRead": "Qanday oʻqiladi"
   },
   "Filters": {
     "label": "Filtrlar",
@@ -89,7 +93,7 @@
       "shareOfVoice": "Ovoz ulushi"
     },
     "hints": {
-      "visibility": "ChatGPT javoblarining necha foizida brend tilga olingani — 100 balldan.",
+      "visibility": "ChatGPT javoblarining necha foizida brend tilga olingani.",
       "sentiment": "ChatGPT brend haqida qanchalik ijobiy gapirgani: 0 — salbiy, 100 — ijobiy.",
       "position": "Brend javobda nechanchi boʻlib tilga olingani. 1 — birinchi; son qancha kichik boʻlsa, shuncha yaxshi.",
       "shareOfVoice": "Barcha kuzatilayotgan brendlarning tilga olinishidan brendning ulushi, foizda."
@@ -98,7 +102,31 @@
     "date": "Sana",
     "chartLabel": "{metric}: {brands} ta brend, {weeks} ta haftalik tekshiruv. Haftalarni chap va oʻng strelkalar bilan koʻring.",
     "firstRun": "Hozircha bitta tekshiruv oʻtkazildi. Dinamika keyingi haftalik tekshiruvdan keyin koʻrinadi.",
-    "weeks": "{weeks} ta haftalik tekshiruv."
+    "weeks": "{weeks} ta haftalik tekshiruv.",
+    "table": "{metric}: raqamlarda",
+    "guide": {
+      "line": "Har bir chiziq — bitta brend, har bir nuqta — bitta davr. Chiziq qancha yuqorida boʻlsa, natija shuncha yaxshi. Grafik ustiga kursorni olib boring yoki bosing — oʻsha davrning raqamlari koʻrinadi.",
+      "bar": "Har bir ustun — bitta brendning oxirgi tekshiruvdagi natijasi. Eng yaxshi natija tepada; ustun qancha uzun boʻlsa, shuncha yaxshi.",
+      "barPosition": "Har bir ustun — brendning javoblardagi oʻrtacha oʻrni. Eng yaxshi natija tepada; bu yerda ustun qancha qisqa boʻlsa, shuncha yaxshi.",
+      "grain": "Kun, Hafta, Oy — nuqtalar qaysi davr boʻyicha koʻrsatilishi. Bir davrda bir nechta tekshiruv boʻlsa, nuqta ularning oʻrtachasini koʻrsatadi."
+    },
+    "grainLabel": "Nuqtalar davri",
+    "grains": {
+      "day": "Kun",
+      "week": "Hafta",
+      "month": "Oy"
+    },
+    "grainShort": {
+      "day": "K",
+      "week": "H",
+      "month": "O"
+    },
+    "grainBy": {
+      "day": "Kunlar boʻyicha",
+      "week": "Haftalar boʻyicha",
+      "month": "Oylar boʻyicha"
+    },
+    "averaged": "Har bir nuqta — shu davrdagi tekshiruvlarning oʻrtachasi."
   },
   "BrandTable": {
     "title": "{brand} va raqobatchilari",
@@ -115,7 +143,8 @@
     "better": "oʻtgan haftadan {amount} ga yaxshiroq",
     "worse": "oʻtgan haftadan {amount} ga yomonroq",
     "shareOfVoice": "Ovoz ulushi",
-    "titleShort": "Brendlar reytingi"
+    "titleShort": "Brendlar reytingi",
+    "guide": "Har bir qator — bitta brend. Ustun sarlavhasini bossangiz, jadval shu koʻrsatkich boʻyicha saralanadi. Raqam yonidagi strelka — oʻtgan haftaga nisbatan oʻzgarish."
   },
   "SourcesTable": {
     "title": "ChatGPT tayangan manbalar",
@@ -136,7 +165,16 @@
     "mentionedYes": "Bor",
     "mentionedNo": "Yoʻq",
     "mentionedUnknown": "Oʻqilmadi",
-    "hint": "Javoblarning necha foizida shu sayt yoki sahifaga havola berilgan. Nuqta saytning turini koʻrsatadi."
+    "hint": "Javoblarning necha foizida shu sayt yoki sahifaga havola berilgan. Nuqta saytning turini koʻrsatadi.",
+    "listed": "Brendingiz shu saytda",
+    "shown": "Jami: {count}",
+    "takeawayTop": "ChatGPT eng koʻp tayanadigan sayt: {domain} — javoblarning {share} qismida.",
+    "takeawayMissing": "ChatGPT tayanadigan saytlardan {count} tasida brendingiz hali yoʻq. Eng muhimlari: {sites}.",
+    "takeawayListed": "Roʻyxatdagi katalog, yangilik va boshqa saytlarning barchasida brendingiz bor.",
+    "guide": "Foiz — javoblarning qancha qismida shu manbaga havola berilgani. Ustun qancha uzun boʻlsa, ChatGPT shu manbaga shuncha koʻp tayanadi.",
+    "legendYes": "brendingiz bor",
+    "legendNo": "brendingiz yoʻq",
+    "legendUnknown": "sahifa oʻqilmadi"
   },
   "SourceTypes": {
     "title": "Manbalar turi boʻyicha",
@@ -155,7 +193,21 @@
       "social": "Ijtimoiy",
       "other": "Boshqa"
     },
-    "total": "Jami {count} ta havola"
+    "total": "Jami {count} ta havola",
+    "takeaway": "ChatGPT eng koʻp tayanadigan manba turi: {type} — barcha havolalarning {share} qismi.",
+    "takeawayOwn": "Sizning saytingiz ulushi: {share}.",
+    "takeawayNoOwn": "Sizning saytingizga hali havola berilmagan.",
+    "guide": "Foiz — barcha havolalarning qancha qismi shu turdagi saytlarga toʻgʻri kelishi. Ustun qancha uzun boʻlsa, ChatGPT shu turga shuncha koʻp tayanadi.",
+    "count": "{count} ta havola",
+    "top": "Eng koʻp: {sites}.",
+    "about": {
+      "own": "Brendingizning rasmiy sayti.",
+      "competitor": "Siz kuzatayotgan raqobatchilarning saytlari.",
+      "directory": "Xaritalar, kataloglar va sharh saytlari — masalan, 2GIS, Yandex Xaritalar, Google Maps.",
+      "news": "Yangilik saytlari va onlayn nashrlar.",
+      "social": "Ijtimoiy tarmoqlar va Telegram kanallari.",
+      "other": "Yuqoridagi turlarga kirmaydigan saytlar."
+    }
   },
   "Actions": {
     "planTitle": "ChatGPT javoblarida koʻproq chiqish uchun 4 yoʻl",
@@ -444,7 +496,7 @@
     "emptyHint": "Birinchi brendni qoʻshing — ChatGPT uni qanchalik koʻp tilga olishini oʻlchaymiz.",
     "noData": "Hali oʻlchov yoʻq",
     "promptCount": "{count} ta savol",
-    "rival": "{name}: {score}/100",
+    "rival": "{name}: {score}",
     "visibility": "ChatGPT’dagi koʻrinish",
     "openReport": "Hisobot"
   },
@@ -469,13 +521,13 @@
     "csv": {
       "date": "Sana",
       "brand": "Brend",
-      "visibility": "Koʻrinish (100 dan)",
+      "visibility": "Koʻrinish, %",
       "shareOfVoice": "Ovoz ulushi, %",
       "sentiment": "Ohang (100 dan)",
       "position": "Oʻrtacha oʻrin"
     },
-    "trendTitle": "Haftalik dinamika",
-    "trendHint": "Har bir brendning soʻnggi haftalik tekshiruvlardagi koʻrsatkichi. Koʻrsatkichni yuqoridagi tugmalar bilan almashtiring.",
+    "trendTitle": "Dinamika",
+    "trendHint": "Har bir brendning tekshiruvlardagi koʻrsatkichi. Sarlavha yonidagi tugmalar koʻrsatkichni almashtiradi; K, H, O — kun, hafta yoki oy boʻyicha koʻrsatadi.",
     "share": "Ulashish",
     "copyLink": "Hisobot havolasini nusxalash",
     "openReport": "Hisobotni ochish",
@@ -490,6 +542,25 @@
       "position": "Oʻrningiz",
       "date": "Sana",
       "notNamed": "Tilga olinmagan"
+    },
+    "breakdown": {
+      "title": "Mavzu va til boʻyicha koʻrinish",
+      "hint": "Har bir mavzu va har bir til savollarida ChatGPT javoblarining necha foizida tilga olinganingiz. Yonida shu savollarda eng koʻp tilga olingan brend turadi.",
+      "topics": "Mavzular",
+      "languages": "Savol tili",
+      "leader": "Yetakchi",
+      "you": "Siz",
+      "nobody": "Hech kim",
+      "lang": {
+        "uz": "Oʻzbekcha savollar",
+        "ru": "Ruscha savollar"
+      },
+      "takeawayTopics": "Eng kuchli mavzuingiz — {best}: {bestValue}. Eng zaifi — {worst}: {worstValue}.",
+      "takeawayLanguages": "Oʻzbekcha savollarda koʻrinishingiz — {uz}, ruscha savollarda — {ru}.",
+      "detail": "{prompts} ta savol, {answers} ta javob: {named} tasida tilga olingansiz.",
+      "guide": "Foiz — shu savollarga berilgan javoblarning qancha qismida tilga olinganingiz. Ustun qancha uzun boʻlsa, shu mavzuda yoki tilda shuncha koʻp koʻrinasiz. «Yetakchi» — shu savollarda eng koʻp tilga olingan brend va uning foizi. Mavzu yoki til nomini bossangiz, uning savollari ochiladi.",
+      "detailLeader": "Yetakchi — {leader}: {value}.",
+      "detailYouLead": "Bu yerda yetakchi — siz."
     }
   },
   "Competitors": {
@@ -697,7 +768,7 @@
       "tabs": {
         "visibility": {
           "title": "Koʻrinish",
-          "text": "ChatGPT javoblarining nechtasida tilga olinasiz. Bu asosiy ballingiz — 100 dan."
+          "text": "ChatGPT javoblarining necha foizida tilga olinasiz. Bu asosiy koʻrsatkichingiz."
         },
         "position": {
           "title": "Oʻrin",
@@ -724,7 +795,7 @@
           "text": "Implantatsiyaga ixtisoslashgan, narxlari hamyonbop."
         }
       },
-      "yourScore": "Ball: {score}/100",
+      "yourScore": "Koʻrinish: {score}%",
       "yourPosition": "Oʻrtacha oʻrin: {position}",
       "yourTone": "Ohang: ijobiy"
     },
@@ -787,7 +858,7 @@
       "cta": "Demo soʻrash",
       "bot": "GEO hisobot",
       "heading": "{brand} · haftalik hisobot",
-      "score": "Ballingiz",
+      "score": "Koʻrinishingiz",
       "change": "(+{points})",
       "facts": "Notoʻgʻri faktlar",
       "open": "Hisobotni ochish",
@@ -798,7 +869,7 @@
       "title": "Bir qarashda tushunarli hisobotlar",
       "sub": "Raqamlarni rahbar ham, mijoz ham darhol tushunadigan qilib beramiz.",
       "chartLabel": "Brendlar: ball va ijobiy ohang ulushi boʻyicha joylashuvi",
-      "xAxis": "Ball (100 dan)",
+      "xAxis": "Koʻrinish, %",
       "yAxis": "Ijobiy ohang ulushi",
       "sample": "Namuna: Toshkentdagi stomatologiya klinikalari",
       "quadrants": {
@@ -1486,7 +1557,7 @@
       "usedAsSource": "Manba sifatida"
     },
     "hints": {
-      "visibility": "ChatGPT javoblarining necha foizida tilga olindingiz — 100 balldan.",
+      "visibility": "ChatGPT javoblarining necha foizida tilga olindingiz.",
       "shareOfVoice": "Javoblarda kuzatilayotgan brendlar necha marta tilga olingan boʻlsa, shundan necha foizi sizniki.",
       "sentiment": "ChatGPT siz haqingizda qanchalik ijobiy gapiradi: 0 — salbiy, 100 — ijobiy.",
       "position": "Javobda nechanchi boʻlib tilga olinasiz. 1 — birinchi; son kichikroq boʻlsa, yaxshiroq.",
@@ -1512,5 +1583,15 @@
     },
     "fix": "Tuzatish rejasi",
     "empty": "Notoʻgʻri maʼlumot topilmadi."
+  },
+  "Standing": {
+    "behind": "{metric} boʻyicha {of} ta brend ichida {rank}-oʻrindasiz: {value}. Yetakchi — {leader}: {leaderValue}.",
+    "first": "{metric} boʻyicha {of} ta brend ichida birinchisiz: {value}. Keyingi oʻrinda — {next}: {nextValue}.",
+    "only": "{metric} boʻyicha natijangiz: {value}.",
+    "unnamed": "{metric}: ChatGPT javoblarida hali tilga olinmagansiz. Yetakchi — {leader}: {leaderValue}.",
+    "nobody": "ChatGPT javoblarida kuzatilayotgan brendlardan hech biri hali tilga olinmagan.",
+    "better": "Oʻtgan haftaga nisbatan {amount} ga yaxshilandi.",
+    "worse": "Oʻtgan haftaga nisbatan {amount} ga yomonlashdi.",
+    "same": "Oʻtgan haftaga nisbatan oʻzgarmadi."
   }
 }

@@ -13,12 +13,11 @@ import {
 import { useTranslations } from "next-intl";
 import { DEMO_REPORT } from "@/mocks/demo";
 import { EngineIcon } from "@/shared/components/engine-icon";
-import { Panel } from "@/shared/components/panel";
 import { BrandTable } from "@/shared/components/scores/brand-table";
 import { HeadlineKpis } from "@/shared/components/scores/headline-kpis";
-import { MetricChart } from "@/shared/components/scores/metric-chart";
 import { SourceTypesChart } from "@/shared/components/scores/source-types-chart";
 import { TopDomains } from "@/shared/components/scores/top-domains";
+import { TrendPanel } from "@/shared/components/scores/trend-panel";
 import { seriesBrands, totalAnswers } from "@/shared/helpers/scores";
 import { cn } from "@/shared/helpers/utils";
 
@@ -117,9 +116,7 @@ export function DashboardPreview() {
 
           <HeadlineKpis report={report} />
           <div className="grid gap-3 @3xl:grid-cols-2">
-            <Panel title={overview("trendTitle")}>
-              <MetricChart history={report.history} brands={brands} autoplay />
-            </Panel>
+            <TrendPanel autoplay title={overview("trendTitle")} history={report.history} brands={brands} />
             <BrandTable history={report.history} brands={brands} title={table("titleShort")} description={table("description")} />
             <TopDomains sources={report.topSources} totalAnswers={totalAnswers(report.prompts)} youId={brand.id} limit={5} />
             <SourceTypesChart sources={report.topSources} />

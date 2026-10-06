@@ -4,6 +4,7 @@ import type {
   BrandScore,
   HistoryPoint,
   Project,
+  Prompt,
   PromptResult,
   Report,
   Source,
@@ -19,7 +20,7 @@ type Scored = Omit<BrandScore, "trend">;
 /** Visibility (0–1) as "named in N of 10 answers", for sentences. */
 export const outOfTen = (visibility: number) => Math.round(visibility * 10);
 
-/** Visibility (0–1) as the headline score out of 100. */
+/** A share (0–1) as a whole number of percent: visibility 0.42 → 42. */
 export const outOf100 = (visibility: number) => Math.round(visibility * 100);
 
 export function scoreOf<T extends { brandId: string }>(scores: T[], brandId: string): T | undefined {
@@ -84,8 +85,8 @@ export function namedBrands(result: PromptResult, brands: Brand[], youId: string
 }
 
 /**
- * A brand's value on a metric as it is shown: visibility as a score out of 100, share of voice in
- * percent, tone 0–100, mean position. Null if it was never named.
+ * A brand's value on a metric as it is shown: visibility and share of voice in percent, tone 0–100,
+ * mean position. Null if it was never named.
  */
 export function metricValue(score: Scored | undefined, metric: Metric): number | null {
   if (!score) return null;
@@ -94,8 +95,8 @@ export function metricValue(score: Scored | undefined, metric: Metric): number |
   return metric === "sentiment" ? score.sentiment : score.avgPosition;
 }
 
-/** Share of voice is the one metric shown with a percent sign. */
-export const metricUnit = (metric: Metric) => (metric === "shareOfVoice" ? "%" : "");
+/** Visibility and share of voice are percentages; tone is a score out of 100 and position a place. */
+export const metricUnit = (metric: Metric) => (metric === "visibility" || metric === "shareOfVoice" ? "%" : "");
 
 /**
  * The client's numbers in the latest run, each with its change since the run before (null on a first
@@ -173,3 +174,31 @@ export function sourceTypeShares(sources: Source[]): { type: SourceType; share: 
 
 /** All answers of a report: what "share of answers" is counted against. */
 export const totalAnswers = (results: PromptResult[]) => results.reduce((sum, result) => sum + result.answers.length, 0);
+
+/** A group of the report's questions (a topic, a language) and how often its answers name each brand. */
+export interface Slice {
+  key: string;
+  /** Questions in the group. */
+  prompts: number;
+  /** Answers to them: what a brand's visibility in the group is counted against. */
+  answers: number;
+  /** Brand id → answers naming it. */
+  named: Record<string, number>;
+}
+
+/** The questions grouped by `keyOf` (their topic, their language), in the order the groups first appear. */
+export function slicesBy(results: PromptResult[], keyOf: (prompt: Prompt) => string, brandIds: string[]): Slice[] {
+  const slices = new Map<string, Slice>();
+  for (const result of results) {
+    const key = keyOf(result.prompt);
+    const slice = slices.get(key) ?? { key, prompts: 0, answers: 0, named: {} };
+    slice.prompts += 1;
+    slice.answers += result.answers.length;
+    for (const id of brandIds) slice.named[id] = (slice.named[id] ?? 0) + answersNaming(result, id);
+    slices.set(key, slice);
+  }
+  return [...slices.values()];
+}
+
+/** A brand's visibility (0–1) in a group of questions. */
+export const sliceShare = (slice: Slice, brandId: string) => (slice.answers ? (slice.named[brandId] ?? 0) / slice.answers : 0);

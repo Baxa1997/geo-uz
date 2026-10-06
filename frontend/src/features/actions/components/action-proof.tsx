@@ -2,6 +2,7 @@ import { ArrowDown, ArrowUp, CircleCheck, Minus } from "lucide-react";
 import { useLocale, useTimeZone, useTranslations } from "next-intl";
 import { TIME_ZONE } from "@/shared/constants";
 import { formatLongDate, formatWeekdayDate } from "@/shared/helpers/dates";
+import { formatPercent } from "@/shared/helpers/numbers";
 import { outOf100 } from "@/shared/helpers/scores";
 import { cn } from "@/shared/helpers/utils";
 import type { Action } from "@/shared/types/api";
@@ -38,7 +39,7 @@ export function ActionProof({ action, nextRunAt }: { action: Action; nextRunAt: 
           aria-hidden
           className={cn("size-4 shrink-0", change > 0 ? "text-positive" : change < 0 ? "text-negative" : "text-muted-foreground")}
         />
-        {t("proof", { before: outOf100(before), after: outOf100(after) })}
+        {t("proof", { before: formatPercent(before, locale), after: formatPercent(after, locale) })}
       </p>
       <p className="pl-6 text-xs text-muted-foreground">
         {done}

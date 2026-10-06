@@ -1,15 +1,18 @@
 import { useTranslations } from "next-intl";
+import { ExpandButton, type Expanded } from "@/shared/components/expand-button";
 import { InfoTip } from "@/shared/components/info-tip";
 import { cn } from "@/shared/helpers/utils";
 
 /**
  * A card of a data page: a title with an ⓘ that explains it, tools on the right (tabs, export, a link),
  * the content, and an optional footer line. Every block of the Overview and the other data pages is one.
+ * `expand` adds a ⤢ after the tools that opens the card in a large window.
  */
 export function Panel({
   title,
   hint,
   actions,
+  expand,
   footer,
   className,
   children,
@@ -18,6 +21,8 @@ export function Panel({
   /** What the block shows, behind the ⓘ. */
   hint?: string;
   actions?: React.ReactNode;
+  /** The card opened large: everything in it, what the numbers say, how to read them. */
+  expand?: Expanded;
   footer?: React.ReactNode;
   className?: string;
   children: React.ReactNode;
@@ -30,7 +35,12 @@ export function Panel({
           <h2 className="truncate font-medium">{title}</h2>
           {hint && <InfoTip label={t("about")}>{hint}</InfoTip>}
         </div>
-        {actions && <div className="flex shrink-0 items-center gap-1.5">{actions}</div>}
+        {(actions || expand) && (
+          <div className="flex shrink-0 items-center gap-1.5">
+            {actions}
+            {expand && <ExpandButton title={title} {...expand} />}
+          </div>
+        )}
       </header>
       {/* min-w-0: a wide table inside scrolls in place instead of stretching the card */}
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">{children}</div>
