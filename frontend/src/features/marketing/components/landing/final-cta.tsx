@@ -1,10 +1,10 @@
 import { ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { buttonVariants } from "@/shared/components/ui/button";
-import { Link } from "@/i18n/navigation";
 import { cn } from "@/shared/helpers/utils";
 import { SECTION } from "../../constants";
 import { MonoLabel } from "./mono-label";
+import { SectionLink } from "../section-link";
 
 /** Dark band: the page's last word before the dark footer. */
 export function FinalCta() {
@@ -30,22 +30,22 @@ export function FinalCta() {
           </h2>
           <p className="max-w-xl text-lg text-pretty text-background/75">{t("text")}</p>
           <div className="mt-2 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
-            <Link
-              href={{ pathname: "/", hash: SECTION.check }}
+            <SectionLink
+              hash={SECTION.check}
               className={cn(buttonVariants({ variant: "brand", size: "lg" }), "h-12 px-5 text-base")}
             >
               {t("button")}
               <ArrowRight aria-hidden data-icon="inline-end" />
-            </Link>
-            <Link
-              href={{ pathname: "/", hash: SECTION.demo }}
+            </SectionLink>
+            <SectionLink
+              hash={SECTION.demo}
               className={cn(
                 buttonVariants({ variant: "outline", size: "lg" }),
                 "h-12 border-background/30 bg-transparent px-5 text-base text-background hover:bg-background/10 hover:text-background",
               )}
             >
               {t("demo")}
-            </Link>
+            </SectionLink>
           </div>
         </div>
       </div>

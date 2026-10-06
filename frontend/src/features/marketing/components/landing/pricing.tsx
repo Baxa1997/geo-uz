@@ -1,12 +1,12 @@
 import { ArrowRight, Check, Tags, Wrench } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { buttonVariants } from "@/shared/components/ui/button";
-import { Link } from "@/i18n/navigation";
 import { cn } from "@/shared/helpers/utils";
 import { MANAGED_PRICE_FROM, PRICING, PRICING_FEATURES, SECTION } from "../../constants";
 import { MonoLabel } from "./mono-label";
 import { PlanTable } from "./plan-table";
 import { Panel, Section, SectionIntro } from "./section";
+import { SectionLink } from "../section-link";
 
 /** The plans as cards, the done-for-you service as a banner, then the full comparison. */
 export function Pricing() {
@@ -37,12 +37,12 @@ export function Pricing() {
                   </p>
                 </div>
                 <p className="min-h-10 text-sm text-pretty text-muted-foreground">{t(`tiers.${key}.for`)}</p>
-                <Link
-                  href={{ pathname: "/", hash: target }}
+                <SectionLink
+                  hash={target}
                   className={cn(buttonVariants({ variant: recommended ? "brand" : "secondary", size: "lg" }), "h-11 w-full")}
                 >
                   {t(`tiers.${key}.cta`)}
-                </Link>
+                </SectionLink>
                 <div className="flex flex-col gap-3 text-sm">
                   <p className="text-muted-foreground">{t("includes")}</p>
                   <ul className="flex flex-col gap-3">
@@ -70,13 +70,13 @@ export function Pricing() {
             <span className="font-medium">{t("managedTitle")}</span>{" "}
             <span className="text-muted-foreground">{t("managed", { amount: MANAGED_PRICE_FROM })}</span>
           </p>
-          <Link
-            href={{ pathname: "/", hash: SECTION.demo }}
+          <SectionLink
+            hash={SECTION.demo}
             className={cn(buttonVariants({ variant: "outline", size: "lg" }), "h-11 bg-background px-4 shadow-xs")}
           >
             {t("managedCta")}
             <ArrowRight aria-hidden data-icon="inline-end" />
-          </Link>
+          </SectionLink>
         </div>
       </div>
 

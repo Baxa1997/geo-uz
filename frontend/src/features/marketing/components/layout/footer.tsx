@@ -74,7 +74,8 @@ export function Footer() {
                 {links.map((link) => (
                   <li key={link.label}>
                     {"href" in link ? (
-                      <Link href={link.href} className="transition-colors hover:text-background">
+                      // A section of this page isn't worth a prefetch: it would download the page itself
+                      <Link href={link.href} prefetch={typeof link.href === "string" ? null : false} className="transition-colors hover:text-background">
                         {link.label}
                       </Link>
                     ) : "text" in link ? (

@@ -7,7 +7,8 @@ export function Logo({ compact = false, className }: { compact?: boolean; classN
   const t = useTranslations("Common");
 
   return (
-    <Link href="/" aria-label={t("home")} className={cn("flex shrink-0 items-center gap-2", className)}>
+    // No prefetch: on the landing page it would download the page itself, and in the app nobody is about to leave
+    <Link href="/" prefetch={false} aria-label={t("home")} className={cn("flex shrink-0 items-center gap-2", className)}>
       <span aria-hidden className="flex size-7 items-center justify-center rounded-lg bg-brand text-brand-foreground">
         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" className="size-4">
           <circle cx="8.5" cy="8.5" r="5.5" />

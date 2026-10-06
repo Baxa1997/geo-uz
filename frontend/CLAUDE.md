@@ -1,5 +1,8 @@
 # GEO Platform (working name) — project context for Claude Code
 
+What is done, what comes next and how the work is organized: `../CLAUDE.md`. This file holds the rules for
+the frontend.
+
 ## What we are building
 An AI-visibility (GEO) platform for brands in Uzbekistan and Central Asia.
 It asks ChatGPT the questions customers ask ("best dental clinic in Tashkent?"),
@@ -71,7 +74,45 @@ The hero's dashboard is the app's Overview built from the same shared components
 HeadlineKpis, TrendPanel, BrandTable, TopDomains, SourceTypesChart) with `mocks/demo.ts`, so the
 two can't drift apart. It plays by itself (`autoplay`: the chart reads out week
 after week and switches metric) and is labelled as sample data. All motion on the page is CSS or a small
-client component, stops under `prefers-reduced-motion`, and pauses off screen. The headline is never animated.
+client component, stops under `prefers-reduced-motion`, pauses off screen, and ends: nothing animates
+forever (see below). The headline is never animated.
+
+### Keeping the landing page fast
+Measured on the production build as a slow phone would load it (4x slower CPU, slow 4G), Oct 6: the page
+weighs about 350 KB (scripts 200 KB, HTML 52 KB, fonts 67 KB, CSS 24 KB), paints its headline in 1.7 s
+and blocks the main thread for under 100 ms. Before the rules below it was 500 KB, 2.0 s and 250 ms.
+With the real graphics card (headless Chrome started with `--enable-gpu --use-angle=metal`, frames read
+from Chrome's trace): 8 layers, no dropped frames while scrolling, and the page at rest when left alone.
+`npm run dev` is always slower (unminified scripts, a compile after every change): judge speed on
+`npm run build && npm run start`.
+
+- **Messages.** The root layout gives the browser only `Common` (for error.tsx). The app's layouts and pages
+  (workspace, login, onboarding, the free check's run, the public report) wrap themselves in `AppProviders`
+  (every message + the data cache) or in `NextIntlClientProvider`. The marketing layout gives its client
+  components only the paths in `LANDING_CLIENT_MESSAGES` (marketing/constants), picked with
+  `i18n/pick-messages.ts`: add a path when a client component of the navbar, the landing page or the
+  dashboard preview starts using a new namespace, or the browser's console shows a missing message.
+- **No app libraries on the landing page.** No TanStack Query (the demo form keeps its own state) and no
+  Base UI: `ui/button`, `ui/input` and `ui/separator` are plain elements, and an InfoTip downloads its bubble
+  (`info-tip-popup.tsx`) the first time one is opened, like ExpandButton its window. Check after adding a
+  dependency to anything the landing page renders.
+- **Links to the page's own sections** use `SectionLink` (marketing/components), which is never prefetched;
+  so are the logo and the language links. A prefetched link to "/#pricing" downloads the page it is on.
+- **Nothing that moves sits under a filter, a mask or a backdrop blur.** The hero's glows are radial
+  gradients, not blurred discs; the preview fades into the page under a painted gradient to `--page` (the
+  marketing layout's opaque background), not under a mask. No sticky bar blurs what is behind it (the navbar,
+  the workspace's page title bar): that blur was almost half of the graphics card's work during a scroll.
+- **Every animation ends and leaves nothing applied** (`backwards` fill, a finite count: see globals.css). An
+  endless one, however small (a pinging dot, a drifting glow), makes the browser redraw the page 60 times a
+  second while it is on screen: measured on an M1, the landing page drew 300 frames in 5 idle seconds, and
+  about 70 without them. The live dots ring four times (`animate-ring`); the glows stand still.
+- **Blocks fade in once** (`data-reveal` + `RevealOnScroll`, an IntersectionObserver), not by a scroll-driven
+  animation: those never end, kept every block a separate layer on the graphics card (62 layers, now 8) and
+  caused late and dropped frames while scrolling. A block with `data-reveal` carries no transition or
+  transform of its own.
+- **What follows the pointer or plays by itself moves by `translate`**, never by `left`/`top` (the chart's
+  marker line, dots and tooltip: `FOLLOWS` in metric-chart.tsx). The website field types its examples
+  straight into the input's placeholder, not through React state.
 
 ## Key rules
 - The frontend NEVER calls AI providers and never holds API keys. It only calls the Python backend.
@@ -105,7 +146,8 @@ frontend/src/
       projects/[id]/report/   # client-facing report, public, no sidebar
   features/               # one folder per product area
     marketing/            # landing (components/landing/: one file per section), free check,
-                          #   components/layout/: navbar + footer of all public pages
+                          #   components/layout/: navbar + footer of all public pages; SectionLink (a link to
+                          #   "/#section", never prefetched); see "Keeping the landing page fast"
     auth/                 # login screen (auth-layout + auth-panel): phone + SMS code, Telegram, where to go after login
     workspace/            # shell: sidebar by task in sections (collapsible) with a "start here" checklist at its foot
                           #   (progress kept in the browser), project card, account, help sheet, placeholder (Reports),
@@ -136,7 +178,8 @@ frontend/src/
   shared/                 # used by 2+ features
     api/                  # client.ts (switches mocks/backend), session.ts (requireUser), query-keys.ts, errors.ts,
                           #   load-report.ts (the report under the URL's filters, for every data page)
-    components/           # ui/ (shadcn), scores/ (HeadlineKpis + KpiStrip, TrendPanel (the chart card: MetricTabs in
+    components/           # AppProviders (every message + the data cache: wraps the app's layouts, never the landing
+                          #   page), ui/ (shadcn), scores/ (HeadlineKpis + KpiStrip, TrendPanel (the chart card: MetricTabs in
                           #   its header, MetricChart as its plot, its large view), BrandTable, TopDomains,
                           #   SourceTypesChart, BarRows: the Overview's parts, also the landing hero's; StandingLine
                           #   (where the client stands, in words);
@@ -149,7 +192,8 @@ frontend/src/
     helpers/              # domain, dates, labels, phone, scores (pure functions), utils (cn)
     constants/            # app-wide constants (ENGINES, TIME_ZONE, SESSION_COOKIE, phone format, prompt limits)
     types/                # api.ts (API contract types), scores.ts
-  i18n/                   # next-intl routing, navigation, request config, setPageLocale
+  i18n/                   # next-intl routing, navigation, request config, setPageLocale, pickMessages (the
+                          #   part of the catalog a public page's client components need)
   messages/               # uz.json, ru.json, en.json
   mocks/                  # realistic mock data (Tashkent dental clinics), test accounts, mock session
   proxy.ts                # locale routing + sends logged-out visitors of private pages to /login?next=…

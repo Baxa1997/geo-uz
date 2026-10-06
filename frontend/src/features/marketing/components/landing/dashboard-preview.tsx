@@ -107,7 +107,7 @@ export function DashboardPreview() {
             </Chip>
             <Chip className="ml-auto hidden border-transparent text-muted-foreground @2xl:flex">
               <span className="relative flex size-2">
-                <span className="absolute inset-0 rounded-full bg-positive opacity-60 motion-safe:animate-ping" />
+                <span className="absolute inset-0 rounded-full bg-positive opacity-60 motion-safe:animate-ring" />
                 <span className="relative size-2 rounded-full bg-positive" />
               </span>
               {t("sample")}

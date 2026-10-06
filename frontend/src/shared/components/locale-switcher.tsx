@@ -34,6 +34,8 @@ function LocaleLinks({ query = {} }: { query?: Record<string, string> }) {
           key={locale}
           href={{ pathname, query }}
           locale={locale}
+          // The same page in two more languages isn't worth downloading before anyone asks
+          prefetch={false}
           aria-current={locale === current ? "page" : undefined}
           className={cn(
             "rounded-md px-2 py-1 text-foreground/65 uppercase transition-colors hover:text-foreground",

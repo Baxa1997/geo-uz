@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { CheckRunner } from "../components/check-runner";
 import { SiteForm } from "../components/site-form";
 import { setPageLocale } from "@/i18n/page-locale";
+import { AppProviders } from "@/shared/components/app-providers";
 import { isValidDomain } from "@/shared/helpers/domain";
 import { parseSiteParam } from "../helpers/site-param";
 
@@ -26,7 +27,10 @@ export default async function CheckPage({ params, searchParams }: Props) {
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col px-4 pt-6 pb-16 sm:pt-12">
       {isValidDomain(domain) ? (
-        <CheckRunner key={domain} site={domain} />
+        // The check runs and shows a whole report: the full catalog and the data cache, unlike the landing page
+        <AppProviders>
+          <CheckRunner key={domain} site={domain} />
+        </AppProviders>
       ) : (
         <section className="flex flex-col gap-4">
           <h1 className="text-2xl font-semibold tracking-tight">{t("askTitle")}</h1>

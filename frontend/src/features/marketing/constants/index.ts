@@ -210,3 +210,28 @@ export const DEMO_SECTORS: DemoSector[] = ["clinic", "real_estate", "education",
 
 /** Placeholder contacts: replace with the real ones before launch. */
 export const CONTACT = { email: "hello@geo.uz", telegram: "@geo_uz" } as const;
+
+/**
+ * The messages the public pages' client components translate in the browser, by path. Everything else on
+ * the landing page is rendered on the server and needs none. Add a path here when a client component of
+ * the navbar, the landing page or the dashboard preview starts using a new namespace: a missing one shows
+ * as an error in the browser's console.
+ */
+export const LANDING_CLIENT_MESSAGES = [
+  "Common",
+  "LocaleSwitcher",
+  "Tone",
+  // The dashboard preview's chart, table and source list
+  "MetricChart",
+  "BrandTable",
+  "SourcesTable",
+  "SourceTypes",
+  // Mobile menu, the metric tabs, the demo form, the website field
+  "Landing.nav",
+  "Landing.metrics",
+  "Landing.demo",
+  "Landing.siteLabel",
+  "Landing.sitePlaceholder",
+  "Landing.siteInvalid",
+  "Landing.submit",
+] as const;

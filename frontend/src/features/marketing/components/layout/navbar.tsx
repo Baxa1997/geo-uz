@@ -8,6 +8,7 @@ import { NAV, SECTION } from "../../constants";
 import { MobileMenu } from "./mobile-menu";
 import { NavMenu } from "./nav-menu";
 import { NavbarShell } from "./navbar-shell";
+import { SectionLink } from "../section-link";
 
 /** Logo, the menus (Product, Resources) and links (Pricing, Agencies), language, log in and the free check. */
 export function Navbar() {
@@ -25,8 +26,8 @@ export function Navbar() {
                   <ul className="flex flex-col">
                     {entry.items.map(({ key, hash, icon: Icon }) => (
                       <li key={key}>
-                        <Link
-                          href={{ pathname: "/", hash }}
+                        <SectionLink
+                          hash={hash}
                           className="flex items-start gap-3 rounded-xl p-3 transition-colors hover:bg-muted"
                         >
                           <Icon aria-hidden className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
@@ -34,18 +35,18 @@ export function Navbar() {
                             <span className="font-medium">{t(`items.${key}.title`)}</span>
                             <span className="text-muted-foreground">{t(`items.${key}.text`)}</span>
                           </span>
-                        </Link>
+                        </SectionLink>
                       </li>
                     ))}
                   </ul>
                 </NavMenu>
               ) : (
-                <Link
-                  href={{ pathname: "/", hash: entry.hash }}
+                <SectionLink
+                  hash={entry.hash}
                   className="flex h-9 items-center rounded-lg px-3 text-muted-foreground transition-colors hover:text-foreground"
                 >
                   {t(entry.key)}
-                </Link>
+                </SectionLink>
               )}
             </li>
           ))}
@@ -59,12 +60,12 @@ export function Navbar() {
           {t("login")}
         </Link>
         {/* On the narrowest phones the button doesn't fit beside the logo; the menu has it too */}
-        <Link
-          href={{ pathname: "/", hash: SECTION.check }}
+        <SectionLink
+          hash={SECTION.check}
           className={cn(buttonVariants({ variant: "brand" }), "h-9 px-3 max-[359px]:hidden")}
         >
           {t("cta")}
-        </Link>
+        </SectionLink>
         <MobileMenu />
       </div>
     </NavbarShell>

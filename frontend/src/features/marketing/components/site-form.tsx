@@ -1,7 +1,7 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { useEffect, useId, useRef, useState, type FormEvent } from "react";
+import { useEffect, useId, useRef, useState, type FormEvent, type RefObject } from "react";
 import { Button } from "@/shared/components/ui/button";
 import { FieldError } from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";
@@ -18,12 +18,15 @@ const ERASE_MS = 35;
 const HOLD_MS = 1700;
 const NEXT_MS = 400;
 
-/** Types the examples one after another, erasing each before the next; `fallback` while it rests. */
-function useTypedText(examples: string[], fallback: string, playing: boolean) {
-  const [typed, setTyped] = useState<string | null>(null);
-
+/**
+ * Types the examples into the field's placeholder one after another, erasing each before the next, and
+ * puts `fallback` back when it stops. It writes to the input itself: a dozen letters a second through
+ * React state would re-render the whole form for each one, for as long as the field is on screen.
+ */
+function useTypedPlaceholder(input: RefObject<HTMLInputElement | null>, examples: string[], fallback: string, playing: boolean) {
   useEffect(() => {
-    if (!playing || examples.length === 0) return;
+    const field = input.current;
+    if (!playing || !field || examples.length === 0) return;
     let example = 0;
     let length = 0;
     let erasing = false;
@@ -31,7 +34,7 @@ function useTypedText(examples: string[], fallback: string, playing: boolean) {
     const step = () => {
       const word = examples[example % examples.length] ?? "";
       length += erasing ? -1 : 1;
-      setTyped(word.slice(0, length));
+      field.placeholder = word.slice(0, length);
       if (!erasing && length === word.length) erasing = true;
       else if (erasing && length === 0) {
         erasing = false;
@@ -41,10 +44,11 @@ function useTypedText(examples: string[], fallback: string, playing: boolean) {
       timer = setTimeout(step, full ? HOLD_MS : length === 0 ? NEXT_MS : erasing ? ERASE_MS : TYPE_MS);
     };
     timer = setTimeout(step, NEXT_MS);
-    return () => clearTimeout(timer);
-  }, [examples, playing]);
-
-  return playing && typed !== null ? typed : fallback;
+    return () => {
+      clearTimeout(timer);
+      field.placeholder = fallback;
+    };
+  }, [input, examples, fallback, playing]);
 }
 
 /**
@@ -71,11 +75,8 @@ export function SiteForm({
   const formRef = useRef<HTMLFormElement>(null);
   const inView = useInView(formRef);
   const reducedMotion = useReducedMotion();
-  const placeholder = useTypedText(
-    examples ?? NO_EXAMPLES,
-    t("sitePlaceholder"),
-    inView && !reducedMotion && !focused && site === "",
-  );
+  const placeholder = t("sitePlaceholder");
+  useTypedPlaceholder(inputRef, examples ?? NO_EXAMPLES, placeholder, inView && !reducedMotion && !focused && site === "");
 
   function submit(event: FormEvent) {
     event.preventDefault();

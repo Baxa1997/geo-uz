@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
-import { getTranslations, setRequestLocale } from "next-intl/server";
-import { Providers } from "@/shared/components/providers";
+import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
+import { pickMessages } from "@/i18n/pick-messages";
 import { routing } from "@/i18n/routing";
 import { fontVariables } from "../fonts";
 import "../globals.css";
@@ -33,9 +33,12 @@ export default async function LocaleLayout({
     <html lang={locale} data-scroll-behavior="smooth" className={`${fontVariables} h-full antialiased`}>
       {/* Extensions like Grammarly add attributes to <body> before hydration */}
       <body suppressHydrationWarning className="flex min-h-full flex-col">
-        <NextIntlClientProvider>
-          <Providers>{children}</Providers>
-        </NextIntlClientProvider>
+        {/*
+          Only what error.tsx needs: messages given here are sent to the browser with every page. The
+          app's own layouts add the whole catalog and the data cache (AppProviders); the landing page
+          adds the few parts its client components use.
+        */}
+        <NextIntlClientProvider messages={pickMessages(await getMessages(), ["Common"])}>{children}</NextIntlClientProvider>
       </body>
     </html>
   );

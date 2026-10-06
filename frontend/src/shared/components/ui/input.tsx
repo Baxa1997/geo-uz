@@ -1,10 +1,13 @@
-import * as React from "react"
-import { Input as InputPrimitive } from "@base-ui/react/input"
+import type * as React from "react"
 import { cn } from "cn"
 
+/**
+ * A plain <input>. The UI library's input is its form-field control, which nothing here uses (fields
+ * are laid out and validated by ./field and the forms themselves) and which costs every page its scripts.
+ */
 function Input({ className, type, ...props }: React.ComponentProps<"input">) {
   return (
-    <InputPrimitive
+    <input
       type={type}
       data-slot="input"
       className={cn(

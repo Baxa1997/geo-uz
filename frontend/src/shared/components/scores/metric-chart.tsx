@@ -52,6 +52,15 @@ const DOTTED_RUNS = 26;
 const LABEL_GAP_PX = 15;
 
 /**
+ * What follows the week being read (the marker line, the dots on it, the tooltip) moves by `translate`,
+ * not by `left` and `top`: each is a box the size of the plot, shifted by a percentage of itself, with
+ * its content pinned to its corner. The graphics card slides such a box by itself; a change of `left`
+ * makes the browser lay the page out again on every frame of the glide, and the landing page's chart
+ * glides every second and a half for as long as it is on screen.
+ */
+const FOLLOWS = "pointer-events-none absolute inset-0 transition-[translate] duration-300 ease-out motion-reduce:transition-none";
+
+/**
  * The plot of the chart card (TrendPanel): every tracked brand over time on one metric. `history` is the
  * chart's points, already grouped by day, week or month. Lines with a dot on every point and each
  * brand's latest number at the line's end, over dashed gridlines and a y-axis that ends just above the
@@ -188,50 +197,53 @@ export function MetricChart({
 
       {/*
         The chart's numbers as a table: on screen in the large view, otherwise the chart's text twin for
-        screen readers (in a wrapper: a table itself can't be clipped to 1px).
+        screen readers (in a wrapper: a table itself can't be clipped to 1px). The landing page's chart
+        is a picture hidden from screen readers, so it has none.
       */}
-      <div className={large ? "flex flex-col gap-2.5 border-t p-4 sm:px-5" : "sr-only"}>
-        {large && (
-          <p aria-hidden className="text-sm font-medium">
-            {t("table", { metric: t(`metrics.${metric}`) })}
-          </p>
-        )}
-        {/* relative + min-w-0: with many brands the table scrolls here, not the window */}
-        <div className={large ? "relative min-w-0 overflow-x-auto rounded-lg ring-1 ring-foreground/10" : undefined}>
-          <table className={large ? "w-full table-fixed text-sm" : undefined} style={large ? { minWidth: `${11 + series.length * 8}rem` } : undefined}>
-            <caption className="sr-only">{t(`metrics.${metric}`)}</caption>
-            <thead>
-              <tr className={large ? "border-b text-left text-xs text-muted-foreground [&>th]:px-3 [&>th]:py-2.5 [&>th]:font-medium" : undefined}>
-                <th scope="col" className={large ? "w-44" : undefined}>
-                  {t("date")}
-                </th>
-                {series.map((line) => (
-                  <th key={line.id} scope="col">
-                    <span className="flex items-center gap-1.5">
-                      {large && <span aria-hidden className="size-2.5 shrink-0 rounded-[3px]" style={{ background: line.color }} />}
-                      <span className="truncate">{large && line.isYou ? t("you", { name: line.name }) : line.name}</span>
-                    </span>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className={large ? "divide-y" : undefined}>
-              {tableRows.map((index) => (
-                <tr key={history[index]?.collectedAt ?? index}>
-                  <th scope="row" className={large ? "px-3 py-2.5 text-left font-normal whitespace-nowrap text-muted-foreground" : undefined}>
-                    {heading(history[index]?.collectedAt ?? "")}
+      {(large || interactive) && (
+        <div className={large ? "flex flex-col gap-2.5 border-t p-4 sm:px-5" : "sr-only"}>
+          {large && (
+            <p aria-hidden className="text-sm font-medium">
+              {t("table", { metric: t(`metrics.${metric}`) })}
+            </p>
+          )}
+          {/* relative + min-w-0: with many brands the table scrolls here, not the window */}
+          <div className={large ? "relative min-w-0 overflow-x-auto rounded-lg ring-1 ring-foreground/10" : undefined}>
+            <table className={large ? "w-full table-fixed text-sm" : undefined} style={large ? { minWidth: `${11 + series.length * 8}rem` } : undefined}>
+              <caption className="sr-only">{t(`metrics.${metric}`)}</caption>
+              <thead>
+                <tr className={large ? "border-b text-left text-xs text-muted-foreground [&>th]:px-3 [&>th]:py-2.5 [&>th]:font-medium" : undefined}>
+                  <th scope="col" className={large ? "w-44" : undefined}>
+                    {t("date")}
                   </th>
                   {series.map((line) => (
-                    <td key={line.id} className={large ? cn("px-3 py-2.5 tabular-nums", line.isYou && "bg-you-soft/25 font-semibold") : undefined}>
-                      {text(line.values[index] ?? null)}
-                    </td>
+                    <th key={line.id} scope="col">
+                      <span className="flex items-center gap-1.5">
+                        {large && <span aria-hidden className="size-2.5 shrink-0 rounded-[3px]" style={{ background: line.color }} />}
+                        <span className="truncate">{large && line.isYou ? t("you", { name: line.name }) : line.name}</span>
+                      </span>
+                    </th>
                   ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className={large ? "divide-y" : undefined}>
+                {tableRows.map((index) => (
+                  <tr key={history[index]?.collectedAt ?? index}>
+                    <th scope="row" className={large ? "px-3 py-2.5 text-left font-normal whitespace-nowrap text-muted-foreground" : undefined}>
+                      {heading(history[index]?.collectedAt ?? "")}
+                    </th>
+                    {series.map((line) => (
+                      <td key={line.id} className={large ? cn("px-3 py-2.5 tabular-nums", line.isYou && "bg-you-soft/25 font-semibold") : undefined}>
+                        {text(line.values[index] ?? null)}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
@@ -418,22 +430,17 @@ function LinePlot({
           </div>
 
           {active !== null && (
-            <span
-              aria-hidden
-              className="absolute inset-y-0 w-0 border-l border-dashed border-foreground/40 transition-[left] duration-300 ease-out motion-reduce:transition-none"
-              style={{ left: `${x(active)}%` }}
-            />
+            <span aria-hidden className={FOLLOWS} style={{ translate: `${x(active)}% 0` }}>
+              <span className="absolute inset-y-0 left-0 w-0 border-l border-dashed border-foreground/40" />
+            </span>
           )}
           {series.map((line) => {
             const value = line.values[marked] ?? null;
             return (
               value !== null && (
-                <span
-                  key={line.id}
-                  aria-hidden
-                  className="absolute size-2.5 -translate-1/2 rounded-full ring-2 ring-card transition-[left,top] duration-300 ease-out motion-reduce:transition-none"
-                  style={{ left: `${x(marked)}%`, top: `${yOf(value, scale)}%`, background: line.color }}
-                />
+                <span key={line.id} aria-hidden className={FOLLOWS} style={{ translate: `${x(marked)}% ${yOf(value, scale)}%` }}>
+                  <span className="absolute top-0 left-0 size-2.5 -translate-1/2 rounded-full ring-2 ring-card" style={{ background: line.color }} />
+                </span>
               )
             );
           })}
@@ -449,17 +456,14 @@ function LinePlot({
             </span>
           ))}
           {active !== null && (
-            <div
-              // Beside the crosshair, on the side with more room, and never past the plot's edges
-              className="pointer-events-none absolute top-1 z-10 flex w-44 flex-col gap-1.5 rounded-xl bg-foreground p-3 text-xs text-background shadow-xl transition-[left] duration-300 ease-out motion-reduce:transition-none"
-              style={{
-                left:
-                  x(active) <= 50
-                    ? `min(calc(${x(active)}% + 0.75rem), calc(100% - 11rem))`
-                    : `max(calc(${x(active)}% - 11.75rem), 0rem)`,
-              }}
-            >
-              {tooltip(active)}
+            <div className={cn(FOLLOWS, "z-10")} style={{ translate: `${x(active)}% 0` }}>
+              <div
+                // Beside the marker line, on the side with more room
+                className="absolute top-1 flex w-44 flex-col gap-1.5 rounded-xl bg-foreground p-3 text-xs text-background shadow-xl"
+                style={x(active) <= 50 ? { left: "0.75rem" } : { right: "calc(100% + 0.75rem)" }}
+              >
+                {tooltip(active)}
+              </div>
             </div>
           )}
         </div>

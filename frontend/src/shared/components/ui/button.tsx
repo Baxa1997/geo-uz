@@ -1,4 +1,4 @@
-import { Button as ButtonPrimitive } from "@base-ui/react/button"
+import type * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "cn"
 
@@ -40,15 +40,23 @@ const buttonVariants = cva(
   }
 )
 
+/**
+ * A plain <button>, not the UI library's: that one brings some 40 KB of scripts to every page for
+ * features nothing here uses. Like it, the type is "button" unless given, so a button inside a form
+ * never submits it by accident. Other parts can still render as this one (`render={<Button />}`):
+ * it passes every prop, the ref included, to the element.
+ */
 function Button({
   className,
   variant = "default",
   size = "default",
+  type = "button",
   ...props
-}: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) {
+}: React.ComponentProps<"button"> & VariantProps<typeof buttonVariants>) {
   return (
-    <ButtonPrimitive
+    <button
       data-slot="button"
+      type={type}
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     />

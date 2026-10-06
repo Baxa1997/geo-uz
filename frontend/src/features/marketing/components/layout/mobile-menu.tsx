@@ -8,6 +8,7 @@ import { buttonVariants } from "@/shared/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/shared/helpers/utils";
 import { NAV, SECTION } from "../../constants";
+import { SectionLink } from "../section-link";
 
 /**
  * Below lg: every navbar link (the menus opened out), language, login and the main CTA in a drawer. A native modal
@@ -52,25 +53,25 @@ export function MobileMenu() {
               <div key={entry.key} className="flex flex-col pb-2">
                 <p className="px-3 pt-3 pb-1 text-xs font-medium text-muted-foreground">{t(entry.key)}</p>
                 {entry.items.map(({ key, hash }) => (
-                  <Link
+                  <SectionLink
                     key={key}
-                    href={{ pathname: "/", hash }}
+                    hash={hash}
                     onClick={close}
                     className="rounded-lg px-3 py-2.5 text-base font-medium hover:bg-muted"
                   >
                     {t(`items.${key}.title`)}
-                  </Link>
+                  </SectionLink>
                 ))}
               </div>
             ) : (
-              <Link
+              <SectionLink
                 key={entry.key}
-                href={{ pathname: "/", hash: entry.hash }}
+                hash={entry.hash}
                 onClick={close}
                 className="rounded-lg px-3 py-2.5 text-base font-medium hover:bg-muted"
               >
                 {t(entry.key)}
-              </Link>
+              </SectionLink>
             ),
           )}
         </nav>
@@ -79,13 +80,13 @@ export function MobileMenu() {
           <Link href="/login" onClick={close} className={cn(buttonVariants({ variant: "outline", size: "lg" }), "h-11")}>
             {t("login")}
           </Link>
-          <Link
-            href={{ pathname: "/", hash: SECTION.check }}
+          <SectionLink
+            hash={SECTION.check}
             onClick={close}
             className={cn(buttonVariants({ variant: "brand", size: "lg" }), "h-11")}
           >
             {t("cta")}
-          </Link>
+          </SectionLink>
         </div>
       </dialog>
     </>

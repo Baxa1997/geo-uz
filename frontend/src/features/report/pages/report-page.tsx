@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { NextIntlClientProvider } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { cache } from "react";
 import { NoData } from "@/shared/components/no-data";
@@ -34,25 +35,28 @@ export default async function ReportPage({ params }: PageProps<"/[locale]/projec
   const youId = report.project.brand.id;
 
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-col gap-4 px-4 py-6 sm:gap-6 sm:py-10">
-      <ReportHeader report={report} />
-      {report.prompts.length === 0 ? (
-        <NoData projectId={report.project.id} />
-      ) : (
-        <>
-          <HeadlineScore
-            brand={report.project.brand}
-            competitors={report.project.competitors}
-            scores={report.scores}
-            // A first run has no week before it to compare with
-            showTrend={report.history.length > 1}
-          />
-          <ShareOfVoiceChart brands={brands} scores={report.scores} youId={youId} />
-          <WrongFacts facts={report.wrongFacts} prompts={report.prompts} />
-          <SourcesList sources={report.topSources} competitors={report.project.competitors} />
-          <PromptTable results={report.prompts} brands={brands} youId={youId} samples={report.method.samples} />
-        </>
-      )}
-    </main>
+    // Its chart and table translate in the browser; nothing here saves, so no data cache
+    <NextIntlClientProvider>
+      <main className="mx-auto flex w-full max-w-3xl flex-col gap-4 px-4 py-6 sm:gap-6 sm:py-10">
+        <ReportHeader report={report} />
+        {report.prompts.length === 0 ? (
+          <NoData projectId={report.project.id} />
+        ) : (
+          <>
+            <HeadlineScore
+              brand={report.project.brand}
+              competitors={report.project.competitors}
+              scores={report.scores}
+              // A first run has no week before it to compare with
+              showTrend={report.history.length > 1}
+            />
+            <ShareOfVoiceChart brands={brands} scores={report.scores} youId={youId} />
+            <WrongFacts facts={report.wrongFacts} prompts={report.prompts} />
+            <SourcesList sources={report.topSources} competitors={report.project.competitors} />
+            <PromptTable results={report.prompts} brands={brands} youId={youId} samples={report.method.samples} />
+          </>
+        )}
+      </main>
+    </NextIntlClientProvider>
   );
 }

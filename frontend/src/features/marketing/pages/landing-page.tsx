@@ -9,6 +9,7 @@ import { KeyFeatures } from "../components/landing/key-features";
 import { Metrics } from "../components/landing/metrics";
 import { Pricing } from "../components/landing/pricing";
 import { Reports } from "../components/landing/reports";
+import { RevealOnScroll } from "../components/landing/reveal-on-scroll";
 import { Statement } from "../components/landing/statement";
 import { TelegramReports } from "../components/landing/telegram-reports";
 import { WhyLocal } from "../components/landing/why-local";
@@ -36,6 +37,7 @@ export default async function LandingPage({ params }: PageProps<"/[locale]">) {
       <Faq />
       <DemoSection />
       <FinalCta />
+      <RevealOnScroll />
     </>
   );
 }

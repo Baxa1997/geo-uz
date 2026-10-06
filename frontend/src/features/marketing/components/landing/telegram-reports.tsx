@@ -1,10 +1,10 @@
 import { ArrowRight, Send } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { DEMO_REPORT } from "@/mocks/demo";
-import { Link } from "@/i18n/navigation";
 import { outOf100, scoreOf, topCompetitor } from "@/shared/helpers/scores";
 import { SECTION } from "../../constants";
 import { Section } from "./section";
+import { SectionLink } from "../section-link";
 
 /** The weekly report as it arrives in Telegram, with the sample clinic's numbers. */
 export function TelegramReports() {
@@ -20,14 +20,14 @@ export function TelegramReports() {
           {t("title")}
         </h2>
         <p className="max-w-md text-lg text-pretty text-muted-foreground">{t("text")}</p>
-        <Link
-          href={{ pathname: "/", hash: SECTION.demo }}
+        <SectionLink
+          hash={SECTION.demo}
           className="mt-2 inline-flex items-center gap-2 rounded-lg border bg-background px-3 py-2 text-sm font-medium shadow-xs transition-colors hover:bg-muted/50"
         >
           <span aria-hidden className="size-2 rounded-full bg-brand" />
           {t("cta")}
           <ArrowRight aria-hidden className="size-4" />
-        </Link>
+        </SectionLink>
       </div>
 
       <div data-reveal aria-hidden className="rounded-2xl border bg-muted/40 p-4 select-none sm:p-10">

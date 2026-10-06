@@ -22,7 +22,8 @@ export function Page({
   return (
     <>
       {/* Wraps on narrow screens: the switcher moves under the title */}
-      <header className="sticky top-0 z-10 flex min-h-14 shrink-0 flex-wrap items-center gap-x-4 gap-y-2 border-b bg-background/95 px-4 py-2.5 backdrop-blur sm:px-6">
+      {/* Solid, not see-through and blurred: a blur behind a sticky bar is redone on every frame of a scroll */}
+      <header className="sticky top-0 z-10 flex min-h-14 shrink-0 flex-wrap items-center gap-x-4 gap-y-2 border-b bg-background px-4 py-2.5 sm:px-6">
         <h1 className="min-w-0 flex-auto truncate text-lg font-semibold tracking-tight">{title}</h1>
         {engines && <EngineSwitcher />}
         {actions}

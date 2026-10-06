@@ -1,6 +1,5 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
 import { CircleCheck } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useId, useRef, useState, type FormEvent } from "react";
@@ -16,6 +15,10 @@ import { DEMO_SECTORS } from "../../constants";
 
 type Errors = Partial<Record<"name" | "phone" | "sector", string>>;
 
+/**
+ * "Book a demo": name, phone and field of business. It sends one request and keeps its state itself, so
+ * the landing page doesn't load the data library the app's forms use.
+ */
 export function DemoForm() {
   const t = useTranslations("Landing.demo");
   const id = useId();
@@ -24,7 +27,17 @@ export function DemoForm() {
   const [digits, setDigits] = useState("");
   const [sector, setSector] = useState<DemoSector | null>(null);
   const [errors, setErrors] = useState<Errors>({});
-  const mutation = useMutation({ mutationFn: (body: DemoRequest) => api.createDemoRequest(body) });
+  const [request, setRequest] = useState<"idle" | "sending" | "sent" | "failed">("idle");
+
+  async function send(body: DemoRequest) {
+    setRequest("sending");
+    try {
+      await api.createDemoRequest(body);
+      setRequest("sent");
+    } catch {
+      setRequest("failed");
+    }
+  }
 
   function submit(event: FormEvent) {
     event.preventDefault();
@@ -41,10 +54,10 @@ export function DemoForm() {
       });
       return;
     }
-    mutation.mutate({ name: name.trim(), phone: `${PHONE_PREFIX}${digits}`, sector });
+    void send({ name: name.trim(), phone: `${PHONE_PREFIX}${digits}`, sector });
   }
 
-  if (mutation.isSuccess) {
+  if (request === "sent") {
     return (
       <div role="status" className="flex flex-col items-center gap-3 rounded-2xl border bg-background p-8 text-center shadow-sm">
         <CircleCheck aria-hidden className="size-10 text-positive" />
@@ -115,13 +128,13 @@ export function DemoForm() {
         <FieldError id={`${id}-sector-error`}>{errors.sector}</FieldError>
       </div>
 
-      {mutation.isError && (
+      {request === "failed" && (
         <p role="alert" className="text-sm text-destructive">
           {t("failed")}
         </p>
       )}
-      <Button type="submit" variant="brand" size="lg" className="h-12 text-base" disabled={mutation.isPending}>
-        {mutation.isPending ? t("sending") : t("submit")}
+      <Button type="submit" variant="brand" size="lg" className="h-12 text-base" disabled={request === "sending"}>
+        {request === "sending" ? t("sending") : t("submit")}
       </Button>
       <p className="text-center text-xs text-muted-foreground">{t("note")}</p>
     </form>
