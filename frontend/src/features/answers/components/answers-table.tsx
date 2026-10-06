@@ -3,6 +3,7 @@
 import { CircleSlash, Search, SearchX, Sparkles, Users } from "lucide-react";
 import { useLocale, useTimeZone, useTranslations } from "next-intl";
 import { useState } from "react";
+import { ChatDialog } from "@/shared/components/answers/chat-dialog";
 import { EmptyState } from "@/shared/components/empty-state";
 import { EngineIcon } from "@/shared/components/engine-icon";
 import { FilterMenu } from "@/shared/components/filter-menu";
@@ -18,7 +19,6 @@ import type { Report, ReportFilters } from "@/shared/types/api";
 import type { SeriesBrand } from "@/shared/types/scores";
 import { answerRows, matchesBrand, matchesQuery, matchesStatus, NO_BRAND, rowKey } from "../helpers/filters";
 import type { AnswersFilter } from "../types";
-import { ChatDialog } from "./chat-dialog";
 
 const PAGE = 20;
 const SOURCES_SHOWN = 3;
@@ -38,7 +38,7 @@ export function AnswersTable({
   report: Report;
   brands: SeriesBrand[];
   initialPromptId?: string;
-  /** The page's language and topic filters, carried to the Questions page a chat links to. */
+  /** The page's language and topic filters, carried to the question's page a chat links to. */
   filters: ReportFilters;
 }) {
   const t = useTranslations("AnswersPage");
@@ -266,7 +266,7 @@ export function AnswersTable({
         index={open !== null && open < visible.length ? open : null}
         project={report.project}
         collectedAt={report.method.collectedAt}
-        questionHref={(topic) => withFilters(`/projects/${report.project.id}/prompts`, { ...filters, topic })}
+        questionHref={(prompt) => withFilters(`/projects/${report.project.id}/prompts/${prompt.id}`, filters)}
         onIndex={(index) => {
           setOpen(index);
           // The row being read stays in the list, even past the ones shown

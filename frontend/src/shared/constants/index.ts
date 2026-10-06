@@ -10,7 +10,10 @@ export const SESSION_COOKIE = "geo_session";
 export const PHONE_PREFIX = "+998";
 export const PHONE_LOCAL_DIGITS = 9;
 
-/** Recommended size of a prompt set in the MVP (CLAUDE.md). */
+/**
+ * Recommended size of a first prompt set (onboarding, before the project has a plan). After that the most
+ * a project may track comes from its plan: `Project.limits.prompts`.
+ */
 export const MIN_PROMPTS = 20;
 export const MAX_PROMPTS = 50;
 

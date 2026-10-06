@@ -10,6 +10,7 @@ import { Link } from "@/i18n/navigation";
 import { setPageLocale } from "@/i18n/page-locale";
 import { api } from "@/shared/api/client";
 import { orNotFound } from "@/shared/api/errors";
+import { isTracked } from "@/shared/helpers/prompts";
 import { cn } from "@/shared/helpers/utils";
 import { ActionBoard } from "../components/action-board";
 
@@ -45,7 +46,7 @@ export default async function ActionsPage({ params, searchParams }: Props) {
   if (report.prompts.length === 0) {
     return (
       <Page title={t("actions")} engines>
-        <NoData projectId={project.id} promptCount={prompts.length} />
+        <NoData projectId={project.id} promptCount={prompts.filter(isTracked).length} />
       </Page>
     );
   }

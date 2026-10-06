@@ -20,13 +20,15 @@ import type {
   SnapshotRequest,
   Source,
   SourceType,
-  Tone,
   UntrackedBrand,
   WrongFact,
 } from "@/shared/types/api";
 import { normalizeDomain } from "@/shared/helpers/domain";
+import { TONE_POINTS } from "@/shared/helpers/scores";
 import { ANSWERS, WRONG_FACTS } from "./answers";
 import {
+  ARCHIVED_PROMPT,
+  ARCHIVED_PROMPT_ANSWERS,
   BRANDS,
   LISTINGS,
   OTHER_CLINICS,
@@ -58,9 +60,12 @@ export interface MockRun {
   hasPrevious: boolean;
 }
 
-/** The seeded prompts' weekly run. */
+/** The seeded prompts' weekly run. The archived question keeps the answers of its last check. */
 export const SEEDED_RUN: MockRun = {
-  answeredWith: new Map(PROMPTS.map((prompt) => [prompt.id, prompt.id])),
+  answeredWith: new Map([
+    ...PROMPTS.map((prompt): [string, string] => [prompt.id, prompt.id]),
+    [ARCHIVED_PROMPT.id, ARCHIVED_PROMPT_ANSWERS],
+  ]),
   collectedAt: METHOD.collectedAt,
   hasPrevious: true,
 };
@@ -214,9 +219,6 @@ function resultsFor(
   });
 }
 
-/** Sentiment is the mean of these over a brand's mentions. */
-const TONE_POINTS: Record<Tone, number> = { positive: 100, neutral: 50, negative: 0 };
-
 /** The seeded clinic a tracked brand plays. */
 const roleOf = (cast: Cast, brand: Brand) =>
   [...cast.seeded].find(([, player]) => player.id === brand.id)?.[0];
@@ -338,6 +340,46 @@ function history(scores: BrandScore[], run: MockRun): HistoryPoint[] {
   });
 }
 
+/** The run's weekly checks, oldest first: eight for the sample project, one for a project's first run. */
+function checkDates(run: MockRun): string[] {
+  const weeks = run.hasPrevious ? HISTORY_WEEKS : 1;
+  return Array.from({ length: weeks }, (_, index) => weeksBefore(run.collectedAt, weeks - 1 - index));
+}
+
+/**
+ * One question's checks, ending with `scores`. With three answers a check, a brand is named in none, one,
+ * two or all of them, so its visibility moves in thirds: an earlier check differs from the latest by one
+ * answer in about one check out of five, and the client was named in one answer fewer before its last four.
+ */
+function promptHistory(scores: BrandScore[], prompt: Prompt, asked: string[], answers: number): HistoryPoint[] {
+  const seed = [...prompt.id].reduce((sum, char) => sum + char.charCodeAt(0), 0);
+  return asked.map((collectedAt, index) => {
+    const back = asked.length - 1 - index;
+    if (back === 0) return { collectedAt, scores: scores.map(({ brandId, visibility, shareOfVoice, avgPosition, sentiment }) => ({ brandId, visibility, shareOfVoice, avgPosition, sentiment })) };
+    const named = scores.map(({ visibility }, brand) => {
+      const wave = Math.sin((seed + brand * 7) * 1.3 + back * 1.1);
+      const step = wave > 0.8 ? 1 : wave < -0.8 ? -1 : 0;
+      const earlier = brand === 0 && back > 3 ? 1 : 0;
+      return Math.min(answers, Math.max(0, Math.round(visibility * answers) + step - earlier));
+    });
+    const total = named.reduce((sum, count) => sum + count, 0);
+    return {
+      collectedAt,
+      scores: scores.map(({ brandId, avgPosition, sentiment }, brand) => {
+        const count = named[brand] ?? 0;
+        const sway = Math.round(Math.sin(back * 1.3 + brand * 1.9) * 1.4);
+        return {
+          brandId,
+          visibility: round(count / answers),
+          shareOfVoice: total ? round(count / total) : 0,
+          avgPosition: count ? Math.max(1, (avgPosition ?? 2 + (brand % 2)) + 0.5 * sway) : null,
+          sentiment: count ? Math.min(100, Math.max(0, (sentiment ?? 50) + 17 * sway)) : null,
+        };
+      }),
+    };
+  });
+}
+
 /** Clinics the answers name that the project doesn't track, by how many answers name them. */
 function untrackedBrands(prompts: Prompt[], run: MockRun, cast: Cast): UntrackedBrand[] {
   const counts = new Map<string, number>();
@@ -404,6 +446,33 @@ export function buildReport(
     untrackedBrands: untrackedBrands(prompts, run, cast),
     // Depends on the clock: the mock backend fills it in
     nextRunAt: null,
+  };
+}
+
+/**
+ * The report over one question, archived or not. Its history is its own checks: from the first after it
+ * was added to the last before it was archived. A question no check has asked yet has no results.
+ */
+export function buildPromptReport(project: Project, prompt: Prompt, period: ReportPeriod, run: MockRun): Report {
+  const added = Date.parse(prompt.createdAt);
+  const archived = prompt.archivedAt ? Date.parse(prompt.archivedAt) : Infinity;
+  const asked = run.answeredWith.has(prompt.id)
+    ? checkDates(run).filter((date) => Date.parse(date) > added && Date.parse(date) < archived)
+    : [];
+  const last = asked.at(-1);
+  if (!last) return buildReport(project, [], period, run);
+
+  const report = buildReport(project, [prompt], period, { ...run, collectedAt: last });
+  const answers = report.prompts.reduce((sum, result) => sum + result.answers.length, 0);
+  const history = promptHistory(report.scores, prompt, asked, answers);
+  const previous = history.at(-2)?.scores;
+  return {
+    ...report,
+    history,
+    scores: report.scores.map((score) => {
+      const before = previous?.find((past) => past.brandId === score.brandId)?.visibility ?? score.visibility;
+      return { ...score, trend: round(score.visibility - before) };
+    }),
   };
 }
 

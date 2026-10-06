@@ -1,6 +1,10 @@
+/** A table's ruler row: "|---|:--:|". */
+const TABLE_RULE = /^\|?[\s:|-]+\|?$/;
+
 /**
  * Markdown answer → its first plain-text lines. Inline citations "([site.uz](…))" are dropped
- * (they're listed separately), other links become their text, emphasis and list markers go.
+ * (they're listed separately), other links become their text, emphasis and list markers go, and a
+ * table row reads as its cells.
  */
 export function plainLines(markdown: string, max: number): string[] {
   return markdown
@@ -9,7 +13,16 @@ export function plainLines(markdown: string, max: number): string[] {
     .replace(/[*_`#>]/g, "")
     .split("\n")
     .map((line) => line.replace(/^\s*(?:\d+\.|[-•])\s+/, "").trim())
-    .filter(Boolean)
+    .filter((line) => line && !(line.includes("|") && TABLE_RULE.test(line)))
+    .map((line) =>
+      line.startsWith("|")
+        ? line
+            .split("|")
+            .map((cell) => cell.trim())
+            .filter(Boolean)
+            .join(", ")
+        : line,
+    )
     .slice(0, max);
 }
 

@@ -39,7 +39,11 @@ open questions): add to it each time a page is finished.
   their weekly change, every brand over time on four metrics by day, week or month, brands table, the sites cited and their kinds as
   bar lists, visibility by topic and by question language; then recommended actions and questions without
   the client, latest answers, a share menu with the public report's link and CSV; the cards of numbers open
-  large with ⤢: a takeaway sentence, every row, the numbers as a table and how to read them); Questions (topics column, tracked and suggested tabs, plan usage, the client's numbers, CSV); Answers
+  large with ⤢: a takeaway sentence, every row, the numbers as a table and how to read them); Questions (topics column;
+  tracked, suggested and archived tabs; how many of the plan's questions are used; search, a filter and sorting,
+  with the client's numbers over the rows shown; CSV; a question opens its own page: its facts, a sentence on its
+  latest answers, every brand over time, the brands table, the sites cited and their kinds for that question alone,
+  the fixes that list it and its answers); Answers
   (the answers in numbers, a table of every answer that opens like a chat, Previous/Next); Competitors
   (brands table, who leads each topic, untracked brands, questions each competitor wins); Sources (numbers,
   then sites, pages and gaps: pages that name competitors and not the client); Wrong facts (numbers and a
@@ -93,8 +97,8 @@ from Chrome's trace): 8 layers, no dropped frames while scrolling, and the page 
   `i18n/pick-messages.ts`: add a path when a client component of the navbar, the landing page or the
   dashboard preview starts using a new namespace, or the browser's console shows a missing message.
 - **No app libraries on the landing page.** No TanStack Query (the demo form keeps its own state) and no
-  Base UI: `ui/button`, `ui/input` and `ui/separator` are plain elements, and an InfoTip downloads its bubble
-  (`info-tip-popup.tsx`) the first time one is opened, like ExpandButton its window. Check after adding a
+  Base UI: `ui/button`, `ui/input` and `ui/separator` are plain elements, and an InfoTip or a Hint downloads its
+  bubble (`info-tip-popup.tsx`) the first time one is opened, like ExpandButton its window. Check after adding a
   dependency to anything the landing page renders.
 - **Links to the page's own sections** use `SectionLink` (marketing/components), which is never prefetched;
   so are the logo and the language links. A prefetched link to "/#pricing" downloads the page it is on.
@@ -141,7 +145,8 @@ frontend/src/
       (marketing)/        # public, with site navbar + footer: / (landing), /check?site=…
       (auth)/             # /login?snapshot=…&next=… on its own: dark panel + form, no site navbar
       (app)/              # workspace, login required: /dashboard, /settings, /projects/new, /projects/[id]/…
-                          #   (overview, prompts, answers, competitors, sources, wrong-facts, reports, settings)
+                          #   (overview, prompts, prompts/[promptId], answers, competitors, sources, wrong-facts,
+                          #   reports, settings)
       onboarding/         # first-login wizard, login required, no sidebar; runs/[id]: first run's progress
       projects/[id]/report/   # client-facing report, public, no sidebar
   features/               # one folder per product area
@@ -171,25 +176,35 @@ frontend/src/
                           #   language (BreakdownCard; these five cards open large, ⤢), then recommended actions and
                           #   questions without you, latest answers; share menu (public link, CSV), next weekly check
                           #   date. Numbers and charts come right after the sentence (the user's order, Oct 5)
-    prompts/              # Questions: topics column, tracked / suggested tabs, plan usage, the client's numbers over
-                          #   the list, table with each question's visibility, tone, position, brands named, leader;
-                          #   add/edit; accept / reject suggestions; CSV; footer with the weekly check
+    prompts/              # Questions: topics column; tracked / suggested / archived tabs; questions used out of the
+                          #   plan's limit (Project.limits.prompts; at the limit nothing can be added, accepted or
+                          #   restored); search, a "you're named / not named" filter and sorting by visibility or
+                          #   position, with the client's numbers over the rows shown (helpers/stats.ts); table with
+                          #   each question's visibility, tone, position, brands named, leader; add/edit/archive;
+                          #   accept / reject suggestions; CSV; footer with the plan and the weekly check.
+                          #   pages/prompt-page: one question (/prompts/[promptId], opened from the list, the archive
+                          #   and an answer's chat): facts row, a sentence counted in answers, then the Overview's
+                          #   cards fed with the report over that question, the fixes that list it, its answers
     report/               # client report: chart, sources, wrong facts, answers
   shared/                 # used by 2+ features
     api/                  # client.ts (switches mocks/backend), session.ts (requireUser), query-keys.ts, errors.ts,
                           #   load-report.ts (the report under the URL's filters, for every data page)
     components/           # AppProviders (every message + the data cache: wraps the app's layouts, never the landing
-                          #   page), ui/ (shadcn), scores/ (HeadlineKpis + KpiStrip, TrendPanel (the chart card: MetricTabs in
+                          #   page), ui/ (shadcn), answers/ (ChatDialog: an answer opened like a chat, used by the
+                          #   Answers page and a question's page), scores/ (HeadlineKpis + KpiStrip, TrendPanel (the chart card: MetricTabs in
                           #   its header, MetricChart as its plot, its large view), BrandTable, TopDomains,
                           #   SourceTypesChart, BarRows: the Overview's parts, also the landing hero's; StandingLine
                           #   (where the client stands, in words);
                           #   HeadlineScore, SourcesList, WrongFacts, AnswerViewer, …), Panel (a data page's card: title,
                           #   ⓘ hint, tools, footer, and `expand` for ⤢), ExpandButton + ExpandWindow (a card opened in a
-                          #   large window), InfoTip, FilterMenu (a dropdown filter chip), ReportFilterBar (language + topic
+                          #   large window), InfoTip (an ⓘ that explains a title or a number), Hint (the same bubble
+                          #   on anything else: wraps a table heading, a figure, a mark or an icon button and
+                          #   explains it on hover, keyboard focus or a tap), FilterMenu (a dropdown filter chip), ReportFilterBar (language + topic
                           #   chips, kept in the URL: ?lang=&topic=),
-                          #   Page (title bar + engine switcher + body of a workspace page), EmptyState, Logo, …
+                          #   Page (title bar + engine switcher + body of a workspace page; `crumb` puts a link to
+                          #   the parent page before the title), EmptyState, Logo, …
     hooks/                # use-assistant (open GEO AI from any page), use-logout, use-in-view, use-reduced-motion
-    helpers/              # domain, dates, labels, phone, scores (pure functions), utils (cn)
+    helpers/              # domain, dates, labels, phone, scores (pure functions), prompts (isTracked), utils (cn)
     constants/            # app-wide constants (ENGINES, TIME_ZONE, SESSION_COOKIE, phone format, prompt limits)
     types/                # api.ts (API contract types), scores.ts
   i18n/                   # next-intl routing, navigation, request config, setPageLocale, pickMessages (the
@@ -222,15 +237,23 @@ Auth: the backend sets an httpOnly session cookie `geo_session` on login. The br
   city, competitors[], optional description, services[] and prompts[] = first question set; with prompts, the
   first run starts at once and runId is its id, otherwise null)
 - `GET  /projects/{id}` → Project
-- `GET  /projects/{id}/prompts` → Prompt[]
-- `POST /projects/{id}/prompts` → Prompt
+- `GET  /projects/{id}/prompts` → Prompt[] (every question, archived ones too)
+- `POST /projects/{id}/prompts` → Prompt (409 when the plan's questions are all in use)
 - `PUT  /projects/{id}/prompts/{promptId}` → Prompt  (body: text, language, topic)
+- `PATCH /projects/{id}/prompts/{promptId}` → Prompt (body: archived true/false. An archived question isn't asked
+  any more, leaves the report and the actions at once, keeps its past answers and doesn't count toward the
+  plan's limit; tracking it again asks it from the next run, 409 when the plan is full)
+- `GET  /projects/{id}/prompts/{promptId}/report` → Report over that one question, archived or not: its answers
+  of the last run that asked it, the scores and cited sites over them, its wrong facts, and `history` = one
+  point per run that asked it (from the first run after it was added to the last before it was archived).
+  Empty (`prompts: []`, `history: []`) until a run has asked it
 - `GET  /projects/{id}/prompt-suggestions` → SuggestedPrompt[] (questions buyers ask that the project doesn't
   track yet; rejected ones aren't offered again)
-- `POST /projects/{id}/prompt-suggestions/{suggestionId}/accept` → Prompt (adds it; asked from the next run)
+- `POST /projects/{id}/prompt-suggestions/{suggestionId}/accept` → Prompt (adds it; asked from the next run; 409
+  when the plan's questions are all in use)
 - `DELETE /projects/{id}/prompt-suggestions/{suggestionId}` → 204 (rejects it)
-- `GET  /projects/{id}/report?period=week&language=uz&topic=implants` → Report (language and topic are optional
-  filters: the report then covers only those prompts, and its scores are computed over them)
+- `GET  /projects/{id}/report?period=week&language=uz&topic=implants` → Report over the tracked questions (language
+  and topic are optional filters: the report then covers only those prompts, and its scores are computed over them)
 - `GET  /projects/{id}/actions` → Action[] (recommended fixes made from the latest run over all prompts, most
   important first; recomputed after every weekly run, keeping the statuses the client set)
 - `PATCH /projects/{id}/actions/{actionId}` → Action (body: status and/or stepsDone; marking done sets doneAt,
@@ -251,9 +274,11 @@ Auth: the backend sets an httpOnly session cookie `geo_session` on login. The br
 Types:
 - User { id, name | null, phone | null, telegramUsername | null }
 - Project { id, brand: Brand, competitors: Brand[], category, city, languages: ("uz"|"ru")[], description ("" if none),
-  services: string[] (as the client wrote them) }
+  services: string[] (as the client wrote them), plan: "start"|"business"|"agency", limits: { prompts (questions
+  tracked at once), competitors } }. The frontend reads the question limit from `limits.prompts`; the competitor
+  limit is still the fixed 5 of onboarding (to wire up with the Competitors and Settings pages)
 - Brand { id, name, aliases: string[], domain }
-- Prompt { id, text, language: "uz"|"ru", topic }
+- Prompt { id, text, language: "uz"|"ru", topic, createdAt, archivedAt | null }
 - Report { project, period, method: { engine, model, webSearch: boolean, samples, collectedAt },
   scores: BrandScore[], prompts: PromptResult[], topSources: Source[], wrongFacts: WrongFact[],
   history: HistoryPoint[] (past runs, oldest first, ending with this one),
@@ -330,8 +355,28 @@ Four numbers per brand, shown side by side (the Overview's numbers, its chart ta
   beside the number ("78 /100"); an axis in percent shows the sign on its ticks.
 - A bar that shows visibility (by topic or language) is drawn against the whole scale, 0–100%, not against the
   longest row: 20% must not look like a full bar. Bars that rank sites or kinds stay relative to the largest.
+- A question's own page shows the same cards as the Overview, over that question's answers alone. With three
+  answers a check, a brand's visibility there is 0, 33, 67 or 100%, so the page's sentence counts in answers
+  ("named in 1 of 3 answers") and the chart's ⓘ says a single answer moves the percentage a lot.
 - Peec's topics × tags heat map is replaced by two bar lists (by topic, by question language), each row with the
   brand that leads there. No heat maps: a cell's shade can't be read as a number.
+
+## Explanations on hover
+Everything on a data page says what it is when the mouse rests on it, as on Peec (the user's correction, Oct 6):
+every table heading, every figure that isn't self-evident, every mark that stands for something (a brand's
+initial, a tone icon, a site's kind as a dot) and every button with only an icon. A card's title and a number
+in a row of numbers have an ⓘ (`InfoTip`); anything else is wrapped in `Hint`, which opens the same dark bubble
+over the element on hover, on keyboard focus and on a tap (phones have no hover).
+
+- A heading's hint says what the column measures and how to read it, in a sentence or two, in the three
+  languages; a sorting heading adds that a click sorts. Never the native `title` attribute: it is slow, unstyled
+  and doesn't open on a phone.
+- A control that already takes the focus (a sorting heading, an icon button, a tab) is passed to `Hint` as a
+  function and gets the description's id for `aria-describedby`. Marks repeated in every row pass
+  `focusable={false}` (reached by the mouse and a tap, not by Tab) and `described={false}` when a hidden label
+  already says the same.
+- Done on Savollar and a question's page, and in the shared brands table, tone icons and site-kind dots. The
+  other pages' tables get theirs when their turn comes.
 
 ## Commands (frontend, from `frontend/`)
 - `npm run dev`

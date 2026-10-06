@@ -139,6 +139,9 @@ export function standing(scores: Scored[], brandId: string, metric: Metric): { r
 /** The run before the latest one; undefined on a first run. */
 export const previousRun = (history: HistoryPoint[]): HistoryPoint | undefined => history.at(-2);
 
+/** Sentiment is the mean of these over a brand's mentions. */
+export const TONE_POINTS: Record<Tone, number> = { positive: 100, neutral: 50, negative: 0 };
+
 /** Sentiment (0–100) as one of the three tones, for the icon beside the number. */
 export const toneOf = (sentiment: number): Tone => (sentiment >= 67 ? "positive" : sentiment <= 33 ? "negative" : "neutral");
 

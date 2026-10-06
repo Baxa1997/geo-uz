@@ -1,5 +1,6 @@
 import { Frown, Meh, Smile } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Hint } from "@/shared/components/hint";
 import { cn } from "@/shared/helpers/utils";
 import type { Tone } from "@/shared/types/api";
 
@@ -11,14 +12,14 @@ const COLORS = {
   negative: "text-negative",
 } as const;
 
-/** Tone as icon shape + color, with the label for hover and screen readers. */
+/** Tone as icon shape + color, with the label on hover (or a tap) and for screen readers. */
 export function ToneIcon({ tone, className }: { tone: Tone; className?: string }) {
   const t = useTranslations("Tone");
   const Icon = ICONS[tone];
   return (
-    <span title={t(tone)} className="inline-flex">
+    <Hint text={t(tone)} focusable={false} described={false}>
       <Icon aria-hidden className={cn("size-3.5 shrink-0", COLORS[tone], className)} />
       <span className="sr-only">{t(tone)}</span>
-    </span>
+    </Hint>
   );
 }

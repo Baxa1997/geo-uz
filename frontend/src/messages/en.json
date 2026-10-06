@@ -138,13 +138,15 @@
     "sentiment": "Tone",
     "position": "Position",
     "you": "(you)",
-    "sortBy": "Sort by {metric}",
     "notNamed": "Not named",
     "better": "{amount} better than last week",
     "worse": "{amount} worse than last week",
     "shareOfVoice": "Share of voice",
     "titleShort": "Brand ranking",
-    "guide": "Each row is one brand. Click a column heading to sort the table by that number. The arrow beside a number is the change since last week."
+    "guide": "Each row is one brand. Click a column heading to sort the table by that number. The arrow beside a number is the change since last week.",
+    "rankHint": "The brand’s place on the chosen number.",
+    "brandHint": "You and the competitors you track. The color matches the brand’s line in the chart.",
+    "sortHint": "Click the heading to sort the table by this number."
   },
   "SourcesTable": {
     "title": "Sources ChatGPT cites",
@@ -586,10 +588,8 @@
   "PromptManager": {
     "description": "Questions your customers ask ChatGPT. Each one is measured every week.",
     "count": "{count, plural, one {# question} other {# questions}}",
-    "recommended": "Recommended: 20–50",
     "schedule": "Checked every week, next on {date}",
     "belowMin": "Add at least 20 questions for a reliable result.",
-    "aboveMax": "More than 50 questions is above the MVP limit.",
     "add": "Add question",
     "edit": "Edit",
     "empty": "No questions yet",
@@ -608,12 +608,9 @@
     "queued": "Queued",
     "you": "You",
     "nobody": "Nobody",
-    "openAnswers": "Open the answers",
     "noMatch": "No questions match these filters.",
     "visibilityHint": "You’re named in {count} of {total} answers",
     "tabsLabel": "Question list",
-    "tabActive": "Tracked",
-    "tabSuggested": "Suggested",
     "suggestedIntro": "Questions buyers ask in your field that you don’t track yet. An added question is checked from the next weekly run.",
     "accept": "Add",
     "reject": "Reject",
@@ -635,11 +632,65 @@
       "position": "Average position",
       "tones": "Tone",
       "leader": "Leader",
-      "lastRun": "Checked"
+      "lastRun": "Checked",
+      "added": "Added"
     },
     "topics": "Topics",
     "allTopics": "All topics",
-    "usedHint": "How many of your plan’s {max} questions are in use"
+    "usedHint": "How many of the {plan} plan’s {max} questions are tracked",
+    "tabs": {
+      "tracked": "Tracked",
+      "suggested": "Suggested",
+      "archived": "Archive"
+    },
+    "search": "Search questions",
+    "filter": {
+      "label": "Result",
+      "all": "All questions",
+      "missing": "You’re not named",
+      "named": "You’re named"
+    },
+    "archive": "Archive",
+    "archiveHint": "Move to the archive: the question is no longer checked, its results are kept",
+    "restore": "Track again",
+    "restoreLabel": "Track again: {text}",
+    "limitReached": "Your plan’s questions are all in use. Archive another question first.",
+    "archivedOn": "Archived on {date}",
+    "archiveIntro": "Archived questions are no longer asked and don’t count toward your plan’s limit. Their past results are kept. A question you track again is checked from the next weekly run.",
+    "archiveEmpty": "The archive is empty. Questions you stop tracking land here: use the archive button in a question’s row.",
+    "archivedNote": "Archived: {text}",
+    "restoredNote": "Tracked again: {text}",
+    "full": "All {max} questions of the {plan} plan are in use. To add a new one, archive a question or move to a higher plan.",
+    "saveFailed": "Couldn’t save. Try again.",
+    "planLimit": "{plan} plan: up to {max} questions",
+    "hints": {
+      "tabs": {
+        "tracked": "The questions we ask ChatGPT every week.",
+        "suggested": "Questions buyers ask in your field that you don’t track yet. Add or reject each one.",
+        "archived": "Questions you stopped tracking. They are no longer checked; their results are kept."
+      },
+      "topics": "Questions are grouped by topic; the number is how many questions a topic has. Click a topic to show only its questions.",
+      "question": "The question we ask ChatGPT. Click it to open the question’s page: its answers, brands and sources.",
+      "visibility": "In how many of the answers to this question you were named in the latest check. For example, 2/3 means 2 of 3 answers.",
+      "tone": "How ChatGPT speaks of you in each answer that names you: positive, neutral or negative. One icon per answer.",
+      "position": "Where you are named in the answers, on average. 1 is first; the smaller the number, the better.",
+      "named": "The tracked brands named in the answers to this question. Hover a mark to see the brand’s name.",
+      "leader": "The brand named in the most answers to this question. “You” means you lead.",
+      "sort": "Click the heading to sort the table by this column.",
+      "summary": {
+        "visibility": "The share of answers to the questions in the list that name you.",
+        "tone": "How positively ChatGPT speaks of you in the answers to the questions in the list: 0 is negative, 100 is positive.",
+        "position": "Where you are named, on average, in the answers to the questions in the list. 1 is first."
+      },
+      "queued": "The question hasn’t been asked yet. It is asked for the first time in the next weekly check.",
+      "language": {
+        "uz": "Asked in Uzbek",
+        "ru": "Asked in Russian"
+      },
+      "count": "How many questions are tracked now.",
+      "schedule": "Your questions are asked again every Monday morning.",
+      "edit": "Change the question’s text, language or topic"
+    }
   },
   "PromptForm": {
     "addTitle": "New question",
@@ -657,6 +708,81 @@
     "textDuplicate": "This question already exists.",
     "topicRequired": "Enter a topic.",
     "saveFailed": "Couldn’t save. Please try again."
+  },
+  "PromptPage": {
+    "label": "Question",
+    "facts": {
+      "added": "Added",
+      "topic": "Topic",
+      "language": "Question language",
+      "city": "City",
+      "status": "Status"
+    },
+    "languages": {
+      "uz": "Uzbek",
+      "ru": "Russian"
+    },
+    "status": {
+      "tracked": "Tracked",
+      "queued": "Queued",
+      "archived": "Archived",
+      "nextRun": "next check: {date}",
+      "archivedOn": "since {date}"
+    },
+    "trendHint": "Each brand’s number in the answers to this question, check after check. The question is asked {samples, plural, one {once} other {# times}} in every check, so a single answer moves the percentage a lot.",
+    "brandsHint": "The four numbers over the answers to this question, and the change since the check before.",
+    "brandsHintFirst": "The four numbers over the answers to this question.",
+    "verdict": {
+      "named": "In the latest check ({date}) ChatGPT named you in {count} of its {total} answers to this question.",
+      "missing": "In the latest check ({date}) ChatGPT named you in none of its {total} answers to this question.",
+      "ahead": "The most-named competitor is {competitor}: {count} of {total}.",
+      "level": "{competitor} is named in as many.",
+      "behind": "{competitor} leads on this question: {count} of {total} answers.",
+      "alone": "None of the tracked competitors is named.",
+      "nobody": "The tracked competitors aren’t named either.",
+      "same": "The check before was the same.",
+      "before": "In the check before you were named in {count} of {total}."
+    },
+    "queued": {
+      "title": "This question hasn’t been checked yet",
+      "text": "First check: {date}. The results will appear on this page.",
+      "textNoDate": "It will be asked in the next weekly check. The results will appear on this page.",
+      "archivedTitle": "This question was never checked",
+      "archivedText": "It was archived before its first check, so it has no results. Track it again and it is asked in the next weekly check."
+    },
+    "actions": {
+      "title": "What to do about this question",
+      "hint": "The recommended fixes that should improve your result on this question. Each opens on the Actions page with its steps.",
+      "empty": "No recommendations for this question yet."
+    },
+    "answers": {
+      "title": "ChatGPT’s answers",
+      "hint": "The {samples} answers ChatGPT gave to this question in the latest check. ChatGPT answers a little differently each time, so the question is asked several times. Click an answer to read it in full.",
+      "sample": "Answer {n}",
+      "nobody": "Nobody named",
+      "notNamed": "Not named",
+      "yourPlace": "your place"
+    },
+    "hints": {
+      "added": "When the question was added. Its results start with the first weekly check after that.",
+      "topic": "The topic the question belongs to. You can filter the Questions page and the reports by topic.",
+      "language": "The language the question is asked in. Answers to Uzbek and Russian questions can differ.",
+      "city": "The question is asked as a customer in this city, so the answer is a local one.",
+      "status": {
+        "tracked": "The question is asked every week.",
+        "queued": "The question hasn’t been asked yet; it is asked for the first time in the next weekly check.",
+        "archived": "The question is no longer asked and doesn’t count toward your plan’s limit. Its past results are kept."
+      },
+      "place": "Where in this answer you are named.",
+      "notNamed": "This answer doesn’t name you.",
+      "impact": "Expected effect: how much this fix could raise your visibility compared with the other recommendations.",
+      "actionStatus": "The recommendation’s status. It changes on the Actions page as you tick its steps."
+    }
+  },
+  "Plans": {
+    "start": "Start",
+    "business": "Business",
+    "agency": "Agency"
   },
   "NewProject": {
     "title": "New project",
@@ -1530,7 +1656,7 @@
     },
     "dialog": {
       "close": "Close",
-      "openQuestion": "On the Questions page",
+      "openQuestion": "Question’s page",
       "previous": "Previous",
       "next": "Next",
       "counter": "{index} of {total}",

@@ -1,6 +1,6 @@
 // Mock data: one Tashkent dental clinic and three competitors.
 // All clinic names, domains, prices and facts are fictional.
-import type { Brand, NewBrand, Project, Prompt, SourceType } from "@/shared/types/api";
+import type { Brand, CreatePromptRequest, NewBrand, Plan, Project, ProjectLimits, Prompt, SourceType } from "@/shared/types/api";
 
 export const BRANDS = {
   oq: {
@@ -43,6 +43,16 @@ export const OTHER_CLINICS = {
 
 export type OtherClinic = keyof typeof OTHER_CLINICS;
 
+/** What each plan allows, as on the pricing table. */
+export const PLAN_LIMITS: Record<Plan, ProjectLimits> = {
+  start: { prompts: 25, competitors: 3 },
+  business: { prompts: 75, competitors: 5 },
+  agency: { prompts: 300, competitors: 5 },
+};
+
+/** Billing doesn't exist yet: every mock project is on the recommended plan. */
+export const DEFAULT_PLAN: Plan = "business";
+
 export const PROJECT: Project = {
   id: "prj_oqtabassum",
   brand: BRANDS.oq,
@@ -53,9 +63,20 @@ export const PROJECT: Project = {
   description:
     "Toshkentdagi oilaviy stomatologiya klinikasi: implantlar, breketlar, bolalar stomatologiyasi va tish oqartirish. Har kuni 9:00–21:00 ishlaydi.",
   services: ["Implantlar", "Breketlar", "Bolalar stomatologiyasi", "Tish oqartirish", "Professional gigiyena"],
+  plan: DEFAULT_PLAN,
+  limits: PLAN_LIMITS[DEFAULT_PLAN],
 };
 
-export const PROMPTS: Prompt[] = [
+/** The sample project was set up a few days before its first weekly check (10 August). */
+const SETUP_AT = "2026-08-05T09:20:00Z";
+
+/** Two questions were added a month later: their own history starts with the check of 7 September. */
+const ADDED_LATER: Record<string, string> = {
+  prm_10: "2026-09-02T11:05:00Z",
+  prm_20: "2026-09-02T11:07:00Z",
+};
+
+const SEEDED_PROMPTS: (CreatePromptRequest & { id: string })[] = [
   { id: "prm_01", language: "uz", topic: "best", text: "Toshkentdagi eng yaxshi stomatologiya klinikasi qaysi?" },
   { id: "prm_02", language: "uz", topic: "implants", text: "Toshkentda implant qoʻyish qayerda arzon va sifatli?" },
   { id: "prm_03", language: "uz", topic: "kids", text: "Toshkentda bolalar uchun yaxshi tish shifokori qayerda bor?" },
@@ -77,6 +98,25 @@ export const PROMPTS: Prompt[] = [
   { id: "prm_19", language: "ru", topic: "prices", text: "Сколько стоит коронка из циркония в Ташкенте?" },
   { id: "prm_20", language: "ru", topic: "root_canal", text: "Где в Ташкенте лечат каналы под микроскопом?" },
 ];
+
+export const PROMPTS: Prompt[] = SEEDED_PROMPTS.map((prompt) => ({
+  ...prompt,
+  createdAt: ADDED_LATER[prompt.id] ?? SETUP_AT,
+  archivedAt: null,
+}));
+
+/** A question the sample client stopped tracking after six checks. */
+export const ARCHIVED_PROMPT: Prompt = {
+  id: "prm_21",
+  language: "uz",
+  topic: "prices",
+  text: "Toshkentda tishni professional tozalash qayerda arzon?",
+  createdAt: SETUP_AT,
+  archivedAt: "2026-09-16T08:40:00Z",
+};
+
+/** It has no answers of its own: its last check reuses those of the question on the same subject. */
+export const ARCHIVED_PROMPT_ANSWERS = "prm_09";
 
 /** Pages ChatGPT cites in the answers. */
 export const SOURCES = {
@@ -129,7 +169,7 @@ export const PAGE_MENTIONS: Record<SourceKey, BrandKey[]> = {
 };
 
 /** Questions offered on the Questions page after onboarding: buyers ask them, the project doesn't track them yet. */
-export const SUGGESTED_PROMPTS: Omit<Prompt, "id">[] = [
+export const SUGGESTED_PROMPTS: CreatePromptRequest[] = [
   { language: "uz", topic: "implants", text: "Toshkentda implant necha yil xizmat qiladi va qaysi klinika kafolat beradi?" },
   { language: "uz", topic: "kids", text: "Yunusobodda yaxshi bolalar stomatologi bormi?" },
   { language: "uz", topic: "whitening", text: "Tish oqartirish zararli emasmi va Toshkentda qancha turadi?" },

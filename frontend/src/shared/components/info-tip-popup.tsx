@@ -4,17 +4,20 @@ import { Popover } from "@base-ui/react/popover";
 import type { RefObject } from "react";
 
 /**
- * The bubble of an InfoTip, placed under its ⓘ and kept inside the window. It closes on Escape or a
- * press outside; InfoTip opens it and closes it when the pointer or the focus leaves the ⓘ. Hidden from
- * screen readers: they get the same text as the ⓘ's description.
+ * The bubble of an InfoTip or a Hint, placed under its anchor (or over it: `side`) and kept inside the
+ * window. It closes on Escape or a press outside; its owner opens it and closes it when the pointer or
+ * the focus leaves the anchor. Hidden from screen readers: they get the same text as the anchor's
+ * description.
  */
 export function InfoTipPopup({
   anchor,
+  side = "bottom",
   open,
   onOpenChange,
   children,
 }: {
-  anchor: RefObject<HTMLButtonElement | null>;
+  anchor: RefObject<HTMLElement | null>;
+  side?: "top" | "bottom";
   open: boolean;
   onOpenChange: (open: boolean) => void;
   children: React.ReactNode;
@@ -22,9 +25,9 @@ export function InfoTipPopup({
   return (
     <Popover.Root open={open} onOpenChange={(next) => onOpenChange(next)}>
       <Popover.Portal>
-        <Popover.Positioner anchor={anchor} sideOffset={6} collisionPadding={12} className="z-50">
+        <Popover.Positioner anchor={anchor} side={side} sideOffset={6} collisionPadding={12} className="z-50">
           <Popover.Popup
-            // The ⓘ keeps the focus: the bubble is read, not operated
+            // The anchor keeps the focus: the bubble is read, not operated
             initialFocus={false}
             finalFocus={false}
             aria-hidden

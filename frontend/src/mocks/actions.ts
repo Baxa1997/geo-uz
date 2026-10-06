@@ -5,6 +5,7 @@
 import { ApiError, type ApiClient, type MockResult } from "@/shared/api/client";
 import type {
   AnalyzeSiteRequest,
+  ArchivePromptRequest,
   CreateProjectRequest,
   CreatePromptRequest,
   DemoRequest,
@@ -73,6 +74,14 @@ export async function createPrompt(projectId: string, body: CreatePromptRequest)
 
 export async function updatePrompt(projectId: string, promptId: string, body: UpdatePromptRequest) {
   return run((m) => m.updatePrompt(projectId, promptId, body));
+}
+
+export async function archivePrompt(projectId: string, promptId: string, body: ArchivePromptRequest) {
+  return run((m) => m.archivePrompt(projectId, promptId, body));
+}
+
+export async function getPromptReport(projectId: string, promptId: string) {
+  return run((m) => m.getPromptReport(projectId, promptId));
 }
 
 export async function getPromptSuggestions(projectId: string) {

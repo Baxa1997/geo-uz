@@ -8,7 +8,7 @@ import { setPageLocale } from "@/i18n/page-locale";
 import { api } from "@/shared/api/client";
 import { orNotFound } from "@/shared/api/errors";
 import { loadReport } from "@/shared/api/load-report";
-import { metricValue, scoreOf, seriesBrands } from "@/shared/helpers/scores";
+import { seriesBrands } from "@/shared/helpers/scores";
 import { PromptManager } from "../components/prompt-manager";
 
 type Props = PageProps<"/[locale]/projects/[id]/prompts">;
@@ -22,19 +22,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: `${t("prompts")} — ${project.brand.name}` };
 }
 
-/** The questions we ask ChatGPT, each with the latest run's result; add and edit them here. */
+/**
+ * The questions we ask ChatGPT, each with the latest run's result. They are added, edited and archived
+ * here; a question opens its own page (prompt-page).
+ */
 export default async function PromptsPage({ params, searchParams }: Props) {
   const { locale: segment, id } = await params;
   const locale = setPageLocale(segment);
-  const [{ report, prompts, filters, topics }, suggestions, t, tPrompts] = await Promise.all([
+  const [{ report, prompts, allPrompts, filters, topics }, suggestions, t, tPrompts] = await Promise.all([
     loadReport(id, await searchParams),
     orNotFound(api.getPromptSuggestions(id)),
     getTranslations({ locale, namespace: "Sidebar" }),
     getTranslations({ locale, namespace: "PromptManager" }),
   ]);
-  const { brand, competitors } = report.project;
-  // The client's numbers over the questions on screen (the report is already narrowed by the filters)
-  const own = report.prompts.length ? scoreOf(report.scores, brand.id) : undefined;
+  const { brand, competitors, plan, limits } = report.project;
 
   return (
     <Page title={t("prompts")} engines>
@@ -42,15 +43,12 @@ export default async function PromptsPage({ params, searchParams }: Props) {
       {prompts.length > 0 && <ReportFilterBar topics={topics} topicFilter={false} />}
       <PromptManager
         projectId={report.project.id}
-        initialPrompts={prompts}
+        plan={plan}
+        limit={limits.prompts}
+        initialPrompts={allPrompts}
         results={report.prompts}
         brands={[brand, ...competitors]}
         series={seriesBrands(report.project)}
-        summary={{
-          visibility: metricValue(own, "visibility"),
-          sentiment: metricValue(own, "sentiment"),
-          position: metricValue(own, "position"),
-        }}
         youId={brand.id}
         collectedAt={report.method.collectedAt}
         filters={filters}

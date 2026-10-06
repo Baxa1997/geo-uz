@@ -3,6 +3,7 @@
 import { Info } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useId, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 
 // The bubble (and the popup library that positions it) is downloaded the first time a tip is opened.
 // A page shows dozens of these and most are never opened; the landing page's preview can't open any.
@@ -38,6 +39,14 @@ export function InfoTip({ label, children }: { label: string; children: React.Re
         onClick={show}
         onFocus={(event) => event.currentTarget.matches(":focus-visible") && show()}
         onBlur={() => setOpen(false)}
+        // Tab moves on: with the bubble still there, the popup library would take the focus into it and lose it
+        onKeyDown={(event) => {
+          if (event.key !== "Tab" || !opened) return;
+          flushSync(() => {
+            setOpen(false);
+            setOpened(false);
+          });
+        }}
         onPointerEnter={(event) => {
           if (event.pointerType === "mouse") hover.current = setTimeout(show, HOVER_MS);
         }}

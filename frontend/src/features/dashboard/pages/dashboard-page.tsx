@@ -8,6 +8,7 @@ import { Link } from "@/i18n/navigation";
 import { setPageLocale } from "@/i18n/page-locale";
 import { api } from "@/shared/api/client";
 import { orNull } from "@/shared/api/errors";
+import { isTracked } from "@/shared/helpers/prompts";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/dashboard">): Promise<Metadata> {
   const locale = setPageLocale((await params).locale);
@@ -26,7 +27,7 @@ export default async function DashboardPage({ params }: PageProps<"/[locale]/das
         orNull(api.getReport(project.id)),
         orNull(api.getPrompts(project.id)),
       ]);
-      return { project, report, promptCount: prompts?.length ?? 0 };
+      return { project, report, promptCount: prompts?.filter(isTracked).length ?? 0 };
     }),
   );
 

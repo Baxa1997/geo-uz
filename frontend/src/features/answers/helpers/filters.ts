@@ -1,5 +1,6 @@
 import type { Report } from "@/shared/types/api";
-import type { AnswerRow, AnswersFilter } from "../types";
+import type { AnswerRow } from "@/shared/types/scores";
+import type { AnswersFilter } from "../types";
 
 /** Every answer of the report, question by question, in sample order. */
 export const answerRows = (report: Report): AnswerRow[] =>

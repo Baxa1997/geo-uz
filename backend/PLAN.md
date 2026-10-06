@@ -41,9 +41,9 @@ One row per line. Columns are the ones the frontend already depends on; add what
 | `users` | name, phone, Telegram id and username | Phone or Telegram, either may be empty |
 | `sessions` | session token, user, expiry | The `geo_session` httpOnly cookie |
 | `login_codes` | phone, code hash, expiry, attempts | Six digits; `resendIn` seconds between sends |
-| `projects` | owner, category, city, languages, description, services | Later: plan |
+| `projects` | owner, category, city, languages, description, services, plan | The API sends the plan and what it allows: `limits.prompts`, `limits.competitors` |
 | `brands` | project, role (own or competitor), name, spellings, domain, order | The order of competitors fixes each brand's chart color, so it must be stable |
-| `prompts` | project, text, language (uz, ru), topic | See open question 5 on edits |
+| `prompts` | project, text, language (uz, ru), topic, created at, archived at | Archived = not asked any more; its answers stay. See open question 5 on edits |
 | `prompt_suggestions` | project, text, language, topic, status (offered, accepted, rejected) | A rejected one is never offered again |
 | `runs` | project, kind (first, weekly, snapshot), status, model, web search, samples, started, finished, total, answered | Status: queued, running, analyzing, done, failed |
 | `answers` | run, prompt, sample number, text, raw response | Keep the raw response: extraction rules will change |
@@ -65,7 +65,7 @@ One row per line. Columns are the ones the frontend already depends on; add what
 
 Runs start on Monday at 06:00 Tashkent time (01:00 UTC). A new project's first run starts as soon as it is created with questions. The report always shows the latest finished run; until the first one finishes it is empty and the progress screen polls `GET /runs/{id}/progress`.
 
-1. **Ask.** Every question, three samples, through OpenAI with web search on. The request must say where the user is (Uzbekistan and the project's city), so the answer is the one a local customer gets. Count `answered` as the answers come in: the progress screen shows it against `total` (questions × samples).
+1. **Ask.** Every tracked question (not the archived ones), three samples, through OpenAI with web search on. The request must say where the user is (Uzbekistan and the project's city), so the answer is the one a local customer gets. Count `answered` as the answers come in: the progress screen shows it against `total` (questions × samples).
 2. **Cut out the citations.** Unique URLs per answer, without the `utm_source=openai` tag the search tool adds.
 3. **Read the answer** (status `analyzing`). List every business the answer names, in order. Position counts all of them: a tracked brand named after two untracked ones is at position 3. Give each mention a tone: positive, neutral or negative. Match names to tracked brands through their spellings, Latin and Cyrillic. Any model may do this step.
 4. **Keep the untracked names** with the number of answers naming each.
@@ -96,6 +96,9 @@ All of these are per brand, over the answers of one run.
 Rules that follow from the frontend:
 
 - **Filters.** `?language=` and `?topic=` narrow the report to those questions, and every number above, including every point of `history`, is then calculated over those questions only. So past runs need their answers and mentions kept, not only their totals.
+- **Archived questions.** The report, the actions and the plan's limit count the tracked questions only. A question archived today leaves the report at once, from every point of `history` too, and comes back the same way when it is tracked again. Its own report (below) still shows it.
+- **One question's report.** `GET /projects/{id}/prompts/{promptId}/report` is the report over that question alone: the answers of the last run that asked it, the scores, sites and wrong facts over them, and one history point per run that asked it. With three answers a run, visibility there moves in thirds; the page counts in answers for that reason.
+- **Plan limit.** Adding a question, accepting a suggestion and tracking an archived question again answer 409 when the project already tracks `limits.prompts` questions.
 - **History.** One point per finished run, oldest first, ending with the latest. A first run gives one point, which the chart shows as dots; lines start with the second run.
 - **Day, week, month.** The chart's switch groups the runs in the frontend: a period with several runs becomes one point with the plain mean of the runs' numbers. Nothing is needed from the API. Two things follow. If the mean has to be exact (weighted by the number of answers in each run), the backend should send the grouped points itself, for which the report's `period` parameter is the natural place. And "day" only differs from "week" when a project is checked more than once a week: see open question 14.
 - **Order of `topSources`**: most cited first. **Order of `untrackedBrands`**: most named first. **Order of actions**: see "Rules".
@@ -110,7 +113,8 @@ The frontend calculates these itself from the report, so the backend does not: t
 | Project list | `/projects`, then report and questions for each | One summary call would be better once an agency has many projects |
 | Onboarding | `/onboarding/analyze-site`, `/onboarding/suggest-competitors`, `/onboarding/suggest-prompts`, `POST /projects`, `/runs/{id}/progress`, `/snapshot/{id}` | Competitors come from the brands ChatGPT names for the category and city, never from a similar name; about 20 questions in Uzbek and Russian, each with a topic |
 | Overview | report, actions | `history` (at least one point), scores, every answer with its mentions and citations, sites with kind, `brandListed` and pages, the number of wrong facts, `nextRunAt` |
-| Questions | questions (list, add, edit), suggestions (list, accept, reject), report | A question added today has no result until the next run: the page shows "queued" |
+| Questions | questions (list, add, edit, archive and track again), suggestions (list, accept, reject), report | A question added today has no result until the next run: the page shows "queued". The list needs each question's `createdAt` and `archivedAt`, and the project's `plan` and `limits.prompts`. The numbers over the list are calculated in the frontend from the rows shown |
+| A question's page | one question's report, questions, actions | The report over that question with its own history; the actions whose `promptIds` include it. Works for an archived question (up to its last run) and for one not asked yet (empty report, `nextRunAt`) |
 | Answers | report | The full text of every answer |
 | Competitors | report | Scores, history, `untrackedBrands` |
 | Sources | report | `topSources` with `pages[].mentions` for the gap tab |
@@ -170,7 +174,7 @@ That is roughly one to two US cents per answer, and it has to cover the answer w
 5. **Editing a question.** Today an edit keeps the question's id. Its old answers were given to the old wording. Either an edit makes a new question, or each answer stores the wording it was asked with.
 6. **The public report** is read by project id without login. Ids must be impossible to guess, or the link needs its own token; a password is on the roadmap.
 7. **The free check**: how many samples (the app's three, or one to save cost), and the limits against abuse.
-8. **Plan limits.** The frontend uses a fixed 50 questions and 5 competitors. The plans say 25, 75 and 300 questions and 3 or 5 competitors. The API needs to carry the project's limits.
+8. **Plan limits. Partly decided 6 Oct 2026:** the project carries `plan` and `limits` (questions 25, 75, 300; competitors 3, 5, 5), and the Questions page uses the question limit. Still open: which plan a new project gets before billing exists (the mocks give every project Biznes), how Agentlik's 300 questions are split between its brands (`limits.prompts` is meant to be what this brand may use), and the competitor limit, which onboarding still fixes at 5.
 9. **Where personal data is stored.** Phone numbers and Telegram accounts of Uzbek citizens may have to stay on servers in Uzbekistan. To confirm with a lawyer before choosing hosting.
 10. **SMS provider** for Uzbek numbers.
 11. **Size of the report.** It carries the full text of every answer: 75 questions × 3 answers already, 300 for an agency. If pages get slow, send the texts only to the Answers page.
@@ -178,8 +182,12 @@ That is roughly one to two US cents per answer, and it has to cover the answer w
 13. **Wrong facts before brand facts exist.** What they are checked against: the client's website, or nothing until the client writes its facts.
 14. **Daily checks. Decided 6 Oct 2026: not offered for now.** The chart has a day view, as Peec's does, and Peec checks daily. Daily checks mean about seven times the answers: Start would go from 300 to about 2,250 a month, which leaves about 30 soʻm per answer at today's price. To reopen only as a higher plan or an add-on.
 
+15. **Three answers are few for one question.** A question's own chart moves in steps of a third, and one different answer looks like a big change. Enough for "named or not"; if clients read too much into it, the choices are more samples for chosen questions or showing a question's history over four weeks at a time.
+16. **The searches behind an answer.** Peec's prompt page lists the web searches the engine ran ("query fanouts"). The raw response we already keep contains them, so nothing is lost; a page for them is on the "Later" list.
+
 ## Change log
 
 - **5 Oct 2026, first version.** From the pages built so far: login, onboarding, Overview, Questions, Answers, Competitors, Sources, Wrong facts, Actions, Settings (read-only), public report, free check.
 - **6 Oct 2026, chart.** The chart card follows Peec's layout and has a day / week / month switch, grouped in the frontend (see "How each number is calculated"). Question 14 on daily checks: not offered for now. Visibility is shown in percent everywhere; the API still sends it as 0–1.
 - **5 Oct 2026, Overview finished.** Added a sentence above the numbers, visibility by topic and by question language, and large views of the cards. All of it is calculated in the frontend from the report. New for the backend: nothing, but the by-topic and by-language block needs every answer's mentions in the report (it already has them) and makes open question 11 matter sooner.
+- **6 Oct 2026, Questions.** The list got an archive (a question stops being asked and keeps its answers), the plan's question limit from the project, and a page per question. New for the backend: `createdAt` and `archivedAt` on a question, `plan` and `limits` on a project, `PATCH /projects/{id}/prompts/{promptId}` (archive, track again), `GET /projects/{id}/prompts/{promptId}/report`, and 409 at the plan's limit. Open questions 15 and 16 added; 8 partly decided.

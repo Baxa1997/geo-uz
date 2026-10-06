@@ -1,4 +1,10 @@
-import type { Brand, Tone } from "./api";
+import type { Answer, Brand, PromptResult, Tone } from "./api";
+
+/** One answer with the question it answers: a row of an answers list, and what the chat window opens. */
+export interface AnswerRow {
+  result: PromptResult;
+  answer: Answer;
+}
 
 export interface NamedBrand {
   brand: Brand;

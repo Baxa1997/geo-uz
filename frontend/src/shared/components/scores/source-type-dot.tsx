@@ -1,3 +1,4 @@
+import { Hint } from "@/shared/components/hint";
 import { cn } from "@/shared/helpers/utils";
 import type { SourceType } from "@/shared/types/api";
 
@@ -11,12 +12,20 @@ export const SOURCE_TYPE_COLORS: Record<SourceType, string> = {
   other: "var(--rival)",
 };
 
-export function SourceTypeDot({ type, className }: { type: SourceType; className?: string }) {
-  return (
+/** `label` (the kind in words) is for a dot that stands alone: it shows when the dot is hovered or tapped. */
+export function SourceTypeDot({ type, label, className }: { type: SourceType; label?: string; className?: string }) {
+  const dot = (
     <span
       aria-hidden
       className={cn("size-2 shrink-0 rounded-full", className)}
       style={{ background: SOURCE_TYPE_COLORS[type] }}
     />
+  );
+  if (!label) return dot;
+  return (
+    // Padded, so the pointer has more than 8px to rest on
+    <Hint text={label} focusable={false} described={false} className="-m-1 shrink-0 p-1">
+      {dot}
+    </Hint>
   );
 }

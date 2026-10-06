@@ -4,6 +4,7 @@ import { randomUUID } from "node:crypto";
 import { ApiError, type ApiClient } from "@/shared/api/client";
 import { ACTION_STEP_COUNT } from "@/shared/constants";
 import { isValidDomain, normalizeDomain } from "@/shared/helpers/domain";
+import { isTracked } from "@/shared/helpers/prompts";
 import type {
   DemoRequest,
   Project,
@@ -17,9 +18,9 @@ import type {
 } from "@/shared/types/api";
 import { buildActions, type ActionState } from "./action-items";
 import { DEMO_USER } from "./accounts";
-import { PROJECT, PROMPTS, SUGGESTED_PROMPTS } from "./data";
+import { ARCHIVED_PROMPT, DEFAULT_PLAN, PLAN_LIMITS, PROJECT, PROMPTS, SUGGESTED_PROMPTS } from "./data";
 import * as onboarding from "./onboarding";
-import { buildReport, buildSnapshot, firstRun, METHOD, NO_RUN, SEEDED_RUN, type MockRun } from "./report";
+import { buildPromptReport, buildReport, buildSnapshot, firstRun, METHOD, NO_RUN, SEEDED_RUN, type MockRun } from "./report";
 import { clearSessionToken, readSessionToken, writeSessionToken } from "./session";
 
 const LATENCY_MS = 300;
@@ -66,14 +67,14 @@ interface MockState {
 
 // Kept on globalThis so hot reloads and separate route bundles share one copy.
 // Bump the version when MockState changes: a hot reload then starts fresh instead of reading old data.
-const STATE_KEY = "__geoMockState_v7";
+const STATE_KEY = "__geoMockState_v12";
 const globalForMocks = globalThis as typeof globalThis & { [STATE_KEY]?: MockState };
 const state: MockState = (globalForMocks[STATE_KEY] ??= {
   accounts: [{ user: DEMO_USER }],
   sessions: new Map(),
   projects: [PROJECT],
   owners: new Map([[PROJECT.id, DEMO_USER.id]]),
-  prompts: new Map([[PROJECT.id, [...PROMPTS]]]),
+  prompts: new Map([[PROJECT.id, [...PROMPTS, ARCHIVED_PROMPT]]]),
   runs: new Map([[PROJECT.id, { id: "run_seeded", projectId: PROJECT.id, run: SEEDED_RUN, startedAt: 0 }]]),
   snapshots: new Map(),
   actionStates: new Map(),
@@ -126,14 +127,47 @@ async function findOwnProject(id: string): Promise<Project> {
   return project;
 }
 
+/** Every question of the project, archived ones too. */
 const promptsOf = (projectId: string) => state.prompts.get(projectId) ?? [];
 
-/** Suggested questions the project doesn't track and the client hasn't rejected. */
+/** The questions the weekly check asks: what the report, the actions and the plan's limit count. */
+const trackedOf = (projectId: string) => promptsOf(projectId).filter(isTracked);
+
+/** One more tracked question must fit the plan. */
+function assertRoom(project: Project) {
+  if (trackedOf(project.id).length >= project.limits.prompts) {
+    throw new ApiError(409, `The plan allows ${project.limits.prompts} tracked questions`);
+  }
+}
+
+const newPrompt = (body: Pick<Prompt, "text" | "language" | "topic">): Prompt => ({
+  id: newId("prm"),
+  text: body.text,
+  language: body.language,
+  topic: body.topic,
+  createdAt: new Date().toISOString(),
+  archivedAt: null,
+});
+
+/** Suggested questions the project doesn't have (tracked or archived) and the client hasn't rejected. */
 function suggestionsOf(projectId: string): SuggestedPrompt[] {
   const tracked = new Set(promptsOf(projectId).map((prompt) => prompt.text));
   const rejected = state.rejectedSuggestions.get(projectId) ?? new Set<string>();
   return SUGGESTED_PROMPTS.map((prompt, index) => ({ id: `sug_${String(index + 1).padStart(2, "0")}`, ...prompt })).filter(
     (suggestion) => !tracked.has(suggestion.text) && !rejected.has(suggestion.id),
+  );
+}
+
+function findPrompt(projectId: string, promptId: string): Prompt {
+  const prompt = promptsOf(projectId).find((candidate) => candidate.id === promptId);
+  if (!prompt) throw new ApiError(404, `Prompt ${promptId} not found`);
+  return prompt;
+}
+
+function replacePrompt(projectId: string, prompt: Prompt) {
+  state.prompts.set(
+    projectId,
+    promptsOf(projectId).map((candidate) => (candidate.id === prompt.id ? prompt : candidate)),
   );
 }
 
@@ -232,10 +266,12 @@ export const mockApi: ApiClient = {
       languages: ["uz", "ru"],
       description: description.trim(),
       services,
+      plan: DEFAULT_PLAN,
+      limits: PLAN_LIMITS[DEFAULT_PLAN],
     };
     state.projects.push(project);
     state.owners.set(project.id, user.id);
-    const created = prompts.map((prompt) => ({ id: newId("prm"), ...prompt }));
+    const created = prompts.map(newPrompt);
     state.prompts.set(project.id, created);
     if (created.length === 0) return respond({ project, runId: null });
     // The first run starts right away and takes a few seconds
@@ -254,23 +290,35 @@ export const mockApi: ApiClient = {
   },
 
   createPrompt: async (projectId, body) => {
-    await findOwnProject(projectId);
-    const prompt: Prompt = { id: newId("prm"), ...body };
+    assertRoom(await findOwnProject(projectId));
+    const prompt = newPrompt(body);
     state.prompts.set(projectId, [...promptsOf(projectId), prompt]);
     return respond(prompt);
   },
 
-  updatePrompt: async (projectId, promptId, body) => {
+  updatePrompt: async (projectId, promptId, { text, language, topic }) => {
     await findOwnProject(projectId);
-    if (!promptsOf(projectId).some((p) => p.id === promptId)) {
-      throw new ApiError(404, `Prompt ${promptId} not found`);
-    }
-    const prompt: Prompt = { id: promptId, ...body };
-    state.prompts.set(
-      projectId,
-      promptsOf(projectId).map((p) => (p.id === promptId ? prompt : p)),
-    );
+    const prompt: Prompt = { ...findPrompt(projectId, promptId), text, language, topic };
+    replacePrompt(projectId, prompt);
     return respond(prompt);
+  },
+
+  // An archived question isn't asked any more and leaves the report at once; tracking it again needs room in the plan
+  archivePrompt: async (projectId, promptId, { archived }) => {
+    const project = await findOwnProject(projectId);
+    const current = findPrompt(projectId, promptId);
+    if (archived === !isTracked(current)) return respond(current);
+    if (!archived) assertRoom(project);
+    const prompt: Prompt = { ...current, archivedAt: archived ? new Date().toISOString() : null };
+    replacePrompt(projectId, prompt);
+    return respond(prompt);
+  },
+
+  getPromptReport: async (projectId, promptId) => {
+    const project = await findOwnProject(projectId);
+    const prompt = findPrompt(projectId, promptId);
+    const report = buildPromptReport(project, prompt, "week", finishedRun(projectId));
+    return respond({ ...report, nextRunAt: isTracked(prompt) ? nextWeeklyRun(Date.now()) : null });
   },
 
   getPromptSuggestions: async (projectId) => {
@@ -280,9 +328,8 @@ export const mockApi: ApiClient = {
 
   // Accepting adds the question; it is asked from the next weekly run
   acceptPromptSuggestion: async (projectId, suggestionId) => {
-    await findOwnProject(projectId);
-    const { text, language, topic } = findSuggestion(projectId, suggestionId);
-    const prompt: Prompt = { id: newId("prm"), text, language, topic };
+    assertRoom(await findOwnProject(projectId));
+    const prompt = newPrompt(findSuggestion(projectId, suggestionId));
     state.prompts.set(projectId, [...promptsOf(projectId), prompt]);
     return respond(prompt);
   },
@@ -296,20 +343,20 @@ export const mockApi: ApiClient = {
 
   getReport: async (projectId, period = "week", filters) => {
     const project = findProject(projectId);
-    const prompts = promptsOf(projectId);
+    const prompts = trackedOf(projectId);
     const report = buildReport(project, prompts, period, finishedRun(projectId), filters);
     return respond({ ...report, nextRunAt: prompts.length > 0 ? nextWeeklyRun(Date.now()) : null });
   },
 
   getActions: async (projectId) => {
     const project = await findOwnProject(projectId);
-    const report = buildReport(project, promptsOf(projectId), "week", finishedRun(projectId));
+    const report = buildReport(project, trackedOf(projectId), "week", finishedRun(projectId));
     return respond(buildActions(report, state.actionStates.get(projectId)));
   },
 
   updateAction: async (projectId, actionId, { status, stepsDone }) => {
     const project = await findOwnProject(projectId);
-    const report = buildReport(project, promptsOf(projectId), "week", finishedRun(projectId));
+    const report = buildReport(project, trackedOf(projectId), "week", finishedRun(projectId));
     const changed = state.actionStates.get(projectId) ?? new Map<string, ActionState>();
     const action = buildActions(report, changed).find((candidate) => candidate.id === actionId);
     if (!action) throw new ApiError(404, `Action ${actionId} not found`);

@@ -53,6 +53,8 @@ Any other number makes a new account, which goes through onboarding and gets a p
 2. **Clear enough for a business owner.** Every number and chart has to be professional, clear and simple
    to explain, and it has to help a decision. A block says in a plain sentence what its numbers mean and
    how to read them. On a page, the numbers and charts come first and the "what to do" blocks under them.
+   Every table heading, figure and mark explains itself on hover (a tap on a phone), as on Peec: the rule
+   is in `frontend/CLAUDE.md`, "Explanations on hover".
 3. **Three languages, always.** Every piece of interface text goes into `uz.json`, `ru.json` and `en.json`.
 4. **Check before saying done.** Open the change in a real browser, on desktop and phone width, and run the
    type check and the linter. Judge speed on a production build, not on `npm run dev`.
@@ -69,6 +71,14 @@ Any other number makes a new account, which goes through onboarding and gets a p
   week / month switch), brand ranking, cited sites and their kinds, visibility by topic and by question
   language, recommended actions, latest answers. Each card of numbers opens large with a takeaway sentence
   and how to read it.
+- **Savollar, built from Peec's Prompts screenshots, with the user's first correction (6 Oct).** The list: the
+  question limit from the project's plan (25, 75, 300); Tracked, Suggested and Archive tabs (an archived
+  question isn't asked, keeps its answers and frees a place in the plan); search, a "named / not named"
+  filter and sorting, with the client's numbers following the rows shown. A page per question, opened from
+  the list: its facts, a sentence on its latest answers counted in answers, the Overview's charts for that
+  question alone, the fixes that list it, its answers. The correction: every heading, figure and mark
+  explains itself on hover. Left out of Peec's page on purpose: share of voice per question, volume,
+  web-search share, branded and intent tags, free tags, location, bulk select, query fanouts.
 - **Decisions the user made (6 Oct):** visibility is shown in percent, as Peec shows it; a change is green
   when better and red when worse, for the client only (competitors stay gray); daily checks are not offered
   for now, so the day and week views of the chart show the same points.
@@ -89,28 +99,40 @@ Any other number makes a new account, which goes through onboarding and gets a p
   how each number is calculated, cost per plan and the open questions.
 - **Git:** `main` is on GitHub (Baxa1997/geo-uz) and holds everything above: the branch `overview-dashboard`
   (the backend plan, the Overview, the landing page speed work and this file) was merged into it and pushed
-  on 6 Oct.
+  on 6 Oct. Savollar is committed on the branch `savollar-page`, local and not pushed.
 
 ## To do, in order
 
-1. **Savollar (questions) page.** The user sends Peec's Prompts screenshots (All prompts, Discovery); then as
-   in "How we work". Known gaps: the question limit is a fixed 50 while the plans say 25, 75 and 300, and
-   there is no archive.
-2. **The other pages, the same way, in the sidebar's order:**
+1. **Merge Savollar.** The user has been asked (6 Oct) whether to merge `savollar-page` into `main` and push.
+   Do it when they say so. More corrections for Savollar may still come.
+2. **The other pages, the same way, in the sidebar's order.** Each also gets hover explanations on its table
+   headings, figures and marks (`Hint`), which only Savollar has so far:
    - Javoblar: export of the answers.
    - Raqobatchilar: suggested competitors can be seen but not yet tracked or dismissed.
    - Manbalar: two things from Peec's "My website": the number "cited without a mention" (answers that link
-     to the client's site and don't name the client), and a way to see only the client's own pages.
+     to the client's site and don't name the client), and a way to see only the client's own pages. From
+     Peec's Gap analysis: a filter by kind of site on the gaps tab. Peec's Domains and URLs pages were not
+     among the 4 Oct screenshots: ask the user for them.
    - Notoʻgʻri faktlar: brand facts for the answers to be checked against.
    - Harakatlar: marks on the chart where a fix started and was done.
    - Sozlamalar: editing (today it is read-only), then facts, members, billing.
    - Hisobotlar: a placeholder today.
+
+   Peec pages that get no page of ours (the user agreed on 6 Oct):
+   - Discovery (a wizard that makes new topics and prompts from services, personas and markets): onboarding
+     and the Suggested tab already do this. Worth taking later, inside the Suggested tab: "suggest questions
+     for a service or a keyword", which needs the backend.
+   - Impact: not a page, a block on Harakatlar (the chart with marks, above).
+   - Fanouts: on the "Later" list; the raw answers the backend keeps contain the searches.
+   - Ads: no. ChatGPT ads aren't sold here, and Peec has paused the page itself.
 3. **Parts that are design only:** the GEO AI side panel answers every question with a demo reply; Gemini
-   and Yandex are marked "tez orada" in the engine switcher; plans are not in the data model yet.
+   and Yandex are marked "tez orada" in the engine switcher. Plans: a project now carries its plan and
+   limits and the question limit is used, but nothing sets a plan (every mock project is on Biznes) and the
+   competitor limit is still the fixed 5 of onboarding.
 4. **Backend.** Begin with step 0 of `backend/PLAN.md`: a small script that measures what one answer costs
    and whether the answers are the ones a person in Tashkent gets. Its result decides whether the prices
    work, so it comes before any other backend code. Then follow the build order in that file. It lists
-   thirteen open questions; a fourteenth, daily checks, is decided.
+   sixteen open questions; daily checks (14) is decided and plan limits (8) partly.
 5. **Noted during the dashboard review, not scheduled:** saving a chart as a picture (owners forward
    pictures in Telegram), a date-range filter once a client has four or more weeks, an export menu on each
    card, and a "write to us in Telegram" banner for new clients. Also a "Saytim" (my website) page once the

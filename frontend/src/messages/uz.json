@@ -138,13 +138,15 @@
     "sentiment": "Ohang",
     "position": "Oʻrin",
     "you": "(siz)",
-    "sortBy": "{metric} boʻyicha saralash",
     "notNamed": "Tilga olinmagan",
     "better": "oʻtgan haftadan {amount} ga yaxshiroq",
     "worse": "oʻtgan haftadan {amount} ga yomonroq",
     "shareOfVoice": "Ovoz ulushi",
     "titleShort": "Brendlar reytingi",
-    "guide": "Har bir qator — bitta brend. Ustun sarlavhasini bossangiz, jadval shu koʻrsatkich boʻyicha saralanadi. Raqam yonidagi strelka — oʻtgan haftaga nisbatan oʻzgarish."
+    "guide": "Har bir qator — bitta brend. Ustun sarlavhasini bossangiz, jadval shu koʻrsatkich boʻyicha saralanadi. Raqam yonidagi strelka — oʻtgan haftaga nisbatan oʻzgarish.",
+    "rankHint": "Tanlangan koʻrsatkich boʻyicha brendning oʻrni.",
+    "brandHint": "Siz va kuzatilayotgan raqobatchilaringiz. Rang — brendning grafikdagi chizigʻi rangi.",
+    "sortHint": "Sarlavhani bossangiz, jadval shu koʻrsatkich boʻyicha saralanadi."
   },
   "SourcesTable": {
     "title": "ChatGPT tayangan manbalar",
@@ -586,10 +588,8 @@
   "PromptManager": {
     "description": "Mijozlaringiz ChatGPT’ga beradigan savollar. Har bir savol har hafta oʻlchanadi.",
     "count": "{count} ta savol",
-    "recommended": "Tavsiya: 20–50 ta",
     "schedule": "Har hafta tekshiriladi, keyingisi: {date}",
     "belowMin": "Ishonchli natija uchun kamida 20 ta savol qoʻshing.",
-    "aboveMax": "50 tadan koʻp savol MVP chegarasidan oshadi.",
     "add": "Savol qoʻshish",
     "edit": "Tahrirlash",
     "empty": "Hali savol yoʻq",
@@ -608,12 +608,9 @@
     "queued": "Navbatda",
     "you": "Siz",
     "nobody": "Hech kim",
-    "openAnswers": "Javoblarni ochish",
     "noMatch": "Bu filtrlarga mos savol yoʻq.",
     "visibilityHint": "{total} ta javobdan {count} tasida tilga olingansiz",
     "tabsLabel": "Savollar roʻyxati",
-    "tabActive": "Kuzatilayotgan",
-    "tabSuggested": "Tavsiyalar",
     "suggestedIntro": "Mijozlar sohangizda soʻraydigan, lekin siz hali kuzatmayotgan savollar. Qoʻshilgan savol keyingi haftalik tekshiruvdan boshlab oʻlchanadi.",
     "accept": "Qoʻshish",
     "reject": "Rad etish",
@@ -635,11 +632,65 @@
       "position": "Oʻrtacha oʻrin",
       "tones": "Ohang",
       "leader": "Yetakchi",
-      "lastRun": "Tekshirilgan"
+      "lastRun": "Tekshirilgan",
+      "added": "Qoʻshilgan"
     },
     "topics": "Mavzular",
     "allTopics": "Barcha mavzular",
-    "usedHint": "Tarifingizdagi {max} ta savoldan nechtasi ishlatilgan"
+    "usedHint": "{plan} tarifidagi {max} ta savoldan nechtasi kuzatilmoqda",
+    "tabs": {
+      "tracked": "Kuzatilayotgan",
+      "suggested": "Tavsiyalar",
+      "archived": "Arxiv"
+    },
+    "search": "Savol qidirish",
+    "filter": {
+      "label": "Natija",
+      "all": "Barcha savollar",
+      "missing": "Siz tilga olinmagan",
+      "named": "Siz tilga olingan"
+    },
+    "archive": "Arxivlash",
+    "archiveHint": "Arxivga oʻtkazish: savol endi tekshirilmaydi, natijalari saqlanadi",
+    "restore": "Kuzatuvga qaytarish",
+    "restoreLabel": "Kuzatuvga qaytarish: {text}",
+    "limitReached": "Tarif chegarasi toʻlgan. Avval boshqa savolni arxivlang.",
+    "archivedOn": "Arxivlangan: {date}",
+    "archiveIntro": "Arxivdagi savollar endi ChatGPT’ga berilmaydi va tarif chegarasiga kirmaydi. Oldingi natijalari saqlanadi. Qaytarilgan savol keyingi haftalik tekshiruvdan boshlab yana oʻlchanadi.",
+    "archiveEmpty": "Arxiv boʻsh. Kerak boʻlmay qolgan savolni roʻyxatdagi arxiv tugmasi bilan shu yerga oʻtkazasiz.",
+    "archivedNote": "Arxivga oʻtkazildi: {text}",
+    "restoredNote": "Kuzatuvga qaytarildi: {text}",
+    "full": "{plan} tarifidagi {max} ta savolning hammasi band. Yangi savol qoʻshish uchun birini arxivlang yoki tarifni oshiring.",
+    "saveFailed": "Saqlab boʻlmadi. Qayta urinib koʻring.",
+    "planLimit": "{plan} tarifi: {max} tagacha savol",
+    "hints": {
+      "tabs": {
+        "tracked": "Har hafta ChatGPT’ga beriladigan savollar.",
+        "suggested": "Mijozlar sohangizda soʻraydigan, siz hali kuzatmayotgan savollar. Har birini qoʻshish yoki rad etish mumkin.",
+        "archived": "Kuzatish toʻxtatilgan savollar. Ular endi tekshirilmaydi, natijalari saqlanadi."
+      },
+      "topics": "Savollar mavzular boʻyicha guruhlangan; yonidagi son — mavzudagi savollar soni. Mavzuni bossangiz, roʻyxatda faqat shu mavzu qoladi.",
+      "question": "ChatGPT’ga beriladigan savol. Ustiga bossangiz, shu savolning sahifasi ochiladi: javoblar, brendlar va manbalar.",
+      "visibility": "Oxirgi tekshiruvda shu savolga berilgan javoblarning nechtasida tilga olingansiz. Masalan, 2/3 — 3 ta javobdan 2 tasida.",
+      "tone": "Sizni tilga olgan har bir javobda ChatGPT siz haqingizda qanday ohangda gapirgan: ijobiy, neytral yoki salbiy. Har bir belgi — bitta javob.",
+      "position": "Javoblarda oʻrtacha nechanchi boʻlib tilga olingansiz. 1 — birinchi; son kichikroq boʻlsa, yaxshiroq.",
+      "named": "Shu savolga berilgan javoblarda tilga olingan kuzatilayotgan brendlar. Belgi ustiga kursorni olib borsangiz, brend nomi koʻrinadi.",
+      "leader": "Shu savolda eng koʻp javobda tilga olingan brend. “Siz” — yetakchi sizsiz.",
+      "sort": "Sarlavhani bossangiz, jadval shu ustun boʻyicha saralanadi.",
+      "summary": {
+        "visibility": "Roʻyxatdagi savollarga berilgan javoblarning necha foizida tilga olingansiz.",
+        "tone": "Roʻyxatdagi savollar boʻyicha ChatGPT siz haqingizda qanchalik ijobiy gapiradi: 0 — salbiy, 100 — ijobiy.",
+        "position": "Roʻyxatdagi savollar boʻyicha javoblarda oʻrtacha nechanchi boʻlib tilga olinasiz. 1 — birinchi."
+      },
+      "queued": "Savol hali ChatGPT’ga berilmagan. Navbatdagi haftalik tekshiruvda birinchi marta beriladi.",
+      "language": {
+        "uz": "Savol oʻzbek tilida beriladi",
+        "ru": "Savol rus tilida beriladi"
+      },
+      "count": "Hozir kuzatilayotgan savollar soni.",
+      "schedule": "Savollaringiz har hafta dushanba kuni ertalab ChatGPT’ga qayta beriladi.",
+      "edit": "Savol matni, tili yoki mavzusini oʻzgartirish"
+    }
   },
   "PromptForm": {
     "addTitle": "Yangi savol",
@@ -657,6 +708,81 @@
     "textDuplicate": "Bunday savol allaqachon bor.",
     "topicRequired": "Mavzuni kiriting.",
     "saveFailed": "Saqlab boʻlmadi. Qayta urinib koʻring."
+  },
+  "PromptPage": {
+    "label": "Savol",
+    "facts": {
+      "added": "Qoʻshilgan",
+      "topic": "Mavzu",
+      "language": "Savol tili",
+      "city": "Shahar",
+      "status": "Holat"
+    },
+    "languages": {
+      "uz": "Oʻzbekcha",
+      "ru": "Ruscha"
+    },
+    "status": {
+      "tracked": "Kuzatilmoqda",
+      "queued": "Navbatda",
+      "archived": "Arxivda",
+      "nextRun": "keyingi tekshiruv: {date}",
+      "archivedOn": "{date}"
+    },
+    "trendHint": "Bu savolga berilgan javoblarda har bir brendning koʻrsatkichi, tekshiruvdan tekshiruvga. Har tekshiruvda savol {samples} marta beriladi, shuning uchun bitta javob ham foizni sezilarli oʻzgartiradi.",
+    "brandsHint": "Bu savolga berilgan javoblar boʻyicha toʻrt koʻrsatkich va oldingi tekshiruvga nisbatan oʻzgarish.",
+    "brandsHintFirst": "Bu savolga berilgan javoblar boʻyicha toʻrt koʻrsatkich.",
+    "verdict": {
+      "named": "Oxirgi tekshiruvda ({date}) ChatGPT bu savolga bergan {total} ta javobdan {count} tasida sizni tilga oldi.",
+      "missing": "Oxirgi tekshiruvda ({date}) ChatGPT bu savolga bergan {total} ta javobning hech birida sizni tilga olmadi.",
+      "ahead": "Raqobatchilar ichida eng koʻp tilga olingani — {competitor}: {total} tadan {count} tasida.",
+      "level": "{competitor} ham shuncha javobda tilga olingan.",
+      "behind": "Bu savolda yetakchi — {competitor}: {total} ta javobdan {count} tasida.",
+      "alone": "Kuzatilayotgan raqobatchilardan hech biri tilga olinmagan.",
+      "nobody": "Kuzatilayotgan raqobatchilar ham tilga olinmagan.",
+      "same": "Oldingi tekshiruvda ham shunday edi.",
+      "before": "Oldingi tekshiruvda siz {total} tadan {count} tasida tilga olingan edingiz."
+    },
+    "queued": {
+      "title": "Bu savol hali tekshirilmagan",
+      "text": "Birinchi tekshiruv: {date}. Natijalar shu sahifada chiqadi.",
+      "textNoDate": "Savol navbatdagi haftalik tekshiruvda ChatGPT’ga beriladi. Natijalar shu sahifada chiqadi.",
+      "archivedTitle": "Bu savol tekshirilmagan",
+      "archivedText": "Savol birinchi tekshiruvdan oldin arxivlangan, shuning uchun natijasi yoʻq. Kuzatuvga qaytarsangiz, navbatdagi haftalik tekshiruvda ChatGPT’ga beriladi."
+    },
+    "actions": {
+      "title": "Bu savol uchun nima qilish kerak",
+      "hint": "Shu savoldagi natijangizni yaxshilashi kutilayotgan tavsiyalar. Har biri Harakatlar sahifasida qadamlari bilan ochiladi.",
+      "empty": "Bu savol uchun hozircha tavsiya yoʻq."
+    },
+    "answers": {
+      "title": "ChatGPT javoblari",
+      "hint": "Oxirgi tekshiruvda ChatGPT bu savolga bergan {samples} ta javob. ChatGPT har safar biroz boshqacha javob beradi, shuning uchun savol bir necha marta beriladi. Toʻliq oʻqish uchun javobni bosing.",
+      "sample": "{n}-javob",
+      "nobody": "Hech kim tilga olinmagan",
+      "notNamed": "Siz yoʻq",
+      "yourPlace": "oʻrningiz"
+    },
+    "hints": {
+      "added": "Savol qoʻshilgan sana. Natijalari shundan keyingi birinchi haftalik tekshiruvdan boshlanadi.",
+      "topic": "Savol qaysi mavzuga tegishli. Savollar sahifasi va hisobotlarni mavzu boʻyicha filtrlash mumkin.",
+      "language": "Savol ChatGPT’ga shu tilda beriladi. Oʻzbekcha va ruscha savollarga javoblar farq qilishi mumkin.",
+      "city": "Savol shu shahardagi mijoz nomidan beriladi, shuning uchun javob mahalliy boʻladi.",
+      "status": {
+        "tracked": "Savol har hafta ChatGPT’ga beriladi.",
+        "queued": "Savol hali berilmagan; navbatdagi haftalik tekshiruvda birinchi marta beriladi.",
+        "archived": "Savol endi berilmaydi va tarif chegarasiga kirmaydi. Oldingi natijalari saqlangan."
+      },
+      "place": "Shu javobda nechanchi boʻlib tilga olingansiz.",
+      "notNamed": "Bu javobda tilga olinmagansiz.",
+      "impact": "Kutilayotgan taʼsir: bu ish bajarilsa, koʻrinishingiz boshqa tavsiyalarga nisbatan qanchalik oshishi mumkin.",
+      "actionStatus": "Tavsiyaning holati. Harakatlar sahifasida qadamlarni belgilaganingizda oʻzgaradi."
+    }
+  },
+  "Plans": {
+    "start": "Start",
+    "business": "Biznes",
+    "agency": "Agentlik"
   },
   "NewProject": {
     "title": "Yangi loyiha",
@@ -1530,7 +1656,7 @@
     },
     "dialog": {
       "close": "Yopish",
-      "openQuestion": "Savollar sahifasida",
+      "openQuestion": "Savol sahifasi",
       "previous": "Oldingi",
       "next": "Keyingi",
       "counter": "{index} / {total}",

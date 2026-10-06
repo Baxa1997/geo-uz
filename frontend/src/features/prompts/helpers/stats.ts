@@ -1,4 +1,4 @@
-import { answersNaming } from "@/shared/helpers/scores";
+import { answersNaming, outOf100, TONE_POINTS } from "@/shared/helpers/scores";
 import type { Brand, PromptResult, Tone } from "@/shared/types/api";
 
 /** How the client did on one question in the latest run. */
@@ -27,4 +27,39 @@ export function promptStats(result: PromptResult, brands: Brand[], youId: string
     tones: mine.map((mention) => mention.tone),
     leader,
   };
+}
+
+/** The client's numbers over a set of questions, as shown: visibility in percent, tone 0–100, mean position. */
+export interface PromptsSummary {
+  visibility: number | null;
+  sentiment: number | null;
+  position: number | null;
+}
+
+/**
+ * The client's numbers over the questions on screen, by the same formulas as the report's scores, so
+ * the line above the list follows the search and the filters. All null when none of them has been asked.
+ */
+export function promptsSummary(results: PromptResult[], youId: string): PromptsSummary {
+  const answers = results.flatMap((result) => result.answers);
+  if (answers.length === 0) return { visibility: null, sentiment: null, position: null };
+  const mine = answers.flatMap((answer) => answer.mentions.filter((mention) => mention.brandId === youId));
+  const named = answers.filter((answer) => answer.mentions.some((mention) => mention.brandId === youId)).length;
+  return {
+    visibility: outOf100(named / answers.length),
+    sentiment: mine.length ? Math.round(mine.reduce((sum, mention) => sum + TONE_POINTS[mention.tone], 0) / mine.length) : null,
+    position: mine.length ? mine.reduce((sum, mention) => sum + mention.position, 0) / mine.length : null,
+  };
+}
+
+/** Which questions the list shows: all, those whose answers never name the client, or those that do. */
+export type PromptsFilter = "all" | "missing" | "named";
+
+export const PROMPTS_FILTERS: PromptsFilter[] = ["all", "missing", "named"];
+
+/** A question that hasn't been asked yet matches "all" only. */
+export function matchesFilter(stats: PromptStats | undefined, filter: PromptsFilter) {
+  if (filter === "all") return true;
+  if (!stats) return false;
+  return filter === "missing" ? stats.named === 0 : stats.named > 0;
 }

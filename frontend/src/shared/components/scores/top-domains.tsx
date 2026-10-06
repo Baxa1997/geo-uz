@@ -3,6 +3,7 @@
 import { CircleCheck, CircleHelp, CircleX } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
+import { Hint } from "@/shared/components/hint";
 import { Panel } from "@/shared/components/panel";
 import { Segmented, SegmentedButton } from "@/shared/components/segmented";
 import { formatPercent } from "@/shared/helpers/numbers";
@@ -110,7 +111,7 @@ export function TopDomains({
                 {row.name.charAt(0)}
               </span>
               <span className="truncate font-medium">{row.name}</span>
-              <SourceTypeDot type={row.type} />
+              <SourceTypeDot type={row.type} label={types(row.type)} />
               <span className={detailed ? "hidden shrink-0 text-xs text-muted-foreground @md:inline" : "sr-only"}>
                 {types(detailed ? `short.${row.type}` : row.type)}
               </span>
@@ -211,7 +212,7 @@ function Presence({ value, label }: { value: boolean | null; label: string }) {
   const text = t(value === null ? "mentionedUnknown" : value ? "mentionedYes" : "mentionedNo");
   const Icon = value === null ? CircleHelp : value ? CircleCheck : CircleX;
   return (
-    <span title={`${label}: ${text}`} className="shrink-0">
+    <Hint text={`${label}: ${text}`} focusable={false} described={false} className="shrink-0">
       <Icon
         aria-hidden
         className={value === null ? "size-4 text-muted-foreground" : value ? "size-4 text-positive" : "size-4 text-negative"}
@@ -219,6 +220,6 @@ function Presence({ value, label }: { value: boolean | null; label: string }) {
       <span className="sr-only">
         {label}: {text}
       </span>
-    </span>
+    </Hint>
   );
 }

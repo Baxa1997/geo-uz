@@ -15,6 +15,20 @@ export interface Brand {
   domain: string;
 }
 
+/** The paid plans (names in messages/Plans). The free check has no project. */
+export type Plan = "start" | "business" | "agency";
+
+/** What the project's plan allows. */
+export interface ProjectLimits {
+  /**
+   * Questions the project may track at once; archived ones don't count. On the agency plan the plan's questions
+   * are shared by the agency's brands, and this is what this brand may use.
+   */
+  prompts: number;
+  /** Competitors it may track. */
+  competitors: number;
+}
+
 export interface Project {
   id: string;
   brand: Brand;
@@ -26,6 +40,8 @@ export interface Project {
   description: string;
   /** What the business offers, as the client wrote it ("Implantlar", "Breketlar"); steers suggested questions. */
   services: string[];
+  plan: Plan;
+  limits: ProjectLimits;
 }
 
 export interface Prompt {
@@ -33,6 +49,14 @@ export interface Prompt {
   text: string;
   language: PromptLanguage;
   topic: string;
+  /** ISO 8601: when it was added. Its results start with the first run after that. */
+  createdAt: string;
+  /**
+   * ISO 8601: when the client stopped tracking it; null while it is tracked. An archived question isn't
+   * asked any more and is left out of the report, keeps its past answers (its own page still shows them),
+   * and doesn't count toward the plan's limit. It can be tracked again.
+   */
+  archivedAt: string | null;
 }
 
 export interface ReportMethod {
@@ -244,9 +268,14 @@ export interface CreateProjectResponse {
   runId: string | null;
 }
 
-export type CreatePromptRequest = Omit<Prompt, "id">;
+export type CreatePromptRequest = Pick<Prompt, "text" | "language" | "topic">;
 
 export type UpdatePromptRequest = CreatePromptRequest;
+
+/** Archive a question (stop asking it) or track it again. */
+export interface ArchivePromptRequest {
+  archived: boolean;
+}
 
 /** A question the project doesn't track yet, offered on the Questions page to accept or reject. */
 export interface SuggestedPrompt {

@@ -2,6 +2,7 @@ import { SESSION_COOKIE } from "@/shared/constants";
 import type {
   Action,
   AnalyzeSiteRequest,
+  ArchivePromptRequest,
   CompetitorSuggestion,
   CreateProjectRequest,
   CreateProjectResponse,
@@ -46,6 +47,10 @@ export interface ApiClient {
   getPrompts(projectId: string): Promise<Prompt[]>;
   createPrompt(projectId: string, body: CreatePromptRequest): Promise<Prompt>;
   updatePrompt(projectId: string, promptId: string, body: UpdatePromptRequest): Promise<Prompt>;
+  /** Archives a question or tracks it again; 409 when tracking it again would pass the plan's limit. */
+  archivePrompt(projectId: string, promptId: string, body: ArchivePromptRequest): Promise<Prompt>;
+  /** The report over one question, archived or not: its answers, scores, cited sites and its own history. */
+  getPromptReport(projectId: string, promptId: string): Promise<Report>;
   getPromptSuggestions(projectId: string): Promise<SuggestedPrompt[]>;
   acceptPromptSuggestion(projectId: string, suggestionId: string): Promise<Prompt>;
   rejectPromptSuggestion(projectId: string, suggestionId: string): Promise<void>;
@@ -119,6 +124,9 @@ const httpApi: ApiClient = {
     send("POST", `/projects/${id(projectId)}/prompts`, body),
   updatePrompt: (projectId, promptId, body) =>
     send("PUT", `/projects/${id(projectId)}/prompts/${id(promptId)}`, body),
+  archivePrompt: (projectId, promptId, body) =>
+    send("PATCH", `/projects/${id(projectId)}/prompts/${id(promptId)}`, body),
+  getPromptReport: (projectId, promptId) => request(`/projects/${id(projectId)}/prompts/${id(promptId)}/report`),
   getPromptSuggestions: (projectId) => request(`/projects/${id(projectId)}/prompt-suggestions`),
   acceptPromptSuggestion: (projectId, suggestionId) =>
     send("POST", `/projects/${id(projectId)}/prompt-suggestions/${id(suggestionId)}/accept`),
@@ -169,6 +177,10 @@ export const api: ApiClient = USE_MOCKS
         mocks().then((m) => unwrap(m.createPrompt(projectId, body))),
       updatePrompt: (projectId, promptId, body) =>
         mocks().then((m) => unwrap(m.updatePrompt(projectId, promptId, body))),
+      archivePrompt: (projectId, promptId, body) =>
+        mocks().then((m) => unwrap(m.archivePrompt(projectId, promptId, body))),
+      getPromptReport: (projectId, promptId) =>
+        mocks().then((m) => unwrap(m.getPromptReport(projectId, promptId))),
       getPromptSuggestions: (projectId) => mocks().then((m) => unwrap(m.getPromptSuggestions(projectId))),
       acceptPromptSuggestion: (projectId, suggestionId) =>
         mocks().then((m) => unwrap(m.acceptPromptSuggestion(projectId, suggestionId))),

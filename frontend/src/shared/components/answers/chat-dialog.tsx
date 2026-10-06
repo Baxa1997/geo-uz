@@ -12,13 +12,13 @@ import { TIME_ZONE } from "@/shared/constants";
 import { formatLongDate } from "@/shared/helpers/dates";
 import { labelFor } from "@/shared/helpers/labels";
 import { cn } from "@/shared/helpers/utils";
-import type { Brand, Project } from "@/shared/types/api";
-import type { AnswerRow } from "../types";
+import type { Brand, Project, Prompt } from "@/shared/types/api";
+import type { AnswerRow } from "@/shared/types/scores";
 
 /**
  * One answer opened like a chat: the question on the right, ChatGPT's answer on the left, details
  * beside it (who it names and where, the sites it cites). Previous and Next (or the arrow keys) walk
- * through the rows the table shows.
+ * through the rows the list shows. `questionHref` adds a link to the question's own page (left out there).
  */
 export function ChatDialog({
   rows,
@@ -34,7 +34,7 @@ export function ChatDialog({
   index: number | null;
   project: Project;
   collectedAt: string;
-  questionHref: (topic: string) => string;
+  questionHref?: (prompt: Prompt) => string;
   onIndex: (index: number) => void;
   onClose: () => void;
 }) {
@@ -95,7 +95,7 @@ function Conversation({
   total: number;
   project: Project;
   collectedAt: string;
-  questionHref: (topic: string) => string;
+  questionHref?: (prompt: Prompt) => string;
   onIndex: (index: number) => void;
 }) {
   const t = useTranslations("AnswersPage.dialog");
@@ -117,13 +117,15 @@ function Conversation({
             {labelFor(messages.Cities, project.city)}
           </span>
           <span className="rounded-lg border px-2 py-1 text-xs font-semibold text-muted-foreground uppercase">{result.prompt.language}</span>
-          <Link
-            href={questionHref(result.prompt.topic)}
-            className="ml-auto inline-flex items-center gap-1 rounded-md px-2 py-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
-          >
-            {t("openQuestion")}
-            <ArrowUpRight aria-hidden className="size-4" />
-          </Link>
+          {questionHref && (
+            <Link
+              href={questionHref(result.prompt)}
+              className="ml-auto inline-flex items-center gap-1 rounded-md px-2 py-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
+              {t("openQuestion")}
+              <ArrowUpRight aria-hidden className="size-4" />
+            </Link>
+          )}
         </header>
 
         <div className="min-h-0 flex-1 overflow-y-auto">

@@ -3,6 +3,7 @@
 import { ArrowDown, ArrowUp, ChevronDown, ChevronUp, ChevronsUpDown } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
+import { Hint } from "@/shared/components/hint";
 import { Panel } from "@/shared/components/panel";
 import { formatDecimal } from "@/shared/helpers/numbers";
 import { byMetric, lowerIsBetter, METRICS, metricUnit, metricValue, scoreOf, toneOf } from "@/shared/helpers/scores";
@@ -31,7 +32,8 @@ const HIDDEN_CELLS: Partial<Record<Metric, string>> = {
 
 /**
  * The tracked brands side by side on the four metrics, each with its change since the previous
- * run. A column's heading sorts by it, best first; a second click turns the order around.
+ * run. A column's heading explains the column on hover and sorts by it, best first; a second click turns
+ * the order around.
  * `expandable` adds ⤢: the table in a large window with every column, where the client stands on the
  * sorted metric in words, and what each of the four numbers means.
  */
@@ -81,11 +83,13 @@ export function BrandTable({
         <thead>
           <tr className="border-b text-left text-xs text-muted-foreground [&>th]:font-medium">
             <th scope="col" className="w-9 py-2.5 pl-4">
-              <span aria-hidden>#</span>
-              <span className="sr-only">{t("rank")}</span>
+              <Hint text={t("rankHint")}>
+                <span aria-hidden>#</span>
+                <span className="sr-only">{t("rank")}</span>
+              </Hint>
             </th>
             <th scope="col" className="py-2.5 pr-2">
-              {t("brand")}
+              <Hint text={t("brandHint")}>{t("brand")}</Hint>
             </th>
             {METRICS.map((metric) => {
               const sorted = sort.metric === metric;
@@ -99,19 +103,23 @@ export function BrandTable({
                   aria-sort={!sorted ? undefined : ascending ? "ascending" : "descending"}
                   className={cn("border-l p-0", COLUMNS[metric])}
                 >
-                  <button
-                    type="button"
-                    onClick={() => setSort({ metric, reversed: sorted && !sort.reversed })}
-                    title={t("sortBy", { metric: t(metric) })}
-                    className={cn(
-                      "flex w-full items-center justify-between gap-1 px-1.5 py-2.5 font-medium transition-colors outline-none hover:text-foreground focus-visible:bg-muted @sm:px-2 @lg:px-2.5",
-                      sorted && "text-foreground",
+                  <Hint text={`${metrics(`hints.${metric}`)} ${t("sortHint")}`} className="flex w-full">
+                    {(describedBy) => (
+                      <button
+                        type="button"
+                        aria-describedby={describedBy}
+                        onClick={() => setSort({ metric, reversed: sorted && !sort.reversed })}
+                        className={cn(
+                          "flex w-full items-center justify-between gap-1 px-1.5 py-2.5 font-medium transition-colors outline-none hover:text-foreground focus-visible:bg-muted @sm:px-2 @lg:px-2.5",
+                          sorted && "text-foreground",
+                        )}
+                      >
+                        {/* Two short words may take two lines: a cut-off heading explains nothing */}
+                        <span className="min-w-0 text-left leading-tight text-balance">{t(metric)}</span>
+                        <Icon aria-hidden className="hidden size-3.5 shrink-0 @lg:block" />
+                      </button>
                     )}
-                  >
-                    {/* Two short words may take two lines: a cut-off heading explains nothing */}
-                    <span className="min-w-0 text-left leading-tight text-balance">{t(metric)}</span>
-                    <Icon aria-hidden className="hidden size-3.5 shrink-0 @lg:block" />
-                  </button>
+                  </Hint>
                 </th>
               );
             })}

@@ -14,9 +14,18 @@ type Decision = { suggestion: SuggestedPrompt; accept: boolean };
 
 /**
  * Questions buyers ask that the project doesn't track yet, each accepted or rejected in one click.
- * An accepted one joins the question list at once and is asked from the next weekly run.
+ * An accepted one joins the question list at once and is asked from the next weekly run. Nothing can be
+ * accepted while the plan's questions are all in use (`full`).
  */
-export function PromptSuggestions({ projectId, suggestions }: { projectId: string; suggestions: SuggestedPrompt[] }) {
+export function PromptSuggestions({
+  projectId,
+  suggestions,
+  full,
+}: {
+  projectId: string;
+  suggestions: SuggestedPrompt[];
+  full: boolean;
+}) {
   const t = useTranslations("PromptManager");
   const messages = useMessages();
   const queryClient = useQueryClient();
@@ -79,7 +88,8 @@ export function PromptSuggestions({ projectId, suggestions }: { projectId: strin
                   <Button
                     variant="outline"
                     size="sm"
-                    disabled={busy}
+                    disabled={busy || full}
+                    title={full ? t("limitReached") : undefined}
                     aria-label={t("acceptLabel", { text: suggestion.text })}
                     onClick={() => decide.mutate({ suggestion, accept: true })}
                   >

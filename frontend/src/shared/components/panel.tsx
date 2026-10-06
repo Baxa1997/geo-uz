@@ -36,7 +36,8 @@ export function Panel({
           {hint && <InfoTip label={t("about")}>{hint}</InfoTip>}
         </div>
         {(actions || expand) && (
-          <div className="flex shrink-0 items-center gap-1.5">
+          // Wraps on a phone: tools wider than the card would push the ⤢ past its edge
+          <div className="flex max-w-full flex-wrap items-center gap-1.5">
             {actions}
             {expand && <ExpandButton title={title} {...expand} />}
           </div>
