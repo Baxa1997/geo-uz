@@ -87,17 +87,16 @@ Any other number makes a new account, which goes through onboarding and gets a p
     describes the brand) is on the "Later" list.
 - **Backend plan (5–6 Oct):** `backend/PLAN.md`, with the build order, tables, the weekly check step by step,
   how each number is calculated, cost per plan and the open questions.
-- **Git:** `main` is the first commit and is on GitHub (Baxa1997/geo-uz). The branch `overview-dashboard`,
-  local and not pushed, holds the backend plan, the Overview, the landing page speed work and this file.
+- **Git:** `main` is on GitHub (Baxa1997/geo-uz) and holds everything above: the branch `overview-dashboard`
+  (the backend plan, the Overview, the landing page speed work and this file) was merged into it and pushed
+  on 6 Oct.
 
 ## To do, in order
 
-1. **Merge.** The user has been asked (6 Oct) whether to merge `overview-dashboard` into `main` and push.
-   Do it when they say so.
-2. **Savollar (questions) page.** The user sends Peec's Prompts screenshots (All prompts, Discovery); then as
+1. **Savollar (questions) page.** The user sends Peec's Prompts screenshots (All prompts, Discovery); then as
    in "How we work". Known gaps: the question limit is a fixed 50 while the plans say 25, 75 and 300, and
    there is no archive.
-3. **The other pages, the same way, in the sidebar's order:**
+2. **The other pages, the same way, in the sidebar's order:**
    - Javoblar: export of the answers.
    - Raqobatchilar: suggested competitors can be seen but not yet tracked or dismissed.
    - Manbalar: two things from Peec's "My website": the number "cited without a mention" (answers that link
@@ -106,13 +105,13 @@ Any other number makes a new account, which goes through onboarding and gets a p
    - Harakatlar: marks on the chart where a fix started and was done.
    - Sozlamalar: editing (today it is read-only), then facts, members, billing.
    - Hisobotlar: a placeholder today.
-4. **Parts that are design only:** the GEO AI side panel answers every question with a demo reply; Gemini
+3. **Parts that are design only:** the GEO AI side panel answers every question with a demo reply; Gemini
    and Yandex are marked "tez orada" in the engine switcher; plans are not in the data model yet.
-5. **Backend.** Begin with step 0 of `backend/PLAN.md`: a small script that measures what one answer costs
+4. **Backend.** Begin with step 0 of `backend/PLAN.md`: a small script that measures what one answer costs
    and whether the answers are the ones a person in Tashkent gets. Its result decides whether the prices
    work, so it comes before any other backend code. Then follow the build order in that file. It lists
    thirteen open questions; a fourteenth, daily checks, is decided.
-6. **Noted during the dashboard review, not scheduled:** saving a chart as a picture (owners forward
+5. **Noted during the dashboard review, not scheduled:** saving a chart as a picture (owners forward
    pictures in Telegram), a date-range filter once a client has four or more weeks, an export menu on each
    card, and a "write to us in Telegram" banner for new clients. Also a "Saytim" (my website) page once the
    full site audit exists: every site check with passed and failed (a client sees only the failed ones today,
