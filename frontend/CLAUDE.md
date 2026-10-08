@@ -46,9 +46,10 @@ open questions): add to it each time a page is finished.
   what ChatGPT searched the web for, the fixes that list it and its answers); Answers
   (the answers in numbers, a table of every answer that opens like a chat, Previous/Next; filters by brand,
   cited site and status; CSV with the full texts); Competitors
-  (five numbers, the brands table, who leads each topic, the brands ChatGPT names that aren't tracked: track or hide
-  each; the questions each competitor wins, and stop tracking a competitor); Sources (numbers,
-  then sites, pages and gaps: pages that name competitors and not the client); Wrong facts (numbers and a
+  (four numbers, the brands table, who leads each topic, the brands ChatGPT names that aren't tracked: track or hide
+  each; the questions each competitor wins, and stop tracking a competitor); Sources (numbers, the most cited
+  sites over time beside what changed, then sites, pages and gaps: pages that name competitors and not the
+  client; a page per cited site); Wrong facts (numbers and a
   table); Harakatlar (four goal tiles, the list by status and goal, a side panel with steps to tick, fix →
   proof); Settings (sections: brand profile, tracked brands, interface language; editing later); sidebar
   sections with a start checklist; site checks in the free check; public report; language + topic filters as
@@ -132,7 +133,8 @@ from Chrome's trace): 8 layers, no dropped frames while scrolling, and the page 
 Two separate folders, one git repository:
 
 - `frontend/`: Next.js (App Router) + TypeScript strict, Tailwind CSS, shadcn/ui,
-  TanStack Query for data fetching, Recharts for charts, next-intl for uz/ru/en.
+  TanStack Query for data fetching, next-intl for uz/ru/en. Charts are our own (`LinePlot`, `BarRows`):
+  `recharts` is still in package.json but nothing imports it since the report's rewrite (Oct 8).
 - `backend/` (later): Python 3.12, FastAPI, SQLAlchemy 2.0 + Alembic, PostgreSQL,
   Pydantic v2, pytest, managed with uv. Scheduled runs with Celery or RQ + Redis.
 - API contract: once the backend exists, FastAPI generates OpenAPI and the frontend
@@ -147,8 +149,8 @@ frontend/src/
       (marketing)/        # public, with site navbar + footer: / (landing), /check?site=…
       (auth)/             # /login?snapshot=…&next=… on its own: dark panel + form, no site navbar
       (app)/              # workspace, login required: /dashboard, /settings, /projects/new, /projects/[id]/…
-                          #   (overview, prompts, prompts/[promptId], answers, competitors, sources, wrong-facts,
-                          #   reports, settings)
+                          #   (overview, prompts, prompts/[promptId], answers, competitors, sources,
+                          #   sources/[domain], wrong-facts, reports, settings)
       onboarding/         # first-login wizard, login required, no sidebar; runs/[id]: first run's progress
       projects/[id]/report/   # client-facing report, public, no sidebar
   features/               # one folder per product area
@@ -159,17 +161,32 @@ frontend/src/
     workspace/            # shell: sidebar by task in sections (collapsible) with a "start here" checklist at its foot
                           #   (progress kept in the browser), project card, account, help sheet, placeholder (Reports),
                           #   GEO AI panel (design only, opened from a page, e.g. "Analyze" in Answers)
-    answers/              # Answers: numbers, then every answer as a table row (search; filters by brand named, by
-                          #   site cited and by status); the rows shown export as CSV with their full text; a row
-                          #   opens a chat window (question, answer, details, Previous/Next); ?prompt= opens a
-                          #   question's first answer, ?source= starts with the answers citing a site
-    competitors/          # Competitors: five numbers on where the client stands, the brands table, who leads each
+    answers/              # Answers: numbers about the answers themselves (naming the client, negative about it,
+                          #   naming nobody, with a web search), then every answer as a table row, the answers to
+                          #   one question grouped under the question written once (search; filters by brand
+                          #   named, by site cited and by status); the rows shown export as CSV with their full
+                          #   text; a row opens a chat window (question, answer, details, Previous/Next); ?prompt=
+                          #   opens a question's first answer, ?source= starts with the answers citing a site
+    competitors/          # Competitors: four numbers on where the client stands (place, gap to the leader, topics
+                          #   led, questions without it), the brands table, who leads each
                           #   topic (helpers/topics.ts; a topic opens its questions), the brands ChatGPT names that
                           #   aren't tracked, like Peec's brand suggestions (track one while the plan has room:
                           #   Project.limits.competitors; or hide it, and show it again), and a card per competitor
                           #   with the questions it wins (each opens the question's page) and a stop-tracking button
-    sources/              # Sources: numbers, then one card with sites / pages / gaps tabs (?tab=): kind, share of
-                          #   answers, who each page names, "are you listed?", pages naming competitors not you; CSV
+    sources/              # Sources, after Peec's Sources › Domains: four numbers (the client's own site as a
+                          #   source, cited without the client being named, sites the client is missing from, links
+                          #   per answer); the five most cited sites over the checks (SourcesChart) beside what
+                          #   changed since the last check (SourceMovers: sites used more, less, for the first time;
+                          #   helpers/history.ts); then one card with sites / pages / gaps tabs (?tab=, &type= one
+                          #   kind of site): kind, share of answers, who each page names, "are you listed?", pages
+                          #   naming competitors not you; filters by kind, by "are you on it" (sites) and by
+                          #   competitor named (gaps); CSV. A site anywhere opens its own page.
+                          #   pages/source-page: one cited site (/sources/[domain], the domain as written, "2gis.uz"):
+                          #   its facts, a sentence on what it means for the client with a link to the fix that
+                          #   gets it listed, the whole site and its most cited pages over the checks beside who
+                          #   ChatGPT names when it cites the site, then Pages / Answers tabs (?tab=answers&page=
+                          #   opens the answers citing one page). A site the latest check no longer cites keeps
+                          #   its page from the history
     wrong-facts/          # Wrong facts: numbers, then claim, correct value, question, date found as a table
     actions/              # Harakatlar: recommended fixes (sites to get onto, wrong facts, pages to write, site fixes):
                           #   four goal tiles, the list by status then goal, a side panel (?action=) with steps to tick,
@@ -199,17 +216,19 @@ frontend/src/
                           #   cards fed with the report over that question, what ChatGPT searched the web for (Peec's
                           #   "query fanouts": each search with the answers that ran it) beside the fixes that list
                           #   the question, then its answers
-    report/               # client report: chart, sources, wrong facts, answers
+    report/               # the client's report (public, no login, no sidebar; prints as A4): see "The report"
   shared/                 # used by 2+ features
     api/                  # client.ts (switches mocks/backend), session.ts (requireUser), query-keys.ts, errors.ts,
                           #   load-report.ts (the report under the URL's filters, for every data page)
     components/           # AppProviders (every message + the data cache: wraps the app's layouts, never the landing
-                          #   page), ui/ (shadcn), answers/ (ChatDialog: an answer opened like a chat, used by the
-                          #   Answers page and a question's page), scores/ (HeadlineKpis + KpiStrip, TrendPanel (the chart card: MetricTabs in
+                          #   page), ui/ (shadcn), answers/ (AnswersList: answers as table rows grouped under their
+                          #   question, used by the Answers page and a cited site's page; ChatDialog: an answer
+                          #   opened like a chat, laid out like Peec's chat window, also used by a question's page),
+                          #   scores/ (HeadlineKpis + KpiStrip, TrendPanel (the chart card: MetricTabs in
                           #   its header, MetricChart as its plot, its large view), BrandTable, TopDomains,
                           #   SourceTypesChart, BarRows: the Overview's parts, also the landing hero's; StandingLine
                           #   (where the client stands, in words);
-                          #   HeadlineScore, SourcesList, WrongFacts, AnswerViewer, …), Panel (a data page's card: title,
+                          #   HeadlineScore, AnswerViewer, …), Panel (a data page's card: title,
                           #   ⓘ hint, tools, footer, and `expand` for ⤢), ExpandButton + ExpandWindow (a card opened in a
                           #   large window), InfoTip (an ⓘ that explains a title or a number), Hint (the same bubble
                           #   on anything else: wraps a table heading, a figure, a mark or an icon button and
@@ -218,7 +237,10 @@ frontend/src/
                           #   Page (title bar + engine switcher + body of a workspace page; `crumb` puts a link to
                           #   the parent page before the title), EmptyState, Logo, …
     hooks/                # use-assistant (open GEO AI from any page), use-logout, use-in-view, use-reduced-motion
-    helpers/              # domain, dates, labels, phone, scores (pure functions), prompts (isTracked), utils (cn)
+    helpers/              # domain (also shortUrl, pathOf, and siteHref + SITE_SLOT: the address of a cited site's
+                          #   page as a pattern a server page can hand to a client component), dates, labels, phone,
+                          #   scores (pure functions), history (checks grouped by day, week, month), prompts
+                          #   (isTracked), utils (cn)
     constants/            # app-wide constants (ENGINES, TIME_ZONE, SESSION_COOKIE, phone format, prompt limits)
     types/                # api.ts (API contract types), scores.ts
   i18n/                   # next-intl routing, navigation, request config, setPageLocale, pickMessages (the
@@ -276,7 +298,8 @@ Auth: the backend sets an httpOnly session cookie `geo_session` on login. The br
 - `DELETE /projects/{id}/prompt-suggestions/{suggestionId}` → 204 (rejects it)
 - `GET  /projects/{id}/report?period=week&language=uz&topic=implants` → Report over the tracked questions (language
   and topic are optional filters: the report then covers only those prompts, and its scores are computed over them)
-- `GET  /projects/{id}/actions` → Action[] (recommended fixes made from the latest run over all prompts, most
+- `GET  /projects/{id}/actions` → Action[] (readable without login through the report's link, like the report
+  itself: the report lists its recommendations; changing an action needs the owner. Recommended fixes made from the latest run over all prompts, most
   important first; recomputed after every weekly run, keeping the statuses the client set)
 - `PATCH /projects/{id}/actions/{actionId}` → Action (body: status and/or stepsDone; marking done sets doneAt,
   and the proof appears after the next run; the frontend sends status in_progress with the first ticked step)
@@ -304,18 +327,23 @@ Types:
 - Report { project, period, method: { engine, model, webSearch: boolean, samples, collectedAt },
   scores: BrandScore[], prompts: PromptResult[], topSources: Source[], wrongFacts: WrongFact[],
   history: HistoryPoint[] (past runs, oldest first, ending with this one),
+  sourceHistory: SourceHistoryPoint[] (the cited sites over the same runs),
   untrackedBrands: { name, answers, dismissed }[] (brands the answers name that aren't tracked: new-competitor
   alerts; `dismissed` ones were hidden by the client and are listed apart),
   nextRunAt | null (next weekly run; runs start Monday 06:00 Tashkent; shown on the Overview as a date, not a countdown) }
 - HistoryPoint { collectedAt, scores: BrandScore without trend [] }
+- SourceHistoryPoint { collectedAt, answers (answers of that run), sources: { domain, type, count (answers citing
+  it), pages: { url, count }[] }[] } (a site the run didn't cite is left out; the last point's counts are
+  `topSources`. The sites chart, a site's own chart and "what changed" are made from it in the frontend)
 - BrandScore { brandId, visibility (0–1), shareOfVoice (0–1), avgPosition | null, sentiment (0–100) | null,
   trend (visibility vs previous period) }
 - PromptResult { prompt: Prompt, answers: Answer[] }
-- Answer { sample, text, mentions: { brandId, position, tone: "positive"|"neutral"|"negative" }[], citations: { url, domain }[],
+- Answer { sample, text, mentions: { brandId, position, tone: "positive"|"neutral"|"negative" }[], citations: { url, domain, title | null (the page's
+  title, as the search tool gives it with the link) }[],
   searches: string[] (the web searches ChatGPT ran before writing the answer, as the search tool reports them, in
   order; empty when it answered without searching) }
 - Source { domain, type: "own"|"competitor"|"news"|"directory"|"social"|"other", count, brandListed: boolean,
-  pages: { url, count, mentions: brandId[] | null }[] }  (directory = maps, catalogs and review sites; social
+  pages: { url, title | null, count, mentions: brandId[] | null }[] }  (directory = maps, catalogs and review sites; social
   includes Telegram channels; mentions = tracked brands the page names, found by reading it, null if unreadable)
 - Snapshot (shape in types/api.ts) includes siteChecks: { check: "ai_bots_blocked"|"prices_as_images"|
   "no_business_markup"|"contacts_missing", passed }[] | null (null when the website couldn't be read)
@@ -349,12 +377,14 @@ Four numbers per brand, shown side by side (the Overview's numbers, its chart ta
   is always the client, competitors take `--series-2…6` in the project's order, so a brand keeps its color
   whatever its rank. The order of the colors is what keeps neighbours apart for color-blind readers:
   don't reorder or add hues without re-running the palette check.
-- Where one brand is the story (headline score, share of voice, the public report), the client is `--you`
-  and competitors are gray.
+- Where one brand is the story (the free check's headline score), the client is `--you` and competitors are
+  gray. The report compares every brand, so its table and chart use the brands' own colors, as the Overview does.
 - Kinds of cited sites have fixed colors too (`SOURCE_TYPE_COLORS`). Good/bad uses `--positive`/`--negative`
   with an arrow or icon, never color alone. A change since last week is an arrow with its number, both green
   (`--better`) when the number got better and red (`--worse`) when it got worse; for position, better means a
-  smaller number, and the arrow still points up. Only the client's own change is colored; competitors' stay gray.
+  smaller number, and the arrow still points up. Every brand's change is colored in its own direction, so a
+  competitor that gained is green too; the client's is also bold (the user's correction, Oct 8: until then
+  competitors' changes were gray).
 - The chart card (TrendPanel) follows Peec's: title and metric tabs in the header, the plot, a footer line that
   explains the metric and switches lines and bars. The plot has dashed gridlines, straight lines with a dot on
   every run (no curves: they would suggest values between two weekly checks), each brand's latest number at its
@@ -366,6 +396,12 @@ Four numbers per brand, shown side by side (the Overview's numbers, its chart ta
   month's average; day only differs once checks run more than once a week, and daily checks are not offered
   for now (the user's decision, Oct 6; `backend/PLAN.md`). The numbers above the chart and the takeaway always compare the latest check with the one before.
 - Every chart has a text twin for screen readers and shows its values on hover and on keyboard focus.
+- The cited sites over time (`SourcesChart`, sources feature) reuse the brands chart's plot (`LinePlot`,
+  exported from metric-chart.tsx). A point is the share of that check's answers citing the site, in whole
+  percent, the number the tables show. Among the sites, the client's own keeps `--series-1` and a thicker line
+  and the others take `--series-2…6` by rank; on a site's own page the whole site is the thick gray line and its
+  pages take the palette. A change in a site's share is an arrow with the points it moved, green up and red down
+  (`ChangeMark`): colored in its own direction, like a brand's.
 - Rankings of sites and kinds are bar lists (`BarRows`): light bars behind the labels, the number at the end
   of each row carries the value. One y-axis per chart; Peec's two-axis "own source impact" is left out.
 - A table with a minimum width scrolls inside its card: give the scroll box `relative` and `min-w-0`, or its
@@ -386,6 +422,62 @@ Four numbers per brand, shown side by side (the Overview's numbers, its chart ta
 - Peec's topics × tags heat map is replaced by two bar lists (by topic, by question language), each row with the
   brand that leads there. No heat maps: a cell's shade can't be read as a number.
 
+## The report
+`/projects/[id]/report` is the document a client forwards and prints: public, no sidebar, three languages. It
+follows the order of a standard business report (the user's request, Oct 8: "a standard, internationally
+accepted format, very clear, that helps a business decide"), every section numbered:
+
+1. **Title block**: what it is, about whom, the period, the date, the scope (questions × answers), the assistant.
+2. **Executive summary**: the answer first. Where the client stands in a sentence, the trend and the place
+   among the brands; four findings, each a sentence with its number, marked good news or a problem (place,
+   questions and topic lost, sites missing, wrong facts); the three things to do first.
+3. **Key figures**: the five numbers, each with what it measures, this check, the previous check, the change
+   and the strongest competitor.
+4. **The evidence**: position among the brands (table and visibility over the checks), topics and question
+   languages won and lost with the questions where only competitors are named, the sites ChatGPT relies on,
+   what it says that is wrong.
+5. **Recommendations**: what to do, the most effective first, each with why, the expected effect and its
+   status; then what is done and what it changed.
+6. **Method and scope**, with the limits of the numbers; **definitions**; **appendix**: every question.
+
+Rules: a reader who stops after the summary has the decision, and everything after it is evidence for it. No
+number appears without what it is compared with. Nothing depends on hover: the report must read on paper, so a
+term is explained in the definitions and under the scorecard's names, not in a bubble. It is laid out for A4
+(`@page` and the `print:` classes; the tools and filters are `print:hidden`, a section stays on one page where
+it fits, and backgrounds print, or bars and marks would vanish): "Print or save as PDF" is the browser's print
+dialog. A sent PDF (Telegram) will be this same page printed by the backend. Its texts are the `Report`
+namespace; the findings are computed in `features/report/helpers/report.ts` and the shared score helpers.
+
+## One place for each number
+A number or a block appears once in the app, plus the Overview, which is the summary of the other pages (the
+user's correction, Oct 8: "some infos are repetitive").
+
+- A page's top row holds numbers about that page's own subject which the blocks right under it don't already
+  show. No count that a tab or a block's title repeats (how many sites are cited is on the Sites tab), no
+  restating of a table's first row (the leader), and no number that belongs to another page: how often the
+  client's site is cited lives on Manbalar, who leads on Raqobatchilar, links per answer on Manbalar.
+- A chart or a card that already stands on the Overview is not added to the page it summarizes, unless that
+  page shows more of it.
+- In a table, what is the same in every row is said once outside it (the date of the check is in the method
+  line). Rows that share a question are grouped under the question, written once.
+- Before adding a block, check where its numbers already appear.
+
+## Clickable rows
+Whatever acts on a click shows the hand cursor: a base rule in `globals.css` gives it to buttons, tabs and menu
+items (Tailwind 4 leaves them with the arrow). A table row that opens something opens on a click anywhere on
+it and shows the hand too: `LinkRow` (shared/components) for a row that leads to a page, `cursor-pointer` with
+an `onClick` for a row that opens a window. The link or button inside the row stays, for the keyboard. A row of
+a bar list leads somewhere when it has `href` (`BarRows`): the whole row is then the link.
+
+A cited site opens its own page wherever it is shown (the user's correction, Oct 8): a row of the sites table,
+the chart's legend, a row of "what changed", the Overview's and a question's list of sites. A cited page's row
+opens its site's page on the answers that cite that page; its address under the title opens the page itself
+in a new tab. A row whose question is written once over several columns spans only the columns every width
+shows, with an empty cell for each column a wider card adds: a wider span adds columns on a phone.
+
+The site's page has the site's domain in its address ("…/sources/2gis.uz"). `proxy.ts` skips addresses with a
+dot (files), so its matcher lists this route apart; restart `npm run dev` after changing the matcher.
+
 ## Explanations on hover
 Everything on a data page says what it is when the mouse rests on it, as on Peec (the user's correction, Oct 6):
 every table heading, every figure that isn't self-evident, every mark that stands for something (a brand's
@@ -400,9 +492,9 @@ over the element on hover, on keyboard focus and on a tap (phones have no hover)
   function and gets the description's id for `aria-describedby`. Marks repeated in every row pass
   `focusable={false}` (reached by the mouse and a tap, not by Tab) and `described={false}` when a hidden label
   already says the same.
-- Done on Savollar, a question's page, Javoblar (the table and the opened answer) and Raqobatchilar, and in
-  the shared brands table, tone icons, site-kind dots and export buttons. The other pages' tables get theirs
-  when their turn comes.
+- Done on Savollar, a question's page, Javoblar (the table and the opened answer), Raqobatchilar, Manbalar and
+  a cited site's page, and in the shared brands table, tone icons, site-kind dots and export buttons. The other pages' tables get
+  theirs when their turn comes.
 
 ## Commands (frontend, from `frontend/`)
 - `npm run dev`

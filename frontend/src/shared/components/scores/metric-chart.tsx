@@ -27,7 +27,8 @@ export interface ChartView {
   grain: Grain;
 }
 
-interface Series extends SeriesBrand {
+/** A line of the plot: a brand, or anything else drawn the same way (a cited site, one of its pages). */
+export interface Series extends SeriesBrand {
   /** One value per run; null where the brand was never named. */
   values: (number | null)[];
 }
@@ -41,7 +42,7 @@ interface Scale {
 }
 
 /** The plot's height in a card and in the large view; the labels at the lines' ends are spaced by it. */
-const PLOT = { card: { box: "h-56", px: 224 }, large: { box: "h-72", px: 288 } } as const;
+export const PLOT = { card: { box: "h-56", px: 224 }, large: { box: "h-72", px: 288 } } as const;
 
 type PlotSize = (typeof PLOT)[keyof typeof PLOT];
 
@@ -256,7 +257,7 @@ const AXIS_STEPS = [1, 2, 5, 10, 15, 20, 25];
  * largest value (never past 100), so low numbers aren't pressed flat against the bottom. Position starts
  * at 1 and grows down the chart.
  */
-function lineScale(metric: Metric, series: Series[]): Scale {
+export function lineScale(metric: Metric, series: Series[]): Scale {
   const values = series.flatMap((line) => line.values).filter((value) => value !== null);
   if (metric === "position") {
     const max = Math.max(3, Math.ceil(Math.max(1, ...values)));
@@ -320,7 +321,12 @@ function endLabels(series: Series[], index: number, scale: Scale, height: number
   return tops.map((label, i) => ({ ...label, top: up[i] ?? label.top }));
 }
 
-function LinePlot({
+/**
+ * The plot itself: the y-axis, dashed gridlines, a straight line per series with a dot on every point and its
+ * latest number at its end, the dates under it, and a tooltip that reads out one point for all the lines.
+ * Exported for the charts that draw something other than the brands' four metrics (the cited sites).
+ */
+export function LinePlot({
   series,
   scale,
   unit,

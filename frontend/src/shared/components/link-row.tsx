@@ -1,0 +1,24 @@
+"use client";
+
+import { useRouter } from "@/i18n/navigation";
+import { cn } from "@/shared/helpers/utils";
+
+/**
+ * A table row that opens a page when clicked anywhere on it, and shows the hand cursor to say so. Links
+ * and buttons inside keep their own click; the row's own link (to the same address) stays the way in for
+ * the keyboard and for "open in a new tab".
+ */
+export function LinkRow({ href, className, children }: { href: string; className?: string; children: React.ReactNode }) {
+  const router = useRouter();
+  return (
+    <tr
+      onClick={(event) => {
+        if (event.target instanceof Element && event.target.closest("a, button")) return;
+        router.push(href);
+      }}
+      className={cn("cursor-pointer", className)}
+    >
+      {children}
+    </tr>
+  );
+}

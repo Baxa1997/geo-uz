@@ -95,9 +95,38 @@ Any other number makes a new account, which goes through onboarding and gets a p
   can be tracked (while the plan has room) or hidden, like Peec's brand suggestions; a competitor's card
   stops tracking it and its questions open the question's page; a topic opens its questions; hover
   explanations.
+- **Review for repeats and three smaller corrections (8 Oct).** The user found some information repetitive and chose all four fixes offered: on Javoblar
+  each question is written once over its three answers and the date column is gone; Javoblar's top row
+  keeps numbers about the answers only; Raqobatchilar's top row lost "leader" and "new brands" (the blocks
+  below say them) and gained the gap to the leader; Manbalar lost the kinds chart and the "your site as a
+  source" card added the same day. The rule is in `frontend/CLAUDE.md`, "One place for each number". Also:
+  clickable things show the hand cursor and whole rows open on a click ("Clickable rows"), and the up and
+  down changes are colored for every brand.
+- **Manbalar rebuilt after Peec's Sources › Domains screenshots (8 Oct); the user has not sent corrections
+  for it yet.** The page: four numbers, the five most cited sites over the checks beside
+  "what changed" (sites used more, less, for the first time), then the Sites / Pages / Gaps card. A site
+  anywhere (a table row, the chart's legend, a change, the Overview's and a question's list of sites) opens
+  the site's own page, `/sources/[domain]`: its facts, a sentence on what it means for the client with a
+  link to the fix that gets it listed, the site and its pages over the checks beside who ChatGPT names when
+  it cites the site, then Pages and Answers tabs. An answer opens the chat window, which now follows Peec's
+  (two cards in a frame, the assistant's name as a chip on top, sources by page title over address), and
+  its bar links to the question's page. Left out of Peec's pages on purpose: "Top" among the movers and the
+  kinds chart (the table and the Overview already are those), "retrieved" apart from "cited", hosts, tags,
+  URL movers and URL types, and the "Links" list of the chat window (our answers carry citations only). New
+  for the backend: page titles on citations and `sourceHistory` in the report.
+- **The report rewritten as a standard business report (8 Oct); the user has not sent corrections for it
+  yet.** They asked for "a standard, internationally accepted format, very clear, that helps a
+  business decide". The public report is now a numbered document: title block, executive summary (where
+  the client stands, four findings, three things to do first), key figures against the previous check and
+  the strongest competitor, position among the brands, topics won and lost, sources, wrong facts,
+  recommendations in order of effect with what is done, method with its limits, definitions, and every
+  question as an appendix. It is laid out for A4: "Print or save as PDF" is the browser's print dialog. The
+  format's rules are in `frontend/CLAUDE.md`, "The report". The Hisobotlar menu item is still a placeholder
+  that links to it.
 - **Decisions the user made (6 Oct):** visibility is shown in percent, as Peec shows it; a change is green
-  when better and red when worse, for the client only (competitors stay gray); daily checks are not offered
-  for now, so the day and week views of the chart show the same points.
+  when better and red when worse; daily checks are not offered for now, so the day and week views of the
+  chart show the same points. Changed on 8 Oct: the up and down changes are colored for every brand, not
+  only for the client (competitors' used to stay gray).
 - **Landing page speed (6 Oct).** The page went from 501 KB to 347 KB, from 62 graphics layers to 8, and from
   redrawing 60 times a second while idle to resting. The rules that keep it that way are in
   `frontend/CLAUDE.md`, "Keeping the landing page fast". The user looked at the page and confirmed it is fast.
@@ -114,8 +143,9 @@ Any other number makes a new account, which goes through onboarding and gets a p
 - **Backend plan (5–6 Oct):** `backend/PLAN.md`, with the build order, tables, the weekly check step by step,
   how each number is calculated, cost per plan and the open questions.
 - **Git:** `main` is on GitHub (Baxa1997/geo-uz) and holds everything above: the Overview branch was merged
-  and pushed on 6 Oct, Savollar on 7 Oct, Javoblar with the second Savollar correction and then Raqobatchilar
-  on 8 Oct (both times the user chose "commit, push, continue" when asked). Each page gets its own branch,
+  and pushed on 6 Oct, Savollar on 7 Oct, and on 8 Oct Javoblar with the second Savollar correction, then
+  Raqobatchilar, then `manbalar-page` (the review for repeats, Manbalar with a page per cited site, the
+  report). Each time the user chose "commit, push, continue" when asked. Each page gets its own branch,
   merged when the user says so.
 
 ## To do, in order
@@ -124,14 +154,15 @@ Any other number makes a new account, which goes through onboarding and gets a p
    headings, figures and marks (`Hint`), which only Savollar has so far:
    - Javoblar: built and merged (see "Done"); corrections may still come.
    - Raqobatchilar: built and merged (see "Done"); corrections may still come.
-   - Manbalar: two things from Peec's "My website": the number "cited without a mention" (answers that link
-     to the client's site and don't name the client), and a way to see only the client's own pages. From
-     Peec's Gap analysis: a filter by kind of site on the gaps tab. Peec's Domains and URLs pages were not
-     among the 4 Oct screenshots: on 8 Oct the user said they will send them. Wait for them before building.
-   - Notoʻgʻri faktlar: brand facts for the answers to be checked against.
+   - Manbalar: rebuilt after Peec's Domains screenshots and merged (see "Done"); corrections may still come.
+     Peec's URLs page was not among the screenshots; our Pages tab stands in for it.
+   - The report: rewritten and merged (see "Done"); corrections may still come.
+   - Notoʻgʻri faktlar, next: brand facts for the answers to be checked against. The user chose on 8 Oct to
+     send Peec's screenshots first (Settings › Facts and wherever Peec shows what its fact check found).
    - Harakatlar: marks on the chart where a fix started and was done.
    - Sozlamalar: editing (today it is read-only), then facts, members, billing.
-   - Hisobotlar: a placeholder today.
+   - Hisobotlar: a placeholder today that links to the report. When its turn comes: the list of past
+     checks' reports (needs a report per run from the backend), sending to Telegram, the agency's name on it.
 
    Peec pages that get no page of ours (the user agreed on 6 Oct):
    - Discovery (a wizard that makes new topics and prompts from services, personas and markets): onboarding
@@ -147,7 +178,7 @@ Any other number makes a new account, which goes through onboarding and gets a p
 3. **Backend.** Begin with step 0 of `backend/PLAN.md`: a small script that measures what one answer costs
    and whether the answers are the ones a person in Tashkent gets. Its result decides whether the prices
    work, so it comes before any other backend code. Then follow the build order in that file. It lists
-   sixteen open questions; daily checks (14) is decided and plan limits (8) partly.
+   nineteen open questions; daily checks (14) and the searches (16) are decided and plan limits (8) partly.
 4. **Noted during the dashboard review, not scheduled:** saving a chart as a picture (owners forward
    pictures in Telegram), a date-range filter once a client has four or more weeks, an export menu on each
    card, and a "write to us in Telegram" banner for new clients. Also a "Saytim" (my website) page once the

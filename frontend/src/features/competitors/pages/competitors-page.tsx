@@ -13,9 +13,8 @@ import { setPageLocale } from "@/i18n/page-locale";
 import { api } from "@/shared/api/client";
 import { orNotFound } from "@/shared/api/errors";
 import { loadReport } from "@/shared/api/load-report";
-import { formatPercent } from "@/shared/helpers/numbers";
 import { hasFilters, withFilters } from "@/shared/helpers/report-filters";
-import { promptsWithoutYou, rankedBrands, seriesBrands, standing } from "@/shared/helpers/scores";
+import { outOf100, promptsWithoutYou, rankedBrands, seriesBrands, standing } from "@/shared/helpers/scores";
 import { RivalCard } from "../components/rival-card";
 import { TopicRankings } from "../components/topic-rankings";
 import { UntrackedBrands } from "../components/untracked-brands";
@@ -33,8 +32,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 /**
- * The client against each competitor: where the client stands in five numbers, then the brands on the four
- * metrics with their weekly change (Peec's ranking), who leads each topic, the brands ChatGPT names that
+ * The client against each competitor: where the client stands in four numbers the blocks below don't show
+ * as such (its place, the gap to the leader, the topics it leads, the questions without it), then the
+ * brands on the four metrics with their weekly change (Peec's ranking), who leads each topic, the brands ChatGPT names that
  * aren't tracked yet (Peec's brand suggestions: track one or hide it), then the questions each competitor
  * wins. A competitor's card also stops tracking it.
  */
@@ -69,9 +69,13 @@ export default async function CompetitorsPage({ params, searchParams }: Props) {
   const series = seriesBrands(report.project);
   const rankings = topicRankings(report.prompts, series);
   const place = standing(report.scores, brand.id, "visibility");
-  const leader = rankedBrands(report)[0];
+  // The gap to the leader in points of visibility; when the client leads, its lead over the next brand
+  const ranked = rankedBrands(report);
+  const you = ranked.find((entry) => entry.isYou);
+  const rival = ranked.find((entry) => !entry.isYou);
+  const leading = ranked[0]?.isYou ?? false;
+  const gap = you && rival ? Math.abs(outOf100(rival.score.visibility) - outOf100(you.score.visibility)) : null;
   const withoutYou = promptsWithoutYou(report.prompts, brand.id, competitors.map((competitor) => competitor.id)).length;
-  const suggested = report.untrackedBrands.filter((untracked) => !untracked.dismissed).length;
 
   return (
     <Page title={t("competitors")} engines>
@@ -86,11 +90,11 @@ export default async function CompetitorsPage({ params, searchParams }: Props) {
             note: place ? tCompetitors("kpi.placeOf", { of: place.of }) : undefined,
           },
           {
-            key: "leader",
-            label: tCompetitors("kpi.leader"),
-            hint: tCompetitors("kpi.leaderHint"),
-            value: leader && leader.score.visibility > 0 ? (leader.isYou ? tCompetitors("kpi.you") : leader.brand.name) : null,
-            note: leader && leader.score.visibility > 0 ? formatPercent(leader.score.visibility, locale) : undefined,
+            key: "gap",
+            label: tCompetitors(leading ? "kpi.lead" : "kpi.gap"),
+            hint: tCompetitors(leading ? "kpi.leadHint" : "kpi.gapHint"),
+            value: gap === null ? null : String(gap),
+            note: gap === null || !rival ? undefined : tCompetitors("kpi.points", { points: gap, name: rival.brand.name }),
           },
           {
             key: "topics",
@@ -106,7 +110,6 @@ export default async function CompetitorsPage({ params, searchParams }: Props) {
             value: String(withoutYou),
             note: tCompetitors("kpi.withoutOf", { total: report.prompts.length }),
           },
-          { key: "new", label: tCompetitors("kpi.new"), hint: tCompetitors("kpi.newHint"), value: String(suggested) },
         ]}
       />
       <BrandTable

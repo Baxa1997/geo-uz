@@ -11,6 +11,7 @@ import { TrendPanel } from "@/shared/components/scores/trend-panel";
 import { setPageLocale } from "@/i18n/page-locale";
 import { api } from "@/shared/api/client";
 import { orNotFound } from "@/shared/api/errors";
+import { SITE_SLOT } from "@/shared/helpers/domain";
 import { isTracked } from "@/shared/helpers/prompts";
 import { parseReportFilters, withFilters } from "@/shared/helpers/report-filters";
 import { seriesBrands, totalAnswers } from "@/shared/helpers/scores";
@@ -101,7 +102,15 @@ export default async function PromptPage({ params, searchParams }: Props) {
                 // A first check has no week before it to compare with
                 description={tPage(report.history.length > 1 ? "brandsHint" : "brandsHintFirst")}
               />
-              <TopDomains expandable sources={report.topSources} totalAnswers={totalAnswers(report.prompts)} youId={project.brand.id} limit={TOP_SOURCES} />
+              <TopDomains
+                expandable
+                sources={report.topSources}
+                totalAnswers={totalAnswers(report.prompts)}
+                youId={project.brand.id}
+                limit={TOP_SOURCES}
+                // A site's page covers every question, not this one alone
+                sitePattern={withFilters(`${base}/sources/${SITE_SLOT}`, filters)}
+              />
               <SourceTypesChart expandable sources={report.topSources} />
             </div>
           </div>
@@ -124,6 +133,7 @@ export default async function PromptPage({ params, searchParams }: Props) {
             project={project}
             brands={brands}
             collectedAt={report.method.collectedAt}
+            engine={report.method.engine}
             allHref={isTracked(prompt) ? `${base}/answers` : undefined}
           />
 

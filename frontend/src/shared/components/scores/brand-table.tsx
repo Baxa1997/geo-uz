@@ -154,7 +154,7 @@ export function BrandTable({
                         {formatDecimal(value, locale)}
                         {metricUnit(metric)}
                       </span>
-                      <Change metric={metric} change={change} judged={brand.isYou} />
+                      <Change metric={metric} change={change} own={brand.isYou} />
                     </span>
                   )}
                 </td>
@@ -201,10 +201,11 @@ export function BrandTable({
 }
 
 /**
- * Change since the previous run. The arrow points up when the brand did better, which for
- * position means a smaller number. Only the client's own change is judged: green when up, red when down.
+ * Change since the previous run, for every brand in its own direction: an arrow up and green when the
+ * brand's number got better (for position that means a smaller number), an arrow down and red when it got
+ * worse. The client's own change is also bold. (Until 8 Oct 2026 competitors' changes were gray.)
  */
-function Change({ metric, change, judged }: { metric: Metric; change: number; judged: boolean }) {
+function Change({ metric, change, own }: { metric: Metric; change: number; own: boolean }) {
   const t = useTranslations("BrandTable");
   const locale = useLocale();
   const amount = formatDecimal(Math.abs(change), locale);
@@ -215,7 +216,8 @@ function Change({ metric, change, judged }: { metric: Metric; change: number; ju
     <span
       className={cn(
         "hidden items-center gap-0.5 text-xs tabular-nums @md:inline-flex",
-        !judged ? "text-muted-foreground" : better ? "font-medium text-better" : "font-medium text-worse",
+        better ? "text-better" : "text-worse",
+        own && "font-medium",
       )}
     >
       <Icon aria-hidden className="size-3" />

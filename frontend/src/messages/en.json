@@ -64,8 +64,166 @@
     "home": "Home"
   },
   "Report": {
-    "metaTitle": "{brand} — ChatGPT visibility report",
-    "weekly": "Weekly report"
+    "metaTitle": "{brand} — AI visibility report",
+    "kicker": "AI visibility report",
+    "weekly": "Weekly",
+    "tools": "Report tools",
+    "print": "Print or save as PDF",
+    "copy": "Copy link",
+    "copied": "Link copied",
+    "footer": "Prepared by GEO from ChatGPT’s answers of {date}. The numbers describe those answers; they are not a forecast.",
+    "meta": {
+      "period": "Period",
+      "periodRange": "{from} – {to}",
+      "issued": "Report date",
+      "scope": "Scope",
+      "scopeValue": "{prompts} questions × {samples} answers = {answers} answers",
+      "assistant": "AI assistant",
+      "assistantValue": "{engine}, web search on"
+    },
+    "sections": {
+      "summary": "Executive summary",
+      "scorecard": "Key figures",
+      "competitors": "Competitive position",
+      "topics": "Where you win and where you lose",
+      "sources": "Sources ChatGPT relies on",
+      "accuracy": "Accuracy",
+      "actions": "Recommendations",
+      "method": "Method and scope",
+      "glossary": "Definitions",
+      "appendix": "Appendix. Every question"
+    },
+    "summary": {
+      "trend": "Trend",
+      "status": {
+        "up": "Improving",
+        "down": "Declining",
+        "steady": "Steady",
+        "first": "First check"
+      },
+      "place": "Place among brands",
+      "placeValue": "{rank} of {of}",
+      "findings": "Key findings",
+      "first": "What to do first",
+      "more": "All recommendations are in section {section}.",
+      "noActions": "Nothing is waiting to be done: every recommendation so far is done or declined.",
+      "rankBehind": "By visibility you rank {rank} of {of} tracked brands. {leader} leads with {leaderValue}, {gap} points ahead of you.",
+      "rankFirst": "You lead the {of} tracked brands by visibility. {next} follows with {nextValue}.",
+      "rankOnly": "No competitors are tracked yet, so there is no one to compare with.",
+      "missing": "In {count} of {total} questions ChatGPT names competitors and never you.",
+      "missingNone": "There is no question where ChatGPT names only competitors.",
+      "weakTopic": "Your weakest topic is “{topic}”: {value} against {leader}’s {leaderValue}.",
+      "sources": "{count, plural, one {# site ChatGPT relies on doesn’t} other {# sites ChatGPT relies on don’t}} list you. The most used: {sites}.",
+      "sourcesNone": "You are on every site ChatGPT relies on.",
+      "facts": "ChatGPT states {count, plural, one {# wrong fact} other {# wrong facts}} about you.",
+      "factsNone": "No wrong facts about you were found in the answers."
+    },
+    "scorecard": {
+      "lead": "The five numbers this report follows: now, in the previous check, and against the strongest competitor.",
+      "metric": "Metric",
+      "now": "This check",
+      "before": "Previous check",
+      "change": "Change",
+      "best": "Best competitor",
+      "about": {
+        "visibility": "Share of answers that name you",
+        "shareOfVoice": "Your share of all mentions of the tracked brands",
+        "position": "Your average place in an answer; 1 is first",
+        "sentiment": "How positively you are spoken of, out of 100",
+        "usedAsSource": "Share of answers that link to your website"
+      },
+      "noChange": "no change",
+      "better": "better by {amount}",
+      "worse": "worse by {amount}",
+      "notNamed": "not named"
+    },
+    "competitors": {
+      "lead": "Every tracked brand in the latest check, the most visible first.",
+      "brand": "Brand",
+      "change": "Change",
+      "chart": "Visibility over the checks",
+      "chartLabel": "Line chart: visibility of {brands} brands over {count} checks",
+      "you": "you"
+    },
+    "topics": {
+      "lead": "Your visibility in each topic against the strongest competitor there. Topics where you trail most come first.",
+      "topic": "Topic",
+      "questions": "Questions",
+      "you": "You",
+      "leader": "Strongest competitor",
+      "gap": "Result",
+      "ahead": "ahead by {points}",
+      "behind": "behind by {points}",
+      "level": "level",
+      "languageTitle": "By question language",
+      "language": "Language",
+      "missingTitle": "Questions where only competitors are named",
+      "missingMore": "and {count} more",
+      "missingNone": "None: wherever a tracked brand is named, you are named too.",
+      "named": "Named: {brands}"
+    },
+    "sources": {
+      "lead": "The sites ChatGPT cites most. Being on them is the quickest way into its answers.",
+      "site": "Site",
+      "kind": "Kind",
+      "used": "Used",
+      "you": "Are you there?",
+      "listed": "Yes",
+      "notListed": "No",
+      "own": "Your site",
+      "competitor": "Competitor’s site",
+      "summary": "ChatGPT links to your own site in {own} of its answers. {missing, plural, =0 {You are on every other site it relies on.} one {You are missing from # site it relies on.} other {You are missing from # sites it relies on.}}",
+      "more": "{count} more sites are cited less often."
+    },
+    "accuracy": {
+      "lead": "What ChatGPT says about you that is not true. A wrong price or address costs customers.",
+      "none": "No wrong facts were found in this check.",
+      "says": "ChatGPT says",
+      "correct": "Correct",
+      "question": "Question",
+      "since": "First seen"
+    },
+    "actions": {
+      "lead": "What to do, the most effective first. Each follows from the findings above.",
+      "what": "What to do",
+      "why": "Why",
+      "impact": "Expected effect",
+      "status": "Status",
+      "none": "No open recommendations.",
+      "more": "{count} more are on the Actions page of the app.",
+      "doneTitle": "Done so far",
+      "doneProof": "Visibility on its questions: {before} → {after}",
+      "donePending": "The result shows after the next check"
+    },
+    "method": {
+      "lead": "How the numbers were collected, so the report can be checked and repeated.",
+      "assistant": "AI assistant",
+      "assistantValue": "{engine} ({model}), asked through its API with web search on",
+      "location": "Asked as",
+      "locationValue": "A customer in {city}",
+      "questions": "Questions",
+      "questionsValue": "{count} tracked questions: {uz} in Uzbek, {ru} in Russian",
+      "samples": "Answers per question",
+      "samplesValue": "{samples}: an assistant answers differently each time, so every question is asked several times",
+      "checks": "Checks",
+      "checksValue": "Weekly. This check: {date}; the previous one: {previous}",
+      "checksFirst": "Weekly. This is the first check: {date}",
+      "brands": "Brands compared",
+      "limits": "Limits",
+      "limitsValue": "An AI assistant’s answers vary from one asking to the next, and between its API and its app. The numbers are shares over all {answers} answers of this check; a change of a few points between two checks can be chance. A trend over several checks is more reliable than one week’s change."
+    },
+    "glossary": {
+      "visibility": "The share of answers that name the brand. 42% means 42 of every 100 answers.",
+      "shareOfVoice": "The brand’s mentions out of all mentions of the tracked brands. It shows how the attention is divided.",
+      "position": "Where the brand comes among the businesses an answer names. 1 is first; the smaller, the better. Averaged over the answers that name it.",
+      "sentiment": "How positively the brand is spoken of, from 0 (negative) to 100 (positive).",
+      "usedAsSource": "The share of answers that link to a site. For your own site it shows how much ChatGPT relies on what you publish.",
+      "checkTerm": "Check",
+      "check": "One weekly round in which every tracked question is asked several times."
+    },
+    "appendix": {
+      "lead": "Every question of this check with the brands its answers name. Open a question to read the answers."
+    }
   },
   "Headline": {
     "title": "How often ChatGPT names you",
@@ -361,13 +519,6 @@
       "doneAt": "Done on"
     }
   },
-  "ShareOfVoice": {
-    "title": "Share of voice",
-    "description": "Each brand’s share of all mentions of the tracked clinics.",
-    "you": "{name} (you)",
-    "brand": "Brand",
-    "share": "Share"
-  },
   "WrongFacts": {
     "title": "Wrong facts about you",
     "description": "Claims in ChatGPT’s answers that don’t match reality.",
@@ -376,15 +527,6 @@
     "prompt": "Question",
     "empty": "No wrong facts found.",
     "foundAt": "First found: {date}"
-  },
-  "Sources": {
-    "title": "Sources ChatGPT cites",
-    "description": "Sites cited in ChatGPT’s answers, by number of answers citing them.",
-    "missing": "You’re not listed on {count} of these sources.",
-    "answers": "{count, plural, one {# answer} other {# answers}}",
-    "listed": "Listed",
-    "notListed": "Not listed",
-    "competitorSite": "Competitor’s site"
   },
   "SourcesPage": {
     "typeLabel": "Source type",
@@ -413,22 +555,23 @@
       "named": "Competitors on the page",
       "citations": "Citations on average",
       "listed": "Listed",
-      "you": "Names you"
+      "you": "Names you",
+      "title": "Title"
     },
     "pageYou": "You’re named",
     "pageNotYou": "You’re not named",
     "pageUnknown": "Couldn’t be read",
     "kpi": {
-      "sites": "Sites cited",
-      "sitesHint": "How many sites ChatGPT links to in its answers.",
-      "pages": "Pages cited",
-      "pagesHint": "How many exact pages on those sites.",
       "citations": "Citations per answer",
       "citationsHint": "The average number of pages an answer cites.",
       "own": "Your site as a source",
       "ownHint": "The share of answers in which ChatGPT links to your website.",
       "missing": "Sites without you",
-      "missingHint": "Sites ChatGPT relies on where you have no listing or page (competitors’ own sites aside)."
+      "missingHint": "Sites ChatGPT relies on where you have no listing or page (competitors’ own sites aside).",
+      "unnamed": "Cited, not named",
+      "unnamedHint": "Answers where ChatGPT cited your site but didn’t name your brand: it took facts from your site and didn’t recommend you.",
+      "ownNote": "{count, plural, one {# answer} other {# answers}}",
+      "unnamedNote": "of {total}"
     },
     "tabsLabel": "Sources view",
     "tabs": {
@@ -447,18 +590,68 @@
       "used": "Used",
       "citations": "Citations",
       "listed": "Are you listed?",
-      "pages": "Pages",
       "you": "Names you",
       "competitors": "Competitors on the page"
     },
-    "usedHint": "The share of answers that link to this source",
-    "citationsHint": "Average citations in an answer that relies on the source",
-    "pagesCount": "{count, plural, one {# page} other {# pages}}",
-    "emptyFiltered": "No sources match this filter."
+    "emptyFiltered": "No sources match this filter.",
+    "presence": {
+      "label": "Are you listed?",
+      "all": "All sites",
+      "listed": "Sites you’re on",
+      "missing": "Sites you’re not on"
+    },
+    "brandFilter": {
+      "label": "Competitor",
+      "all": "All competitors"
+    },
+    "hints": {
+      "tabs": {
+        "sites": "The sites ChatGPT cites in its answers, the most used first.",
+        "pages": "The exact pages on those sites: what ChatGPT actually relied on.",
+        "gaps": "Pages that name competitors and not you: where it pays to get added."
+      },
+      "rank": "The site’s place by the number of answers that use it.",
+      "site": "A site ChatGPT cited. Click the row to open the site’s own page: its pages, the answers that cite it and how its use changed.",
+      "page": "The exact page ChatGPT cited: its title, and its address under it. The address opens the page in a new tab; a click on the row lists the answers that cite it.",
+      "type": "The kind of site: maps and directories, news, social, a competitor’s site or your own.",
+      "named": "The tracked brands named on this site or page. Hover a mark to see the brand’s name.",
+      "used": "The share of answers that cite this source.",
+      "citations": "How many times, on average, one answer that uses this source cites it.",
+      "listed": "Whether you have a listing or a page on this site. If not, getting onto the site is the quickest win.",
+      "you": "Whether this page names your brand. Unknown when the page couldn’t be read.",
+      "competitors": "The competitors named on this page.",
+      "profile": "The page names a single competitor: it may be that competitor’s own listing. Open or complete your own listing on this site."
+    },
+    "pageAnswers": "{title}: the answers that cite this page",
+    "chart": {
+      "title": "Sources over time",
+      "hint": "How much ChatGPT relied on the most cited sites, check by check. Click a site’s name under the chart to open its page.",
+      "footer": "{count, plural, one {The most cited site} other {The # most cited sites}}. A point is the share of that check’s answers that link to the site.",
+      "label": "Line chart: the share of answers citing each of {sites} sites over {checks} checks. Use the left and right arrow keys to move between checks."
+    },
+    "movers": {
+      "title": "What changed",
+      "hint": "Sites ChatGPT relies on more, less or for the first time, compared with the previous check. The number at the end is the share of answers that cite the site now. Click a site to open its page.",
+      "tabs": {
+        "rising": "Rising",
+        "falling": "Falling",
+        "fresh": "New"
+      },
+      "tabHints": {
+        "rising": "Sites cited in a larger share of answers than in the previous check.",
+        "falling": "Sites cited in a smaller share of answers than in the previous check: 0% when the latest check didn’t cite them at all.",
+        "fresh": "Sites ChatGPT cited for the first time in the latest check."
+      },
+      "firstRun": "Changes appear after the second check: there is nothing to compare with yet.",
+      "compared": "Compared with the check of {date}.",
+      "more": "and {count} more",
+      "new": "new",
+      "newHint": "No earlier check cited this site.",
+      "was": "It was {before} in the previous check.",
+      "none": "No site is cited more or less than in the previous check, and none is new."
+    }
   },
   "Prompts": {
-    "title": "Questions and answers",
-    "description": "{count} questions, {samples, plural, one {# answer} other {# answers}} each. Tap a question to read the answers.",
     "filterLabel": "Filter questions",
     "all": "All",
     "missing": "You’re missing",
@@ -590,17 +783,17 @@
       "place": "Your place",
       "placeOf": "of {of} brands",
       "placeHint": "Your place among the tracked brands by visibility. Visibility is the share of ChatGPT’s answers that name you.",
-      "leader": "Leader",
-      "you": "You",
-      "leaderHint": "The brand named in the most answers, and its visibility.",
       "topics": "You lead",
       "topicsHint": "In how many topics ChatGPT names you more than any other brand.",
       "without": "Without you",
       "withoutHint": "How many questions ChatGPT answers naming a competitor and not you. They are listed at the foot of the page.",
-      "new": "New brands",
-      "newHint": "How many brands ChatGPT’s answers name that you don’t track yet. You can start tracking them further down the page.",
       "topicsOf": "{total, plural, one {of # topic} other {of # topics}}",
-      "withoutOf": "{total, plural, one {of # question} other {of # questions}}"
+      "withoutOf": "{total, plural, one {of # question} other {of # questions}}",
+      "gap": "Behind the leader",
+      "lead": "Ahead of the next",
+      "points": "{points, plural, one {point} other {points}} · {name}",
+      "gapHint": "How many points the leader’s visibility is above yours. A point is a difference of percentages: 72% against 42% is 30 points.",
+      "leadHint": "How many points your visibility is above the brand in second place. A point is a difference of percentages."
     },
     "untracked": {
       "tracked": "Competitors:",
@@ -1686,12 +1879,12 @@
       "totalHint": "ChatGPT’s answers in the latest check: {samples} per question.",
       "named": "Named you",
       "namedHint": "How many answers named you, and their share.",
-      "citing": "Linked your site",
-      "citingHint": "Answers in which ChatGPT links to your website.",
-      "citations": "Citations per answer",
-      "citationsHint": "The average number of pages an answer cites.",
-      "top": "Named most",
-      "topHint": "The tracked brand named in the most answers."
+      "negative": "Negative about you",
+      "negativeHint": "Answers where ChatGPT speaks of you in a negative tone. The Status filter in the table lists them.",
+      "nobody": "Nobody named",
+      "nobodyHint": "Answers that name none of the tracked brands: the place is still open.",
+      "searched": "With a web search",
+      "searchedHint": "Answers ChatGPT searched the web for before writing. When it searches, the answer leans on websites."
     },
     "table": {
       "title": "All answers",
@@ -1712,8 +1905,7 @@
         "brands": "Brands named",
         "sources": "Sources",
         "position": "Your place",
-        "tone": "Tone",
-        "date": "Date"
+        "tone": "Tone"
       },
       "sample": "Answer {n}",
       "notNamed": "Not named",
@@ -1738,12 +1930,11 @@
       },
       "noSources": "This answer cites no site",
       "hints": {
-        "answer": "The question and how ChatGPT’s answer opens. Several answers are collected per question, so a question repeats. Click a row to read the answer in full.",
+        "answer": "How ChatGPT’s answer opens. The answers to one question sit together under it; click the question to open its page. Click an answer’s row to read it in full.",
         "brands": "The tracked brands this answer names, in the order it names them. Hover a mark to see the brand’s name.",
         "sources": "The sites ChatGPT cites in this answer. Hover a mark to see the site.",
         "position": "Where in this answer you are named. 1 is first. A dash means you aren’t named.",
         "tone": "The tone ChatGPT takes about you in this answer: positive, neutral or negative.",
-        "date": "The date of the weekly check that collected the answer.",
         "count": "How many answers match the search and the filters."
       }
     },
@@ -1767,12 +1958,14 @@
         "city": "The question was asked as a customer in this city.",
         "language": "The question was asked in this language.",
         "named": "The tracked brands this answer names: where in the answer, and in what tone.",
-        "sources": "The pages ChatGPT cites in this answer. Click one to open it in a new tab.",
+        "sources": "The pages ChatGPT cites in this answer: each page’s title with its address under it. Click one to open it in a new tab.",
         "sample": "Which of the answers to this question this is. A question is asked several times in every check.",
         "searches": "The searches ChatGPT ran on the web before writing this answer."
       },
       "searches": "What ChatGPT searched",
-      "noSearches": "It didn’t search the web."
+      "noSearches": "It didn’t search the web.",
+      "viewAll": "View all {count}",
+      "viewLess": "Show fewer"
     }
   },
   "Kpi": {
@@ -1823,5 +2016,74 @@
     "better": "That is {amount} better than last week.",
     "worse": "That is {amount} worse than last week.",
     "same": "No change since last week."
+  },
+  "SourcePage": {
+    "label": "Cited site",
+    "visit": "Open the site",
+    "facts": {
+      "type": "Kind",
+      "used": "Used",
+      "listed": "Are you listed?",
+      "citations": "Citations per answer",
+      "lastCited": "Last cited",
+      "owner": "Whose site"
+    },
+    "hints": {
+      "type": "The kind of site: maps and directories, news, social, a competitor’s site or your own.",
+      "used": "The share of the latest check’s answers that cite this site, and how many answers that is.",
+      "listed": "Whether you have a listing or a page on this site. If not, getting onto it is the quickest win.",
+      "citations": "How many of this site’s pages one answer cites on average, among the answers that use the site.",
+      "lastCited": "The latest check in which an answer cited this site.",
+      "owner": "Whose website this is: yours, or a competitor’s you track. There is no listing to get on a competitor’s own site."
+    },
+    "answersCount": "{count, plural, one {# answer} other {# answers}}",
+    "ownSite": "Yours",
+    "competitorSite": "{name}, a competitor",
+    "verdict": {
+      "missing": "ChatGPT relies on {domain} in {share} of its answers, and you aren’t on it.",
+      "rivals": "Named there: {rivals}.",
+      "action": "How to get listed",
+      "listed": "You’re on {domain}. Of the {citing, plural, one {# answer} other {# answers}} that cite it, ChatGPT names you in {named}.",
+      "own": "This is your own site. ChatGPT cites it in {citing, plural, one {# answer} other {# answers}}.",
+      "ownUnnamed": "In {unnamed} of them it doesn’t name you: it took facts from your site and didn’t recommend you.",
+      "ownNamed": "It names you in every one of them.",
+      "competitor": "This is {name}’s own site, so you can’t be listed on it. ChatGPT cites it in {citing, plural, one {# answer} other {# answers}}: see which pages it relies on and write a page of your own on the same topics.",
+      "lost": "ChatGPT didn’t cite this site in the latest check ({date}). It last did in the check of {last}.",
+      "filtered": "No answer under these filters cites this site."
+    },
+    "chart": {
+      "title": "This site over time",
+      "hint": "The share of answers that cite this site, check by check, with its most cited pages beside it.",
+      "whole": "Whole site",
+      "footer": "The whole site and its most cited pages. A point is the share of that check’s answers that link to it.",
+      "footerOne": "A point is the share of that check’s answers that link to the site.",
+      "label": "Line chart: the share of answers citing {domain} over {checks} checks. Use the left and right arrow keys to move between checks."
+    },
+    "brands": {
+      "title": "Who ChatGPT names when it cites this site",
+      "hint": "Of the answers that cite this site, how many name each tracked brand. A full bar means the brand is named in all of them.",
+      "empty": "The answers that cite this site name none of the tracked brands.",
+      "footer": "Counted over the {count, plural, one {# answer} other {# answers}} that cite this site.",
+      "count": "Named in {count} of {total}"
+    },
+    "tabsLabel": "Site view",
+    "tabs": {
+      "pages": "Pages",
+      "answers": "Answers"
+    },
+    "tabHints": {
+      "pages": "The pages of this site that ChatGPT cites.",
+      "answers": "The answers that cite this site. Click one to read it in full."
+    },
+    "pages": {
+      "hint": "A cited page of this site: its title, and its address under it. The address opens the page in a new tab; a click on the row lists the answers that cite the page.",
+      "usedHint": "The share of answers that cite this page, and how it changed since the previous check."
+    },
+    "answers": {
+      "pageFilter": "Page",
+      "allPages": "All pages",
+      "countHint": "The answers of the latest check that cite this site, after the page filter.",
+      "all": "Open in Answers"
+    }
   }
 }

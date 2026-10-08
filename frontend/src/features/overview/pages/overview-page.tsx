@@ -16,6 +16,7 @@ import { setPageLocale } from "@/i18n/page-locale";
 import { api } from "@/shared/api/client";
 import { orNotFound } from "@/shared/api/errors";
 import { loadReport } from "@/shared/api/load-report";
+import { SITE_SLOT } from "@/shared/helpers/domain";
 import { hasFilters, withFilters } from "@/shared/helpers/report-filters";
 import { seriesBrands, totalAnswers } from "@/shared/helpers/scores";
 import { ActionsCard } from "../components/actions-card";
@@ -117,6 +118,7 @@ export default async function OverviewPage({ params, searchParams }: Props) {
             youId={brand.id}
             limit={TOP_SOURCES}
             action={<ArrowLink href={to("/sources")}>{t("sources")}</ArrowLink>}
+            sitePattern={to(`/sources/${SITE_SLOT}`)}
           />
           <SourceTypesChart expandable sources={report.topSources} />
         </div>

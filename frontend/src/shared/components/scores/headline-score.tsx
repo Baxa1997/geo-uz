@@ -100,7 +100,7 @@ function ScoreTile({
         {outOf100(score.visibility)}
         <span className="text-xl text-muted-foreground sm:text-2xl">%</span>
       </p>
-      {showTrend && <Trend trend={score.trend} goodWhenUp={highlight} />}
+      {showTrend && <Trend trend={score.trend} />}
     </div>
   );
 }

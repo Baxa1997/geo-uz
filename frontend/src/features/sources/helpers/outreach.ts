@@ -1,4 +1,4 @@
-import type { CitedPage, Source } from "@/shared/types/api";
+import type { CitedPage, PromptResult, Source } from "@/shared/types/api";
 import type { SeriesBrand } from "@/shared/types/scores";
 
 export interface OutreachPage {
@@ -29,5 +29,16 @@ export function outreachPages(sources: Source[], youId: string, brands: SeriesBr
     .sort((a, b) => b.page.count - a.page.count || b.named.length - a.named.length);
 }
 
-/** "2gis.uz/tashkent/firm/7000…" without the protocol, "www." or a trailing slash. */
-export const shortUrl = (url: string) => url.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
+/**
+ * How ChatGPT uses the client's own website: the answers that cite it, and how many of those don't name
+ * the client (Peec's "cited without a mention": the site served as a source, the brand wasn't recommended).
+ */
+export function ownSiteUse(results: PromptResult[], domain: string, youId: string): { answers: number; citing: number; unnamed: number } {
+  const answers = results.flatMap((result) => result.answers);
+  const citing = answers.filter((answer) => answer.citations.some((citation) => citation.domain === domain));
+  return {
+    answers: answers.length,
+    citing: citing.length,
+    unnamed: citing.filter((answer) => !answer.mentions.some((mention) => mention.brandId === youId)).length,
+  };
+}

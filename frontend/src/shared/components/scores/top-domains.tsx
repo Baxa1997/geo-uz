@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Hint } from "@/shared/components/hint";
 import { Panel } from "@/shared/components/panel";
 import { Segmented, SegmentedButton } from "@/shared/components/segmented";
+import { shortUrl, siteHref } from "@/shared/helpers/domain";
 import { formatPercent } from "@/shared/helpers/numbers";
 import type { Source, SourceType } from "@/shared/types/api";
 import { BarRows } from "./bar-rows";
@@ -15,6 +16,8 @@ type View = "domains" | "pages";
 
 interface Row {
   name: string;
+  /** The site the row belongs to: the row itself, or the page's site. */
+  domain: string;
   type: SourceType;
   /** Answers citing it. */
   answers: number;
@@ -28,8 +31,6 @@ interface Row {
 /** The takeaway names this many of the sites the client is missing from. */
 const MISSING_SHOWN = 3;
 
-const shortUrl = (url: string) => url.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
-
 /** Sites the brand could be on: everything except its own website and the competitors' own. */
 const isOpen = (source: Source) => source.type !== "own" && source.type !== "competitor";
 
@@ -37,7 +38,8 @@ const isOpen = (source: Source) => source.type !== "own" && source.type !== "com
  * The sites ChatGPT cites most, or the exact pages, as bars: the share of answers that use each. A dot
  * gives the site's kind; a page also says whether it names the client. `expandable` adds ⤢: every site
  * and page in a large window, each with its kind in words and whether the client is on it, plus the
- * most cited site and the sites the client is missing from, in words.
+ * most cited site and the sites the client is missing from, in words. With `sitePattern`, a row opens its
+ * site's own page.
  */
 export function TopDomains({
   sources,
@@ -45,6 +47,7 @@ export function TopDomains({
   youId,
   limit,
   action,
+  sitePattern,
   expandable = false,
   className,
 }: {
@@ -53,6 +56,8 @@ export function TopDomains({
   youId: string;
   limit: number;
   action?: React.ReactNode;
+  /** The address of a cited site's page with SITE_SLOT for its domain; without it the rows aren't links. */
+  sitePattern?: string;
   expandable?: boolean;
   className?: string;
 }) {
@@ -66,6 +71,7 @@ export function TopDomains({
     view === "domains"
       ? sources.map((source) => ({
           name: source.domain,
+          domain: source.domain,
           type: source.type,
           answers: source.count,
           present: isOpen(source) ? source.brandListed : undefined,
@@ -73,6 +79,7 @@ export function TopDomains({
       : sources.flatMap((source) =>
           source.pages.map((page) => ({
             name: shortUrl(page.url),
+            domain: source.domain,
             type: source.type,
             answers: page.count,
             present: page.mentions && page.mentions.includes(youId),
@@ -102,6 +109,7 @@ export function TopDomains({
           key: row.name,
           size: row.answers / max,
           value: share(row.answers),
+          href: sitePattern && siteHref(sitePattern, row.domain),
           label: (
             <>
               <span

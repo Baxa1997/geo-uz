@@ -25,6 +25,10 @@ export default function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Skip API routes, Next.js internals and files with an extension
-  matcher: "/((?!api|_next|_vercel|.*\\..*).*)",
+  matcher: [
+    // Skip API routes, Next.js internals and files with an extension
+    "/((?!api|_next|_vercel|.*\\..*).*)",
+    // A cited site's page has the site's domain in its address ("…/sources/2gis.uz"): a dot, but not a file
+    "/:locale/projects/:id/sources/:domain",
+  ],
 };

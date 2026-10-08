@@ -15,6 +15,12 @@ function monday(day: string): string {
   return date.toISOString().slice(0, 10);
 }
 
+/** The period a check falls in: its day, the Monday of its week, or its month ("2026-09"), in the given time zone. */
+export function periodKey(iso: string, grain: Grain, timeZone: string): string {
+  const day = formatIsoDay(iso, timeZone);
+  return grain === "day" ? day : grain === "week" ? monday(day) : day.slice(0, 7);
+}
+
 const mean = (values: number[]) => values.reduce((sum, value) => sum + value, 0) / values.length;
 
 /**
@@ -26,8 +32,7 @@ const mean = (values: number[]) => values.reduce((sum, value) => sum + value, 0)
 export function groupHistory(history: HistoryPoint[], grain: Grain, timeZone: string): HistoryPoint[] {
   const periods = new Map<string, HistoryPoint[]>();
   for (const point of history) {
-    const day = formatIsoDay(point.collectedAt, timeZone);
-    const key = grain === "day" ? day : grain === "week" ? monday(day) : day.slice(0, 7);
+    const key = periodKey(point.collectedAt, grain, timeZone);
     periods.set(key, [...(periods.get(key) ?? []), point]);
   }
   return [...periods.values()].flatMap((checks) => {

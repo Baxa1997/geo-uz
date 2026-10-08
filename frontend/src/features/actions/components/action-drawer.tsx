@@ -6,6 +6,7 @@ import { useState } from "react";
 import { ACTION_KIND_ICONS, ActionTitle, listingKind } from "@/shared/components/actions/action-title";
 import { ImpactBadge } from "@/shared/components/actions/impact-badge";
 import { StatusBadge } from "@/shared/components/actions/status-badge";
+import { ActionWhy } from "@/shared/components/actions/action-why";
 import { Button } from "@/shared/components/ui/button";
 import { Sheet, SheetClose, SheetContent, SheetFooter, SheetHeader, SheetTitle } from "@/shared/components/ui/sheet";
 import { Link } from "@/i18n/navigation";
@@ -14,7 +15,6 @@ import { cn } from "@/shared/helpers/utils";
 import type { Action, ActionStatus, Prompt } from "@/shared/types/api";
 import { STEPS } from "../constants";
 import { ActionProof } from "./action-proof";
-import { ActionWhy } from "./action-why";
 
 interface DetailsProps {
   action: Action;

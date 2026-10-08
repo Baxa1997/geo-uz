@@ -19,6 +19,7 @@ import type {
   Snapshot,
   SnapshotRequest,
   Source,
+  SourceHistoryPoint,
   SourceType,
   UntrackedBrand,
   WrongFact,
@@ -31,11 +32,14 @@ import {
   ARCHIVED_PROMPT_ANSWERS,
   BRANDS,
   LISTINGS,
+  LOST_SOURCE,
   OTHER_CLINICS,
   PAGE_MENTIONS,
   PREVIOUS_VISIBILITY,
   PROMPTS,
   SOURCES,
+  SOURCE_TITLES,
+  SOURCE_TRENDS,
   SOURCE_TYPES,
   type BrandKey,
   type OtherClinic,
@@ -175,13 +179,24 @@ function pageMentions(cast: Cast, rewrite: (text: string) => string): Map<string
   return byUrl;
 }
 
-/** Unique cited URLs, without the utm_source=openai tag the search tool appends. */
-function citations(text: string): Citation[] {
+/** The cited pages' titles, by the page's URL as the answers cite it. */
+function pageTitles(rewrite: (text: string) => string): Map<string, string> {
+  const byUrl = new Map<string, string>();
+  for (const [key, url] of Object.entries(SOURCES) as [SourceKey, string][]) {
+    const cited = new URL(rewrite(url));
+    cited.searchParams.delete("utm_source");
+    byUrl.set(cited.href, rewrite(SOURCE_TITLES[key]));
+  }
+  return byUrl;
+}
+
+/** Unique cited URLs, without the utm_source=openai tag the search tool appends, each with its page's title. */
+function citations(text: string, titles: ReadonlyMap<string, string>): Citation[] {
   const byUrl = new Map<string, Citation>();
   for (const [, raw] of text.matchAll(/\]\((https?:\/\/[^\s)]+)\)/g)) {
     const url = new URL(raw);
     url.searchParams.delete("utm_source");
-    byUrl.set(url.href, { url: url.href, domain: url.hostname.replace(/^www\./, "") });
+    byUrl.set(url.href, { url: url.href, domain: url.hostname.replace(/^www\./, ""), title: titles.get(url.href) ?? null });
   }
   return [...byUrl.values()];
 }
@@ -198,6 +213,7 @@ function resultsFor(
   cast: Cast,
   rewrite: (text: string) => string,
 ): PromptResult[] {
+  const titles = pageTitles(rewrite);
   return prompts.flatMap((prompt) => {
     const seededId = run.answeredWith.get(prompt.id);
     const specs = seededId ? ANSWERS[seededId] : undefined;
@@ -213,7 +229,7 @@ function resultsFor(
             typeof named === "string" ? [cast.others.get(named), "neutral" as const] : [cast.seeded.get(named[0]), named[1]];
           return brand ? [{ brandId: brand.id, position: index + 1, tone }] : [];
         }),
-        citations: citations(text),
+        citations: citations(text, titles),
         searches: seededId ? searchesFor(seededId, i) : [],
       };
     });
@@ -263,6 +279,7 @@ function topSources(
   results: PromptResult[],
   cast: Cast,
   mentions: ReadonlyMap<string, string[]>,
+  titles: ReadonlyMap<string, string>,
 ): Source[] {
   const answers = new Map<string, number>();
   const pages = new Map<string, Map<string, number>>();
@@ -292,7 +309,7 @@ function topSources(
       count,
       brandListed: listed.has(domain),
       pages: [...(pages.get(domain) ?? [])]
-        .map(([url, count]) => ({ url, count, mentions: mentions.get(url) ?? null }))
+        .map(([url, count]) => ({ url, title: titles.get(url) ?? null, count, mentions: mentions.get(url) ?? null }))
         .sort((a, b) => b.count - a.count),
     }))
     .sort((a, b) => b.count - a.count);
@@ -338,6 +355,52 @@ function history(scores: BrandScore[], run: MockRun): HistoryPoint[] {
           sentiment: named && sentiment !== null ? Math.round(Math.min(100, Math.max(0, sentiment - 1.5 * past + 3 * sway))) : null,
         };
       }),
+    };
+  });
+}
+
+/**
+ * The cited sites over the run's checks, ending with today's counts. A site keeps its trend (SOURCE_TRENDS:
+ * new this week, gaining, losing; otherwise steady), and each of its pages moves by an answer now and then.
+ * One site (LOST_SOURCE) was cited in the earlier checks and isn't any more.
+ */
+function sourceHistory(sources: Source[], run: MockRun, answers: number): SourceHistoryPoint[] {
+  const clamp = (count: number) => Math.min(answers, Math.max(0, Math.round(count)));
+
+  /** A site of the latest check as it stood `back` checks before it; nothing if it wasn't cited then. */
+  function earlier(source: Source, back: number): SourceHistoryPoint["sources"] {
+    const trend = SOURCE_TRENDS[source.domain];
+    const pages = source.pages.flatMap((page) => {
+      if (back === 0) return [{ url: page.url, count: page.count }];
+      if (trend === "new") return [];
+      const seed = [...page.url].reduce((sum, char) => sum + char.charCodeAt(0), 0);
+      const wave = Math.sin(seed + back * 1.7);
+      const step = wave > 0.7 ? 1 : wave < -0.7 ? -1 : 0;
+      const drift = trend === "up" ? 1 - 0.13 * back : trend === "down" ? 1 + 0.13 * back : 1;
+      const count = clamp(page.count * Math.max(0, drift) + step);
+      return count > 0 ? [{ url: page.url, count }] : [];
+    });
+    if (pages.length === 0) return [];
+    // A site is cited by at least as many answers as its most cited page, and by no more than its pages together
+    const today = source.pages.reduce((sum, page) => sum + page.count, 0);
+    const then = pages.reduce((sum, page) => sum + page.count, 0);
+    const most = Math.max(...pages.map((page) => page.count));
+    const count = back === 0 ? source.count : Math.max(most, Math.min(then, clamp((source.count * then) / Math.max(1, today))));
+    return [{ domain: source.domain, type: source.type, count, pages }];
+  }
+
+  return checkDates(run).map((collectedAt, index, dates) => {
+    const back = dates.length - 1 - index;
+    const lost = back === 0 ? 0 : clamp(answers * (LOST_SOURCE.share + 0.01 * (back - 1)));
+    return {
+      collectedAt,
+      answers,
+      sources: [
+        ...sources.flatMap((source) => earlier(source, back)),
+        ...(lost > 0
+          ? [{ domain: LOST_SOURCE.domain, type: SOURCE_TYPES[LOST_SOURCE.domain] ?? "other", count: lost, pages: [{ url: LOST_SOURCE.url, count: lost }] }]
+          : []),
+      ].sort((a, b) => b.count - a.count),
     };
   });
 }
@@ -437,15 +500,18 @@ export function buildReport(
   const rewrite = rewriter(cast);
   const results = resultsFor(prompts, run, cast, rewrite);
   const scores = computeScores(tracked, results, cast, run.hasPrevious);
+  const sources = topSources(project.brand, project.competitors, results, cast, pageMentions(cast, rewrite), pageTitles(rewrite));
+  const answers = results.reduce((sum, result) => sum + result.answers.length, 0);
   return {
     project,
     period,
     method: { ...METHOD, collectedAt: run.collectedAt },
     scores,
     prompts: results,
-    topSources: topSources(project.brand, project.competitors, results, cast, pageMentions(cast, rewrite)),
+    topSources: sources,
     wrongFacts: wrongFacts(project.brand, results, run, cast, rewrite),
     history: results.length > 0 ? history(scores, run) : [],
+    sourceHistory: results.length > 0 ? sourceHistory(sources, run, answers) : [],
     untrackedBrands: untrackedBrands(prompts, run, cast),
     // Depends on the clock: the mock backend fills it in
     nextRunAt: null,
@@ -472,6 +538,8 @@ export function buildPromptReport(project: Project, prompt: Prompt, period: Repo
   return {
     ...report,
     history,
+    // The question's own checks: it may have been added later, or archived earlier
+    sourceHistory: report.sourceHistory.slice(-asked.length),
     scores: report.scores.map((score) => {
       const before = previous?.find((past) => past.brandId === score.brandId)?.visibility ?? score.visibility;
       return { ...score, trend: round(score.visibility - before) };
@@ -508,7 +576,7 @@ export function buildSnapshot(request: SnapshotRequest, id: string): Snapshot {
     competitors,
     scores: computeScores(tracked, results, cast, false),
     prompts: results,
-    topSources: topSources(brand, competitors, results, cast, pageMentions(cast, rewrite)),
+    topSources: topSources(brand, competitors, results, cast, pageMentions(cast, rewrite), pageTitles(rewrite)),
     siteChecks: siteChecks(domain),
   };
 }

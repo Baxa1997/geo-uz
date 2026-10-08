@@ -142,6 +142,47 @@ export const SOURCES = {
 
 export type SourceKey = keyof typeof SOURCES;
 
+/** The pages' titles, as the search tool gives them with each link. */
+export const SOURCE_TITLES: Record<SourceKey, string> = {
+  gisSearch: "Stomatologiya — Toshkent — 2GIS",
+  gisOq: "Oq Tabassum, stomatologiya klinikasi — 2GIS",
+  gisNur: "Nur Stomatologiya, implantatsiya markazi — 2GIS",
+  gisReg: "Registan Dental, kechayu kunduz stomatologiya — 2GIS",
+  oqPrices: "Narxlar — Oq Tabassum",
+  oqContacts: "Kontaktlar va filiallar — Oq Tabassum",
+  oqInstagram: "Oq Tabassum (@oqtabassum.uz) • Instagram",
+  samoServices: "Услуги и цены — Samo Dent",
+  samoKids: "Bolalar stomatologiyasi — Samo Dent",
+  samoInstagram: "Samo Dent (@samodent) • Instagram",
+  nurImplants: "Implantatsiya — Nur Stomatologiya",
+  nurPrices: "Цены — Nur Stomatologiya",
+  regEmergency: "24/7 shoshilinch yordam — Registan Dental",
+  kunPrices: "Toshkentda stomatologiya xizmatlari narxlari qancha? — Kun.uz",
+  gazetaPrices: "Сколько стоит лечение зубов в Ташкенте — Газета.uz",
+  topclinicsList: "Toshkentdagi eng yaxshi stomatologiyalar reytingi — TopClinics",
+  topclinicsImplants: "Имплантация зубов в Ташкенте: клиники и цены — TopClinics",
+  med103: "Стоматологии Ташкента: адреса и отзывы — 103.uz",
+};
+
+/**
+ * A site ChatGPT stopped citing: a few answers linked to it in the earlier checks and none in the latest.
+ * `share` is the part of a check's answers that cited it the week before the latest; it grows going back.
+ */
+export const LOST_SOURCE = {
+  domain: "goldenpages.uz",
+  url: "https://www.goldenpages.uz/rubrics/?Id=3162",
+  share: 0.035,
+};
+
+/** How the sample sites' use moved before the latest check: one is new, some gained, some lost; the rest held. */
+export const SOURCE_TRENDS: Record<string, "new" | "up" | "down"> = {
+  "gazeta.uz": "new",
+  "103.uz": "up",
+  "topclinics.uz": "up",
+  "kun.uz": "down",
+  "instagram.com": "down",
+};
+
 /**
  * The clinics each cited page names: what the backend finds when it reads the page. Kept in line with
  * LISTINGS: a clinic is on a site when one of the site's cited pages names it.
@@ -192,6 +233,7 @@ export const SOURCE_TYPES: Record<string, SourceType> = {
   "kun.uz": "news",
   "gazeta.uz": "news",
   "instagram.com": "social",
+  "goldenpages.uz": "directory",
 };
 
 /** Domains where each brand has a listing or profile (drives Source.brandListed). */

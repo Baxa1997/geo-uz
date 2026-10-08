@@ -11,7 +11,7 @@ import { setPageLocale } from "@/i18n/page-locale";
 import { api } from "@/shared/api/client";
 import { orNotFound } from "@/shared/api/errors";
 import { loadReport } from "@/shared/api/load-report";
-import { formatDecimal, formatPercent } from "@/shared/helpers/numbers";
+import { formatPercent } from "@/shared/helpers/numbers";
 import { hasFilters } from "@/shared/helpers/report-filters";
 import { seriesBrands } from "@/shared/helpers/scores";
 import { AnswersTable } from "../components/answers-table";
@@ -28,8 +28,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 /**
- * Every ChatGPT answer of the latest run, laid out like Peec's Chats page: the answers in numbers, then
- * a table of them that opens each one like a chat and exports as CSV. ?prompt= opens a question's first
+ * Every ChatGPT answer of the latest run, laid out like Peec's Chats page: the answers in numbers (how
+ * many name the client, speak badly of it, name nobody, used a web search), then a table of them, grouped
+ * by question, that opens each one like a chat and exports as CSV. ?prompt= opens a question's first
  * answer and ?source= lists the answers citing a site: numbers on other pages link here.
  */
 export default async function AnswersPage({ params, searchParams }: Props) {
@@ -64,12 +65,11 @@ export default async function AnswersPage({ params, searchParams }: Props) {
   const brands = seriesBrands(report.project);
   const answers = report.prompts.flatMap((result) => result.answers);
   const share = (count: number) => formatPercent(answers.length ? count / answers.length : 0, locale);
+  // Numbers about the answers themselves. What they say of sources and of competitors is on those pages
   const named = answers.filter((answer) => answer.mentions.some((mention) => mention.brandId === brand.id)).length;
-  const citing = answers.filter((answer) => answer.citations.some((citation) => citation.domain === brand.domain)).length;
-  const citations = answers.reduce((sum, answer) => sum + new Set(answer.citations.map((citation) => citation.url)).size, 0);
-  const top = brands
-    .map((item) => ({ item, count: answers.filter((answer) => answer.mentions.some((mention) => mention.brandId === item.id)).length }))
-    .sort((a, b) => b.count - a.count)[0];
+  const negative = answers.filter((answer) => answer.mentions.some((mention) => mention.brandId === brand.id && mention.tone === "negative")).length;
+  const nobody = answers.filter((answer) => answer.mentions.length === 0).length;
+  const searched = answers.filter((answer) => answer.searches.length > 0).length;
 
   return (
     <Page title={t("answers")} engines>
@@ -83,20 +83,9 @@ export default async function AnswersPage({ params, searchParams }: Props) {
             value: String(answers.length),
           },
           { key: "named", label: tAnswers("kpi.named"), hint: tAnswers("kpi.namedHint"), value: String(named), note: share(named) },
-          { key: "citing", label: tAnswers("kpi.citing"), hint: tAnswers("kpi.citingHint"), value: String(citing), note: share(citing) },
-          {
-            key: "citations",
-            label: tAnswers("kpi.citations"),
-            hint: tAnswers("kpi.citationsHint"),
-            value: formatDecimal(answers.length ? citations / answers.length : 0, locale),
-          },
-          {
-            key: "top",
-            label: tAnswers("kpi.top"),
-            hint: tAnswers("kpi.topHint"),
-            value: top && top.count > 0 ? top.item.name : null,
-            note: top && top.count > 0 ? share(top.count) : undefined,
-          },
+          { key: "negative", label: tAnswers("kpi.negative"), hint: tAnswers("kpi.negativeHint"), value: String(negative) },
+          { key: "nobody", label: tAnswers("kpi.nobody"), hint: tAnswers("kpi.nobodyHint"), value: String(nobody), note: share(nobody) },
+          { key: "searched", label: tAnswers("kpi.searched"), hint: tAnswers("kpi.searchedHint"), value: String(searched), note: share(searched) },
         ]}
       />
       <AnswersTable

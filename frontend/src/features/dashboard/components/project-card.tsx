@@ -43,7 +43,7 @@ export function ProjectCard({
             <p className="text-xs text-muted-foreground">{t("visibility")}</p>
             <p className="text-3xl font-semibold tracking-tight">{formatPercent(you.visibility, locale)}</p>
             {/* A first run has no week before it to compare with */}
-            {report && report.history.length > 1 && <Trend trend={you.trend} goodWhenUp />}
+            {report && report.history.length > 1 && <Trend trend={you.trend} />}
             {rival && (
               <p className="text-xs text-muted-foreground">
                 {t("rival", { name: rival.brand.name, score: formatPercent(rival.score.visibility, locale) })}

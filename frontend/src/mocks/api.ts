@@ -409,8 +409,9 @@ export const mockApi: ApiClient = {
     });
   },
 
+  // Read without login, like the report: the public report lists its recommendations
   getActions: async (projectId) => {
-    const project = await findOwnProject(projectId);
+    const project = findProject(projectId);
     const report = buildReport(project, trackedOf(projectId), "week", finishedRun(projectId));
     return respond(buildActions(report, state.actionStates.get(projectId)));
   },

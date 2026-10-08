@@ -93,6 +93,8 @@ export interface Mention {
 export interface Citation {
   url: string;
   domain: string;
+  /** The page's title, as the search tool reports it with the link; null when it gives none. */
+  title: string | null;
 }
 
 export interface Answer {
@@ -121,6 +123,8 @@ export type SourceType = "own" | "competitor" | "news" | "directory" | "social" 
 
 export interface CitedPage {
   url: string;
+  /** The page's title, as it was cited; null when unknown. */
+  title: string | null;
   /** How many answers cited this page. */
   count: number;
   /** Tracked brands (ids) the page names, found by reading it; null when it couldn't be read. */
@@ -144,6 +148,16 @@ export interface WrongFact {
   promptId: string;
   /** ISO 8601 timestamp of the run that first found it. */
   foundAt: string;
+}
+
+/** One finished run: how many of its answers cited each site, and each page of the site. */
+export interface SourceHistoryPoint {
+  /** ISO 8601 timestamp. */
+  collectedAt: string;
+  /** Answers of that run: what a count is a share of. */
+  answers: number;
+  /** The sites cited in that run, each with its kind; one that wasn't cited is left out. */
+  sources: { domain: string; type: SourceType; count: number; pages: { url: string; count: number }[] }[];
 }
 
 /** One finished run: every tracked brand's scores at that time. */
@@ -238,6 +252,8 @@ export interface Report {
   wrongFacts: WrongFact[];
   /** Past runs, oldest first, ending with this one (a single point after the first run). */
   history: HistoryPoint[];
+  /** The cited sites over the same runs, oldest first, ending with this one (whose counts are `topSources`). */
+  sourceHistory: SourceHistoryPoint[];
   /** Brands named in the answers but not tracked, most named first. */
   untrackedBrands: UntrackedBrand[];
   /** ISO 8601: when the project's questions are asked again (runs are weekly); null when nothing is scheduled. */

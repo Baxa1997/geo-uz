@@ -1,9 +1,10 @@
 import { useLocale, useTimeZone, useTranslations } from "next-intl";
 import { ArrowLink } from "@/shared/components/arrow-link";
 import { EngineIcon } from "@/shared/components/engine-icon";
+import { LinkRow } from "@/shared/components/link-row";
 import { Panel } from "@/shared/components/panel";
 import { Link } from "@/i18n/navigation";
-import { TIME_ZONE } from "@/shared/constants";
+import { engineOf, TIME_ZONE } from "@/shared/constants";
 import { answerExcerpt } from "@/shared/helpers/answer-excerpt";
 import { formatShortDate } from "@/shared/helpers/dates";
 import type { Report } from "@/shared/types/api";
@@ -63,10 +64,10 @@ export function RecentAnswers({
               const named = answer.mentions.flatMap((mention) => byId.get(mention.brandId) ?? []);
               const domains = [...new Set(answer.citations.map((citation) => citation.domain))];
               return (
-                <tr key={result.prompt.id} className="align-top transition-colors hover:bg-muted/40">
+                <LinkRow key={result.prompt.id} href={answersHref(result.prompt.id)} className="align-top transition-colors hover:bg-muted/40">
                   <td className="px-4 py-3">
                     <Link href={answersHref(result.prompt.id)} className="flex min-w-0 items-start gap-2.5 outline-none focus-visible:underline">
-                      <EngineIcon engine="chatgpt" className="mt-0.5 text-muted-foreground" />
+                      <EngineIcon engine={engineOf(report.method.engine)} className="mt-0.5 text-muted-foreground" />
                       <span className="flex min-w-0 flex-col gap-0.5">
                         <span className="font-medium text-pretty">{result.prompt.text}</span>
                         <span className="truncate text-muted-foreground">{answerExcerpt(answer.text)}</span>
@@ -131,7 +132,7 @@ export function RecentAnswers({
                     )}
                   </td>
                   <td className="hidden px-4 py-3 text-muted-foreground @lg:table-cell">{date}</td>
-                </tr>
+                </LinkRow>
               );
             })}
           </tbody>

@@ -36,3 +36,6 @@ export const ENGINES = [
 ] as const;
 
 export type EngineKey = (typeof ENGINES)[number]["key"];
+
+/** The engine a report names (`method.engine`); ChatGPT for a name this version doesn't know. */
+export const engineOf = (name: string): EngineKey => ENGINES.find((engine) => engine.key === name)?.key ?? "chatgpt";

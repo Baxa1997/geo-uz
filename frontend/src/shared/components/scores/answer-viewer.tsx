@@ -14,13 +14,13 @@ const YOU_MARK = "rounded-sm bg-you-soft px-0.5 text-foreground ring-1 ring-you/
 const RIVAL_MARK = "rounded-sm bg-rival-soft px-0.5 text-foreground";
 
 const components: Components = {
-  // Citations: small chips like in ChatGPT
+  // Citations: small bordered chips with the site's name, as ChatGPT shows them
   a: ({ href, children }) => (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer nofollow"
-      className="rounded-full bg-muted px-1.5 py-0.5 text-[0.7rem] font-normal text-muted-foreground no-underline hover:text-foreground"
+      className="rounded-md border bg-muted/50 px-1.5 py-0.5 text-xs font-normal whitespace-nowrap text-muted-foreground no-underline transition-colors hover:text-foreground"
     >
       {children}
     </a>

@@ -213,6 +213,18 @@
   * {
     @apply border-border outline-ring/50;
   }
+  /* Whatever acts on a click shows the hand: Tailwind 4 leaves buttons with the arrow. A table row that
+     opens something adds `cursor-pointer` itself (LinkRow, the questions and answers tables) */
+  button:not(:disabled),
+  summary,
+  [role="button"]:not([aria-disabled="true"]),
+  [role="tab"],
+  [role="menuitem"],
+  [role="menuitemradio"],
+  [role="menuitemcheckbox"],
+  [role="option"] {
+    cursor: pointer;
+  }
   body {
     @apply bg-background text-foreground;
   }
@@ -256,6 +268,25 @@
 @keyframes bar-grow {
   from {
     transform: scaleX(0);
+  }
+}
+
+/* The public report is laid out for A4: the print dialog is also how it is saved as a PDF */
+@page {
+  size: A4;
+  margin: 14mm 12mm;
+}
+
+@media print {
+  html,
+  body {
+    background: #fff;
+  }
+
+  /* Bars, dots and colored marks are backgrounds: without this a browser leaves them off the paper */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 }
 

@@ -8,6 +8,7 @@ import { EngineIcon } from "@/shared/components/engine-icon";
 import { Hint } from "@/shared/components/hint";
 import { Panel } from "@/shared/components/panel";
 import { ToneIcon } from "@/shared/components/scores/tone-icon";
+import { engineOf } from "@/shared/constants";
 import { answerExcerpt } from "@/shared/helpers/answer-excerpt";
 import { cn } from "@/shared/helpers/utils";
 import type { Project, PromptResult } from "@/shared/types/api";
@@ -23,12 +24,15 @@ export function PromptAnswers({
   project,
   brands,
   collectedAt,
+  engine,
   allHref,
 }: {
   result: PromptResult;
   project: Project;
   brands: SeriesBrand[];
   collectedAt: string;
+  /** The assistant that answered: the report's `method.engine`. */
+  engine: string;
   /** The page with every question's answers; left out for an archived question, which isn't there. */
   allHref?: string;
 }) {
@@ -59,7 +63,7 @@ export function PromptAnswers({
                 className="flex w-full flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 text-left text-sm transition-colors outline-none hover:bg-muted/40 focus-visible:bg-muted/40"
               >
                 <span className="flex min-w-0 flex-1 basis-72 items-start gap-2.5">
-                  <EngineIcon engine="chatgpt" className="mt-0.5 text-muted-foreground" />
+                  <EngineIcon engine={engineOf(engine)} className="mt-0.5 text-muted-foreground" />
                   <span className="flex min-w-0 flex-col gap-0.5">
                     <span className="font-medium">{t("sample", { n: answer.sample })}</span>
                     <span lang={result.prompt.language} className="line-clamp-2 text-pretty text-muted-foreground">
@@ -112,7 +116,7 @@ export function PromptAnswers({
         })}
       </ul>
 
-      <ChatDialog rows={rows} index={open} project={project} collectedAt={collectedAt} onIndex={setOpen} onClose={() => setOpen(null)} />
+      <ChatDialog rows={rows} index={open} project={project} collectedAt={collectedAt} engine={engine} onIndex={setOpen} onClose={() => setOpen(null)} />
     </Panel>
   );
 }

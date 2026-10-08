@@ -2,7 +2,7 @@ import { CircleCheck, CircleX } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { Action } from "@/shared/types/api";
 
-/** Why this fix: the evidence from the answers. */
+/** Why this fix: the evidence from the answers. Shown beside the fix's steps and in the report's recommendations. */
 export function ActionWhy({ action, competitors }: { action: Action; competitors: Map<string, string> }) {
   const t = useTranslations("Actions.why");
   const text = "text-sm text-pretty text-muted-foreground";

@@ -64,8 +64,166 @@
     "home": "Bosh sahifa"
   },
   "Report": {
-    "metaTitle": "{brand} — ChatGPT’dagi koʻrinish hisoboti",
-    "weekly": "Haftalik hisobot"
+    "metaTitle": "{brand} — AI koʻrinish hisoboti",
+    "kicker": "AI koʻrinish hisoboti",
+    "weekly": "Haftalik",
+    "tools": "Hisobot amallari",
+    "print": "Chop etish yoki PDF",
+    "copy": "Havolani nusxalash",
+    "copied": "Havola nusxalandi",
+    "footer": "GEO tomonidan ChatGPT’ning {date} dagi javoblari asosida tayyorlandi. Raqamlar shu javoblarni tasvirlaydi; bu prognoz emas.",
+    "meta": {
+      "period": "Davr",
+      "periodRange": "{from} – {to}",
+      "issued": "Hisobot sanasi",
+      "scope": "Qamrov",
+      "scopeValue": "{prompts} ta savol × {samples} ta javob = {answers} ta javob",
+      "assistant": "AI yordamchi",
+      "assistantValue": "{engine}, veb-qidiruv bilan"
+    },
+    "sections": {
+      "summary": "Qisqacha xulosa",
+      "scorecard": "Asosiy koʻrsatkichlar",
+      "competitors": "Raqobatchilar orasidagi oʻrningiz",
+      "topics": "Qayerda oldindasiz, qayerda ortdasiz",
+      "sources": "ChatGPT tayanadigan manbalar",
+      "accuracy": "Maʼlumotlar toʻgʻriligi",
+      "actions": "Tavsiyalar",
+      "method": "Usul va qamrov",
+      "glossary": "Atamalar",
+      "appendix": "Ilova. Barcha savollar"
+    },
+    "summary": {
+      "trend": "Yoʻnalish",
+      "status": {
+        "up": "Oʻsmoqda",
+        "down": "Pasaymoqda",
+        "steady": "Barqaror",
+        "first": "Birinchi tekshiruv"
+      },
+      "place": "Brendlar orasidagi oʻrin",
+      "placeValue": "{of} tadan {rank}-oʻrin",
+      "findings": "Asosiy xulosalar",
+      "first": "Avval nima qilish kerak",
+      "more": "Barcha tavsiyalar — {section}-boʻlimda.",
+      "noActions": "Kutilayotgan ish yoʻq: hozirgacha berilgan barcha tavsiyalar bajarilgan yoki rad etilgan.",
+      "rankBehind": "Koʻrinish boʻyicha kuzatilayotgan {of} ta brend ichida {rank}-oʻrindasiz. Yetakchi — {leader}: {leaderValue}, sizdan {gap} punkt oldinda.",
+      "rankFirst": "Koʻrinish boʻyicha kuzatilayotgan {of} ta brend ichida birinchisiz. Keyingisi — {next}: {nextValue}.",
+      "rankOnly": "Hozircha raqobatchilar kuzatilmayapti, shuning uchun solishtiradigan brend yoʻq.",
+      "missing": "{total} ta savoldan {count} tasida ChatGPT raqobatchilarni tilga oladi, sizni esa hech qachon.",
+      "missingNone": "ChatGPT faqat raqobatchilarni tilga olgan savol yoʻq.",
+      "weakTopic": "Eng zaif mavzuingiz — “{topic}”: sizda {value}, {leader}da {leaderValue}.",
+      "sources": "ChatGPT tayanadigan {count} ta saytda siz yoʻqsiz. Eng koʻp ishlatiladigani: {sites}.",
+      "sourcesNone": "ChatGPT tayanadigan barcha saytlarda borsiz.",
+      "facts": "ChatGPT siz haqingizda {count} ta notoʻgʻri fakt aytmoqda.",
+      "factsNone": "Javoblarda siz haqingizda notoʻgʻri fakt topilmadi."
+    },
+    "scorecard": {
+      "lead": "Hisobot kuzatadigan beshta raqam: hozir, oldingi tekshiruvda va eng kuchli raqobatchiga nisbatan.",
+      "metric": "Koʻrsatkich",
+      "now": "Bu tekshiruv",
+      "before": "Oldingi tekshiruv",
+      "change": "Oʻzgarish",
+      "best": "Eng kuchli raqobatchi",
+      "about": {
+        "visibility": "Sizni tilga olgan javoblar ulushi",
+        "shareOfVoice": "Kuzatilayotgan brendlarning barcha tilga olinishlaridagi ulushingiz",
+        "position": "Javobdagi oʻrtacha oʻrningiz; 1 — birinchi",
+        "sentiment": "Siz haqingizda qanchalik ijobiy gapirilgani, 100 dan",
+        "usedAsSource": "Saytingizga havola bergan javoblar ulushi"
+      },
+      "noChange": "oʻzgarmadi",
+      "better": "{amount} ga yaxshilandi",
+      "worse": "{amount} ga yomonlashdi",
+      "notNamed": "tilga olinmagan"
+    },
+    "competitors": {
+      "lead": "Oxirgi tekshiruvdagi barcha kuzatilayotgan brendlar, eng koʻp koʻringanidan boshlab.",
+      "brand": "Brend",
+      "change": "Oʻzgarish",
+      "chart": "Tekshiruvlar davomidagi koʻrinish",
+      "chartLabel": "Chiziqli grafik: {count} ta tekshiruvda {brands} ta brendning koʻrinishi",
+      "you": "siz"
+    },
+    "topics": {
+      "lead": "Har bir mavzudagi koʻrinishingiz shu mavzudagi eng kuchli raqobatchiga nisbatan. Eng koʻp ortda qolgan mavzular birinchi.",
+      "topic": "Mavzu",
+      "questions": "Savollar",
+      "you": "Siz",
+      "leader": "Eng kuchli raqobatchi",
+      "gap": "Natija",
+      "ahead": "{points} punkt oldinda",
+      "behind": "{points} punkt ortda",
+      "level": "teng",
+      "languageTitle": "Savol tili boʻyicha",
+      "language": "Til",
+      "missingTitle": "Faqat raqobatchilar tilga olingan savollar",
+      "missingMore": "va yana {count} ta",
+      "missingNone": "Yoʻq: kuzatilayotgan brend tilga olingan har bir savolda siz ham tilga olingansiz.",
+      "named": "Tilga olingan: {brands}"
+    },
+    "sources": {
+      "lead": "ChatGPT eng koʻp havola beradigan saytlar. Ularda boʻlish — javoblarga kirishning eng tez yoʻli.",
+      "site": "Sayt",
+      "kind": "Turi",
+      "used": "Ishlatilgan",
+      "you": "Siz bormisiz?",
+      "listed": "Ha",
+      "notListed": "Yoʻq",
+      "own": "Sizning saytingiz",
+      "competitor": "Raqobatchi sayti",
+      "summary": "ChatGPT javoblarining {own} qismida saytingizga havola beradi. {missing, plural, =0 {U tayanadigan boshqa barcha saytlarda borsiz.} other {U tayanadigan # ta saytda siz yoʻqsiz.}}",
+      "more": "Yana {count} ta saytga kamroq havola berilgan."
+    },
+    "accuracy": {
+      "lead": "ChatGPT siz haqingizda aytayotgan notoʻgʻri maʼlumotlar. Notoʻgʻri narx yoki manzil mijoz yoʻqotishga olib keladi.",
+      "none": "Bu tekshiruvda notoʻgʻri fakt topilmadi.",
+      "says": "ChatGPT aytadi",
+      "correct": "Toʻgʻrisi",
+      "question": "Savol",
+      "since": "Birinchi marta"
+    },
+    "actions": {
+      "lead": "Nima qilish kerakligi, eng samaralisidan boshlab. Har biri yuqoridagi xulosalardan kelib chiqadi.",
+      "what": "Nima qilish kerak",
+      "why": "Nima uchun",
+      "impact": "Kutilayotgan taʼsir",
+      "status": "Holat",
+      "none": "Ochiq tavsiyalar yoʻq.",
+      "more": "Yana {count} tasi — Harakatlar sahifasida.",
+      "doneTitle": "Bajarilganlar",
+      "doneProof": "Shu savollardagi koʻrinish: {before} → {after}",
+      "donePending": "Natija keyingi tekshiruvdan keyin koʻrinadi"
+    },
+    "method": {
+      "lead": "Raqamlar qanday yigʻilgani: hisobotni tekshirish va takrorlash mumkin boʻlishi uchun.",
+      "assistant": "AI yordamchi",
+      "assistantValue": "{engine} ({model}), API orqali, veb-qidiruv yoqilgan holda",
+      "location": "Kim nomidan",
+      "locationValue": "{city}dagi mijoz nomidan",
+      "questions": "Savollar",
+      "questionsValue": "{count} ta kuzatilayotgan savol: {uz} tasi oʻzbekcha, {ru} tasi ruscha",
+      "samples": "Har savolga javoblar",
+      "samplesValue": "{samples} ta: AI yordamchi har safar boshqacha javob beradi, shuning uchun har bir savol bir necha marta beriladi",
+      "checks": "Tekshiruvlar",
+      "checksValue": "Har hafta. Bu tekshiruv: {date}; oldingisi: {previous}",
+      "checksFirst": "Har hafta. Bu birinchi tekshiruv: {date}",
+      "brands": "Solishtirilgan brendlar",
+      "limits": "Cheklovlar",
+      "limitsValue": "AI yordamchining javoblari har safar va API bilan ilova orasida farq qilishi mumkin. Raqamlar — shu tekshiruvdagi barcha {answers} ta javob boʻyicha ulushlar; ikki tekshiruv orasidagi bir necha punktlik farq tasodif boʻlishi mumkin. Bir necha tekshiruv davomidagi yoʻnalish bir haftalik oʻzgarishdan ishonchliroq."
+    },
+    "glossary": {
+      "visibility": "Brendni tilga olgan javoblar ulushi. 42% — har 100 javobdan 42 tasi.",
+      "shareOfVoice": "Brendning tilga olinishlari kuzatilayotgan barcha brendlarning tilga olinishlariga nisbatan. Eʼtibor qanday taqsimlanganini koʻrsatadi.",
+      "position": "Javobda tilga olingan bizneslar orasida brend nechanchi turgani. 1 — birinchi; qancha kichik boʻlsa, shuncha yaxshi. Brend tilga olingan javoblar boʻyicha oʻrtacha.",
+      "sentiment": "Brend haqida qanchalik ijobiy gapirilgani: 0 (salbiy) dan 100 (ijobiy) gacha.",
+      "usedAsSource": "Saytga havola bergan javoblar ulushi. Oʻz saytingiz uchun — ChatGPT siz yozgan maʼlumotga qanchalik tayanishini koʻrsatadi.",
+      "checkTerm": "Tekshiruv",
+      "check": "Haftalik bir aylanish: unda har bir kuzatilayotgan savol bir necha marta beriladi."
+    },
+    "appendix": {
+      "lead": "Bu tekshiruvdagi har bir savol va javoblarida tilga olingan brendlar. Javoblarni oʻqish uchun savolni oching."
+    }
   },
   "Headline": {
     "title": "ChatGPT sizni qanchalik koʻp tilga oladi",
@@ -361,13 +519,6 @@
       "doneAt": "Bajarilgan sana"
     }
   },
-  "ShareOfVoice": {
-    "title": "Ovoz ulushi",
-    "description": "Kuzatilayotgan klinikalarning barcha tilga olinishlari ichida har birining ulushi.",
-    "you": "{name} (siz)",
-    "brand": "Brend",
-    "share": "Ulush"
-  },
   "WrongFacts": {
     "title": "Siz haqingizdagi notoʻgʻri maʼlumotlar",
     "description": "ChatGPT javoblaridagi haqiqatga toʻgʻri kelmaydigan daʼvolar.",
@@ -376,15 +527,6 @@
     "prompt": "Savol",
     "empty": "Notoʻgʻri maʼlumot topilmadi.",
     "foundAt": "Birinchi marta topilgan: {date}"
-  },
-  "Sources": {
-    "title": "ChatGPT tayangan manbalar",
-    "description": "Javoblarda keltirilgan saytlar — nechta javobda keltirilgani boʻyicha.",
-    "missing": "Bu manbalarning {count} tasida siz yoʻqsiz.",
-    "answers": "{count} ta javob",
-    "listed": "Siz bor",
-    "notListed": "Siz yoʻq",
-    "competitorSite": "Raqobatchi sayti"
   },
   "SourcesPage": {
     "typeLabel": "Manba turi",
@@ -413,22 +555,23 @@
       "named": "Sahifadagi raqobatchilar",
       "citations": "Oʻrtacha havola",
       "listed": "Siz bormisiz",
-      "you": "Sizni aytadimi"
+      "you": "Sizni aytadimi",
+      "title": "Sarlavha"
     },
     "pageYou": "Siz bor",
     "pageNotYou": "Siz yoʻq",
     "pageUnknown": "Oʻqib boʻlmadi",
     "kpi": {
-      "sites": "Keltirilgan saytlar",
-      "sitesHint": "ChatGPT javoblarida havola berilgan saytlar soni.",
-      "pages": "Keltirilgan sahifalar",
-      "pagesHint": "Shu saytlardagi aniq sahifalar soni.",
       "citations": "Javobdagi havolalar",
       "citationsHint": "Bitta javobdagi oʻrtacha havolalar (sahifalar) soni.",
       "own": "Saytingiz manba sifatida",
       "ownHint": "Javoblarning necha foizida ChatGPT sizning saytingizga havola bergan.",
       "missing": "Siz yoʻq saytlar",
-      "missingHint": "ChatGPT tayangan, lekin sizning kartochka yoki sahifangiz boʻlmagan saytlar (raqobatchilar saytlaridan tashqari)."
+      "missingHint": "ChatGPT tayangan, lekin sizning kartochka yoki sahifangiz boʻlmagan saytlar (raqobatchilar saytlaridan tashqari).",
+      "unnamed": "Havola bor, nom yoʻq",
+      "unnamedHint": "ChatGPT saytingizga havola bergan, lekin brendingizni nomi bilan tilga olmagan javoblar: saytingizdan maʼlumot olgan, sizni esa tavsiya qilmagan.",
+      "ownNote": "{count} ta javobda",
+      "unnamedNote": "{total} tadan"
     },
     "tabsLabel": "Manbalar koʻrinishi",
     "tabs": {
@@ -447,18 +590,68 @@
       "used": "Ishlatilgan",
       "citations": "Oʻrt. havola",
       "listed": "Siz bormisiz?",
-      "pages": "Sahifalar",
       "you": "Sizni aytadimi",
       "competitors": "Sahifadagi raqobatchilar"
     },
-    "usedHint": "Javoblarning necha foizida shu manbaga havola berilgan",
-    "citationsHint": "Manbaga tayangan bitta javobdagi oʻrtacha havolalar soni",
-    "pagesCount": "{count} ta sahifa",
-    "emptyFiltered": "Bu filtrga mos manba yoʻq."
+    "emptyFiltered": "Bu filtrga mos manba yoʻq.",
+    "presence": {
+      "label": "Siz bormisiz",
+      "all": "Barcha saytlar",
+      "listed": "Siz bor saytlar",
+      "missing": "Siz yoʻq saytlar"
+    },
+    "brandFilter": {
+      "label": "Raqobatchi",
+      "all": "Barcha raqobatchilar"
+    },
+    "hints": {
+      "tabs": {
+        "sites": "ChatGPT javoblarida havola berilgan saytlar, eng koʻp ishlatilganidan boshlab.",
+        "pages": "Shu saytlardagi aniq sahifalar: ChatGPT aynan qaysi sahifaga tayangan.",
+        "gaps": "Raqobatchilar tilga olingan, siz esa yoʻq sahifalar: qayerga qoʻshilish kerakligini koʻrsatadi."
+      },
+      "rank": "Sayt nechta javobda ishlatilgani boʻyicha oʻrni.",
+      "site": "ChatGPT havola bergan sayt. Qatorni bossangiz, saytning oʻz sahifasi ochiladi: uning sahifalari, unga havola bergan javoblar va vaqt davomidagi oʻzgarishi.",
+      "page": "ChatGPT havola bergan aniq sahifa: sarlavhasi va ostida manzili. Manzil sahifani yangi oynada ochadi; qatorni bossangiz, shu sahifaga havola bergan javoblar koʻrinadi.",
+      "type": "Saytning turi: xarita va kataloglar, yangiliklar, ijtimoiy tarmoq, raqobatchi sayti yoki sizning saytingiz.",
+      "named": "Shu sayt yoki sahifada nomi uchraydigan kuzatilayotgan brendlar. Belgi ustiga kursorni olib borsangiz, brend nomi koʻrinadi.",
+      "used": "Javoblarning necha foizida shu manbaga havola berilgan.",
+      "citations": "Shu manbaga tayangan bitta javobda unga oʻrtacha necha marta havola berilgan.",
+      "listed": "Shu saytda sizning kartochka yoki sahifangiz bormi. “Siz yoʻq” boʻlsa, saytga qoʻshilish — eng tez yoʻl.",
+      "you": "Shu sahifada brendingiz nomi uchraydimi. Sahifani oʻqib boʻlmagan boʻlsa — nomaʼlum.",
+      "competitors": "Shu sahifada nomi uchraydigan raqobatchilar.",
+      "profile": "Sahifada faqat bitta raqobatchi tilga olingan: bu uning oʻz kartochkasi boʻlishi mumkin. Shu saytda oʻz kartochkangizni oching yoki toʻldiring."
+    },
+    "pageAnswers": "{title}: shu sahifaga havola bergan javoblar",
+    "chart": {
+      "title": "Manbalar vaqt davomida",
+      "hint": "ChatGPT eng koʻp havola bergan saytlarga tekshiruvdan tekshiruvga qanchalik tayangani. Sayt sahifasini ochish uchun grafik ostidagi nomini bosing.",
+      "footer": "Eng koʻp havola berilgan {count} ta sayt. Nuqta — shu tekshiruvdagi javoblarning qancha qismi saytga havola bergani.",
+      "label": "Chiziqli grafik: {checks} ta tekshiruvda {sites} ta saytga havola bergan javoblar ulushi. Tekshiruvlarni chap va oʻng strelkalar bilan koʻring."
+    },
+    "movers": {
+      "title": "Nima oʻzgardi",
+      "hint": "Oldingi tekshiruvga nisbatan ChatGPT koʻproq, kamroq yoki birinchi marta tayangan saytlar. Qator oxiridagi raqam — hozir javoblarning necha foizi saytga havola bergani. Sayt sahifasini ochish uchun uni bosing.",
+      "tabs": {
+        "rising": "Oʻsdi",
+        "falling": "Pasaydi",
+        "fresh": "Yangi"
+      },
+      "tabHints": {
+        "rising": "Oldingi tekshiruvdagidan koʻproq javobda havola berilgan saytlar.",
+        "falling": "Oldingi tekshiruvdagidan kamroq javobda havola berilgan saytlar; oxirgi tekshiruvda umuman havola berilmagan boʻlsa — 0%.",
+        "fresh": "ChatGPT oxirgi tekshiruvda birinchi marta havola bergan saytlar."
+      },
+      "firstRun": "Oʻzgarishlar ikkinchi tekshiruvdan keyin koʻrinadi: hozircha solishtiradigan narsa yoʻq.",
+      "compared": "{date} dagi tekshiruv bilan solishtirilgan.",
+      "more": "va yana {count} ta",
+      "new": "yangi",
+      "newHint": "Avvalgi tekshiruvlarda bu saytga havola berilmagan.",
+      "was": "Oldingi tekshiruvda {before} edi.",
+      "none": "Oldingi tekshiruvdan buyon hech bir sayt koʻproq yoki kamroq ishlatilmagan, yangi sayt ham yoʻq."
+    }
   },
   "Prompts": {
-    "title": "Savollar va javoblar",
-    "description": "{count} ta savol, har biriga {samples} tadan javob. Javoblarni oʻqish uchun savolni bosing.",
     "filterLabel": "Savollarni saralash",
     "all": "Hammasi",
     "missing": "Siz yoʻq",
@@ -590,17 +783,17 @@
       "place": "Oʻrningiz",
       "placeOf": "{of} ta brend ichida",
       "placeHint": "Koʻrinish boʻyicha kuzatilayotgan brendlar orasidagi oʻrningiz. Koʻrinish — ChatGPT javoblarining necha foizida tilga olinganingiz.",
-      "leader": "Yetakchi",
-      "you": "Siz",
-      "leaderHint": "ChatGPT eng koʻp javobda tilga olgan brend va uning koʻrinishi.",
       "topics": "Siz yetakchi",
       "topicsHint": "Nechta mavzuda ChatGPT sizni boshqa brendlardan koʻproq tilga oladi.",
       "without": "Siz yoʻq savollar",
       "withoutHint": "ChatGPT raqobatchini tilga olgan, sizni esa olmagan savollar soni. Roʻyxati sahifa pastida.",
-      "new": "Yangi brendlar",
-      "newHint": "ChatGPT javoblarida uchraydigan, siz hali kuzatmayotgan brendlar soni. Ularni sahifa pastida kuzatuvga qoʻshishingiz mumkin.",
       "topicsOf": "{total} mavzudan",
-      "withoutOf": "{total} tadan"
+      "withoutOf": "{total} tadan",
+      "gap": "Yetakchidan orqada",
+      "lead": "Ikkinchidan oldinda",
+      "points": "punkt · {name}",
+      "gapHint": "Yetakchining koʻrinishi siznikidan necha punkt yuqori. Punkt — foizlar ayirmasi: 72% va 42% orasida 30 punkt.",
+      "leadHint": "Koʻrinishingiz ikkinchi oʻrindagi brendnikidan necha punkt yuqori. Punkt — foizlar ayirmasi."
     },
     "untracked": {
       "tracked": "Raqobatchilar:",
@@ -1686,12 +1879,12 @@
       "totalHint": "Oxirgi tekshiruvda ChatGPT bergan javoblar: har savolga {samples} tadan.",
       "named": "Sizni tilga olgan",
       "namedHint": "Siz tilga olingan javoblar soni va ulushi.",
-      "citing": "Saytingizga havola",
-      "citingHint": "ChatGPT sizning saytingizga havola bergan javoblar.",
-      "citations": "Oʻrtacha havola",
-      "citationsHint": "Bitta javobdagi oʻrtacha havolalar (sahifalar) soni.",
-      "top": "Eng koʻp tilga olingan",
-      "topHint": "Eng koʻp javobda tilga olingan kuzatilayotgan brend."
+      "negative": "Siz haqingizda salbiy",
+      "negativeHint": "ChatGPT sizni salbiy ohangda tilga olgan javoblar. Jadvaldagi “Holat” filtri ularni koʻrsatadi.",
+      "nobody": "Hech kim tilga olinmagan",
+      "nobodyHint": "Kuzatilayotgan brendlardan hech biri tilga olinmagan javoblar: bu yerda oʻrin hali boʻsh.",
+      "searched": "Veb-qidiruv bilan",
+      "searchedHint": "ChatGPT javob yozishdan oldin internetdan qidirgan javoblar. Qidirgan boʻlsa, javob saytlarga tayanadi."
     },
     "table": {
       "title": "Barcha javoblar",
@@ -1712,8 +1905,7 @@
         "brands": "Tilga olinganlar",
         "sources": "Manbalar",
         "position": "Oʻrningiz",
-        "tone": "Ohang",
-        "date": "Sana"
+        "tone": "Ohang"
       },
       "sample": "{n}-javob",
       "notNamed": "Tilga olinmagan",
@@ -1738,12 +1930,11 @@
       },
       "noSources": "Bu javobda havola berilmagan",
       "hints": {
-        "answer": "Savol va ChatGPT javobining boshlanishi. Har bir savolga bir nechta javob olinadi, shuning uchun savol takrorlanadi. Qatorni bossangiz, javob toʻliq ochiladi.",
+        "answer": "ChatGPT javobining boshlanishi. Bir savolga berilgan javoblar savol ostida ketma-ket turadi; savolni bossangiz, uning sahifasi ochiladi. Javob qatorini bossangiz, javob toʻliq ochiladi.",
         "brands": "Shu javobda tilga olingan kuzatilayotgan brendlar, javobdagi tartibda. Belgi ustiga kursorni olib borsangiz, brend nomi koʻrinadi.",
         "sources": "ChatGPT shu javobda havola bergan saytlar. Belgi ustiga kursorni olib borsangiz, sayt nomi koʻrinadi.",
         "position": "Shu javobda nechanchi boʻlib tilga olingansiz. 1 — birinchi. Chiziqcha — tilga olinmagansiz.",
         "tone": "Shu javobda ChatGPT siz haqingizda qanday ohangda gapirgan: ijobiy, neytral yoki salbiy.",
-        "date": "Javob olingan haftalik tekshiruv sanasi.",
         "count": "Qidiruv va filtrlarga mos javoblar soni."
       }
     },
@@ -1767,12 +1958,14 @@
         "city": "Savol shu shahardagi mijoz nomidan berilgan.",
         "language": "Savol shu tilda berilgan.",
         "named": "Shu javobda tilga olingan kuzatilayotgan brendlar: nechanchi boʻlib va qanday ohangda.",
-        "sources": "ChatGPT shu javobda havola bergan sahifalar. Bossangiz, sahifa yangi oynada ochiladi.",
+        "sources": "ChatGPT shu javobda havola bergan sahifalar: sarlavhasi va ostida manzili. Bossangiz, sahifa yangi oynada ochiladi.",
         "sample": "Shu savolga olingan javoblardan nechanchisi. Har tekshiruvda savol bir necha marta beriladi.",
         "searches": "Shu javobni yozishdan oldin ChatGPT internetda qidirgan soʻrovlar."
       },
       "searches": "ChatGPT qidirgan",
-      "noSearches": "Internetdan qidirmagan."
+      "noSearches": "Internetdan qidirmagan.",
+      "viewAll": "Hammasi: {count} ta",
+      "viewLess": "Kamroq koʻrsatish"
     }
   },
   "Kpi": {
@@ -1823,5 +2016,74 @@
     "better": "Oʻtgan haftaga nisbatan {amount} ga yaxshilandi.",
     "worse": "Oʻtgan haftaga nisbatan {amount} ga yomonlashdi.",
     "same": "Oʻtgan haftaga nisbatan oʻzgarmadi."
+  },
+  "SourcePage": {
+    "label": "Manba sayt",
+    "visit": "Saytni ochish",
+    "facts": {
+      "type": "Turi",
+      "used": "Ishlatilgan",
+      "listed": "Siz bormisiz?",
+      "citations": "Javobdagi havolalar",
+      "lastCited": "Oxirgi marta",
+      "owner": "Kimning sayti"
+    },
+    "hints": {
+      "type": "Saytning turi: xarita va kataloglar, yangiliklar, ijtimoiy tarmoq, raqobatchi sayti yoki sizning saytingiz.",
+      "used": "Oxirgi tekshiruvdagi javoblarning necha foizida shu saytga havola berilgan va bu nechta javob ekani.",
+      "listed": "Shu saytda sizning kartochka yoki sahifangiz bormi. Boʻlmasa, saytga qoʻshilish — eng tez yoʻl.",
+      "citations": "Shu saytga tayangan bitta javob uning oʻrtacha nechta sahifasiga havola bergan.",
+      "lastCited": "Javoblarda shu saytga havola berilgan oxirgi tekshiruv.",
+      "owner": "Bu kimning sayti: sizniki yoki siz kuzatayotgan raqobatchiniki. Raqobatchining oʻz saytiga qoʻshilib boʻlmaydi."
+    },
+    "answersCount": "{count} ta javob",
+    "ownSite": "Sizniki",
+    "competitorSite": "{name} (raqobatchi)",
+    "verdict": {
+      "missing": "ChatGPT javoblarining {share} qismida {domain} saytiga tayanadi, siz esa u yerda yoʻqsiz.",
+      "rivals": "U yerda bor: {rivals}.",
+      "action": "Qanday qoʻshilish",
+      "listed": "Siz {domain} saytida borsiz. Unga havola bergan {citing} ta javobdan {named} tasida ChatGPT sizni tilga oldi.",
+      "own": "Bu sizning saytingiz. ChatGPT unga {citing} ta javobda havola berdi.",
+      "ownUnnamed": "Shulardan {unnamed} tasida sizni tilga olmadi: saytingizdan maʼlumot oldi, sizni esa tavsiya qilmadi.",
+      "ownNamed": "Ularning hammasida sizni tilga oldi.",
+      "competitor": "Bu {name} sayti, shuning uchun unga qoʻshilib boʻlmaydi. ChatGPT unga {citing} ta javobda havola berdi: qaysi sahifalariga tayanganini koʻring va shu mavzularda oʻz sahifangizni yozing.",
+      "lost": "ChatGPT oxirgi tekshiruvda ({date}) bu saytga havola bermadi. Oxirgi marta {last} dagi tekshiruvda havola bergan.",
+      "filtered": "Bu filtrlar boʻyicha hech bir javob bu saytga havola bermagan."
+    },
+    "chart": {
+      "title": "Sayt vaqt davomida",
+      "hint": "Tekshiruvdan tekshiruvga javoblarning necha foizi shu saytga havola bergani; yonida — eng koʻp havola berilgan sahifalari.",
+      "whole": "Butun sayt",
+      "footer": "Butun sayt va uning eng koʻp havola berilgan sahifalari. Nuqta — shu tekshiruvdagi javoblarning qancha qismi unga havola bergani.",
+      "footerOne": "Nuqta — shu tekshiruvdagi javoblarning qancha qismi saytga havola bergani.",
+      "label": "Chiziqli grafik: {checks} ta tekshiruvda {domain} saytiga havola bergan javoblar ulushi. Tekshiruvlarni chap va oʻng strelkalar bilan koʻring."
+    },
+    "brands": {
+      "title": "ChatGPT shu saytga tayanganda kimni tilga oladi",
+      "hint": "Shu saytga havola bergan javoblardan nechtasida har bir kuzatilayotgan brend tilga olingan. Toʻliq chiziq — brend ularning hammasida tilga olingan.",
+      "empty": "Shu saytga havola bergan javoblarda kuzatilayotgan brendlar tilga olinmagan.",
+      "footer": "Shu saytga havola bergan {count} ta javob boʻyicha.",
+      "count": "{total} tadan {count} tasida tilga olingan"
+    },
+    "tabsLabel": "Sayt koʻrinishi",
+    "tabs": {
+      "pages": "Sahifalar",
+      "answers": "Javoblar"
+    },
+    "tabHints": {
+      "pages": "ChatGPT shu saytning qaysi sahifalariga havola bergan.",
+      "answers": "Shu saytga havola bergan javoblar. Toʻliq oʻqish uchun javobni bosing."
+    },
+    "pages": {
+      "hint": "Shu saytning havola berilgan sahifasi: sarlavhasi va ostida manzili. Manzil sahifani yangi oynada ochadi; qatorni bossangiz, shu sahifaga havola bergan javoblar koʻrinadi.",
+      "usedHint": "Javoblarning necha foizida shu sahifaga havola berilgan va oldingi tekshiruvdan buyon qanday oʻzgargan."
+    },
+    "answers": {
+      "pageFilter": "Sahifa",
+      "allPages": "Barcha sahifalar",
+      "countHint": "Oxirgi tekshiruvda shu saytga havola bergan javoblar (sahifa filtri bilan).",
+      "all": "Javoblar sahifasida ochish"
+    }
   }
 }
