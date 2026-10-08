@@ -46,7 +46,8 @@ open questions): add to it each time a page is finished.
   what ChatGPT searched the web for, the fixes that list it and its answers); Answers
   (the answers in numbers, a table of every answer that opens like a chat, Previous/Next; filters by brand,
   cited site and status; CSV with the full texts); Competitors
-  (brands table, who leads each topic, untracked brands, questions each competitor wins); Sources (numbers,
+  (five numbers, the brands table, who leads each topic, the brands ChatGPT names that aren't tracked: track or hide
+  each; the questions each competitor wins, and stop tracking a competitor); Sources (numbers,
   then sites, pages and gaps: pages that name competitors and not the client); Wrong facts (numbers and a
   table); Harakatlar (four goal tiles, the list by status and goal, a side panel with steps to tick, fix →
   proof); Settings (sections: brand profile, tracked brands, interface language; editing later); sidebar
@@ -162,7 +163,11 @@ frontend/src/
                           #   site cited and by status); the rows shown export as CSV with their full text; a row
                           #   opens a chat window (question, answer, details, Previous/Next); ?prompt= opens a
                           #   question's first answer, ?source= starts with the answers citing a site
-    competitors/          # Competitors: brands table, who leads each topic, untracked brands, questions each wins
+    competitors/          # Competitors: five numbers on where the client stands, the brands table, who leads each
+                          #   topic (helpers/topics.ts; a topic opens its questions), the brands ChatGPT names that
+                          #   aren't tracked, like Peec's brand suggestions (track one while the plan has room:
+                          #   Project.limits.competitors; or hide it, and show it again), and a card per competitor
+                          #   with the questions it wins (each opens the question's page) and a stop-tracking button
     sources/              # Sources: numbers, then one card with sites / pages / gaps tabs (?tab=): kind, share of
                           #   answers, who each page names, "are you listed?", pages naming competitors not you; CSV
     wrong-facts/          # Wrong facts: numbers, then claim, correct value, question, date found as a table
@@ -246,6 +251,14 @@ Auth: the backend sets an httpOnly session cookie `geo_session` on login. The br
   city, competitors[], optional description, services[] and prompts[] = first question set; with prompts, the
   first run starts at once and runId is its id, otherwise null)
 - `GET  /projects/{id}` → Project
+- `POST /projects/{id}/competitors` → Project (body: name, optional aliases[] and domain; usually one of the
+  report's untracked brands. The backend fills in the spellings and the website it knows from the answers, and
+  counts the brand's mentions in the answers it already has, so its numbers and history appear at once. 409 at
+  the plan's competitor limit or when the brand is tracked already)
+- `DELETE /projects/{id}/competitors/{brandId}` → Project (stops tracking it; the answers keep its mentions, so it
+  returns to the untracked brands and can be tracked again)
+- `PATCH /projects/{id}/untracked-brands` → 204 (body: name, dismissed true/false: hides an untracked brand from
+  the suggestions, or shows it again)
 - `GET  /projects/{id}/prompts` → Prompt[] (every question, archived ones too)
 - `POST /projects/{id}/prompts` → Prompt (409 when the plan's questions are all in use)
 - `PUT  /projects/{id}/prompts/{promptId}` → Prompt  (body: text, language, topic)
@@ -284,14 +297,15 @@ Types:
 - User { id, name | null, phone | null, telegramUsername | null }
 - Project { id, brand: Brand, competitors: Brand[], category, city, languages: ("uz"|"ru")[], description ("" if none),
   services: string[] (as the client wrote them), plan: "start"|"business"|"agency", limits: { prompts (questions
-  tracked at once), competitors } }. The frontend reads the question limit from `limits.prompts`; the competitor
-  limit is still the fixed 5 of onboarding (to wire up with the Competitors and Settings pages)
+  tracked at once), competitors } }. The Questions page reads `limits.prompts` and the Competitors page
+  `limits.competitors`; onboarding, which runs before a project and its plan exist, still uses a fixed 5
 - Brand { id, name, aliases: string[], domain }
 - Prompt { id, text, language: "uz"|"ru", topic, createdAt, archivedAt | null }
 - Report { project, period, method: { engine, model, webSearch: boolean, samples, collectedAt },
   scores: BrandScore[], prompts: PromptResult[], topSources: Source[], wrongFacts: WrongFact[],
   history: HistoryPoint[] (past runs, oldest first, ending with this one),
-  untrackedBrands: { name, answers }[] (brands the answers name that aren't tracked: new-competitor alerts),
+  untrackedBrands: { name, answers, dismissed }[] (brands the answers name that aren't tracked: new-competitor
+  alerts; `dismissed` ones were hidden by the client and are listed apart),
   nextRunAt | null (next weekly run; runs start Monday 06:00 Tashkent; shown on the Overview as a date, not a countdown) }
 - HistoryPoint { collectedAt, scores: BrandScore without trend [] }
 - BrandScore { brandId, visibility (0–1), shareOfVoice (0–1), avgPosition | null, sentiment (0–100) | null,
@@ -386,9 +400,9 @@ over the element on hover, on keyboard focus and on a tap (phones have no hover)
   function and gets the description's id for `aria-describedby`. Marks repeated in every row pass
   `focusable={false}` (reached by the mouse and a tap, not by Tab) and `described={false}` when a hidden label
   already says the same.
-- Done on Savollar, a question's page and Javoblar (the table and the opened answer), and in the shared
-  brands table, tone icons, site-kind dots and export buttons. The other pages' tables get theirs when their
-  turn comes.
+- Done on Savollar, a question's page, Javoblar (the table and the opened answer) and Raqobatchilar, and in
+  the shared brands table, tone icons, site-kind dots and export buttons. The other pages' tables get theirs
+  when their turn comes.
 
 ## Commands (frontend, from `frontend/`)
 - `npm run dev`

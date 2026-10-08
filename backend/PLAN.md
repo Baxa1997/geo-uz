@@ -42,7 +42,8 @@ One row per line. Columns are the ones the frontend already depends on; add what
 | `sessions` | session token, user, expiry | The `geo_session` httpOnly cookie |
 | `login_codes` | phone, code hash, expiry, attempts | Six digits; `resendIn` seconds between sends |
 | `projects` | owner, category, city, languages, description, services, plan | The API sends the plan and what it allows: `limits.prompts`, `limits.competitors` |
-| `brands` | project, role (own or competitor), name, spellings, domain, order | The order of competitors fixes each brand's chart color, so it must be stable |
+| `brands` | project, role (own or competitor), name, spellings, domain, order | The order of competitors fixes each brand's chart color, so it must be stable. A competitor added later goes last |
+| `dismissed_brands` | project, name | Untracked brands the client hid from the suggestions (`untrackedBrands[].dismissed`) |
 | `prompts` | project, text, language (uz, ru), topic, created at, archived at | Archived = not asked any more; its answers stay. See open question 5 on edits |
 | `prompt_suggestions` | project, text, language, topic, status (offered, accepted, rejected) | A rejected one is never offered again |
 | `runs` | project, kind (first, weekly, snapshot), status, model, web search, samples, started, finished, total, answered | Status: queued, running, analyzing, done, failed |
@@ -116,7 +117,7 @@ The frontend calculates these itself from the report, so the backend does not: t
 | Questions | questions (list, add, edit, archive and track again), suggestions (list, accept, reject), report | A question added today has no result until the next run: the page shows "queued". The list needs each question's `createdAt` and `archivedAt`, and the project's `plan` and `limits.prompts`. The numbers over the list are calculated in the frontend from the rows shown |
 | A question's page | one question's report, questions, actions | The report over that question with its own history; the actions whose `promptIds` include it. Works for an archived question (up to its last run) and for one not asked yet (empty report, `nextRunAt`) |
 | Answers | report | The full text of every answer. The filter by cited site and the CSV of the answers are made in the frontend from the report |
-| Competitors | report | Scores, history, `untrackedBrands` |
+| Competitors | report, add and remove a competitor, hide an untracked brand | Scores, history, `untrackedBrands` with `dismissed`, the project's `limits.competitors`. Tracking a brand must change the report at once: see "Tracking a brand" under Rules |
 | Sources | report | `topSources` with `pages[].mentions` for the gap tab |
 | Wrong facts | report | `wrongFacts` with the question and the date first found |
 | Actions | `/actions` (list, change status and steps) | Stable ids, `proof` after the next run |
@@ -141,6 +142,8 @@ A listing action also carries the number of answers citing the site and the comp
 **Status.** New → in progress → done, or declined. The frontend sends "in progress" together with the first ticked step. Marking done sets `doneAt`; marking it done again starts the proof over.
 
 **Proof.** The client's visibility on the action's questions in the last run before `doneAt`, the same in the latest run, and how many runs lie between. Empty until one run has finished since it was done.
+
+**Tracking a brand.** The client can start tracking any brand the answers name (`POST /projects/{id}/competitors`) and stop again. Mentions are stored with the name as written, tracked or not, so adding a competitor means matching its spellings against the stored mentions of every past run: its scores, its history and every other brand's share of voice are then recalculated, without asking ChatGPT again. Removing one is the reverse: its mentions stay and count as untracked. A brand named only by a spelling the backend doesn't know yet stays untracked until the spelling is added.
 
 **Site checks.** Four yes-or-no checks on the client's website: AI search bots blocked, prices only as pictures, no business markup, contacts missing as text.
 
@@ -174,7 +177,7 @@ That is roughly one to two US cents per answer, and it has to cover the answer w
 5. **Editing a question.** Today an edit keeps the question's id. Its old answers were given to the old wording. Either an edit makes a new question, or each answer stores the wording it was asked with.
 6. **The public report** is read by project id without login. Ids must be impossible to guess, or the link needs its own token; a password is on the roadmap.
 7. **The free check**: how many samples (the app's three, or one to save cost), and the limits against abuse.
-8. **Plan limits. Partly decided 6 Oct 2026:** the project carries `plan` and `limits` (questions 25, 75, 300; competitors 3, 5, 5), and the Questions page uses the question limit. Still open: which plan a new project gets before billing exists (the mocks give every project Biznes), how Agentlik's 300 questions are split between its brands (`limits.prompts` is meant to be what this brand may use), and the competitor limit, which onboarding still fixes at 5.
+8. **Plan limits. Partly decided 6 Oct 2026:** the project carries `plan` and `limits` (questions 25, 75, 300; competitors 3, 5, 5), and the Questions page uses the question limit. The Competitors page uses the competitor limit since 8 Oct. Still open: which plan a new project gets before billing exists (the mocks give every project Biznes), how Agentlik's 300 questions are split between its brands (`limits.prompts` is meant to be what this brand may use), and onboarding, which runs before a plan exists and still allows 5 competitors.
 9. **Where personal data is stored.** Phone numbers and Telegram accounts of Uzbek citizens may have to stay on servers in Uzbekistan. To confirm with a lawyer before choosing hosting.
 10. **SMS provider** for Uzbek numbers.
 11. **Size of the report.** It carries the full text of every answer: 75 questions × 3 answers already, 300 for an agency. If pages get slow, send the texts only to the Answers page.
@@ -193,3 +196,4 @@ That is roughly one to two US cents per answer, and it has to cover the answer w
 - **6 Oct 2026, Questions.** The list got an archive (a question stops being asked and keeps its answers), the plan's question limit from the project, and a page per question. New for the backend: `createdAt` and `archivedAt` on a question, `plan` and `limits` on a project, `PATCH /projects/{id}/prompts/{promptId}` (archive, track again), `GET /projects/{id}/prompts/{promptId}/report`, and 409 at the plan's limit. Open questions 15 and 16 added; 8 partly decided.
 - **7 Oct 2026, Answers.** The page got a filter by cited site and a CSV of the answers with their full text. New for the backend: nothing; both are made from the report. The export is one more reader of every answer's full text, which matters for open question 11.
 - **7 Oct 2026, Questions, second correction.** The list shows share of voice, web search, wrong facts and the date added per question (all calculated in the frontend from the report), and a question's page lists what ChatGPT searched for. New for the backend: `Answer.searches`. Open question 16 decided.
+- **8 Oct 2026, Competitors.** The untracked brands can be tracked or hidden, and a competitor can be dropped. New for the backend: `POST` and `DELETE /projects/{id}/competitors`, `PATCH /projects/{id}/untracked-brands`, `untrackedBrands[].dismissed`, the rule "Tracking a brand" (recount the stored mentions, no new run), and the plan's competitor limit (409).

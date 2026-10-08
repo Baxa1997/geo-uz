@@ -89,6 +89,12 @@ Any other number makes a new account, which goes through onboarding and gets a p
   cited site (`?source=` lets other pages link to "the answers citing this site"), hover explanations on the
   table and in the opened answer, and the searches behind each answer in its details. Left out: Peec's
   web-search share, "most common feature" and features filter.
+- **Raqobatchilar (8 Oct), built from Peec's Ranking and Settings › Brands screenshots of 4 Oct; the user has
+  not sent corrections for it yet.** Added to the page that existed: a row of five numbers (your place, the
+  leader, topics you lead, questions without you, new brands); the brands ChatGPT names that aren't tracked
+  can be tracked (while the plan has room) or hidden, like Peec's brand suggestions; a competitor's card
+  stops tracking it and its questions open the question's page; a topic opens its questions; hover
+  explanations.
 - **Decisions the user made (6 Oct):** visibility is shown in percent, as Peec shows it; a change is green
   when better and red when worse, for the client only (competitors stay gray); daily checks are not offered
   for now, so the day and week views of the chart show the same points.
@@ -108,19 +114,20 @@ Any other number makes a new account, which goes through onboarding and gets a p
 - **Backend plan (5–6 Oct):** `backend/PLAN.md`, with the build order, tables, the weekly check step by step,
   how each number is calculated, cost per plan and the open questions.
 - **Git:** `main` is on GitHub (Baxa1997/geo-uz) and holds everything above: the Overview branch was merged
-  and pushed on 6 Oct, Savollar on 7 Oct, Javoblar with the second Savollar correction on 8 Oct (the user
-  chose "commit, push, continue"). Each page gets its own branch, merged when the user says so.
+  and pushed on 6 Oct, Savollar on 7 Oct, Javoblar with the second Savollar correction and then Raqobatchilar
+  on 8 Oct (both times the user chose "commit, push, continue" when asked). Each page gets its own branch,
+  merged when the user says so.
 
 ## To do, in order
 
 1. **The other pages, the same way, in the sidebar's order.** Each also gets hover explanations on its table
    headings, figures and marks (`Hint`), which only Savollar has so far:
    - Javoblar: built and merged (see "Done"); corrections may still come.
-   - Raqobatchilar: suggested competitors can be seen but not yet tracked or dismissed.
+   - Raqobatchilar: built and merged (see "Done"); corrections may still come.
    - Manbalar: two things from Peec's "My website": the number "cited without a mention" (answers that link
      to the client's site and don't name the client), and a way to see only the client's own pages. From
      Peec's Gap analysis: a filter by kind of site on the gaps tab. Peec's Domains and URLs pages were not
-     among the 4 Oct screenshots: ask the user for them.
+     among the 4 Oct screenshots: on 8 Oct the user said they will send them. Wait for them before building.
    - Notoʻgʻri faktlar: brand facts for the answers to be checked against.
    - Harakatlar: marks on the chart where a fix started and was done.
    - Sozlamalar: editing (today it is read-only), then facts, members, billing.
@@ -135,8 +142,8 @@ Any other number makes a new account, which goes through onboarding and gets a p
    - Ads: no. ChatGPT ads aren't sold here, and Peec has paused the page itself.
 2. **Parts that are design only:** the GEO AI side panel answers every question with a demo reply; Gemini
    and Yandex are marked "tez orada" in the engine switcher. Plans: a project now carries its plan and
-   limits and the question limit is used, but nothing sets a plan (every mock project is on Biznes) and the
-   competitor limit is still the fixed 5 of onboarding.
+   limits, and the question and competitor limits are used, but nothing sets a plan (every mock project is
+   on Biznes) and onboarding still allows a fixed 5 competitors.
 3. **Backend.** Begin with step 0 of `backend/PLAN.md`: a small script that measures what one answer costs
    and whether the answers are the ones a person in Tashkent gets. Its result decides whether the prices
    work, so it comes before any other backend code. Then follow the build order in that file. It lists

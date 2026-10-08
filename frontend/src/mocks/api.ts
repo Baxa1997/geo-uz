@@ -6,6 +6,7 @@ import { ACTION_STEP_COUNT } from "@/shared/constants";
 import { isValidDomain, normalizeDomain } from "@/shared/helpers/domain";
 import { isTracked } from "@/shared/helpers/prompts";
 import type {
+  Brand,
   DemoRequest,
   Project,
   Prompt,
@@ -18,7 +19,7 @@ import type {
 } from "@/shared/types/api";
 import { buildActions, type ActionState } from "./action-items";
 import { DEMO_USER } from "./accounts";
-import { ARCHIVED_PROMPT, DEFAULT_PLAN, PLAN_LIMITS, PROJECT, PROMPTS, SUGGESTED_PROMPTS } from "./data";
+import { ARCHIVED_PROMPT, BRANDS, DEFAULT_PLAN, OTHER_CLINICS, PLAN_LIMITS, PROJECT, PROMPTS, SUGGESTED_PROMPTS } from "./data";
 import * as onboarding from "./onboarding";
 import { buildPromptReport, buildReport, buildSnapshot, firstRun, METHOD, NO_RUN, SEEDED_RUN, type MockRun } from "./report";
 import { clearSessionToken, readSessionToken, writeSessionToken } from "./session";
@@ -60,6 +61,8 @@ interface MockState {
   actionStates: Map<string, Map<string, ActionState>>;
   /** Project id → ids of the suggested questions the client rejected. */
   rejectedSuggestions: Map<string, Set<string>>;
+  /** Project id → names of the untracked brands the client hid from the suggestions. */
+  dismissedBrands: Map<string, Set<string>>;
   demoRequests: DemoRequest[];
   supportMessages: (SupportMessage & { userId: string })[];
   nextId: number;
@@ -67,7 +70,7 @@ interface MockState {
 
 // Kept on globalThis so hot reloads and separate route bundles share one copy.
 // Bump the version when MockState changes: a hot reload then starts fresh instead of reading old data.
-const STATE_KEY = "__geoMockState_v12";
+const STATE_KEY = "__geoMockState_v13";
 const globalForMocks = globalThis as typeof globalThis & { [STATE_KEY]?: MockState };
 const state: MockState = (globalForMocks[STATE_KEY] ??= {
   accounts: [{ user: DEMO_USER }],
@@ -79,6 +82,7 @@ const state: MockState = (globalForMocks[STATE_KEY] ??= {
   snapshots: new Map(),
   actionStates: new Map(),
   rejectedSuggestions: new Map(),
+  dismissedBrands: new Map(),
   demoRequests: [],
   supportMessages: [],
   nextId: 1,
@@ -126,6 +130,15 @@ async function findOwnProject(id: string): Promise<Project> {
   if (state.owners.get(id) !== user.id) throw new ApiError(404, `Project ${id} not found`);
   return project;
 }
+
+/** A changed project replaces the stored one: the seeded project object is also the landing page's sample. */
+function replaceProject(project: Project) {
+  state.projects = state.projects.map((candidate) => (candidate.id === project.id ? project : candidate));
+}
+
+/** What the backend knows of a brand from the answers that name it: its spellings and its website. */
+const knownBrand = (name: string) =>
+  [...Object.values(BRANDS), ...Object.values(OTHER_CLINICS)].find((clinic) => clinic.name.toLowerCase() === name.toLowerCase());
 
 /** Every question of the project, archived ones too. */
 const promptsOf = (projectId: string) => state.prompts.get(projectId) ?? [];
@@ -284,6 +297,49 @@ export const mockApi: ApiClient = {
 
   getProject: async (id) => respond(findProject(id)),
 
+  // The report is made from the answers it already has, so a new competitor's numbers appear at once
+  addCompetitor: async (projectId, { name, aliases, domain }) => {
+    const project = await findOwnProject(projectId);
+    const known = knownBrand(name.trim());
+    const competitor: Brand = {
+      id: newId("brd"),
+      name: known?.name ?? name.trim(),
+      aliases: aliases ?? known?.aliases ?? [],
+      domain: domain ? normalizeDomain(domain) : (known?.domain ?? ""),
+    };
+    if (!competitor.name) throw new ApiError(422, "A brand needs a name");
+    if ([project.brand, ...project.competitors].some((brand) => brand.name.toLowerCase() === competitor.name.toLowerCase())) {
+      throw new ApiError(409, `${competitor.name} is already tracked`);
+    }
+    if (project.competitors.length >= project.limits.competitors) {
+      throw new ApiError(409, `The plan allows ${project.limits.competitors} competitors`);
+    }
+    const updated: Project = { ...project, competitors: [...project.competitors, competitor] };
+    replaceProject(updated);
+    state.dismissedBrands.get(projectId)?.delete(competitor.name);
+    return respond(updated);
+  },
+
+  // Its mentions stay in the answers: it goes back to the untracked brands and can be tracked again
+  removeCompetitor: async (projectId, brandId) => {
+    const project = await findOwnProject(projectId);
+    if (!project.competitors.some((competitor) => competitor.id === brandId)) {
+      throw new ApiError(404, `Competitor ${brandId} not found`);
+    }
+    const updated: Project = { ...project, competitors: project.competitors.filter((competitor) => competitor.id !== brandId) };
+    replaceProject(updated);
+    return respond(updated);
+  },
+
+  dismissBrand: async (projectId, { name, dismissed }) => {
+    await findOwnProject(projectId);
+    const hidden = state.dismissedBrands.get(projectId) ?? new Set<string>();
+    if (dismissed) hidden.add(name);
+    else hidden.delete(name);
+    state.dismissedBrands.set(projectId, hidden);
+    return respond(undefined);
+  },
+
   getPrompts: async (projectId) => {
     findProject(projectId);
     return respond(promptsOf(projectId));
@@ -345,7 +401,12 @@ export const mockApi: ApiClient = {
     const project = findProject(projectId);
     const prompts = trackedOf(projectId);
     const report = buildReport(project, prompts, period, finishedRun(projectId), filters);
-    return respond({ ...report, nextRunAt: prompts.length > 0 ? nextWeeklyRun(Date.now()) : null });
+    const hidden = state.dismissedBrands.get(projectId);
+    return respond({
+      ...report,
+      untrackedBrands: report.untrackedBrands.map((brand) => ({ ...brand, dismissed: hidden?.has(brand.name) ?? false })),
+      nextRunAt: prompts.length > 0 ? nextWeeklyRun(Date.now()) : null,
+    });
   },
 
   getActions: async (projectId) => {

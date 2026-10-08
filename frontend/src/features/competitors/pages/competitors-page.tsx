@@ -6,17 +6,20 @@ import { FilteredEmpty } from "@/shared/components/filtered-empty";
 import { NoData } from "@/shared/components/no-data";
 import { Page } from "@/shared/components/page";
 import { ReportFilterBar } from "@/shared/components/report-filter-bar";
-import { MethodLabel } from "@/shared/components/scores/method-label";
 import { BrandTable } from "@/shared/components/scores/brand-table";
+import { KpiStrip } from "@/shared/components/scores/kpi-strip";
+import { MethodLabel } from "@/shared/components/scores/method-label";
 import { setPageLocale } from "@/i18n/page-locale";
 import { api } from "@/shared/api/client";
 import { orNotFound } from "@/shared/api/errors";
 import { loadReport } from "@/shared/api/load-report";
+import { formatPercent } from "@/shared/helpers/numbers";
 import { hasFilters, withFilters } from "@/shared/helpers/report-filters";
-import { seriesBrands } from "@/shared/helpers/scores";
+import { promptsWithoutYou, rankedBrands, seriesBrands, standing } from "@/shared/helpers/scores";
 import { RivalCard } from "../components/rival-card";
 import { TopicRankings } from "../components/topic-rankings";
 import { UntrackedBrands } from "../components/untracked-brands";
+import { topicRankings, topicsLed } from "../helpers/topics";
 
 type Props = PageProps<"/[locale]/projects/[id]/competitors">;
 
@@ -30,9 +33,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 /**
- * The client against each competitor, laid out like Peec's ranking: the brands on the four numbers with
- * their weekly change, who leads each topic, brands ChatGPT names that aren't tracked yet, then the
- * questions each competitor wins.
+ * The client against each competitor: where the client stands in five numbers, then the brands on the four
+ * metrics with their weekly change (Peec's ranking), who leads each topic, the brands ChatGPT names that
+ * aren't tracked yet (Peec's brand suggestions: track one or hide it), then the questions each competitor
+ * wins. A competitor's card also stops tracking it.
  */
 export default async function CompetitorsPage({ params, searchParams }: Props) {
   const { locale: segment, id } = await params;
@@ -62,47 +66,103 @@ export default async function CompetitorsPage({ params, searchParams }: Props) {
   }
 
   const totalAnswers = report.prompts.reduce((sum, result) => sum + result.answers.length, 0);
+  const series = seriesBrands(report.project);
+  const rankings = topicRankings(report.prompts, series);
+  const place = standing(report.scores, brand.id, "visibility");
+  const leader = rankedBrands(report)[0];
+  const withoutYou = promptsWithoutYou(report.prompts, brand.id, competitors.map((competitor) => competitor.id)).length;
+  const suggested = report.untrackedBrands.filter((untracked) => !untracked.dismissed).length;
 
   return (
     <Page title={t("competitors")} engines>
       <ReportFilterBar topics={topics} />
+      <KpiStrip
+        items={[
+          {
+            key: "place",
+            label: tCompetitors("kpi.place"),
+            hint: tCompetitors("kpi.placeHint"),
+            value: place ? String(place.rank) : null,
+            note: place ? tCompetitors("kpi.placeOf", { of: place.of }) : undefined,
+          },
+          {
+            key: "leader",
+            label: tCompetitors("kpi.leader"),
+            hint: tCompetitors("kpi.leaderHint"),
+            value: leader && leader.score.visibility > 0 ? (leader.isYou ? tCompetitors("kpi.you") : leader.brand.name) : null,
+            note: leader && leader.score.visibility > 0 ? formatPercent(leader.score.visibility, locale) : undefined,
+          },
+          {
+            key: "topics",
+            label: tCompetitors("kpi.topics"),
+            hint: tCompetitors("kpi.topicsHint"),
+            value: String(topicsLed(rankings)),
+            note: tCompetitors("kpi.topicsOf", { total: rankings.length }),
+          },
+          {
+            key: "without",
+            label: tCompetitors("kpi.without"),
+            hint: tCompetitors("kpi.withoutHint"),
+            value: String(withoutYou),
+            note: tCompetitors("kpi.withoutOf", { total: report.prompts.length }),
+          },
+          { key: "new", label: tCompetitors("kpi.new"), hint: tCompetitors("kpi.newHint"), value: String(suggested) },
+        ]}
+      />
       <BrandTable
+        expandable
         history={report.history}
-        brands={seriesBrands(report.project)}
+        brands={series}
         title={tTable("titleShort")}
         // A first run has no week before it to compare with
         description={tTable(report.history.length > 1 ? "description" : "descriptionFirst")}
       />
-      <TopicRankings results={report.prompts} brands={seriesBrands(report.project)} />
+      <TopicRankings
+        rankings={rankings}
+        places={series.length}
+        questionsHref={(topic) => withFilters(`${base}/prompts`, { ...filters, topic })}
+      />
       {report.untrackedBrands.length > 0 && (
-        <UntrackedBrands brands={report.untrackedBrands} totalAnswers={totalAnswers} />
+        <UntrackedBrands
+          projectId={report.project.id}
+          brands={report.untrackedBrands}
+          totalAnswers={totalAnswers}
+          tracked={competitors.length}
+          limit={report.project.limits.competitors}
+          plan={report.project.plan}
+        />
       )}
-      <section aria-labelledby="ahead-title" className="flex flex-col gap-3">
-        <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-1">
-          <div className="flex flex-col gap-1">
-            <h2 id="ahead-title" className="font-medium">
-              {tCompetitors("aheadTitle")}
-            </h2>
-            <p className="text-sm text-muted-foreground">{tCompetitors("aheadDescription")}</p>
+      {competitors.length > 0 && (
+        <section aria-labelledby="ahead-title" className="flex flex-col gap-3">
+          <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-1">
+            <div className="flex flex-col gap-1">
+              <h2 id="ahead-title" className="font-medium">
+                {tCompetitors("aheadTitle")}
+              </h2>
+              <p className="text-sm text-muted-foreground">{tCompetitors("aheadDescription")}</p>
+            </div>
+            <ArrowLink href={withFilters(`${base}/answers`, filters)}>{tCompetitors("readAnswers")}</ArrowLink>
           </div>
-          <ArrowLink href={withFilters(`${base}/answers`, filters)}>{tCompetitors("readAnswers")}</ArrowLink>
-        </div>
-        {/* Columns follow the panel's width, which shrinks when GEO AI is open */}
-        <div className="@container">
-          <ul className="grid gap-4 @2xl:grid-cols-2 @5xl:grid-cols-3">
-            {competitors.map((rival) => (
-              <li key={rival.id}>
-                <RivalCard
-                  rival={rival}
-                  results={report.prompts}
-                  youId={brand.id}
-                  answersHref={(promptId) => withFilters(`${base}/answers`, filters, { prompt: promptId })}
-                />
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
+          {/* Columns follow the panel's width, which shrinks when GEO AI is open */}
+          <div className="@container">
+            <ul className="grid gap-4 @2xl:grid-cols-2 @5xl:grid-cols-3">
+              {series
+                .filter((rival) => !rival.isYou)
+                .map((rival) => (
+                  <li key={rival.id}>
+                    <RivalCard
+                      projectId={report.project.id}
+                      rival={rival}
+                      results={report.prompts}
+                      youId={brand.id}
+                      questionHref={(promptId) => withFilters(`${base}/prompts/${promptId}`, filters)}
+                    />
+                  </li>
+                ))}
+            </ul>
+          </div>
+        </section>
+      )}
       <MethodLabel method={report.method} />
     </Page>
   );

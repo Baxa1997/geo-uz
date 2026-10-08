@@ -1,6 +1,7 @@
 import { SESSION_COOKIE } from "@/shared/constants";
 import type {
   Action,
+  AddCompetitorRequest,
   AnalyzeSiteRequest,
   ArchivePromptRequest,
   CompetitorSuggestion,
@@ -8,6 +9,7 @@ import type {
   CreateProjectResponse,
   CreatePromptRequest,
   DemoRequest,
+  DismissBrandRequest,
   Project,
   Prompt,
   PromptSuggestion,
@@ -44,6 +46,12 @@ export interface ApiClient {
   getProjects(): Promise<Project[]>;
   createProject(body: CreateProjectRequest): Promise<CreateProjectResponse>;
   getProject(id: string): Promise<Project>;
+  /** Tracks one more competitor; 409 at the plan's limit or when the brand is tracked already. */
+  addCompetitor(projectId: string, body: AddCompetitorRequest): Promise<Project>;
+  /** Stops tracking a competitor; the answers keep its mentions, so it can be tracked again. */
+  removeCompetitor(projectId: string, brandId: string): Promise<Project>;
+  /** Hides an untracked brand from the suggestions, or shows it again. */
+  dismissBrand(projectId: string, body: DismissBrandRequest): Promise<void>;
   getPrompts(projectId: string): Promise<Prompt[]>;
   createPrompt(projectId: string, body: CreatePromptRequest): Promise<Prompt>;
   updatePrompt(projectId: string, promptId: string, body: UpdatePromptRequest): Promise<Prompt>;
@@ -119,6 +127,9 @@ const httpApi: ApiClient = {
   getProjects: () => request("/projects"),
   createProject: (body) => send("POST", "/projects", body),
   getProject: (projectId) => request(`/projects/${id(projectId)}`),
+  addCompetitor: (projectId, body) => send("POST", `/projects/${id(projectId)}/competitors`, body),
+  removeCompetitor: (projectId, brandId) => send("DELETE", `/projects/${id(projectId)}/competitors/${id(brandId)}`),
+  dismissBrand: (projectId, body) => send("PATCH", `/projects/${id(projectId)}/untracked-brands`, body),
   getPrompts: (projectId) => request(`/projects/${id(projectId)}/prompts`),
   createPrompt: (projectId, body) =>
     send("POST", `/projects/${id(projectId)}/prompts`, body),
@@ -172,6 +183,9 @@ export const api: ApiClient = USE_MOCKS
       getProjects: () => mocks().then((m) => unwrap(m.getProjects())),
       createProject: (body) => mocks().then((m) => unwrap(m.createProject(body))),
       getProject: (projectId) => mocks().then((m) => unwrap(m.getProject(projectId))),
+      addCompetitor: (projectId, body) => mocks().then((m) => unwrap(m.addCompetitor(projectId, body))),
+      removeCompetitor: (projectId, brandId) => mocks().then((m) => unwrap(m.removeCompetitor(projectId, brandId))),
+      dismissBrand: (projectId, body) => mocks().then((m) => unwrap(m.dismissBrand(projectId, body))),
       getPrompts: (projectId) => mocks().then((m) => unwrap(m.getPrompts(projectId))),
       createPrompt: (projectId, body) =>
         mocks().then((m) => unwrap(m.createPrompt(projectId, body))),

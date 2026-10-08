@@ -1,29 +1,30 @@
 import { useMessages, useTranslations } from "next-intl";
+import { Hint } from "@/shared/components/hint";
 import { Panel } from "@/shared/components/panel";
+import { Link } from "@/i18n/navigation";
 import { labelFor } from "@/shared/helpers/labels";
-import { answersNaming } from "@/shared/helpers/scores";
 import { cn } from "@/shared/helpers/utils";
-import type { PromptResult } from "@/shared/types/api";
-import type { SeriesBrand } from "@/shared/types/scores";
+import type { TopicRanking } from "../helpers/topics";
 
 /**
  * Who leads each topic: one row per topic, the tracked brands in the order ChatGPT names them most on
- * that topic's questions. The client's place stands out; a brand never named there is left out.
+ * that topic's questions. The client's place stands out; a brand never named there is left out. A topic
+ * opens its questions; a brand's cell says on hover in how many of the topic's answers it is named.
  */
-export function TopicRankings({ results, brands }: { results: PromptResult[]; brands: SeriesBrand[] }) {
+export function TopicRankings({
+  rankings,
+  places,
+  questionsHref,
+}: {
+  rankings: TopicRanking[];
+  /** How many places the table has: one per tracked brand. */
+  places: number;
+  /** The Questions page narrowed to a topic. */
+  questionsHref: (topic: string) => string;
+}) {
   const t = useTranslations("Competitors.topics");
   const messages = useMessages();
-  const topics = [...new Set(results.map((result) => result.prompt.topic))];
-  const rows = topics.map((topic) => {
-    const inTopic = results.filter((result) => result.prompt.topic === topic);
-    const total = inTopic.reduce((sum, result) => sum + result.answers.length, 0);
-    const ranked = brands
-      .map((brand) => ({ brand, share: total ? inTopic.reduce((sum, result) => sum + answersNaming(result, brand.id), 0) / total : 0 }))
-      .filter(({ share }) => share > 0)
-      .sort((a, b) => b.share - a.share);
-    return { topic, ranked };
-  });
-  const places = brands.map((_, index) => index + 1);
+  const columns = Array.from({ length: places }, (_, index) => index + 1);
 
   return (
     <Panel title={t("title")} hint={t("hint")}>
@@ -33,27 +34,31 @@ export function TopicRankings({ results, brands }: { results: PromptResult[]; br
           <thead>
             <tr className="border-b text-left text-xs text-muted-foreground [&>th]:py-2.5 [&>th]:font-medium">
               <th scope="col" className="w-40 pl-4">
-                {t("topic")}
+                <Hint text={t("topicHint")}>{t("topic")}</Hint>
               </th>
-              {places.map((place) => (
+              {columns.map((place) => (
                 <th key={place} scope="col" className="px-1.5 text-center">
-                  #{place}
+                  <Hint text={t("placeHint", { place })}>#{place}</Hint>
                 </th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {rows.map(({ topic, ranked }) => (
+            {rankings.map(({ topic, answers, ranked }) => (
               <tr key={topic}>
-                <th scope="row" className="py-1.5 pl-4 text-left font-normal text-muted-foreground">
-                  {labelFor(messages.Topics, topic)}
+                <th scope="row" className="py-1.5 pl-4 text-left font-normal">
+                  <Link href={questionsHref(topic)} className="text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline">
+                    {labelFor(messages.Topics, topic)}
+                  </Link>
                 </th>
-                {places.map((place) => {
+                {columns.map((place) => {
                   const entry = ranked[place - 1];
                   return (
                     <td key={place} className="px-1.5 py-1.5">
                       {entry ? (
-                        <span
+                        <Hint
+                          text={t("cell", { brand: entry.brand.name, count: entry.named, total: answers })}
+                          focusable={false}
                           className={cn(
                             "flex h-9 items-center justify-center gap-1.5 rounded-md px-2 text-xs font-medium",
                             entry.brand.isYou ? "bg-you-soft/70 ring-1 ring-you/40" : "bg-muted",
@@ -62,7 +67,7 @@ export function TopicRankings({ results, brands }: { results: PromptResult[]; br
                           <span aria-hidden className="size-2 shrink-0 rounded-full" style={{ background: entry.brand.color }} />
                           <span className="truncate">{entry.brand.name}</span>
                           {entry.brand.isYou && <span className="shrink-0 font-normal text-muted-foreground">{t("you")}</span>}
-                        </span>
+                        </Hint>
                       ) : (
                         <span className="flex h-9 items-center justify-center text-muted-foreground">
                           <span aria-hidden>—</span>

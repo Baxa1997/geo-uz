@@ -158,6 +158,8 @@ export interface UntrackedBrand {
   name: string;
   /** How many answers named it. */
   answers: number;
+  /** The client hid it from the suggestions (it isn't a competitor); it can be shown again. */
+  dismissed: boolean;
 }
 
 /**
@@ -271,6 +273,22 @@ export interface CreateProjectResponse {
   project: Project;
   /** Poll GET /runs/{id}/progress; null when the project was created without prompts. */
   runId: string | null;
+}
+
+/**
+ * Starts tracking a brand as a competitor, usually one of the report's untracked brands. Only the name is
+ * needed: the backend fills in the spellings and the website it knows from the answers that name it.
+ */
+export interface AddCompetitorRequest {
+  name: string;
+  aliases?: string[];
+  domain?: string;
+}
+
+/** Hides an untracked brand from the suggestions, or shows it again. */
+export interface DismissBrandRequest {
+  name: string;
+  dismissed: boolean;
 }
 
 export type CreatePromptRequest = Pick<Prompt, "text" | "language" | "topic">;

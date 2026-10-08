@@ -394,7 +394,8 @@ function untrackedBrands(prompts: Prompt[], run: MockRun, cast: Cast): Untracked
       }
     }
   }
-  return [...counts].map(([name, answers]) => ({ name, answers })).sort((a, b) => b.answers - a.answers);
+  // Which of them the client hid is the mock backend's to say
+  return [...counts].map(([name, answers]) => ({ name, answers, dismissed: false })).sort((a, b) => b.answers - a.answers);
 }
 
 /** Wrong facts about the clinic the brand plays, on the prompts the run asked. */

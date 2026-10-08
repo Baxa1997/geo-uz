@@ -574,16 +574,59 @@
     "more": "{count, plural, one {# more question} other {# more questions}}",
     "readAnswers": "Read the answers",
     "untrackedTitle": "ChatGPT also names {count, plural, one {# other brand} other {# other brands}}",
-    "untrackedText": "You don’t track them yet. The ones named often may be your new competitors.",
+    "untrackedText": "You don’t track them yet. The ones that come up often may be your new competitors: “Track” adds a brand to your competitors, × hides it from the list.",
     "untrackedAnswers": "in {count} of {total} answers",
     "topics": {
       "title": "Places by topic",
       "hint": "The brands in order of how often ChatGPT names them on each topic’s questions.",
       "topic": "Topic",
       "you": "(you)",
-      "empty": "Nobody"
+      "empty": "Nobody",
+      "topicHint": "The topic of the questions. Click to open this topic’s questions.",
+      "placeHint": "The brand in place {place} by how often the answers to this topic’s questions name it.",
+      "cell": "{brand}: named in {count} of {total} answers on this topic"
     },
-    "untrackedSoon": "Tracking them is coming soon"
+    "kpi": {
+      "place": "Your place",
+      "placeOf": "of {of} brands",
+      "placeHint": "Your place among the tracked brands by visibility. Visibility is the share of ChatGPT’s answers that name you.",
+      "leader": "Leader",
+      "you": "You",
+      "leaderHint": "The brand named in the most answers, and its visibility.",
+      "topics": "You lead",
+      "topicsHint": "In how many topics ChatGPT names you more than any other brand.",
+      "without": "Without you",
+      "withoutHint": "How many questions ChatGPT answers naming a competitor and not you. They are listed at the foot of the page.",
+      "new": "New brands",
+      "newHint": "How many brands ChatGPT’s answers name that you don’t track yet. You can start tracking them further down the page.",
+      "topicsOf": "{total, plural, one {of # topic} other {of # topics}}",
+      "withoutOf": "{total, plural, one {of # question} other {of # questions}}"
+    },
+    "untracked": {
+      "tracked": "Competitors:",
+      "usage": "The {plan} plan lets you track up to {max} competitors.",
+      "full": "All {max} competitor places of the {plan} plan are in use. To track a new brand, stop tracking one first or move to a higher plan.",
+      "failed": "Couldn’t save. Try again.",
+      "none": "No new brands for now.",
+      "track": "Track",
+      "trackHint": "Add to your competitors. Its numbers are counted at once from the answers already collected.",
+      "trackFull": "Your plan’s competitor places are all in use.",
+      "trackLabel": "Track {name}",
+      "hideHint": "Hide from the list: this brand isn’t your competitor. You can bring it back later.",
+      "hideLabel": "Hide {name}",
+      "hiddenTitle": "Hidden brands: {count}",
+      "show": "Show again",
+      "showLabel": "Show {name} again",
+      "trackedNote": "Now tracked: {name}",
+      "hiddenNote": "Hidden: {name}",
+      "shownNote": "Shown again: {name}",
+      "titleNone": "Brands you don’t track"
+    },
+    "untrack": {
+      "hint": "Stop tracking. The brand leaves the tables and charts; its mentions stay in the answers, so you can track it again.",
+      "label": "Stop tracking {name}",
+      "failed": "Couldn’t save. Try again."
+    }
   },
   "PromptManager": {
     "description": "Questions your customers ask ChatGPT. Each one is measured every week.",

@@ -4,11 +4,13 @@
 // Next.js server. With NEXT_PUBLIC_USE_MOCKS=false this file is never used.
 import { ApiError, type ApiClient, type MockResult } from "@/shared/api/client";
 import type {
+  AddCompetitorRequest,
   AnalyzeSiteRequest,
   ArchivePromptRequest,
   CreateProjectRequest,
   CreatePromptRequest,
   DemoRequest,
+  DismissBrandRequest,
   ReportFilters,
   ReportPeriod,
   SendCodeRequest,
@@ -62,6 +64,18 @@ export async function createProject(body: CreateProjectRequest) {
 
 export async function getProject(id: string) {
   return run((m) => m.getProject(id));
+}
+
+export async function addCompetitor(projectId: string, body: AddCompetitorRequest) {
+  return run((m) => m.addCompetitor(projectId, body));
+}
+
+export async function removeCompetitor(projectId: string, brandId: string) {
+  return run((m) => m.removeCompetitor(projectId, brandId));
+}
+
+export async function dismissBrand(projectId: string, body: DismissBrandRequest) {
+  return run((m) => m.dismissBrand(projectId, body));
 }
 
 export async function getPrompts(projectId: string) {

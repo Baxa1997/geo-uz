@@ -574,16 +574,59 @@
     "more": "Yana {count} ta savol",
     "readAnswers": "Javoblarni oʻqish",
     "untrackedTitle": "ChatGPT yana {count} ta brendni tilga olmoqda",
-    "untrackedText": "Siz ularni hali kuzatmayapsiz. Javoblarda koʻp uchrayotganlari yangi raqobatchilaringiz boʻlishi mumkin.",
+    "untrackedText": "Siz ularni hali kuzatmayapsiz. Javoblarda koʻp uchrayotganlari yangi raqobatchilaringiz boʻlishi mumkin: “Kuzatish” brendni raqobatchilar qatoriga qoʻshadi, × esa roʻyxatdan yashiradi.",
     "untrackedAnswers": "{total} ta javobdan {count} tasida",
     "topics": {
       "title": "Mavzular boʻyicha oʻrinlar",
       "hint": "Har bir mavzu savollarida ChatGPT brendlarni qanchalik koʻp tilga olishi boʻyicha tartib.",
       "topic": "Mavzu",
       "you": "(siz)",
-      "empty": "Hech kim"
+      "empty": "Hech kim",
+      "topicHint": "Savollar mavzusi. Bossangiz, shu mavzudagi savollar ochiladi.",
+      "placeHint": "Shu mavzu savollariga berilgan javoblarda tilga olinish soni boʻyicha {place}-oʻrindagi brend.",
+      "cell": "{brand}: shu mavzudagi {total} ta javobdan {count} tasida tilga olingan"
     },
-    "untrackedSoon": "Kuzatishga qoʻshish — tez orada"
+    "kpi": {
+      "place": "Oʻrningiz",
+      "placeOf": "{of} ta brend ichida",
+      "placeHint": "Koʻrinish boʻyicha kuzatilayotgan brendlar orasidagi oʻrningiz. Koʻrinish — ChatGPT javoblarining necha foizida tilga olinganingiz.",
+      "leader": "Yetakchi",
+      "you": "Siz",
+      "leaderHint": "ChatGPT eng koʻp javobda tilga olgan brend va uning koʻrinishi.",
+      "topics": "Siz yetakchi",
+      "topicsHint": "Nechta mavzuda ChatGPT sizni boshqa brendlardan koʻproq tilga oladi.",
+      "without": "Siz yoʻq savollar",
+      "withoutHint": "ChatGPT raqobatchini tilga olgan, sizni esa olmagan savollar soni. Roʻyxati sahifa pastida.",
+      "new": "Yangi brendlar",
+      "newHint": "ChatGPT javoblarida uchraydigan, siz hali kuzatmayotgan brendlar soni. Ularni sahifa pastida kuzatuvga qoʻshishingiz mumkin.",
+      "topicsOf": "{total} mavzudan",
+      "withoutOf": "{total} tadan"
+    },
+    "untracked": {
+      "tracked": "Raqobatchilar:",
+      "usage": "{plan} tarifida {max} tagacha raqobatchini kuzatish mumkin.",
+      "full": "{plan} tarifidagi {max} ta raqobatchi oʻrni band. Yangi brendni kuzatish uchun avval birini kuzatuvdan chiqaring yoki tarifni oshiring.",
+      "failed": "Saqlab boʻlmadi. Qayta urinib koʻring.",
+      "none": "Hozircha yangi brend yoʻq.",
+      "track": "Kuzatish",
+      "trackHint": "Raqobatchilar qatoriga qoʻshish. Raqamlari mavjud javoblardan darhol hisoblanadi.",
+      "trackFull": "Tarifdagi raqobatchilar oʻrni band.",
+      "trackLabel": "Kuzatish: {name}",
+      "hideHint": "Roʻyxatdan yashirish: bu brend raqobatchingiz emas. Keyin qaytarish mumkin.",
+      "hideLabel": "Yashirish: {name}",
+      "hiddenTitle": "Yashirilgan brendlar: {count}",
+      "show": "Qaytarish",
+      "showLabel": "Roʻyxatga qaytarish: {name}",
+      "trackedNote": "Kuzatuvga qoʻshildi: {name}",
+      "hiddenNote": "Yashirildi: {name}",
+      "shownNote": "Roʻyxatga qaytarildi: {name}",
+      "titleNone": "Kuzatilmayotgan brendlar"
+    },
+    "untrack": {
+      "hint": "Kuzatishni toʻxtatish. Brend jadval va grafiklardan olinadi; javoblardagi maʼlumoti saqlanadi va uni qayta kuzatish mumkin.",
+      "label": "Kuzatishni toʻxtatish: {name}",
+      "failed": "Saqlab boʻlmadi. Qayta urinib koʻring."
+    }
   },
   "PromptManager": {
     "description": "Mijozlaringiz ChatGPT’ga beradigan savollar. Har bir savol har hafta oʻlchanadi.",
