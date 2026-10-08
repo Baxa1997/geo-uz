@@ -30,16 +30,16 @@ export interface ChartLine {
 }
 
 /**
- * How much ChatGPT relied on a few sites (or on a site's pages) check after check, laid out like Peec's
- * "source retrievals over time": the lines over the checks with the day / week / month switch, and a legend
- * whose names open each site's page. A point is the share of that check's answers that cite the site, in
- * whole percent, the same number the tables show. The plot is the brands chart's, so hovering (or the
- * arrow keys) reads out one check for all lines; screen readers get the numbers as a table.
+ * How much ChatGPT relied on a few sites (or pages) check after check, laid out like Peec's "source
+ * retrievals over time": the title with the day / week / month switch, the lines over the checks, and the
+ * legend in a strip under them, whose names open each site's page. A point is the share of that check's
+ * answers that cite the site, in whole percent, the same number the tables show; the section's line above
+ * the card says so. The plot is the brands chart's, so hovering (or the arrow keys) reads out one check for
+ * all lines; screen readers get the numbers as a table.
  */
 export function SourcesChart({
   title,
   hint,
-  footer,
   history,
   lines,
   label,
@@ -47,8 +47,6 @@ export function SourcesChart({
 }: {
   title: string;
   hint: string;
-  /** What the lines are and how to read a point, under the plot. */
-  footer: string;
   history: SourceHistoryPoint[];
   lines: ChartLine[];
   /** The chart in words, for screen readers. */
@@ -74,22 +72,12 @@ export function SourcesChart({
   // A month is named; a day or a week is dated by its check
   const tick = (iso: string) => (grain === "month" ? formatMonth(iso, locale, timeZone, "short") : formatShortDate(iso, locale, timeZone));
   const heading = (iso: string) => (grain === "month" ? formatMonth(iso, locale, timeZone, "long") : formatLongDate(iso, locale, timeZone));
+  // Fewer points than checks: some points stand for several checks. One check: nothing to draw a line between.
+  const note = history.length === 1 ? t("firstRun") : history.length > points.length ? t("averaged") : null;
 
   return (
-    <Panel
-      title={title}
-      hint={hint}
-      className={className}
-      actions={<GrainSwitch grain={grain} onChange={setGrain} />}
-      footer={
-        <p className="min-w-0 text-pretty">
-          {footer}
-          {/* Fewer points than checks: some points stand for several checks */}
-          {history.length > points.length && ` ${t("averaged")}`}
-        </p>
-      }
-    >
-      <div className="@container flex flex-1 flex-col gap-3 p-4">
+    <Panel title={title} hint={hint} className={className} actions={<GrainSwitch grain={grain} onChange={setGrain} />}>
+      <div className="@container flex flex-1 flex-col p-4 pb-3">
         <LinePlot
           // Lines draw again when the grouping changes
           key={grain}
@@ -118,9 +106,12 @@ export function SourcesChart({
             </>
           )}
         />
-        <ul className="flex flex-wrap gap-1.5 text-xs">
+      </div>
+      {/* The legend in a strip under the plot, as on Peec */}
+      <div className="flex flex-col gap-2 border-t px-3 py-2.5">
+        <ul className="flex flex-wrap gap-1.5 text-sm">
           {series.map((line) => {
-            const chip = cn("inline-flex max-w-56 items-center gap-1.5 rounded-md bg-muted px-2 py-1", line.isYou && "font-medium");
+            const chip = cn("inline-flex max-w-72 items-center gap-2 rounded-lg bg-muted px-2.5 py-1", line.isYou && "font-medium");
             const name = (
               <>
                 <span aria-hidden className="size-2 shrink-0 rounded-full" style={{ background: line.color }} />
@@ -140,7 +131,7 @@ export function SourcesChart({
             );
           })}
         </ul>
-        {history.length === 1 && <p className="text-xs text-pretty text-muted-foreground">{t("firstRun")}</p>}
+        {note && <p className="px-1 text-xs text-pretty text-muted-foreground">{note}</p>}
       </div>
 
       {/* The chart's numbers as a table for screen readers (in a wrapper: a table itself can't be clipped to 1px) */}

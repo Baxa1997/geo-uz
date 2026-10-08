@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { FilterX } from "lucide-react";
 import { EmptyState } from "@/shared/components/empty-state";
 import { Page } from "@/shared/components/page";
+import { PageSection } from "@/shared/components/page-section";
+import { PageTabs } from "@/shared/components/page-tabs";
 import { ReportFilterBar } from "@/shared/components/report-filter-bar";
 import { MethodLabel } from "@/shared/components/scores/method-label";
 import { buttonVariants } from "@/shared/components/ui/button";
@@ -12,15 +14,19 @@ import { setPageLocale } from "@/i18n/page-locale";
 import { api } from "@/shared/api/client";
 import { orNotFound } from "@/shared/api/errors";
 import { loadReport } from "@/shared/api/load-report";
-import { normalizeDomain } from "@/shared/helpers/domain";
+import { normalizeDomain, SITE_SLOT } from "@/shared/helpers/domain";
 import { hasFilters, withFilters } from "@/shared/helpers/report-filters";
 import { seriesBrands, totalAnswers } from "@/shared/helpers/scores";
 import { percentIn } from "@/shared/helpers/sources";
+import { MoversCard } from "../components/movers-card";
+import { MoversDescription } from "../components/movers-description";
+import { PagesTable } from "../components/pages-table";
+import { SiteAnswers } from "../components/site-answers";
 import { SourceBrands } from "../components/source-brands";
 import { SourceHeader } from "../components/source-header";
-import { SourceTabs } from "../components/source-tabs";
 import { SourceVerdict } from "../components/source-verdict";
 import { SourcesChart } from "../components/sources-chart";
+import { pageMovers } from "../helpers/history";
 import { pageLines } from "../helpers/lines";
 
 type Props = PageProps<"/[locale]/projects/[id]/sources/[domain]">;
@@ -43,31 +49,39 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 /**
  * One cited site, laid out like Peec's domain page (Sources › Domains › a site), opened from any site on
- * the sources page, the Overview or a question's page. The site with its facts; a sentence on what it
- * means for the client, with a link to the fix that gets the client listed; the site over the checks (the
- * whole site and its most cited pages) beside who ChatGPT names when it relies on the site; then its pages
- * and the answers that cite it as two tabs. An answer opens like a chat, and from there the question's own
- * page. `?tab=answers&page=` opens the answers citing one page.
+ * the sources page, the Overview or a question's page. Its two views are tabs under the filters, as on
+ * Peec: Pages (the default) and Answers (`?tab=answers`, `&page=` for the answers citing one page).
+ *
+ * Pages: the site's mark, name and link, its facts in a strip across the panel; a sentence on what it
+ * means for the client, with a link to the fix that gets the client listed; "Overview", the whole site and
+ * its most cited pages over the checks; "What changed", its pages cited for the first time, more and less,
+ * beside who ChatGPT names when it relies on the site (where Peec has URL types); then its pages in a
+ * table. Answers: the answers citing the site, each opening like a chat.
  *
  * A site the latest check didn't cite (it shows among the falling sites) keeps its page: the facts the
- * history has, the sentence, the chart. Left out of Peec's page: "URL movers" (a local site has a few cited
- * pages: each page's change is in the table) and URL types (they need classifying in the backend).
+ * history has, the sentence, the chart, and no tabs.
  */
 export default async function SourcePage({ params, searchParams }: Props) {
   const { locale: segment, id, domain: raw } = await params;
   const locale = setPageLocale(segment);
   const domain = domainOf(raw);
   const query = await searchParams;
-  const [{ report, filters, topics }, actions, t, tPage, tFilters] = await Promise.all([
+  const [{ report, filters, topics }, actions, t, tSources, tPage, tFilters] = await Promise.all([
     loadReport(id, query),
     orNotFound(api.getActions(id)),
     getTranslations({ locale, namespace: "Sidebar" }),
+    getTranslations({ locale, namespace: "SourcesPage" }),
     getTranslations({ locale, namespace: "SourcePage" }),
     getTranslations({ locale, namespace: "Filters" }),
   ]);
   const { project } = report;
   const base = `/projects/${project.id}`;
-  const crumb = { href: withFilters(`${base}/sources`, filters), label: t("sources") };
+  const home = withFilters(`${base}/sources`, filters);
+  const crumbs = [
+    { href: home, label: t("sources") },
+    { href: home, label: tSources("views.sites") },
+  ];
+  const toolbar = <ReportFilterBar topics={topics} />;
 
   const source = report.topSources.find((candidate) => candidate.domain === domain);
   const history = report.sourceHistory;
@@ -78,8 +92,7 @@ export default async function SourcePage({ params, searchParams }: Props) {
     // Nothing under these filters; without them the site may well be there
     if (!hasFilters(filters)) notFound();
     return (
-      <Page title={domain} crumb={crumb} engines>
-        <ReportFilterBar topics={topics} />
+      <Page title={domain} crumbs={crumbs} engines toolbar={toolbar}>
         <EmptyState icon={FilterX} title={tFilters("emptyTitle")} text={tPage("verdict.filtered")}>
           <Link href={`${base}/sources/${encodeURIComponent(domain)}`} className={buttonVariants({ variant: "outline", size: "lg" })}>
             {tFilters("reset")}
@@ -91,6 +104,40 @@ export default async function SourcePage({ params, searchParams }: Props) {
 
   const type = source?.type ?? last?.past.type ?? "other";
   const brands = seriesBrands(project);
+  const sitePattern = withFilters(`${base}/sources/${SITE_SLOT}`, filters);
+  const here = withFilters(`${base}/sources/${encodeURIComponent(domain)}`, filters);
+  const tab = source && query.tab === "answers" ? "answers" : "pages";
+  const tabs = source && (
+    <PageTabs
+      label={tPage("tabs.label")}
+      current={tab}
+      tabs={[
+        { key: "pages", label: tPage("tabs.pages"), href: here, hint: tPage("tabHints.pages") },
+        { key: "answers", label: tPage("tabs.answers"), href: withFilters(`${base}/sources/${encodeURIComponent(domain)}`, filters, { tab: "answers" }), hint: tPage("tabHints.answers") },
+      ]}
+    />
+  );
+
+  if (source && tab === "answers") {
+    return (
+      <Page title={domain} crumbs={crumbs} engines toolbar={toolbar} tabs={tabs}>
+        <div className="flex flex-col gap-8 sm:gap-10">
+          <SiteAnswers
+            // Keyed: a link to another page of the site starts its answers, even from this same view
+            key={typeof query.page === "string" ? query.page : ""}
+            report={report}
+            source={source}
+            brands={brands}
+            filters={filters}
+            initialPage={typeof query.page === "string" ? query.page : ""}
+            answersHref={withFilters(`${base}/answers`, filters, { source: domain })}
+          />
+          <MethodLabel method={report.method} />
+        </div>
+      </Page>
+    );
+  }
+
   const answers = report.prompts.flatMap((result) => result.answers).filter((answer) => answer.citations.some((citation) => citation.domain === domain));
   const named = answers.filter((answer) => answer.mentions.some((mention) => mention.brandId === project.brand.id)).length;
   const owner = project.competitors.find((competitor) => normalizeDomain(competitor.domain) === domain)?.name ?? null;
@@ -101,23 +148,11 @@ export default async function SourcePage({ params, searchParams }: Props) {
   const total = totalAnswers(report.prompts);
   // The pages the chart draws: the latest check's, or the last ones the history has
   const pages = source?.pages ?? [...(last?.past.pages ?? [])].sort((a, b) => b.count - a.count);
-  const lines = pageLines(domain, type === "own", pages, tPage("chart.whole"));
-  const chart = (className?: string) => (
-    <SourcesChart
-      className={className}
-      title={tPage("chart.title")}
-      hint={tPage("chart.hint")}
-      footer={tPage(lines.length > 1 ? "chart.footer" : "chart.footerOne")}
-      label={tPage("chart.label", { domain, checks: history.length })}
-      history={history}
-      lines={lines}
-    />
-  );
-  const { tab, page } = query;
+  const lines = pageLines(domain, type === "own", pages, tPage("chart.whole"), sitePattern);
+  const movers = pageMovers(history, domain);
 
   return (
-    <Page title={domain} crumb={crumb} engines>
-      <ReportFilterBar topics={topics} />
+    <Page title={domain} crumbs={crumbs} engines toolbar={toolbar} tabs={tabs}>
       <SourceHeader
         domain={domain}
         type={type}
@@ -138,31 +173,40 @@ export default async function SourcePage({ params, searchParams }: Props) {
         lastCited={source ? null : (last?.point.collectedAt ?? null)}
         actionHref={action && source && !source.brandListed ? withFilters(`${base}/actions`, filters, { action: action.id }) : undefined}
       />
-      {source ? (
-        <>
-          {/* Columns follow the panel's width, which shrinks when GEO AI is open */}
-          <div className="@container">
-            <div className="grid gap-4 sm:gap-5 @4xl:grid-cols-5">
-              {chart("@4xl:col-span-3")}
-              <SourceBrands className="@4xl:col-span-2" answers={answers} brands={brands} />
-            </div>
-          </div>
-          <SourceTabs
-            // Keyed: a link to another tab or page opens it, even from this same page
-            key={`${tab}:${page}`}
-            report={report}
-            source={source}
-            brands={brands}
-            filters={filters}
-            initialTab={tab === "answers" ? "answers" : "pages"}
-            initialPage={typeof page === "string" ? page : ""}
-            answersHref={withFilters(`${base}/answers`, filters, { source: domain })}
+      <div className="mt-3 flex flex-col gap-8 sm:gap-10">
+        <PageSection title={tSources("sections.overview.title")} description={tPage(lines.length > 1 ? "sections.overview" : "sections.overviewOne")}>
+          <SourcesChart
+            title={tPage("chart.title")}
+            hint={tPage("chart.hint")}
+            label={tPage("chart.label", { domain, checks: history.length })}
+            history={history}
+            lines={lines}
           />
-        </>
-      ) : (
-        chart()
-      )}
-      <MethodLabel method={report.method} />
+        </PageSection>
+        {source && (
+          <>
+            <PageSection title={tSources("sections.movers.title")} description={<MoversDescription comparedWith={movers?.comparedWith ?? null} scope="site" />}>
+              {/* Two cards side by side once the panel is wide enough; it narrows when GEO AI is open */}
+              <div className="@container">
+                <div className="grid gap-4 @3xl:grid-cols-2">
+                  <MoversCard movers={movers} sitePattern={sitePattern} naming="path" />
+                  <SourceBrands answers={answers} brands={brands} />
+                </div>
+              </div>
+            </PageSection>
+            <PagesTable
+              site
+              sources={[source]}
+              totalAnswers={total}
+              youId={project.brand.id}
+              brands={brands}
+              filename={`${domain}-${report.method.collectedAt.slice(0, 10)}`}
+              sitePattern={sitePattern}
+            />
+          </>
+        )}
+        <MethodLabel method={report.method} />
+      </div>
     </Page>
   );
 }

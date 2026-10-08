@@ -47,9 +47,9 @@ open questions): add to it each time a page is finished.
   (the answers in numbers, a table of every answer that opens like a chat, Previous/Next; filters by brand,
   cited site and status; CSV with the full texts); Competitors
   (four numbers, the brands table, who leads each topic, the brands ChatGPT names that aren't tracked: track or hide
-  each; the questions each competitor wins, and stop tracking a competitor); Sources (numbers, the most cited
-  sites over time beside what changed, then sites, pages and gaps: pages that name competitors and not the
-  client; a page per cited site); Wrong facts (numbers and a
+  each; the questions each competitor wins, and stop tracking a competitor); Sources (Sites and Pages views,
+  each: the most cited over time, what changed beside whether they work for the client, the table with a gaps
+  switch; a page per cited site); Wrong facts (numbers and a
   table); Harakatlar (four goal tiles, the list by status and goal, a side panel with steps to tick, fix →
   proof); Settings (sections: brand profile, tracked brands, interface language; editing later); sidebar
   sections with a start checklist; site checks in the free check; public report; language + topic filters as
@@ -121,6 +121,24 @@ from Chrome's trace): 8 layers, no dropped frames while scrolling, and the page 
   marker line, dots and tooltip: `FOLLOWS` in metric-chart.tsx). The website field types its examples
   straight into the input's placeholder, not through React state.
 
+## Page layout
+Every workspace page's top follows Peec's (the user's correction, Oct 8: "page top breadcrumb must also be the
+same"), through `Page` (shared/components/page.tsx):
+
+1. **The bar**: where the page is, as a breadcrumb in plain weight ("Manbalar › Saytlar › 2gis.uz"; `crumbs`
+   are the pages above, the last part is the page's h1), the engine switcher on the right.
+2. **The filters' strip** (`toolbar`): the language and topic chips, and tools for the whole page (the
+   Overview's next check and share menu), with a line under it.
+3. **The views' strip** (`tabs`, `PageTabs`) when a page has views: links, the open one on a light pill with a
+   line under it that covers the strip's border. Each view has its own address (`?view=`, `?tab=`), so the
+   server renders it and it can be linked to.
+4. **The content**, in parts (`PageSection`, on Manbalar and a site's page so far): a heading and a grey line
+   that says what the cards show and how to read them, outside the cards, then the cards. A part's switch
+   (Peec's gap analysis) sits on the right of its heading. A table's card has its tools on top (search on the
+   left, filters and an icon-only CSV on the right), a grey heading row and its row count at the bottom.
+
+A strip of facts across the whole panel (a site's page) steps out of the page's padding (`-mx-4 sm:-mx-6`).
+
 ## Key rules
 - The frontend NEVER calls AI providers and never holds API keys. It only calls the Python backend.
 - Measuring ChatGPT = backend calls OpenAI with web search. Analysis can use any model.
@@ -173,20 +191,23 @@ frontend/src/
                           #   aren't tracked, like Peec's brand suggestions (track one while the plan has room:
                           #   Project.limits.competitors; or hide it, and show it again), and a card per competitor
                           #   with the questions it wins (each opens the question's page) and a stop-tracking button
-    sources/              # Sources, after Peec's Sources › Domains: four numbers (the client's own site as a
-                          #   source, cited without the client being named, sites the client is missing from, links
-                          #   per answer); the five most cited sites over the checks (SourcesChart) beside what
-                          #   changed since the last check (SourceMovers: sites used more, less, for the first time;
-                          #   helpers/history.ts); then one card with sites / pages / gaps tabs (?tab=, &type= one
-                          #   kind of site): kind, share of answers, who each page names, "are you listed?", pages
-                          #   naming competitors not you; filters by kind, by "are you on it" (sites) and by
-                          #   competitor named (gaps); CSV. A site anywhere opens its own page.
-                          #   pages/source-page: one cited site (/sources/[domain], the domain as written, "2gis.uz"):
-                          #   its facts, a sentence on what it means for the client with a link to the fix that
-                          #   gets it listed, the whole site and its most cited pages over the checks beside who
-                          #   ChatGPT names when it cites the site, then Pages / Answers tabs (?tab=answers&page=
-                          #   opens the answers citing one page). A site the latest check no longer cites keeps
-                          #   its page from the history
+    sources/              # Sources, laid out like Peec's Sources › Domains and › URLs (the user's correction,
+                          #   Oct 8: "page top breadcrumb must also be the same"): Sites and Pages as the page's
+                          #   tabs (?view=pages). Each view: "Overview", the five most cited over the checks
+                          #   (SourcesChart); "What changed", MoversCard (cited for the first time, more, less, as
+                          #   tabs; helpers/history.ts) beside PresenceCard (how the citations split by whether they
+                          #   work for the client: its own site, sites it is on, sites it is missing from,
+                          #   competitors'; for pages: naming the client, only competitors, nobody); then the table
+                          #   (SitesTable / PagesTable) with Peec's gap switch (the places where a competitor is
+                          #   named and the client isn't, then a filter by competitor), search, kind filter, CSV and
+                          #   the row count. &type= starts the sites on one kind. A site anywhere opens its own page.
+                          #   pages/source-page: one cited site (/sources/[domain], the domain as written, "2gis.uz"),
+                          #   with Pages / Answers as its tabs (?tab=answers&page= opens the answers citing one
+                          #   page). Pages: the site's mark and link, its facts in a strip across the panel, a
+                          #   sentence on what it means for the client with a link to the fix that gets it listed,
+                          #   the whole site and its pages over the checks, its pages' movers beside who ChatGPT
+                          #   names when it cites the site, its pages' table. Answers: SiteAnswers. A site the
+                          #   latest check no longer cites keeps its page from the history, without tabs
     wrong-facts/          # Wrong facts: numbers, then claim, correct value, question, date found as a table
     actions/              # Harakatlar: recommended fixes (sites to get onto, wrong facts, pages to write, site fixes):
                           #   four goal tiles, the list by status then goal, a side panel (?action=) with steps to tick,
@@ -234,8 +255,9 @@ frontend/src/
                           #   on anything else: wraps a table heading, a figure, a mark or an icon button and
                           #   explains it on hover, keyboard focus or a tap), FilterMenu (a dropdown filter chip), ReportFilterBar (language + topic
                           #   chips, kept in the URL: ?lang=&topic=),
-                          #   Page (title bar + engine switcher + body of a workspace page; `crumb` puts a link to
-                          #   the parent page before the title), EmptyState, Logo, …
+                          #   Page (a workspace page: see "Page layout"), PageTabs (a page's views as tabs, in
+                          #   Page's `tabs` strip), PageSection (a heading and a grey line over a part's cards),
+                          #   EmptyState, Logo, …
     hooks/                # use-assistant (open GEO AI from any page), use-logout, use-in-view, use-reduced-motion
     helpers/              # domain (also shortUrl, pathOf, and siteHref + SITE_SLOT: the address of a cited site's
                           #   page as a pattern a server page can hand to a client component), dates, labels, phone,
@@ -396,12 +418,14 @@ Four numbers per brand, shown side by side (the Overview's numbers, its chart ta
   month's average; day only differs once checks run more than once a week, and daily checks are not offered
   for now (the user's decision, Oct 6; `backend/PLAN.md`). The numbers above the chart and the takeaway always compare the latest check with the one before.
 - Every chart has a text twin for screen readers and shows its values on hover and on keyboard focus.
-- The cited sites over time (`SourcesChart`, sources feature) reuse the brands chart's plot (`LinePlot`,
-  exported from metric-chart.tsx). A point is the share of that check's answers citing the site, in whole
-  percent, the number the tables show. Among the sites, the client's own keeps `--series-1` and a thicker line
-  and the others take `--series-2…6` by rank; on a site's own page the whole site is the thick gray line and its
-  pages take the palette. A change in a site's share is an arrow with the points it moved, green up and red down
-  (`ChangeMark`): colored in its own direction, like a brand's.
+- The cited sites (or pages) over time (`SourcesChart`, sources feature) reuse the brands chart's plot
+  (`LinePlot`, exported from metric-chart.tsx), in Peec's card: the title with the K / H / O switch, the plot,
+  the legend in a strip under it (each name opens the site's page, a page's opens the answers citing it). How
+  to read a point is the section's grey line over the card. A point is the share of that check's answers citing
+  the site, in whole percent, the number the tables show. Among the sites (or pages), the client's own keeps
+  `--series-1` and a thicker line and the others take `--series-2…6` by rank; on a site's own page the whole
+  site is the thick gray line and its pages take the palette. A change in a site's share is an arrow with the
+  points it moved, green up and red down (`ChangeMark`): colored in its own direction, like a brand's.
 - Rankings of sites and kinds are bar lists (`BarRows`): light bars behind the labels, the number at the end
   of each row carries the value. One y-axis per chart; Peec's two-axis "own source impact" is left out.
 - A table with a minimum width scrolls inside its card: give the scroll box `relative` and `min-w-0`, or its
@@ -453,11 +477,15 @@ A number or a block appears once in the app, plus the Overview, which is the sum
 user's correction, Oct 8: "some infos are repetitive").
 
 - A page's top row holds numbers about that page's own subject which the blocks right under it don't already
-  show. No count that a tab or a block's title repeats (how many sites are cited is on the Sites tab), no
-  restating of a table's first row (the leader), and no number that belongs to another page: how often the
-  client's site is cited lives on Manbalar, who leads on Raqobatchilar, links per answer on Manbalar.
+  show. No count that a tab or a block's title repeats (how many sites are cited is under the sites table), no
+  restating of a table's first row (the leader), and no number that belongs to another page: who leads is on
+  Raqobatchilar. Manbalar has no top row since it took Peec's layout (Oct 8): how often the client's own site is
+  cited is among the Overview's five numbers and on that site's page, links per answer on each site's page.
 - A chart or a card that already stands on the Overview is not added to the page it summarizes, unless that
-  page shows more of it.
+  page shows more of it. So Manbalar's "What changed" has whether the sources work for the client beside the
+  movers, where Peec has its domain types: the kinds of sites are on the Overview.
+- A change is shown once on a page: the movers card shows the sites and pages that moved, so the tables under
+  it show shares without arrows.
 - In a table, what is the same in every row is said once outside it (the date of the check is in the method
   line). Rows that share a question are grouped under the question, written once.
 - Before adding a block, check where its numbers already appear.
@@ -470,9 +498,9 @@ an `onClick` for a row that opens a window. The link or button inside the row st
 a bar list leads somewhere when it has `href` (`BarRows`): the whole row is then the link.
 
 A cited site opens its own page wherever it is shown (the user's correction, Oct 8): a row of the sites table,
-the chart's legend, a row of "what changed", the Overview's and a question's list of sites. A cited page's row
-opens its site's page on the answers that cite that page; its address under the title opens the page itself
-in a new tab. A row whose question is written once over several columns spans only the columns every width
+the chart's legend, a row of "what changed", the Overview's and a question's list of sites. A cited page (a row
+of a pages table or of "what changed", a page's name in a chart's legend) opens its site's page on the answers
+that cite that page; its address under the title opens the page itself in a new tab. A row whose question is written once over several columns spans only the columns every width
 shows, with an empty cell for each column a wider card adds: a wider span adds columns on a phone.
 
 The site's page has the site's domain in its address ("…/sources/2gis.uz"). `proxy.ts` skips addresses with a

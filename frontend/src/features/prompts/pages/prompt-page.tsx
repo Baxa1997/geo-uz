@@ -68,7 +68,7 @@ export default async function PromptPage({ params, searchParams }: Props) {
   const tracked = prompts.filter(isTracked).length;
 
   return (
-    <Page title={prompt.text} crumb={{ href: withFilters(`${base}/prompts`, filters), label: t("prompts") }} engines>
+    <Page title={prompt.text} crumbs={[{ href: withFilters(`${base}/prompts`, filters), label: t("prompts") }]} engines>
       <PromptHeader
         prompt={prompt}
         project={project}

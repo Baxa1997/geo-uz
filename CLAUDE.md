@@ -123,6 +123,17 @@ Any other number makes a new account, which goes through onboarding and gets a p
   question as an appendix. It is laid out for A4: "Print or save as PDF" is the browser's print dialog. The
   format's rules are in `frontend/CLAUDE.md`, "The report". The Hisobotlar menu item is still a placeholder
   that links to it.
+- **Manbalar laid out like Peec's, with the breadcrumb on every page (8 Oct); the user confirmed it
+  ("manbalar is correct").** The user sent Peec's Sources › Domains and a domain's page again:
+  "it does not look like ours … page top breadcrumb must also be the same". Every workspace page's top is now
+  Peec's: a breadcrumb in plain weight ("Manbalar › Saytlar › 2gis.uz"), the filters in a strip under it, the
+  views as tabs in a strip of their own (the rules are in `frontend/CLAUDE.md`, "Page layout"). Manbalar has
+  Sites and Pages as its tabs, each with "Overview" (the chart, its legend in a strip), "What changed" (new,
+  rising, falling as tabs beside "are you on them?", how the citations split by whether they work for the
+  client) and the table with Peec's gap switch; its four numbers are gone (they were on the Overview or belong
+  on a site's page). A site's page: Pages and Answers tabs, the facts in a strip across the panel, the chart,
+  its pages' movers beside who ChatGPT names there, its pages. In the place of Peec's domain types stands "are
+  you on them?": the kinds of sites stay on the Overview (the user chose to keep it that way when asked).
 - **Decisions the user made (6 Oct):** visibility is shown in percent, as Peec shows it; a change is green
   when better and red when worse; daily checks are not offered for now, so the day and week views of the
   chart show the same points. Changed on 8 Oct: the up and down changes are colored for every brand, not
@@ -145,7 +156,8 @@ Any other number makes a new account, which goes through onboarding and gets a p
 - **Git:** `main` is on GitHub (Baxa1997/geo-uz) and holds everything above: the Overview branch was merged
   and pushed on 6 Oct, Savollar on 7 Oct, and on 8 Oct Javoblar with the second Savollar correction, then
   Raqobatchilar, then `manbalar-page` (the review for repeats, Manbalar with a page per cited site, the
-  report). Each time the user chose "commit, push, continue" when asked. Each page gets its own branch,
+  report), then `manbalar-correction` (Manbalar and every page's top in Peec's layout). Each time the user
+  chose "commit, push" when asked. Each page gets its own branch,
   merged when the user says so.
 
 ## To do, in order
@@ -154,15 +166,19 @@ Any other number makes a new account, which goes through onboarding and gets a p
    headings, figures and marks (`Hint`), which only Savollar has so far:
    - Javoblar: built and merged (see "Done"); corrections may still come.
    - Raqobatchilar: built and merged (see "Done"); corrections may still come.
-   - Manbalar: rebuilt after Peec's Domains screenshots and merged (see "Done"); corrections may still come.
-     Peec's URLs page was not among the screenshots; our Pages tab stands in for it.
+   - Manbalar: rebuilt after Peec's Domains screenshots, laid out like Peec's on 8 Oct, confirmed by the
+     user and merged (see "Done"). Peec's URLs page was not among the screenshots; our Pages tab stands in.
    - The report: rewritten and merged (see "Done"); corrections may still come.
-   - Notoʻgʻri faktlar, next: brand facts for the answers to be checked against. The user chose on 8 Oct to
-     send Peec's screenshots first (Settings › Facts and wherever Peec shows what its fact check found).
-   - Harakatlar: marks on the chart where a fix started and was done.
-   - Sozlamalar: editing (today it is read-only), then facts, members, billing.
+   - Next, as the user asked on 8 Oct ("we need actions, and reports, need to be corrected"): Harakatlar, then
+     Hisobotlar. Their Peec trial ends about 11 Oct, so the remaining Peec screens are captured in one go:
+     Actions (with an opened action), Impact, Settings › Company (Peec's email report) and the export
+     menus, every other Settings tab including Facts, and the fact-check switch on Prompts. The Fanouts
+     screenshots of 8 Oct need nothing: the question's page already lists the searches (decided 6 Oct).
+   - Harakatlar: marks on the chart where a fix started and was done (Peec's Impact as a block).
    - Hisobotlar: a placeholder today that links to the report. When its turn comes: the list of past
      checks' reports (needs a report per run from the backend), sending to Telegram, the agency's name on it.
+   - Notoʻgʻri faktlar: brand facts for the answers to be checked against (Peec's Settings › Facts).
+   - Sozlamalar: editing (today it is read-only), then facts, members, billing.
 
    Peec pages that get no page of ours (the user agreed on 6 Oct):
    - Discovery (a wizard that makes new topics and prompts from services, personas and markets): onboarding

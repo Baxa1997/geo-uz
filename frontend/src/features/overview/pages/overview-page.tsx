@@ -65,33 +65,31 @@ export default async function OverviewPage({ params, searchParams }: Props) {
 
   if (report.prompts.length === 0) {
     return (
-      <Page title={t("overview")} engines>
-        {hasFilters(filters) ? (
-          <>
-            <ReportFilterBar topics={topics} />
-            <FilteredEmpty resetHref={base} />
-          </>
-        ) : (
-          <NoData projectId={report.project.id} promptCount={prompts.length} />
-        )}
+      <Page title={t("overview")} engines toolbar={hasFilters(filters) && <ReportFilterBar topics={topics} />}>
+        {hasFilters(filters) ? <FilteredEmpty resetHref={base} /> : <NoData projectId={report.project.id} promptCount={prompts.length} />}
       </Page>
     );
   }
 
   return (
-    <Page title={t("overview")} engines>
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <ReportFilterBar topics={topics} />
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-          {report.nextRunAt && <NextRun at={report.nextRunAt} />}
-          <ShareMenu
-            projectId={report.project.id}
-            history={report.history}
-            brands={brands}
-            filename={`${brand.domain}-${report.method.collectedAt.slice(0, 10)}`}
-          />
-        </div>
-      </div>
+    <Page
+      title={t("overview")}
+      engines
+      toolbar={
+        <>
+          <ReportFilterBar topics={topics} />
+          <div className="ml-auto flex flex-wrap items-center gap-x-4 gap-y-2">
+            {report.nextRunAt && <NextRun at={report.nextRunAt} />}
+            <ShareMenu
+              projectId={report.project.id}
+              history={report.history}
+              brands={brands}
+              filename={`${brand.domain}-${report.method.collectedAt.slice(0, 10)}`}
+            />
+          </div>
+        </>
+      }
+    >
       {/* The alert goes over the sentence, so the numbers and charts follow the sentence directly */}
       {report.wrongFacts.length > 0 && <WrongFactsAlert count={report.wrongFacts.length} href={to("/wrong-facts")} />}
       <Verdict report={report} />

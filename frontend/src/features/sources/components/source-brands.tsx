@@ -7,9 +7,10 @@ import type { SeriesBrand } from "@/shared/types/scores";
 
 /**
  * Who ChatGPT names when it relies on this site: for every tracked brand, in how many of the answers
- * citing the site it is named (Peec shows this as a column of brand marks). A bar is drawn against all
- * the citing answers, so a full bar is "named every time"; the client's row is marked. It tells an owner
- * whether a site works for them or for a competitor.
+ * citing the site it is named (Peec shows this as a column of brand marks). It stands beside the page
+ * movers, where Peec has its URL types. A bar is drawn against all the citing answers, counted in the
+ * header, so a full bar is "named every time"; the client's row is marked. It tells an owner whether a
+ * site works for them or for a competitor.
  */
 export function SourceBrands({ answers, brands, className }: { answers: Answer[]; brands: SeriesBrand[]; className?: string }) {
   const t = useTranslations("SourcePage.brands");
@@ -20,7 +21,12 @@ export function SourceBrands({ answers, brands, className }: { answers: Answer[]
     .sort((a, b) => b.count - a.count || Number(b.brand.isYou) - Number(a.brand.isYou));
 
   return (
-    <Panel title={t("title")} hint={t("hint")} className={className} footer={<p>{t("footer", { count: answers.length })}</p>}>
+    <Panel
+      title={t("title")}
+      hint={t("hint")}
+      className={className}
+      actions={<span className="text-sm text-muted-foreground tabular-nums">{t("total", { count: answers.length })}</span>}
+    >
       {rows.length === 0 ? (
         <p className="p-4 text-sm text-pretty text-muted-foreground">{t("empty")}</p>
       ) : (

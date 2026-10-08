@@ -40,15 +40,8 @@ export default async function WrongFactsPage({ params, searchParams }: Props) {
 
   if (report.prompts.length === 0) {
     return (
-      <Page title={t("wrongFacts")} engines>
-        {hasFilters(filters) ? (
-          <>
-            <ReportFilterBar topics={topics} />
-            <FilteredEmpty resetHref={`${base}/wrong-facts`} />
-          </>
-        ) : (
-          <NoData projectId={report.project.id} promptCount={prompts.length} />
-        )}
+      <Page title={t("wrongFacts")} engines toolbar={hasFilters(filters) && <ReportFilterBar topics={topics} />}>
+        {hasFilters(filters) ? <FilteredEmpty resetHref={`${base}/wrong-facts`} /> : <NoData projectId={report.project.id} promptCount={prompts.length} />}
       </Page>
     );
   }
@@ -57,8 +50,7 @@ export default async function WrongFactsPage({ params, searchParams }: Props) {
   const first = facts.map((fact) => fact.foundAt).sort()[0];
 
   return (
-    <Page title={t("wrongFacts")} engines>
-      <ReportFilterBar topics={topics} />
+    <Page title={t("wrongFacts")} engines toolbar={<ReportFilterBar topics={topics} />}>
       <KpiStrip
         items={[
           { key: "count", label: tFacts("kpi.count"), hint: tFacts("kpi.countHint"), value: String(facts.length) },

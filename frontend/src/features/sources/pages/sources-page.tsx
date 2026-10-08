@@ -4,24 +4,27 @@ import { cache } from "react";
 import { FilteredEmpty } from "@/shared/components/filtered-empty";
 import { NoData } from "@/shared/components/no-data";
 import { Page } from "@/shared/components/page";
+import { PageSection } from "@/shared/components/page-section";
+import { PageTabs } from "@/shared/components/page-tabs";
 import { ReportFilterBar } from "@/shared/components/report-filter-bar";
-import { KpiStrip } from "@/shared/components/scores/kpi-strip";
 import { MethodLabel } from "@/shared/components/scores/method-label";
 import { setPageLocale } from "@/i18n/page-locale";
 import { api } from "@/shared/api/client";
 import { orNotFound } from "@/shared/api/errors";
 import { loadReport } from "@/shared/api/load-report";
 import { SITE_SLOT } from "@/shared/helpers/domain";
-import { formatDecimal, formatPercent } from "@/shared/helpers/numbers";
 import { hasFilters, withFilters } from "@/shared/helpers/report-filters";
-import { missingSources, ownSourceShare, seriesBrands, totalAnswers as countAnswers } from "@/shared/helpers/scores";
-import { SourceMovers } from "../components/source-movers";
+import { seriesBrands, totalAnswers } from "@/shared/helpers/scores";
+import { MoversCard } from "../components/movers-card";
+import { MoversDescription } from "../components/movers-description";
+import { PagesTable } from "../components/pages-table";
+import { PresenceCard } from "../components/presence-card";
+import { SitesTable } from "../components/sites-table";
 import { SourcesChart } from "../components/sources-chart";
-import { SourcesTabs } from "../components/sources-tabs";
 import { SOURCE_TYPES } from "../constants";
-import { sourceMovers } from "../helpers/history";
-import { siteLines } from "../helpers/lines";
-import { ownSiteUse } from "../helpers/outreach";
+import { pageMovers, siteMovers } from "../helpers/history";
+import { siteLines, topPageLines } from "../helpers/lines";
+import { pagePresence, sitePresence } from "../helpers/presence";
 
 type Props = PageProps<"/[locale]/projects/[id]/sources">;
 
@@ -35,17 +38,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 /**
- * The sites and pages ChatGPT relies on, laid out like Peec's Sources › Domains: four numbers the table
- * below doesn't show as such (how often the client's own site is cited, how often it is cited without the
- * client being named, the sites the client is missing from, links per answer); the most cited sites over
- * the checks beside what changed since the last one (sites used more, less, for the first time); then
- * sites, pages and gaps (pages naming competitors, not the client) in one card, whose tabs carry the
- * counts. A site anywhere on the page (the chart's legend, the changes, a table row) opens the site's own
- * page. ?tab=pages|gaps opens a tab, &type= one kind of site (own: the client's pages).
+ * The sites and pages ChatGPT relies on, laid out like Peec's Sources › Domains and Sources › URLs, as the
+ * two views of one page (`?view=pages` for the pages): the breadcrumb, the filters, the views as tabs;
+ * then "Overview", the five most cited sites (or pages) over the checks; "What changed", the sites (or
+ * pages) cited for the first time, more and less since the last check beside how the citations split by
+ * whether they work for the client; then every site (or page) in a table with the gap switch. A site
+ * anywhere on the page opens the site's own page; a page opens it on the answers citing that page.
+ * `&type=` starts the sites table on one kind of site.
  *
- * Left out of Peec's page: "Top" among the movers and the kinds of sites as a chart (the table here and
- * the Overview already show them), retrieved as a number apart from cited (we have what the answer cites),
- * hosts, and free tags.
+ * Left out of Peec's pages: "Top" among the movers (the table is that list), domain and URL types (the
+ * kinds of sites are on the Overview; page types would need classifying in the backend), retrieved as a
+ * number apart from cited, hosts, free tags and bookmarks.
  */
 export default async function SourcesPage({ params, searchParams }: Props) {
   const { locale: segment, id } = await params;
@@ -57,94 +60,70 @@ export default async function SourcesPage({ params, searchParams }: Props) {
     getTranslations({ locale, namespace: "SourcesPage" }),
   ]);
   const base = `/projects/${report.project.id}`;
+  const scope = query.view === "pages" ? "pages" : "sites";
+  const home = withFilters(`${base}/sources`, filters);
+  const crumbs = [{ href: home, label: t("sources") }];
+  const tabs = (
+    <PageTabs
+      label={tSources("views.label")}
+      current={scope}
+      tabs={[
+        { key: "sites", label: tSources("views.sites"), href: home, hint: tSources("views.hints.sites") },
+        { key: "pages", label: tSources("views.pages"), href: withFilters(`${base}/sources`, filters, { view: "pages" }), hint: tSources("views.hints.pages") },
+      ]}
+    />
+  );
 
   if (report.prompts.length === 0) {
     return (
-      <Page title={t("sources")} engines>
-        {hasFilters(filters) ? (
-          <>
-            <ReportFilterBar topics={topics} />
-            <FilteredEmpty resetHref={`${base}/sources`} />
-          </>
-        ) : (
-          <NoData projectId={report.project.id} promptCount={prompts.length} />
-        )}
+      <Page title={tSources(`views.${scope}`)} crumbs={crumbs} engines toolbar={hasFilters(filters) && <ReportFilterBar topics={topics} />}>
+        {hasFilters(filters) ? <FilteredEmpty resetHref={`${base}/sources`} /> : <NoData projectId={report.project.id} promptCount={prompts.length} />}
       </Page>
     );
   }
 
-  const totalAnswers = countAnswers(report.prompts);
   const { brand } = report.project;
-  const answers = report.prompts.flatMap((result) => result.answers);
-  const citations = answers.reduce((sum, answer) => sum + new Set(answer.citations.map((citation) => citation.url)).size, 0);
-  const { tab, type } = query;
-  const kind = SOURCE_TYPES.find((candidate) => candidate === type) ?? "";
-  const own = ownSiteUse(report.prompts, brand.domain, brand.id);
   const sitePattern = withFilters(`${base}/sources/${SITE_SLOT}`, filters);
-  const lines = siteLines(report.topSources, sitePattern);
+  const lines = scope === "pages" ? topPageLines(report.topSources, sitePattern) : siteLines(report.topSources, sitePattern);
+  const movers = scope === "pages" ? pageMovers(report.sourceHistory) : siteMovers(report.sourceHistory);
+  const kind = SOURCE_TYPES.find((candidate) => candidate === query.type) ?? "";
+  const filename = `${brand.domain}-sources-${report.method.collectedAt.slice(0, 10)}`;
+  const tableProps = { sources: report.topSources, totalAnswers: totalAnswers(report.prompts), brands: seriesBrands(report.project), filename, sitePattern };
 
   return (
-    <Page title={t("sources")} engines>
-      <ReportFilterBar topics={topics} />
-      {/* How many sites and pages are cited is on the tabs below; the kinds of sites are on the Overview */}
-      <KpiStrip
-        items={[
-          {
-            key: "own",
-            label: tSources("kpi.own"),
-            hint: tSources("kpi.ownHint"),
-            value: formatPercent(ownSourceShare(report.prompts, brand.domain), locale),
-            note: tSources("kpi.ownNote", { count: own.citing }),
-          },
-          {
-            key: "unnamed",
-            label: tSources("kpi.unnamed"),
-            hint: tSources("kpi.unnamedHint"),
-            value: own.citing > 0 ? String(own.unnamed) : null,
-            note: own.citing > 0 ? tSources("kpi.unnamedNote", { total: own.citing }) : undefined,
-          },
-          {
-            key: "missing",
-            label: tSources("kpi.missing"),
-            hint: tSources("kpi.missingHint"),
-            value: String(missingSources(report.topSources, report.project.competitors).length),
-          },
-          {
-            key: "citations",
-            label: tSources("kpi.citations"),
-            hint: tSources("kpi.citationsHint"),
-            value: formatDecimal(answers.length ? citations / answers.length : 0, locale),
-          },
-        ]}
-      />
-      {/* How the sites moved, before the full list: columns follow the panel's width, which shrinks when GEO AI is open */}
-      <div className="@container">
-        <div className="grid gap-4 sm:gap-5 @4xl:grid-cols-5">
+    <Page title={tSources(`views.${scope}`)} crumbs={crumbs} engines toolbar={<ReportFilterBar topics={topics} />} tabs={tabs}>
+      <div className="flex flex-col gap-8 sm:gap-10">
+        <PageSection title={tSources("sections.overview.title")} description={tSources(`sections.overview.${scope}`)}>
           <SourcesChart
-            className="@4xl:col-span-3"
-            title={tSources("chart.title")}
-            hint={tSources("chart.hint")}
-            footer={tSources("chart.footer", { count: lines.length })}
-            label={tSources("chart.label", { sites: lines.length, checks: report.sourceHistory.length })}
+            // Drawn anew for the other view
+            key={scope}
+            title={tSources(`chart.title.${scope}`)}
+            hint={tSources(`chart.hint.${scope}`)}
+            label={tSources(`chart.label.${scope}`, { count: lines.length, checks: report.sourceHistory.length })}
             history={report.sourceHistory}
             lines={lines}
           />
-          <SourceMovers className="@4xl:col-span-2" movers={sourceMovers(report.sourceHistory)} sitePattern={sitePattern} />
-        </div>
+        </PageSection>
+
+        <PageSection title={tSources("sections.movers.title")} description={<MoversDescription comparedWith={movers?.comparedWith ?? null} scope={scope} />}>
+          {/* Two cards side by side once the panel is wide enough; it narrows when GEO AI is open */}
+          <div className="@container">
+            <div className="grid gap-4 @3xl:grid-cols-2">
+              <MoversCard key={scope} movers={movers} sitePattern={sitePattern} naming={scope === "pages" ? "page" : "site"} />
+              <PresenceCard scope={scope} rows={scope === "pages" ? pagePresence(report.topSources, brand.id) : sitePresence(report.topSources)} />
+            </div>
+          </div>
+        </PageSection>
+
+        {scope === "pages" ? (
+          <PagesTable key={`pages:${kind}`} {...tableProps} youId={brand.id} />
+        ) : (
+          // Keyed: a link to another kind opens it, even from this same page
+          <SitesTable key={`sites:${kind}`} {...tableProps} initialType={kind} />
+        )}
+
+        <MethodLabel method={report.method} />
       </div>
-      <SourcesTabs
-        // Keyed: a link to another tab or kind opens it, even from this same page
-        key={`${tab}:${kind}`}
-        sources={report.topSources}
-        totalAnswers={totalAnswers}
-        youId={brand.id}
-        brands={seriesBrands(report.project)}
-        filename={`${brand.domain}-sources-${report.method.collectedAt.slice(0, 10)}`}
-        initialTab={tab === "pages" || tab === "gaps" ? tab : "sites"}
-        initialType={kind}
-        sitePattern={sitePattern}
-      />
-      <MethodLabel method={report.method} />
     </Page>
   );
 }

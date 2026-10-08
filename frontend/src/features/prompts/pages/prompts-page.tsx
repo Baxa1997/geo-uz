@@ -39,9 +39,8 @@ export default async function PromptsPage({ params, searchParams }: Props) {
   const { brand, competitors, plan, limits } = report.project;
 
   return (
-    <Page title={t("prompts")} engines>
+    <Page title={t("prompts")} engines toolbar={prompts.length > 0 && <ReportFilterBar topics={topics} topicFilter={false} />}>
       <p className="text-sm text-pretty text-muted-foreground">{tPrompts("description")}</p>
-      {prompts.length > 0 && <ReportFilterBar topics={topics} topicFilter={false} />}
       <PromptManager
         projectId={report.project.id}
         plan={plan}

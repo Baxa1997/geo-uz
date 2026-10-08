@@ -52,15 +52,8 @@ export default async function CompetitorsPage({ params, searchParams }: Props) {
 
   if (report.prompts.length === 0) {
     return (
-      <Page title={t("competitors")} engines>
-        {hasFilters(filters) ? (
-          <>
-            <ReportFilterBar topics={topics} />
-            <FilteredEmpty resetHref={`${base}/competitors`} />
-          </>
-        ) : (
-          <NoData projectId={report.project.id} promptCount={prompts.length} />
-        )}
+      <Page title={t("competitors")} engines toolbar={hasFilters(filters) && <ReportFilterBar topics={topics} />}>
+        {hasFilters(filters) ? <FilteredEmpty resetHref={`${base}/competitors`} /> : <NoData projectId={report.project.id} promptCount={prompts.length} />}
       </Page>
     );
   }
@@ -78,8 +71,7 @@ export default async function CompetitorsPage({ params, searchParams }: Props) {
   const withoutYou = promptsWithoutYou(report.prompts, brand.id, competitors.map((competitor) => competitor.id)).length;
 
   return (
-    <Page title={t("competitors")} engines>
-      <ReportFilterBar topics={topics} />
+    <Page title={t("competitors")} engines toolbar={<ReportFilterBar topics={topics} />}>
       <KpiStrip
         items={[
           {

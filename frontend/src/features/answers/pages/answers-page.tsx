@@ -48,15 +48,8 @@ export default async function AnswersPage({ params, searchParams }: Props) {
 
   if (report.prompts.length === 0) {
     return (
-      <Page title={t("answers")} engines>
-        {hasFilters(filters) ? (
-          <>
-            <ReportFilterBar topics={topics} />
-            <FilteredEmpty resetHref={`${base}/answers`} />
-          </>
-        ) : (
-          <NoData projectId={report.project.id} promptCount={prompts.length} />
-        )}
+      <Page title={t("answers")} engines toolbar={hasFilters(filters) && <ReportFilterBar topics={topics} />}>
+        {hasFilters(filters) ? <FilteredEmpty resetHref={`${base}/answers`} /> : <NoData projectId={report.project.id} promptCount={prompts.length} />}
       </Page>
     );
   }
@@ -72,8 +65,7 @@ export default async function AnswersPage({ params, searchParams }: Props) {
   const searched = answers.filter((answer) => answer.searches.length > 0).length;
 
   return (
-    <Page title={t("answers")} engines>
-      <ReportFilterBar topics={topics} />
+    <Page title={t("answers")} engines toolbar={<ReportFilterBar topics={topics} />}>
       <KpiStrip
         items={[
           {
