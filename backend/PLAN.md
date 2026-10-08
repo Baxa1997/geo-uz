@@ -46,7 +46,7 @@ One row per line. Columns are the ones the frontend already depends on; add what
 | `prompts` | project, text, language (uz, ru), topic, created at, archived at | Archived = not asked any more; its answers stay. See open question 5 on edits |
 | `prompt_suggestions` | project, text, language, topic, status (offered, accepted, rejected) | A rejected one is never offered again |
 | `runs` | project, kind (first, weekly, snapshot), status, model, web search, samples, started, finished, total, answered | Status: queued, running, analyzing, done, failed |
-| `answers` | run, prompt, sample number, text, raw response | Keep the raw response: extraction rules will change |
+| `answers` | run, prompt, sample number, text, the web searches it ran, raw response | Keep the raw response: extraction rules will change. The searches come from the search tool's own report of each call |
 | `mentions` | answer, brand (empty when not tracked), name as written, position, tone | Untracked names are kept too: they are the "new competitor" list |
 | `citations` | answer, URL, domain | URL without `utm_source`, domain without `www.` |
 | `source_types` | domain, kind (directory, news, social, other) | Our own list for Uzbekistan; "own" and "competitor" come from the project's domains |
@@ -66,7 +66,7 @@ One row per line. Columns are the ones the frontend already depends on; add what
 Runs start on Monday at 06:00 Tashkent time (01:00 UTC). A new project's first run starts as soon as it is created with questions. The report always shows the latest finished run; until the first one finishes it is empty and the progress screen polls `GET /runs/{id}/progress`.
 
 1. **Ask.** Every tracked question (not the archived ones), three samples, through OpenAI with web search on. The request must say where the user is (Uzbekistan and the project's city), so the answer is the one a local customer gets. Count `answered` as the answers come in: the progress screen shows it against `total` (questions × samples).
-2. **Cut out the citations.** Unique URLs per answer, without the `utm_source=openai` tag the search tool adds.
+2. **Cut out the citations and the searches.** Unique URLs per answer, without the `utm_source=openai` tag the search tool adds; and the search queries the tool ran for the answer, in order (`Answer.searches`, empty when it answered without searching).
 3. **Read the answer** (status `analyzing`). List every business the answer names, in order. Position counts all of them: a tracked brand named after two untracked ones is at position 3. Give each mention a tone: positive, neutral or negative. Match names to tracked brands through their spellings, Latin and Cyrillic. Any model may do this step.
 4. **Keep the untracked names** with the number of answers naming each.
 5. **Sort the cited sites into kinds**: the client's own domain, a tracked competitor's domain, then our list (maps, catalogs and review sites; news; social networks and Telegram channels), otherwise "other".
@@ -115,7 +115,7 @@ The frontend calculates these itself from the report, so the backend does not: t
 | Overview | report, actions | `history` (at least one point), scores, every answer with its mentions and citations, sites with kind, `brandListed` and pages, the number of wrong facts, `nextRunAt` |
 | Questions | questions (list, add, edit, archive and track again), suggestions (list, accept, reject), report | A question added today has no result until the next run: the page shows "queued". The list needs each question's `createdAt` and `archivedAt`, and the project's `plan` and `limits.prompts`. The numbers over the list are calculated in the frontend from the rows shown |
 | A question's page | one question's report, questions, actions | The report over that question with its own history; the actions whose `promptIds` include it. Works for an archived question (up to its last run) and for one not asked yet (empty report, `nextRunAt`) |
-| Answers | report | The full text of every answer |
+| Answers | report | The full text of every answer. The filter by cited site and the CSV of the answers are made in the frontend from the report |
 | Competitors | report | Scores, history, `untrackedBrands` |
 | Sources | report | `topSources` with `pages[].mentions` for the gap tab |
 | Wrong facts | report | `wrongFacts` with the question and the date first found |
@@ -183,7 +183,7 @@ That is roughly one to two US cents per answer, and it has to cover the answer w
 14. **Daily checks. Decided 6 Oct 2026: not offered for now.** The chart has a day view, as Peec's does, and Peec checks daily. Daily checks mean about seven times the answers: Start would go from 300 to about 2,250 a month, which leaves about 30 soʻm per answer at today's price. To reopen only as a higher plan or an add-on.
 
 15. **Three answers are few for one question.** A question's own chart moves in steps of a third, and one different answer looks like a big change. Enough for "named or not"; if clients read too much into it, the choices are more samples for chosen questions or showing a question's history over four weeks at a time.
-16. **The searches behind an answer.** Peec's prompt page lists the web searches the engine ran ("query fanouts"). The raw response we already keep contains them, so nothing is lost; a page for them is on the "Later" list.
+16. **The searches behind an answer. Decided 7 Oct 2026:** each answer carries the searches ChatGPT ran (`Answer.searches`). A question's page lists them with the number of answers that ran each, and the Questions list shows in how many of a question's answers ChatGPT searched at all. Still open: whether the API reports every search (step 0 should look), and a page of all searches across questions, which stays on the "Later" list.
 
 ## Change log
 
@@ -191,3 +191,5 @@ That is roughly one to two US cents per answer, and it has to cover the answer w
 - **6 Oct 2026, chart.** The chart card follows Peec's layout and has a day / week / month switch, grouped in the frontend (see "How each number is calculated"). Question 14 on daily checks: not offered for now. Visibility is shown in percent everywhere; the API still sends it as 0–1.
 - **5 Oct 2026, Overview finished.** Added a sentence above the numbers, visibility by topic and by question language, and large views of the cards. All of it is calculated in the frontend from the report. New for the backend: nothing, but the by-topic and by-language block needs every answer's mentions in the report (it already has them) and makes open question 11 matter sooner.
 - **6 Oct 2026, Questions.** The list got an archive (a question stops being asked and keeps its answers), the plan's question limit from the project, and a page per question. New for the backend: `createdAt` and `archivedAt` on a question, `plan` and `limits` on a project, `PATCH /projects/{id}/prompts/{promptId}` (archive, track again), `GET /projects/{id}/prompts/{promptId}/report`, and 409 at the plan's limit. Open questions 15 and 16 added; 8 partly decided.
+- **7 Oct 2026, Answers.** The page got a filter by cited site and a CSV of the answers with their full text. New for the backend: nothing; both are made from the report. The export is one more reader of every answer's full text, which matters for open question 11.
+- **7 Oct 2026, Questions, second correction.** The list shows share of voice, web search, wrong facts and the date added per question (all calculated in the frontend from the report), and a question's page lists what ChatGPT searched for. New for the backend: `Answer.searches`. Open question 16 decided.

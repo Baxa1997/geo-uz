@@ -1,9 +1,10 @@
 "use client";
 
 import { Dialog } from "@base-ui/react/dialog";
-import { ArrowLeft, ArrowRight, ArrowUpRight, Bot, MapPin, User, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpRight, Bot, MapPin, Search, User, X } from "lucide-react";
 import { useLocale, useMessages, useTimeZone, useTranslations } from "next-intl";
 import { useState, type KeyboardEvent } from "react";
+import { Hint } from "@/shared/components/hint";
 import { AnswerMarkdown } from "@/shared/components/scores/answer-viewer";
 import { ToneIcon } from "@/shared/components/scores/tone-icon";
 import { Button } from "@/shared/components/ui/button";
@@ -108,15 +109,19 @@ function Conversation({
     <div className="grid min-h-0 flex-1 md:grid-cols-[minmax(0,1fr)_20rem]">
       <div className="flex min-h-0 flex-col">
         <header className="flex flex-wrap items-center gap-2 border-b py-2.5 pr-14 pl-4">
-          <Dialog.Title className="inline-flex items-center gap-1.5 rounded-lg border px-2 py-1 text-sm font-medium">
-            <Bot aria-hidden className="size-4" />
-            {engines("chatgpt")}
+          <Dialog.Title className="inline-flex rounded-lg border text-sm font-medium">
+            <Hint text={t("hints.engine")} side="bottom" className="items-center gap-1.5 px-2 py-1">
+              <Bot aria-hidden className="size-4" />
+              {engines("chatgpt")}
+            </Hint>
           </Dialog.Title>
-          <span className="inline-flex items-center gap-1.5 rounded-lg border px-2 py-1 text-sm text-muted-foreground">
+          <Hint text={t("hints.city")} side="bottom" className="items-center gap-1.5 rounded-lg border px-2 py-1 text-sm text-muted-foreground">
             <MapPin aria-hidden className="size-4" />
             {labelFor(messages.Cities, project.city)}
-          </span>
-          <span className="rounded-lg border px-2 py-1 text-xs font-semibold text-muted-foreground uppercase">{result.prompt.language}</span>
+          </Hint>
+          <Hint text={t("hints.language")} side="bottom" className="rounded-lg border px-2 py-1 text-xs font-semibold text-muted-foreground uppercase">
+            {result.prompt.language}
+          </Hint>
           {questionHref && (
             <Link
               href={questionHref(result.prompt)}
@@ -178,7 +183,7 @@ function Conversation({
   );
 }
 
-/** Who the answer names, in order and with its tone; the sites it cites; and what was asked when. */
+/** Who the answer names, in order and with its tone; the sites it cites; what ChatGPT searched for; and what was asked when. */
 function Details({ row, project, collectedAt }: { row: AnswerRow; project: Project; collectedAt: string }) {
   const t = useTranslations("AnswersPage.dialog");
   const messages = useMessages();
@@ -192,7 +197,9 @@ function Details({ row, project, collectedAt }: { row: AnswerRow; project: Proje
   return (
     <div className="flex flex-col gap-5 text-sm">
       <section className="flex flex-col gap-2">
-        <h3 className="text-xs font-medium text-muted-foreground">{t("named")}</h3>
+        <h3 className="text-xs font-medium text-muted-foreground">
+          <Hint text={t("hints.named")}>{t("named")}</Hint>
+        </h3>
         {mentions.length ? (
           <ol className="flex flex-col gap-1.5">
             {mentions.map((mention) => (
@@ -219,7 +226,9 @@ function Details({ row, project, collectedAt }: { row: AnswerRow; project: Proje
 
       <section className="flex flex-col gap-2">
         <h3 className="text-xs font-medium text-muted-foreground">
-          {t("sources")} · {pages.length}
+          <Hint text={t("hints.sources")}>
+            {t("sources")} · {pages.length}
+          </Hint>
         </h3>
         {pages.length ? (
           <ul className="flex flex-col gap-1">
@@ -247,10 +256,32 @@ function Details({ row, project, collectedAt }: { row: AnswerRow; project: Proje
         )}
       </section>
 
+      <section className="flex flex-col gap-2">
+        <h3 className="text-xs font-medium text-muted-foreground">
+          <Hint text={t("hints.searches")}>
+            {t("searches")} · {answer.searches.length}
+          </Hint>
+        </h3>
+        {answer.searches.length ? (
+          <ul className="flex flex-col gap-1.5">
+            {answer.searches.map((query) => (
+              <li key={query} className="flex items-start gap-2 px-1">
+                <Search aria-hidden className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
+                <span className="min-w-0">{query}</span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-muted-foreground">{t("noSearches")}</p>
+        )}
+      </section>
+
       <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-1.5 border-t pt-4">
         <dt className="text-muted-foreground">{t("topic")}</dt>
         <dd>{labelFor(messages.Topics, result.prompt.topic)}</dd>
-        <dt className="text-muted-foreground">{t("sample")}</dt>
+        <dt className="text-muted-foreground">
+          <Hint text={t("hints.sample")}>{t("sample")}</Hint>
+        </dt>
         <dd className="tabular-nums">
           {answer.sample} / {result.answers.length}
         </dd>

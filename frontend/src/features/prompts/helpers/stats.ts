@@ -10,6 +10,10 @@ export interface PromptStats {
   position: number | null;
   /** One tone per answer naming the client. */
   tones: Tone[];
+  /** The client's mentions out of all the tracked brands' mentions in these answers, 0–1; null when nobody is named. */
+  shareOfVoice: number | null;
+  /** Answers for which ChatGPT searched the web. */
+  searched: number;
   /** The tracked brand named in the most answers (the client on a tie); undefined if nobody was named. */
   leader: Brand | undefined;
 }
@@ -20,11 +24,14 @@ export function promptStats(result: PromptResult, brands: Brand[], youId: string
     .map((brand) => ({ brand, count: answersNaming(result, brand.id) }))
     .filter(({ count }) => count > 0)
     .sort((a, b) => b.count - a.count || Number(b.brand.id === youId) - Number(a.brand.id === youId))[0]?.brand;
+  const mentions = result.answers.reduce((sum, answer) => sum + answer.mentions.length, 0);
   return {
     named: answersNaming(result, youId),
     total: result.answers.length,
     position: mine.length ? mine.reduce((sum, mention) => sum + mention.position, 0) / mine.length : null,
     tones: mine.map((mention) => mention.tone),
+    shareOfVoice: mentions ? mine.length / mentions : null,
+    searched: result.answers.filter((answer) => answer.searches.length > 0).length,
     leader,
   };
 }

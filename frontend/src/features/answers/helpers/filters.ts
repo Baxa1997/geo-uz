@@ -24,5 +24,18 @@ export function matchesBrand({ answer }: AnswerRow, brandId: string) {
   return answer.mentions.some((mention) => mention.brandId === brandId);
 }
 
+/** "" any answer; otherwise the answers that cite that site. */
+export const matchesSource = ({ answer }: AnswerRow, domain: string) =>
+  !domain || answer.citations.some((citation) => citation.domain === domain);
+
+/** The sites the answers cite, each with the number of answers citing it, most cited first. */
+export function citedSites(rows: AnswerRow[]): { domain: string; answers: number }[] {
+  const counts = new Map<string, number>();
+  for (const { answer } of rows) {
+    for (const domain of new Set(answer.citations.map((citation) => citation.domain))) counts.set(domain, (counts.get(domain) ?? 0) + 1);
+  }
+  return [...counts].map(([domain, answers]) => ({ domain, answers })).sort((a, b) => b.answers - a.answers);
+}
+
 export const matchesQuery = ({ result }: AnswerRow, query: string) =>
   result.prompt.text.toLowerCase().includes(query.trim().toLowerCase());

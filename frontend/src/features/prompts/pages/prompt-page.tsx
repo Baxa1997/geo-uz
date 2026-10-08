@@ -14,10 +14,12 @@ import { orNotFound } from "@/shared/api/errors";
 import { isTracked } from "@/shared/helpers/prompts";
 import { parseReportFilters, withFilters } from "@/shared/helpers/report-filters";
 import { seriesBrands, totalAnswers } from "@/shared/helpers/scores";
+import { cn } from "@/shared/helpers/utils";
 import { PromptActions } from "../components/prompt-actions";
 import { PromptAnswers } from "../components/prompt-answers";
 import { PromptHeader } from "../components/prompt-header";
 import { PromptQueued } from "../components/prompt-queued";
+import { PromptSearches } from "../components/prompt-searches";
 import { PromptVerdict } from "../components/prompt-verdict";
 
 type Props = PageProps<"/[locale]/projects/[id]/prompts/[promptId]">;
@@ -37,8 +39,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 /**
  * One question, laid out like Peec's prompt page: the question with when it was added, its topic,
  * language, city and status; a sentence on how its latest answers went; every brand over time beside the
- * brands table, and the sites cited beside their kinds, all for this question alone; then what to do
- * about it and the answers themselves. A question no check has asked yet says when it will be asked; an
+ * brands table, and the sites cited beside their kinds, all for this question alone; what ChatGPT searched
+ * the web for beside what to do about the question; then the answers themselves. A question no check has asked yet says when it will be asked; an
  * archived one keeps its results up to its last check.
  */
 export default async function PromptPage({ params, searchParams }: Props) {
@@ -104,13 +106,18 @@ export default async function PromptPage({ params, searchParams }: Props) {
             </div>
           </div>
 
-          {/* What to do, after the numbers it follows from; an archived question has nothing to do */}
-          {isTracked(prompt) && (
-            <PromptActions
-              actions={actions.filter((action) => action.promptIds.includes(prompt.id))}
-              href={(actionId) => (actionId ? `${base}/actions?action=${encodeURIComponent(actionId)}` : `${base}/actions`)}
-            />
-          )}
+          {/* The searches behind the answers, then what to do: it follows from the numbers above. An archived question has nothing to do */}
+          <div className="@container">
+            <div className={cn("grid gap-4 sm:gap-5", isTracked(prompt) && "@4xl:grid-cols-2")}>
+              <PromptSearches result={result} />
+              {isTracked(prompt) && (
+                <PromptActions
+                  actions={actions.filter((action) => action.promptIds.includes(prompt.id))}
+                  href={(actionId) => (actionId ? `${base}/actions?action=${encodeURIComponent(actionId)}` : `${base}/actions`)}
+                />
+              )}
+            </div>
+          </div>
 
           <PromptAnswers
             result={result}

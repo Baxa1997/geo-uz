@@ -8,6 +8,7 @@ import { setPageLocale } from "@/i18n/page-locale";
 import { api } from "@/shared/api/client";
 import { orNotFound } from "@/shared/api/errors";
 import { loadReport } from "@/shared/api/load-report";
+import { withFilters } from "@/shared/helpers/report-filters";
 import { seriesBrands } from "@/shared/helpers/scores";
 import { PromptManager } from "../components/prompt-manager";
 
@@ -55,6 +56,8 @@ export default async function PromptsPage({ params, searchParams }: Props) {
         initialSuggestions={suggestions}
         filename={`${brand.domain}-questions-${report.method.collectedAt.slice(0, 10)}`}
         nextRunAt={report.nextRunAt}
+        wrongFacts={report.wrongFacts}
+        wrongFactsHref={withFilters(`/projects/${report.project.id}/wrong-facts`, filters)}
       />
       {report.prompts.length > 0 && <MethodLabel method={report.method} />}
     </Page>

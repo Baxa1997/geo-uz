@@ -101,6 +101,11 @@ export interface Answer {
   text: string;
   mentions: Mention[];
   citations: Citation[];
+  /**
+   * The web searches ChatGPT ran before writing the answer, as the search tool reports them, in order.
+   * Empty when it answered without searching.
+   */
+  searches: string[];
 }
 
 export interface PromptResult {

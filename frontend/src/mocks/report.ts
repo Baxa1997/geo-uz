@@ -41,6 +41,7 @@ import {
   type OtherClinic,
   type SourceKey,
 } from "./data";
+import { searchesFor } from "./searches";
 import { siteChecks } from "./site-checks";
 
 export const METHOD: ReportMethod = {
@@ -213,6 +214,7 @@ function resultsFor(
           return brand ? [{ brandId: brand.id, position: index + 1, tone }] : [];
         }),
         citations: citations(text),
+        searches: seededId ? searchesFor(seededId, i) : [],
       };
     });
     return [{ prompt, answers }];

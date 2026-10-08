@@ -603,7 +603,11 @@
       "leader": "Leader",
       "lastRun": "Checked",
       "actions": "Actions",
-      "named": "Brands named"
+      "named": "Brands named",
+      "shareOfVoice": "Share of voice",
+      "webSearch": "Web search",
+      "wrongFacts": "Wrong facts",
+      "added": "Added"
     },
     "queued": "Queued",
     "you": "You",
@@ -633,7 +637,10 @@
       "tones": "Tone",
       "leader": "Leader",
       "lastRun": "Checked",
-      "added": "Added"
+      "added": "Added",
+      "shareOfVoice": "Share of voice, %",
+      "webSearch": "Answers with a web search",
+      "wrongFacts": "Wrong facts"
     },
     "topics": "Topics",
     "allTopics": "All topics",
@@ -670,7 +677,7 @@
         "archived": "Questions you stopped tracking. They are no longer checked; their results are kept."
       },
       "topics": "Questions are grouped by topic; the number is how many questions a topic has. Click a topic to show only its questions.",
-      "question": "The question we ask ChatGPT. Click it to open the question’s page: its answers, brands and sources.",
+      "question": "The question we ask ChatGPT. Click the row to open the question’s page: its answers, brands, sources and the searches ChatGPT ran.",
       "visibility": "In how many of the answers to this question you were named in the latest check. For example, 2/3 means 2 of 3 answers.",
       "tone": "How ChatGPT speaks of you in each answer that names you: positive, neutral or negative. One icon per answer.",
       "position": "Where you are named in the answers, on average. 1 is first; the smaller the number, the better.",
@@ -689,8 +696,16 @@
       },
       "count": "How many questions are tracked now.",
       "schedule": "Your questions are asked again every Monday morning.",
-      "edit": "Change the question’s text, language or topic"
-    }
+      "edit": "Change the question’s text, language or topic",
+      "shareOfVoice": "Of all the times tracked brands are named in the answers to this question, the share that is yours.",
+      "webSearch": "In how many of the answers to this question ChatGPT searched the web. When it searches, the answer leans on websites, so being on those sites matters.",
+      "wrongFacts": "How many wrong facts about you were found in the answers to this question. Every question is checked.",
+      "added": "When the question was added. Its results start with the first weekly check after that."
+    },
+    "webSearchCell": "ChatGPT searched the web for {count} of {total} answers",
+    "wrongFactsSome": "{count, plural, one {# wrong fact} other {# wrong facts}}: click to see",
+    "wrongFactsNone": "No wrong facts found",
+    "openQuestion": "Open the question’s page"
   },
   "PromptForm": {
     "addTitle": "New question",
@@ -777,6 +792,13 @@
       "notNamed": "This answer doesn’t name you.",
       "impact": "Expected effect: how much this fix could raise your visibility compared with the other recommendations.",
       "actionStatus": "The recommendation’s status. It changes on the Actions page as you tick its steps."
+    },
+    "searches": {
+      "title": "What ChatGPT searched for",
+      "hint": "The searches ChatGPT ran on the web before answering, and in how many answers it used each. A page on your site that answers one of them well is more likely to be picked as a source.",
+      "used": "Searched for {count} of {total} answers",
+      "empty": "ChatGPT answered this question without searching the web.",
+      "row": "This search was run for {count} of {total} answers"
     }
   },
   "Plans": {
@@ -1652,7 +1674,35 @@
       },
       "sample": "Answer {n}",
       "notNamed": "Not named",
-      "more": "Show {count} more"
+      "more": "Show {count} more",
+      "sourceFilter": "Source",
+      "allSources": "All sources",
+      "csv": "Export",
+      "csvHint": "Download the answers in the list, with their full text, as a CSV file",
+      "csvHeaders": {
+        "question": "Question",
+        "language": "Language",
+        "topic": "Topic",
+        "sample": "Answer no.",
+        "date": "Date",
+        "brands": "Brands named (in order)",
+        "position": "Your position",
+        "tone": "Tone",
+        "sites": "Sites cited",
+        "pages": "Pages cited",
+        "text": "Answer text",
+        "searches": "Searches run"
+      },
+      "noSources": "This answer cites no site",
+      "hints": {
+        "answer": "The question and how ChatGPT’s answer opens. Several answers are collected per question, so a question repeats. Click a row to read the answer in full.",
+        "brands": "The tracked brands this answer names, in the order it names them. Hover a mark to see the brand’s name.",
+        "sources": "The sites ChatGPT cites in this answer. Hover a mark to see the site.",
+        "position": "Where in this answer you are named. 1 is first. A dash means you aren’t named.",
+        "tone": "The tone ChatGPT takes about you in this answer: positive, neutral or negative.",
+        "date": "The date of the weekly check that collected the answer.",
+        "count": "How many answers match the search and the filters."
+      }
     },
     "dialog": {
       "close": "Close",
@@ -1668,7 +1718,18 @@
       "noSources": "No links.",
       "topic": "Topic",
       "sample": "Answer",
-      "date": "Date"
+      "date": "Date",
+      "hints": {
+        "engine": "The answer comes from this AI assistant, with web search on.",
+        "city": "The question was asked as a customer in this city.",
+        "language": "The question was asked in this language.",
+        "named": "The tracked brands this answer names: where in the answer, and in what tone.",
+        "sources": "The pages ChatGPT cites in this answer. Click one to open it in a new tab.",
+        "sample": "Which of the answers to this question this is. A question is asked several times in every check.",
+        "searches": "The searches ChatGPT ran on the web before writing this answer."
+      },
+      "searches": "What ChatGPT searched",
+      "noSearches": "It didn’t search the web."
     }
   },
   "Kpi": {

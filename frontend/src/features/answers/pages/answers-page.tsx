@@ -29,8 +29,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 /**
  * Every ChatGPT answer of the latest run, laid out like Peec's Chats page: the answers in numbers, then
- * a table of them that opens each one like a chat. ?prompt= opens a question's first answer: numbers on
- * other pages link here.
+ * a table of them that opens each one like a chat and exports as CSV. ?prompt= opens a question's first
+ * answer and ?source= lists the answers citing a site: numbers on other pages link here.
  */
 export default async function AnswersPage({ params, searchParams }: Props) {
   const { locale: segment, id } = await params;
@@ -42,6 +42,7 @@ export default async function AnswersPage({ params, searchParams }: Props) {
     getTranslations({ locale, namespace: "AnswersPage" }),
   ]);
   const promptId = typeof query.prompt === "string" ? query.prompt : undefined;
+  const source = typeof query.source === "string" ? query.source : undefined;
   const base = `/projects/${report.project.id}`;
 
   if (report.prompts.length === 0) {
@@ -99,11 +100,12 @@ export default async function AnswersPage({ params, searchParams }: Props) {
         ]}
       />
       <AnswersTable
-        // Keyed: a link to another question opens it, even from this same page
-        key={promptId}
+        // Keyed: a link to another question or site opens it, even from this same page
+        key={`${promptId}:${source}`}
         report={report}
         brands={brands}
         initialPromptId={promptId}
+        initialSource={source}
         filters={filters}
       />
       <MethodLabel method={report.method} />

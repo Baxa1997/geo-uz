@@ -71,6 +71,8 @@ export function Hint({
     <>
       <span
         ref={anchor}
+        // A row that opens on a click can tell a tap on a hint from a tap on the row
+        data-hint=""
         tabIndex={!control && focusable ? 0 : undefined}
         aria-describedby={control ? undefined : describedBy}
         onClick={control ? undefined : show}

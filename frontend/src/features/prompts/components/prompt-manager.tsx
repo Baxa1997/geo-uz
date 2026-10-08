@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Archive, ChevronDown, ChevronsUpDown, ChevronUp, CircleSlash, Pencil, Plus, Search, Tag } from "lucide-react";
+import { Archive, ChevronDown, ChevronsUpDown, ChevronUp, CircleAlert, CircleSlash, Pencil, Plus, Search, Tag } from "lucide-react";
 import { useLocale, useMessages, useTimeZone, useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
@@ -21,7 +21,7 @@ import { isTracked } from "@/shared/helpers/prompts";
 import { FILTER_PARAMS, withFilters } from "@/shared/helpers/report-filters";
 import { toneOf } from "@/shared/helpers/scores";
 import { cn } from "@/shared/helpers/utils";
-import type { Brand, Plan, Prompt, PromptResult, ReportFilters, SuggestedPrompt } from "@/shared/types/api";
+import type { Brand, Plan, Prompt, PromptResult, ReportFilters, SuggestedPrompt, WrongFact } from "@/shared/types/api";
 import type { SeriesBrand } from "@/shared/types/scores";
 import { matchesFilter, PROMPTS_FILTERS, promptsSummary, promptStats, type PromptsFilter } from "../helpers/stats";
 import { PromptArchive } from "./prompt-archive";
@@ -34,15 +34,21 @@ type View = "tracked" | "suggested" | "archived";
 const VIEWS: View[] = ["tracked", "suggested", "archived"];
 
 /** The columns the table sorts by; without a sort the questions keep the order they were added in. */
-type SortKey = "visibility" | "position";
+type SortKey = "visibility" | "shareOfVoice" | "position" | "added";
+
+const SORT_WIDTHS: Record<SortKey, string> = { visibility: "w-28", shareOfVoice: "w-28", position: "w-20", added: "w-28" };
+
+/** The question stays in view while the other columns scroll sideways under it. */
+const PINNED = "sticky left-0 z-[1] bg-card shadow-[inset_-1px_0_0_var(--border)]";
 
 /**
  * The project's questions, laid out like Peec's prompts page: topics on the left (each with its count,
  * picking one narrows the list), on the right the tracked, suggested and archived questions with how many
- * of the plan's questions are used. The tracked ones are a table: each question's visibility, tone,
- * position, the brands named and who leads, under a search, a filter and the client's numbers over the
- * rows shown. A question opens its own page; it is added and edited in place, and archived when the
- * client stops tracking it. CSV export; the footer says when the questions are asked again. Every heading,
+ * of the plan's questions are used. The tracked ones are a table that scrolls sideways under the question:
+ * visibility, share of voice, tone, position, the brands named, who leads, how often ChatGPT searched the
+ * web, the wrong facts found and the date added, under a search, a filter and the client's numbers over
+ * the rows shown. A click on a row opens the question's own page; a question is added and edited in
+ * place, and archived when the client stops tracking it. CSV export; the footer says when the questions are asked again. Every heading,
  * figure and mark explains itself on hover (Hint), as on Peec.
  */
 export function PromptManager({
@@ -59,6 +65,8 @@ export function PromptManager({
   initialSuggestions,
   filename,
   nextRunAt,
+  wrongFacts,
+  wrongFactsHref,
 }: {
   projectId: string;
   plan: Plan;
@@ -79,6 +87,10 @@ export function PromptManager({
   filters: ReportFilters;
   /** When the questions are asked again; a question added now is asked from then. */
   nextRunAt: string | null;
+  /** What ChatGPT gets wrong about the client, each with the question it came up in. */
+  wrongFacts: WrongFact[];
+  /** The page that lists them. */
+  wrongFactsHref: string;
 }) {
   const t = useTranslations("PromptManager");
   const tones = useTranslations("Tone");
@@ -147,15 +159,20 @@ export function PromptManager({
     });
   type Row = (typeof inTopic)[number];
 
-  const share = ({ stats }: Row) => (stats && stats.total ? stats.named / stats.total : null);
-  const place = ({ stats }: Row) => stats?.position ?? null;
+  // What each sortable column sorts by; a question without the number goes last
+  const sortValue: Record<SortKey, (row: Row) => number | null> = {
+    visibility: ({ stats }) => (stats && stats.total ? stats.named / stats.total : null),
+    shareOfVoice: ({ stats }) => stats?.shareOfVoice ?? null,
+    position: ({ stats }) => stats?.position ?? null,
+    added: ({ prompt }) => Date.parse(prompt.createdAt),
+  };
   const search = query.trim().toLowerCase();
   const matching = inTopic.filter((row) => !search || row.prompt.text.toLowerCase().includes(search));
   const rows = matching.filter((row) => matchesFilter(row.stats, status));
   if (sort) {
-    // Best first (the most answers, the earliest place), or the other way round; a question without a number goes last
-    const value = sort.key === "visibility" ? share : place;
-    const best = sort.key === "visibility" ? -1 : 1;
+    // Best first (the largest share, the earliest place, the latest date), or the other way round
+    const value = sortValue[sort.key];
+    const best = sort.key === "position" ? 1 : -1;
     rows.sort((a, b) => {
       const [x, y] = [value(a), value(b)];
       if (x === null || y === null) return Number(x === null) - Number(y === null);
@@ -163,6 +180,7 @@ export function PromptManager({
     });
   }
   const summary = promptsSummary(rows.flatMap((row) => row.result ?? []), youId);
+  const editingPrompt = tracked.find((prompt) => prompt.id === editing);
 
   function pickTopic(topic: string) {
     const next: Record<string, string> = Object.fromEntries(params);
@@ -172,13 +190,14 @@ export function PromptManager({
   }
 
   /** A column heading that explains its column on hover and sorts: best first, then the other way round, then back to the order added. */
-  function sortHeading(key: SortKey, label: string) {
+  function sortHeading(key: SortKey) {
+    const label = t(`columns.${key}`);
     const sorted = sort?.key === key ? sort : null;
     // Best first means the largest share first, and the smallest place first
     const ascending = sorted ? sorted.reversed !== (key === "position") : false;
     const Icon = !sorted ? ChevronsUpDown : ascending ? ChevronUp : ChevronDown;
     return (
-      <th scope="col" aria-sort={!sorted ? undefined : ascending ? "ascending" : "descending"} className={cn("p-0!", key === "visibility" ? "w-28" : "w-20")}>
+      <th scope="col" aria-sort={!sorted ? undefined : ascending ? "ascending" : "descending"} className={cn("p-0!", SORT_WIDTHS[key])}>
         <Hint text={`${t(`hints.${key}`)} ${t("hints.sort")}`} className="flex w-full">
           {(describedBy) => (
             <button
@@ -194,6 +213,12 @@ export function PromptManager({
         </Hint>
       </th>
     );
+  }
+
+  /** A click anywhere on a question opens its page; the links, buttons (and, on a phone, hints) in it keep their own click. */
+  function openQuestion(event: React.MouseEvent, prompt: Prompt, own = "a, button") {
+    if (event.target instanceof Element && event.target.closest(own)) return;
+    router.push(pageOf(prompt));
   }
 
   const form = (prompt?: Prompt) => (
@@ -249,6 +274,42 @@ export function PromptManager({
     ) : (
       dash
     );
+  const voice = ({ stats }: Row) =>
+    stats && stats.shareOfVoice !== null ? <span className="font-medium tabular-nums">{formatPercent(stats.shareOfVoice, locale)}</span> : dash;
+  const webSearch = ({ stats }: Row) =>
+    stats ? (
+      <Hint text={t("webSearchCell", { count: stats.searched, total: stats.total })} focusable={false} className="tabular-nums">
+        <span className={cn("font-medium", stats.searched === 0 && "text-muted-foreground")}>{stats.searched}</span>
+        <span className="text-muted-foreground">/{stats.total}</span>
+      </Hint>
+    ) : (
+      dash
+    );
+  const factsOf = (prompt: Prompt) => wrongFacts.filter((fact) => fact.promptId === prompt.id).length;
+  /** Our version of Peec's fact-checking switch: every question is checked, so the column shows what was found. */
+  const facts = ({ prompt, stats }: Row) => {
+    const count = factsOf(prompt);
+    if (!stats) return dash;
+    return count > 0 ? (
+      <Hint text={t("wrongFactsSome", { count })} described={false}>
+        {() => (
+          <Link
+            href={wrongFactsHref}
+            aria-label={t("wrongFactsSome", { count })}
+            className="inline-flex items-center gap-1 font-medium text-negative underline-offset-4 outline-none hover:underline focus-visible:underline"
+          >
+            <CircleAlert aria-hidden className="size-4" />
+            {count}
+          </Link>
+        )}
+      </Hint>
+    ) : (
+      <Hint text={t("wrongFactsNone")} focusable={false} className="text-muted-foreground">
+        —
+      </Hint>
+    );
+  };
+  const added = ({ prompt }: Row) => <span className="whitespace-nowrap text-muted-foreground">{formatShortDate(prompt.createdAt, locale, timeZone)}</span>;
   const toneIcons = ({ stats }: Row) =>
     stats && stats.tones.length > 0 ? (
       <span className="inline-flex gap-px align-middle">
@@ -330,9 +391,12 @@ export function PromptManager({
       t("csvHeaders.visibility"),
       t("csvHeaders.named"),
       t("csvHeaders.total"),
+      t("csvHeaders.shareOfVoice"),
       t("csvHeaders.position"),
       t("csvHeaders.tones"),
       t("csvHeaders.leader"),
+      t("csvHeaders.webSearch"),
+      t("csvHeaders.wrongFacts"),
       t("csvHeaders.lastRun"),
       t("csvHeaders.added"),
     ],
@@ -343,9 +407,12 @@ export function PromptManager({
       stats && stats.total ? Math.round((stats.named / stats.total) * 100) : null,
       stats?.named ?? null,
       stats?.total ?? null,
+      stats && stats.shareOfVoice !== null ? Math.round(stats.shareOfVoice * 100) : null,
       stats?.position ? Math.round(stats.position * 10) / 10 : null,
       stats ? stats.tones.map((tone) => tones(tone)).join(", ") : null,
       !stats ? null : stats.leader ? stats.leader.name : t("nobody"),
+      stats?.searched ?? null,
+      stats ? factsOf(prompt) : null,
       stats ? formatIsoDay(collectedAt, timeZone) : t("queued"),
       formatIsoDay(prompt.createdAt, timeZone),
     ]),
@@ -543,6 +610,8 @@ export function PromptManager({
                 <p className="mx-4 mt-3 rounded-lg bg-muted px-3 py-2 text-sm">{t("belowMin")}</p>
               )}
               {editing === "new" && <div className="border-b p-4">{form()}</div>}
+              {/* A row's edit form opens above the table: inside it, the form would be as wide as all its columns */}
+              {editingPrompt && <div className="hidden border-b p-4 @4xl:block">{form(editingPrompt)}</div>}
 
               {tracked.length === 0 ? (
                 editing !== "new" && (
@@ -555,40 +624,50 @@ export function PromptManager({
                 <p className="m-4 rounded-lg bg-muted px-3 py-2 text-sm text-muted-foreground">{t("noMatch")}</p>
               ) : (
                 <>
-                  {/* Wide panel: a table */}
-                  <table className="hidden w-full table-fixed text-sm @4xl:table">
-                    <thead>
-                      <tr className="border-b text-left text-xs text-muted-foreground [&>th]:px-2 [&>th]:py-2.5 [&>th]:font-medium [&>th:first-child]:pl-4 [&>th:last-child]:pr-4">
-                        <th scope="col">
-                          <Hint text={t("hints.question")}>{t("columns.question")}</Hint>
-                        </th>
-                        {sortHeading("visibility", t("columns.visibility"))}
-                        <th scope="col" className="w-20">
-                          <Hint text={t("hints.tone")}>{t("columns.tone")}</Hint>
-                        </th>
-                        {sortHeading("position", t("columns.position"))}
-                        <th scope="col" className="w-32">
-                          <Hint text={t("hints.named")}>{t("columns.named")}</Hint>
-                        </th>
-                        <th scope="col" className="w-32">
-                          <Hint text={t("hints.leader")}>{t("columns.leader")}</Hint>
-                        </th>
-                        <th scope="col" className="w-20">
-                          <span className="sr-only">{t("columns.actions")}</span>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y">
-                      {rows.map((row) =>
-                        editing === row.prompt.id ? (
-                          <tr key={row.prompt.id}>
-                            <td colSpan={7} className="px-4 py-3">
-                              {form(row.prompt)}
-                            </td>
-                          </tr>
-                        ) : (
-                          <tr key={row.prompt.id} className="transition-colors hover:bg-muted/30 [&>td]:px-2 [&>td]:py-2.5 [&>td:first-child]:pl-4 [&>td:last-child]:pr-2">
-                            <td>
+                  {/* Wide panel: a table that scrolls sideways under the question, as on Peec. relative + min-w-0: it scrolls here, not the page */}
+                  <div className="relative hidden min-w-0 overflow-x-auto @4xl:block">
+                    <table className="w-full min-w-[86rem] table-fixed text-sm">
+                      <thead>
+                        <tr className="border-b text-left text-xs text-muted-foreground [&>th]:px-2 [&>th]:py-2.5 [&>th]:font-medium [&>th:first-child]:pl-4 [&>th:last-child]:pr-4">
+                          <th scope="col" className={PINNED}>
+                            <Hint text={t("hints.question")}>{t("columns.question")}</Hint>
+                          </th>
+                          {sortHeading("visibility")}
+                          {sortHeading("shareOfVoice")}
+                          <th scope="col" className="w-20">
+                            <Hint text={t("hints.tone")}>{t("columns.tone")}</Hint>
+                          </th>
+                          {sortHeading("position")}
+                          <th scope="col" className="w-32">
+                            <Hint text={t("hints.named")}>{t("columns.named")}</Hint>
+                          </th>
+                          <th scope="col" className="w-36">
+                            <Hint text={t("hints.leader")}>{t("columns.leader")}</Hint>
+                          </th>
+                          <th scope="col" className="w-28">
+                            <Hint text={t("hints.webSearch")}>{t("columns.webSearch")}</Hint>
+                          </th>
+                          <th scope="col" className="w-32">
+                            <Hint text={t("hints.wrongFacts")}>{t("columns.wrongFacts")}</Hint>
+                          </th>
+                          {sortHeading("added")}
+                          <th scope="col" className="w-20">
+                            <span className="sr-only">{t("columns.actions")}</span>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y">
+                        {rows.map((row) => (
+                          <tr
+                            key={row.prompt.id}
+                            onClick={(event) => openQuestion(event, row.prompt)}
+                            className={cn(
+                              "group cursor-pointer transition-colors hover:bg-muted/30 [&>td]:px-2 [&>td]:py-2.5 [&>td:first-child]:pl-4 [&>td:last-child]:pr-2",
+                              editing === row.prompt.id && "bg-muted/40",
+                            )}
+                          >
+                            {/* Opaque on hover too: the other columns pass under it */}
+                            <td className={cn(PINNED, "transition-colors group-hover:bg-[color-mix(in_oklab,var(--muted)_30%,var(--card))]")}>
                               {question(row)}
                               {!filters.topic && (
                                 <span className="ml-2 inline-flex rounded-md bg-muted px-1.5 py-0.5 text-xs whitespace-nowrap text-muted-foreground">
@@ -597,16 +676,20 @@ export function PromptManager({
                               )}
                             </td>
                             <td>{visibility(row)}</td>
+                            <td>{voice(row)}</td>
                             <td>{toneIcons(row)}</td>
                             <td>{position(row)}</td>
                             <td>{namedChips(row)}</td>
                             <td>{leader(row)}</td>
+                            <td>{webSearch(row)}</td>
+                            <td>{facts(row)}</td>
+                            <td>{added(row)}</td>
                             <td>{actions(row)}</td>
                           </tr>
-                        ),
-                      )}
-                    </tbody>
-                  </table>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
 
                   {/* Narrow panel: the same rows as cards */}
                   <ul className="divide-y @4xl:hidden">
@@ -616,7 +699,11 @@ export function PromptManager({
                           {form(row.prompt)}
                         </li>
                       ) : (
-                        <li key={row.prompt.id} className="flex items-start gap-2 py-3 pr-2 pl-4">
+                        <li
+                          key={row.prompt.id}
+                          onClick={(event) => openQuestion(event, row.prompt, "a, button, [data-hint]")}
+                          className="flex cursor-pointer items-start gap-2 py-3 pr-2 pl-4 transition-colors hover:bg-muted/30"
+                        >
                           <div className="flex min-w-0 flex-1 flex-col gap-2">
                             <p className="text-sm text-pretty">{question(row)}</p>
                             <dl className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs">
@@ -630,6 +717,9 @@ export function PromptManager({
                                   <Stat label={t("columns.visibility")} hint={t("hints.visibility")}>
                                     {visibility(row)}
                                   </Stat>
+                                  <Stat label={t("columns.shareOfVoice")} hint={t("hints.shareOfVoice")}>
+                                    {voice(row)}
+                                  </Stat>
                                   <Stat label={t("columns.position")} hint={t("hints.position")}>
                                     {position(row)}
                                   </Stat>
@@ -639,6 +729,11 @@ export function PromptManager({
                                   <Stat label={t("columns.leader")} hint={t("hints.leader")}>
                                     {leader(row)}
                                   </Stat>
+                                  {factsOf(row.prompt) > 0 && (
+                                    <Stat label={t("columns.wrongFacts")} hint={t("hints.wrongFacts")}>
+                                      {facts(row)}
+                                    </Stat>
+                                  )}
                                 </>
                               ) : (
                                 <div>{run(row)}</div>

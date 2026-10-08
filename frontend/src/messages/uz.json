@@ -603,7 +603,11 @@
       "leader": "Yetakchi",
       "lastRun": "Tekshirilgan",
       "actions": "Amallar",
-      "named": "Tilga olinganlar"
+      "named": "Tilga olinganlar",
+      "shareOfVoice": "Ovoz ulushi",
+      "webSearch": "Veb-qidiruv",
+      "wrongFacts": "Notoʻgʻri fakt",
+      "added": "Qoʻshilgan"
     },
     "queued": "Navbatda",
     "you": "Siz",
@@ -633,7 +637,10 @@
       "tones": "Ohang",
       "leader": "Yetakchi",
       "lastRun": "Tekshirilgan",
-      "added": "Qoʻshilgan"
+      "added": "Qoʻshilgan",
+      "shareOfVoice": "Ovoz ulushi, %",
+      "webSearch": "Veb-qidiruv ishlatilgan javoblar",
+      "wrongFacts": "Notoʻgʻri faktlar"
     },
     "topics": "Mavzular",
     "allTopics": "Barcha mavzular",
@@ -670,7 +677,7 @@
         "archived": "Kuzatish toʻxtatilgan savollar. Ular endi tekshirilmaydi, natijalari saqlanadi."
       },
       "topics": "Savollar mavzular boʻyicha guruhlangan; yonidagi son — mavzudagi savollar soni. Mavzuni bossangiz, roʻyxatda faqat shu mavzu qoladi.",
-      "question": "ChatGPT’ga beriladigan savol. Ustiga bossangiz, shu savolning sahifasi ochiladi: javoblar, brendlar va manbalar.",
+      "question": "ChatGPT’ga beriladigan savol. Qatorni bossangiz, shu savolning sahifasi ochiladi: javoblar, brendlar, manbalar va ChatGPT qidirgan soʻrovlar.",
       "visibility": "Oxirgi tekshiruvda shu savolga berilgan javoblarning nechtasida tilga olingansiz. Masalan, 2/3 — 3 ta javobdan 2 tasida.",
       "tone": "Sizni tilga olgan har bir javobda ChatGPT siz haqingizda qanday ohangda gapirgan: ijobiy, neytral yoki salbiy. Har bir belgi — bitta javob.",
       "position": "Javoblarda oʻrtacha nechanchi boʻlib tilga olingansiz. 1 — birinchi; son kichikroq boʻlsa, yaxshiroq.",
@@ -689,8 +696,16 @@
       },
       "count": "Hozir kuzatilayotgan savollar soni.",
       "schedule": "Savollaringiz har hafta dushanba kuni ertalab ChatGPT’ga qayta beriladi.",
-      "edit": "Savol matni, tili yoki mavzusini oʻzgartirish"
-    }
+      "edit": "Savol matni, tili yoki mavzusini oʻzgartirish",
+      "shareOfVoice": "Shu savolga berilgan javoblarda kuzatilayotgan brendlar necha marta tilga olingan boʻlsa, shundan necha foizi sizniki.",
+      "webSearch": "Shu savolga javob berishda ChatGPT nechta javobda internetdan qidirgan. Qidirgan boʻlsa, javob saytlarga tayanadi — demak, oʻsha saytlarda boʻlish muhim.",
+      "wrongFacts": "Shu savolga berilgan javoblarda siz haqingizda topilgan notoʻgʻri faktlar soni. Har bir savol tekshiriladi.",
+      "added": "Savol qoʻshilgan sana. Natijalari shundan keyingi birinchi haftalik tekshiruvdan boshlanadi."
+    },
+    "webSearchCell": "{total} ta javobdan {count} tasida ChatGPT internetdan qidirgan",
+    "wrongFactsSome": "{count} ta notoʻgʻri fakt — koʻrish uchun bosing",
+    "wrongFactsNone": "Notoʻgʻri fakt topilmadi",
+    "openQuestion": "Savol sahifasini ochish"
   },
   "PromptForm": {
     "addTitle": "Yangi savol",
@@ -777,6 +792,13 @@
       "notNamed": "Bu javobda tilga olinmagansiz.",
       "impact": "Kutilayotgan taʼsir: bu ish bajarilsa, koʻrinishingiz boshqa tavsiyalarga nisbatan qanchalik oshishi mumkin.",
       "actionStatus": "Tavsiyaning holati. Harakatlar sahifasida qadamlarni belgilaganingizda oʻzgaradi."
+    },
+    "searches": {
+      "title": "ChatGPT nimani qidirgan",
+      "hint": "Javob yozishdan oldin ChatGPT internetda qidirgan soʻrovlar va har birini nechta javobda ishlatgani. Saytingizdagi sahifa shu soʻrovlarga aniq javob bersa, ChatGPT uni manba qilib olishi ehtimoli oshadi.",
+      "used": "{total} ta javobdan {count} tasida qidirgan",
+      "empty": "ChatGPT bu savolga internetdan qidirmasdan javob bergan.",
+      "row": "{total} ta javobdan {count} tasida shu soʻrov qidirilgan"
     }
   },
   "Plans": {
@@ -1652,7 +1674,35 @@
       },
       "sample": "{n}-javob",
       "notNamed": "Tilga olinmagan",
-      "more": "Yana {count} tasini koʻrsatish"
+      "more": "Yana {count} tasini koʻrsatish",
+      "sourceFilter": "Manba",
+      "allSources": "Barcha manbalar",
+      "csv": "Eksport",
+      "csvHint": "Roʻyxatdagi javoblarni toʻliq matni bilan CSV faylda yuklab olish",
+      "csvHeaders": {
+        "question": "Savol",
+        "language": "Til",
+        "topic": "Mavzu",
+        "sample": "Javob raqami",
+        "date": "Sana",
+        "brands": "Tilga olinganlar (tartib boʻyicha)",
+        "position": "Oʻrningiz",
+        "tone": "Ohang",
+        "sites": "Havola berilgan saytlar",
+        "pages": "Havola berilgan sahifalar",
+        "text": "Javob matni",
+        "searches": "ChatGPT qidirgan soʻrovlar"
+      },
+      "noSources": "Bu javobda havola berilmagan",
+      "hints": {
+        "answer": "Savol va ChatGPT javobining boshlanishi. Har bir savolga bir nechta javob olinadi, shuning uchun savol takrorlanadi. Qatorni bossangiz, javob toʻliq ochiladi.",
+        "brands": "Shu javobda tilga olingan kuzatilayotgan brendlar, javobdagi tartibda. Belgi ustiga kursorni olib borsangiz, brend nomi koʻrinadi.",
+        "sources": "ChatGPT shu javobda havola bergan saytlar. Belgi ustiga kursorni olib borsangiz, sayt nomi koʻrinadi.",
+        "position": "Shu javobda nechanchi boʻlib tilga olingansiz. 1 — birinchi. Chiziqcha — tilga olinmagansiz.",
+        "tone": "Shu javobda ChatGPT siz haqingizda qanday ohangda gapirgan: ijobiy, neytral yoki salbiy.",
+        "date": "Javob olingan haftalik tekshiruv sanasi.",
+        "count": "Qidiruv va filtrlarga mos javoblar soni."
+      }
     },
     "dialog": {
       "close": "Yopish",
@@ -1668,7 +1718,18 @@
       "noSources": "Havola berilmagan.",
       "topic": "Mavzu",
       "sample": "Javob",
-      "date": "Sana"
+      "date": "Sana",
+      "hints": {
+        "engine": "Javob shu AI yordamchidan, veb-qidiruv yoqilgan holda olingan.",
+        "city": "Savol shu shahardagi mijoz nomidan berilgan.",
+        "language": "Savol shu tilda berilgan.",
+        "named": "Shu javobda tilga olingan kuzatilayotgan brendlar: nechanchi boʻlib va qanday ohangda.",
+        "sources": "ChatGPT shu javobda havola bergan sahifalar. Bossangiz, sahifa yangi oynada ochiladi.",
+        "sample": "Shu savolga olingan javoblardan nechanchisi. Har tekshiruvda savol bir necha marta beriladi.",
+        "searches": "Shu javobni yozishdan oldin ChatGPT internetda qidirgan soʻrovlar."
+      },
+      "searches": "ChatGPT qidirgan",
+      "noSearches": "Internetdan qidirmagan."
     }
   },
   "Kpi": {

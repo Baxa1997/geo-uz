@@ -1,11 +1,12 @@
 "use client";
 
 import { Download } from "lucide-react";
+import { Hint } from "@/shared/components/hint";
 import { Button } from "@/shared/components/ui/button";
 import { downloadCsv, type CsvCell } from "@/shared/helpers/csv";
 import { cn } from "@/shared/helpers/utils";
 
-/** "Export" for a table on screen: the rows are worked out when clicked. */
+/** "Export" for a table on screen: the rows are worked out when clicked. `hint` says on hover what the file holds. */
 export function CsvButton({
   filename,
   rows,
@@ -19,11 +20,11 @@ export function CsvButton({
   hint?: string;
   className?: string;
 }) {
-  return (
+  const button = (describedBy?: string) => (
     <Button
       type="button"
       variant="outline"
-      title={hint}
+      aria-describedby={describedBy}
       onClick={() => downloadCsv(filename, rows())}
       className={cn("h-8 bg-background", className)}
     >
@@ -31,4 +32,5 @@ export function CsvButton({
       {label}
     </Button>
   );
+  return hint ? <Hint text={hint}>{button}</Hint> : button();
 }

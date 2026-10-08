@@ -60,7 +60,7 @@ Any other number makes a new account, which goes through onboarding and gets a p
    type check and the linter. Judge speed on a production build, not on `npm run dev`.
 5. **Commit only when the user asks.** Say plainly which branch the work is on.
 
-## Done (as of 6 October 2026)
+## Done (as of 8 October 2026)
 
 - **Every page exists on mock data:** landing page, free check, login (phone and code, Telegram),
   onboarding in five steps, the first check's progress screen, project list, Overview, Savollar (questions),
@@ -77,8 +77,18 @@ Any other number makes a new account, which goes through onboarding and gets a p
   filter and sorting, with the client's numbers following the rows shown. A page per question, opened from
   the list: its facts, a sentence on its latest answers counted in answers, the Overview's charts for that
   question alone, the fixes that list it, its answers. The correction: every heading, figure and mark
-  explains itself on hover. Left out of Peec's page on purpose: share of voice per question, volume,
-  web-search share, branded and intent tags, free tags, location, bulk select, query fanouts.
+  explains itself on hover. Left out of Peec's page on purpose: volume (no data), branded and intent
+  tags (need the backend), free tags, location, bulk select.
+- **Savollar, second correction (7 Oct).** After the user sent
+  Peec's full table and prompt page again: a click anywhere on a row opens the question's page; the table
+  scrolls sideways under the pinned question, like Peec's, and gained share of voice, web search, wrong
+  facts and date added; the question's page gained "what ChatGPT searched for" (Peec's query fanouts), fed
+  by the new `Answer.searches`.
+- **Javoblar (7 Oct), built from Peec's Chats screenshots of 4 Oct; the user has not sent corrections for
+  it yet.** Added to the page that existed: CSV export of the answers with their full text, a filter by
+  cited site (`?source=` lets other pages link to "the answers citing this site"), hover explanations on the
+  table and in the opened answer, and the searches behind each answer in its details. Left out: Peec's
+  web-search share, "most common feature" and features filter.
 - **Decisions the user made (6 Oct):** visibility is shown in percent, as Peec shows it; a change is green
   when better and red when worse, for the client only (competitors stay gray); daily checks are not offered
   for now, so the day and week views of the chart show the same points.
@@ -97,17 +107,15 @@ Any other number makes a new account, which goes through onboarding and gets a p
     describes the brand) is on the "Later" list.
 - **Backend plan (5–6 Oct):** `backend/PLAN.md`, with the build order, tables, the weekly check step by step,
   how each number is calculated, cost per plan and the open questions.
-- **Git:** `main` is on GitHub (Baxa1997/geo-uz) and holds everything above: the branch `overview-dashboard`
-  (the backend plan, the Overview, the landing page speed work and this file) was merged into it and pushed
-  on 6 Oct. Savollar is committed on the branch `savollar-page`, local and not pushed.
+- **Git:** `main` is on GitHub (Baxa1997/geo-uz) and holds everything above: the Overview branch was merged
+  and pushed on 6 Oct, Savollar on 7 Oct, Javoblar with the second Savollar correction on 8 Oct (the user
+  chose "commit, push, continue"). Each page gets its own branch, merged when the user says so.
 
 ## To do, in order
 
-1. **Merge Savollar.** The user has been asked (6 Oct) whether to merge `savollar-page` into `main` and push.
-   Do it when they say so. More corrections for Savollar may still come.
-2. **The other pages, the same way, in the sidebar's order.** Each also gets hover explanations on its table
+1. **The other pages, the same way, in the sidebar's order.** Each also gets hover explanations on its table
    headings, figures and marks (`Hint`), which only Savollar has so far:
-   - Javoblar: export of the answers.
+   - Javoblar: built and merged (see "Done"); corrections may still come.
    - Raqobatchilar: suggested competitors can be seen but not yet tracked or dismissed.
    - Manbalar: two things from Peec's "My website": the number "cited without a mention" (answers that link
      to the client's site and don't name the client), and a way to see only the client's own pages. From
@@ -123,17 +131,17 @@ Any other number makes a new account, which goes through onboarding and gets a p
      and the Suggested tab already do this. Worth taking later, inside the Suggested tab: "suggest questions
      for a service or a keyword", which needs the backend.
    - Impact: not a page, a block on Harakatlar (the chart with marks, above).
-   - Fanouts: on the "Later" list; the raw answers the backend keeps contain the searches.
+   - Fanouts: no page of its own; since 7 Oct each question's page lists the searches behind its answers.
    - Ads: no. ChatGPT ads aren't sold here, and Peec has paused the page itself.
-3. **Parts that are design only:** the GEO AI side panel answers every question with a demo reply; Gemini
+2. **Parts that are design only:** the GEO AI side panel answers every question with a demo reply; Gemini
    and Yandex are marked "tez orada" in the engine switcher. Plans: a project now carries its plan and
    limits and the question limit is used, but nothing sets a plan (every mock project is on Biznes) and the
    competitor limit is still the fixed 5 of onboarding.
-4. **Backend.** Begin with step 0 of `backend/PLAN.md`: a small script that measures what one answer costs
+3. **Backend.** Begin with step 0 of `backend/PLAN.md`: a small script that measures what one answer costs
    and whether the answers are the ones a person in Tashkent gets. Its result decides whether the prices
    work, so it comes before any other backend code. Then follow the build order in that file. It lists
    sixteen open questions; daily checks (14) is decided and plan limits (8) partly.
-5. **Noted during the dashboard review, not scheduled:** saving a chart as a picture (owners forward
+4. **Noted during the dashboard review, not scheduled:** saving a chart as a picture (owners forward
    pictures in Telegram), a date-range filter once a client has four or more weeks, an export menu on each
    card, and a "write to us in Telegram" banner for new clients. Also a "Saytim" (my website) page once the
    full site audit exists: every site check with passed and failed (a client sees only the failed ones today,

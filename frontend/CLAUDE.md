@@ -41,10 +41,11 @@ open questions): add to it each time a page is finished.
   the client, latest answers, a share menu with the public report's link and CSV; the cards of numbers open
   large with ⤢: a takeaway sentence, every row, the numbers as a table and how to read them); Questions (topics column;
   tracked, suggested and archived tabs; how many of the plan's questions are used; search, a filter and sorting,
-  with the client's numbers over the rows shown; CSV; a question opens its own page: its facts, a sentence on its
+  with the client's numbers over the rows shown; CSV; a row opens the question's own page: its facts, a sentence on its
   latest answers, every brand over time, the brands table, the sites cited and their kinds for that question alone,
-  the fixes that list it and its answers); Answers
-  (the answers in numbers, a table of every answer that opens like a chat, Previous/Next); Competitors
+  what ChatGPT searched the web for, the fixes that list it and its answers); Answers
+  (the answers in numbers, a table of every answer that opens like a chat, Previous/Next; filters by brand,
+  cited site and status; CSV with the full texts); Competitors
   (brands table, who leads each topic, untracked brands, questions each competitor wins); Sources (numbers,
   then sites, pages and gaps: pages that name competitors and not the client); Wrong facts (numbers and a
   table); Harakatlar (four goal tiles, the list by status and goal, a side panel with steps to tick, fix →
@@ -157,8 +158,10 @@ frontend/src/
     workspace/            # shell: sidebar by task in sections (collapsible) with a "start here" checklist at its foot
                           #   (progress kept in the browser), project card, account, help sheet, placeholder (Reports),
                           #   GEO AI panel (design only, opened from a page, e.g. "Analyze" in Answers)
-    answers/              # Answers: numbers, then every answer as a table row (search, brand and status filters);
-                          #   a row opens a chat window (question, answer, details, Previous/Next); ?prompt= opens one
+    answers/              # Answers: numbers, then every answer as a table row (search; filters by brand named, by
+                          #   site cited and by status); the rows shown export as CSV with their full text; a row
+                          #   opens a chat window (question, answer, details, Previous/Next); ?prompt= opens a
+                          #   question's first answer, ?source= starts with the answers citing a site
     competitors/          # Competitors: brands table, who leads each topic, untracked brands, questions each wins
     sources/              # Sources: numbers, then one card with sites / pages / gaps tabs (?tab=): kind, share of
                           #   answers, who each page names, "are you listed?", pages naming competitors not you; CSV
@@ -178,13 +181,19 @@ frontend/src/
                           #   date. Numbers and charts come right after the sentence (the user's order, Oct 5)
     prompts/              # Questions: topics column; tracked / suggested / archived tabs; questions used out of the
                           #   plan's limit (Project.limits.prompts; at the limit nothing can be added, accepted or
-                          #   restored); search, a "you're named / not named" filter and sorting by visibility or
-                          #   position, with the client's numbers over the rows shown (helpers/stats.ts); table with
-                          #   each question's visibility, tone, position, brands named, leader; add/edit/archive;
-                          #   accept / reject suggestions; CSV; footer with the plan and the weekly check.
+                          #   restored); search, a "you're named / not named" filter and sorting, with the client's
+                          #   numbers over the rows shown (helpers/stats.ts); a table that scrolls sideways under the
+                          #   pinned question, like Peec's: visibility, share of voice, tone, position, brands named,
+                          #   leader, web search (answers with a search / answers), wrong facts found (our version
+                          #   of Peec's fact-checking switch), date added; a click on a row opens the question's
+                          #   page; add/edit/archive; accept / reject suggestions; CSV; footer with the plan and the
+                          #   weekly check. Left out of Peec's columns: volume (no data), intent and branding
+                          #   (need classifying in the backend), free tags (we have topics), location (one city).
                           #   pages/prompt-page: one question (/prompts/[promptId], opened from the list, the archive
                           #   and an answer's chat): facts row, a sentence counted in answers, then the Overview's
-                          #   cards fed with the report over that question, the fixes that list it, its answers
+                          #   cards fed with the report over that question, what ChatGPT searched the web for (Peec's
+                          #   "query fanouts": each search with the answers that ran it) beside the fixes that list
+                          #   the question, then its answers
     report/               # client report: chart, sources, wrong facts, answers
   shared/                 # used by 2+ features
     api/                  # client.ts (switches mocks/backend), session.ts (requireUser), query-keys.ts, errors.ts,
@@ -288,7 +297,9 @@ Types:
 - BrandScore { brandId, visibility (0–1), shareOfVoice (0–1), avgPosition | null, sentiment (0–100) | null,
   trend (visibility vs previous period) }
 - PromptResult { prompt: Prompt, answers: Answer[] }
-- Answer { sample, text, mentions: { brandId, position, tone: "positive"|"neutral"|"negative" }[], citations: { url, domain }[] }
+- Answer { sample, text, mentions: { brandId, position, tone: "positive"|"neutral"|"negative" }[], citations: { url, domain }[],
+  searches: string[] (the web searches ChatGPT ran before writing the answer, as the search tool reports them, in
+  order; empty when it answered without searching) }
 - Source { domain, type: "own"|"competitor"|"news"|"directory"|"social"|"other", count, brandListed: boolean,
   pages: { url, count, mentions: brandId[] | null }[] }  (directory = maps, catalogs and review sites; social
   includes Telegram channels; mentions = tracked brands the page names, found by reading it, null if unreadable)
@@ -375,8 +386,9 @@ over the element on hover, on keyboard focus and on a tap (phones have no hover)
   function and gets the description's id for `aria-describedby`. Marks repeated in every row pass
   `focusable={false}` (reached by the mouse and a tap, not by Tab) and `described={false}` when a hidden label
   already says the same.
-- Done on Savollar and a question's page, and in the shared brands table, tone icons and site-kind dots. The
-  other pages' tables get theirs when their turn comes.
+- Done on Savollar, a question's page and Javoblar (the table and the opened answer), and in the shared
+  brands table, tone icons, site-kind dots and export buttons. The other pages' tables get theirs when their
+  turn comes.
 
 ## Commands (frontend, from `frontend/`)
 - `npm run dev`
