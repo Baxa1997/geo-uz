@@ -67,8 +67,8 @@
     "home": "Home"
   },
   "Report": {
-    "metaTitle": "{brand} — AI visibility report",
-    "kicker": "AI visibility report",
+    "metaTitle": "{brand} — AI visibility status report",
+    "kicker": "AI visibility status report",
     "weekly": "Weekly",
     "tools": "Report tools",
     "print": "Print or save as PDF",
@@ -82,53 +82,38 @@
       "scope": "Scope",
       "scopeValue": "{prompts} questions × {samples} answers = {answers} answers",
       "assistant": "AI assistant",
-      "assistantValue": "{engine}, web search on"
+      "assistantValue": "{engine}, web search on",
+      "number": "Report number",
+      "preparedBy": "Prepared by",
+      "preparedByValue": "GEO platform"
     },
     "sections": {
       "summary": "Executive summary",
-      "changes": "What changed since the last report",
       "scorecard": "Key figures",
+      "changes": "What changed since the last report",
       "competitors": "Competitive position",
-      "topics": "Where you win and where you lose",
+      "topics": "Topics and questions",
       "sources": "Sources ChatGPT relies on",
-      "accuracy": "Accuracy",
-      "actions": "Recommendations",
+      "accuracy": "Accuracy and tone",
+      "risks": "Risks and opportunities",
+      "actions": "Action plan",
       "method": "Method and scope",
       "glossary": "Definitions",
       "appendix": "Appendix. Every question"
     },
     "summary": {
-      "first": "What to do first",
-      "more": "All recommendations are in section {section}.",
-      "noActions": "Nothing is waiting to be done: every recommendation so far is done or declined.",
-      "rankBehind": "By visibility you rank {rank} of {of} tracked brands. {leader} leads with {leaderValue}, {gap} points ahead of you.",
-      "rankFirst": "You lead the {of} tracked brands by visibility. {next} follows with {nextValue}.",
-      "rankOnly": "No competitors are tracked yet, so there is no one to compare with.",
-      "missing": "In {count} of {total} questions ChatGPT names competitors and never you.",
-      "missingNone": "There is no question where ChatGPT names only competitors.",
-      "weakTopic": "Your weakest topic is “{topic}”: {value} against {leader}’s {leaderValue}.",
-      "sources": "{count, plural, one {# site ChatGPT relies on doesn’t} other {# sites ChatGPT relies on don’t}} list you. The most used: {sites}.",
-      "sourcesNone": "You are on every site ChatGPT relies on.",
-      "facts": "ChatGPT states {count, plural, one {# wrong fact} other {# wrong facts}} about you.",
-      "factsNone": "No wrong facts about you were found in the answers.",
-      "good": "What went well",
-      "attention": "Needs attention",
-      "goodNone": "No particular good news this week.",
-      "attentionNone": "No serious problems found.",
-      "trendUp": "Visibility is up {points} points since the previous check.",
-      "trendDown": "Visibility is down {points} points since the previous check.",
-      "tonePositive": "ChatGPT speaks well of you: tone {score}/100.",
-      "toneNegative": "ChatGPT speaks badly of you: tone {score}/100.",
-      "doneWeek": "{count, plural, one {# action was} other {# actions were}} done this week; the effect shows in the checks after.",
-      "namedIn": "ChatGPT names you in {count} of {total} questions.",
-      "voiceUp": "Your share of voice is up {points} points.",
-      "voiceDown": "Your share of voice is down {points} points."
+      "highlights": "This week’s highlights",
+      "highlightsQuiet": "No notable change this week.",
+      "highlightsFirst": "This is the first report. From the next one on, the week’s changes show here.",
+      "decisions": "Decisions needed",
+      "more": "The whole plan is in section {section}.",
+      "noActions": "Nothing is waiting to be done: every recommendation so far is done or declined."
     },
     "scorecard": {
-      "lead": "The five numbers this report follows: now, in the previous check, and against the strongest competitor.",
+      "lead": "The five numbers this report follows: now, in the previous check, against the strongest competitor, and over the checks.",
       "metric": "Metric",
-      "now": "This check",
-      "before": "Previous check",
+      "now": "Now",
+      "before": "Before",
       "change": "Change",
       "best": "Best competitor",
       "about": {
@@ -141,7 +126,13 @@
       "noChange": "no change",
       "better": "better by {amount}",
       "worse": "worse by {amount}",
-      "notNamed": "not named"
+      "notNamed": "not named",
+      "gap": "Gap",
+      "ahead": "ahead by {amount}",
+      "behind": "behind by {amount}",
+      "level": "level",
+      "trend": "Trend",
+      "trendLabel": "{metric} over {count} checks: from {from} to {to}"
     },
     "competitors": {
       "lead": "Every tracked brand in the latest check, the most visible first.",
@@ -152,11 +143,10 @@
       "you": "you"
     },
     "topics": {
-      "lead": "Your visibility in each topic against the strongest competitor there. Topics where you trail most come first.",
+      "lead": "Your visibility in each topic over the strongest competitor’s there, as two bars. Topics where you trail most come first.",
       "topic": "Topic",
       "questions": "Questions",
       "you": "You",
-      "leader": "Strongest competitor",
       "gap": "Result",
       "ahead": "ahead by {points}",
       "behind": "behind by {points}",
@@ -166,7 +156,8 @@
       "missingTitle": "Questions where only competitors are named",
       "missingMore": "and {count} more",
       "missingNone": "None: wherever a tracked brand is named, you are named too.",
-      "named": "Named: {brands}"
+      "named": "Named: {brands}",
+      "compared": "You and the strongest competitor"
     },
     "sources": {
       "lead": "The sites ChatGPT cites most. Being on them is the quickest way into its answers.",
@@ -178,28 +169,48 @@
       "notListed": "No",
       "own": "Your site",
       "competitor": "Competitor’s site",
-      "summary": "ChatGPT links to your own site in {own} of its answers. {missing, plural, =0 {You are on every other site it relies on.} one {You are missing from # site it relies on.} other {You are missing from # sites it relies on.}}",
-      "more": "{count} more sites are cited less often."
+      "more": "{count} more sites are cited less often.",
+      "split": "Whom ChatGPT’s citations work for",
+      "splitLabel": "How the citations split: {parts}",
+      "parts": {
+        "own": "Your own site",
+        "listed": "Sites that list you",
+        "missing": "Sites that don’t list you",
+        "competitors": "Competitors’ sites"
+      },
+      "sites": "{count, plural, one {# site} other {# sites}}",
+      "top": "The most cited sites"
     },
     "accuracy": {
-      "lead": "What ChatGPT says about you that is not true. A wrong price or address costs customers.",
+      "lead": "How ChatGPT speaks of you, and whether what it says is true. A wrong price or address costs customers.",
       "none": "No wrong facts were found in this check.",
       "says": "ChatGPT says",
       "correct": "Correct",
       "question": "Question",
-      "since": "First seen"
+      "since": "First seen",
+      "toneTitle": "Tone",
+      "toneNone": "ChatGPT didn’t name you in this check, so there is no tone to measure.",
+      "toneOf": "Out of 100, over the {count, plural, one {# mention} other {# mentions}} of you in this check’s answers:",
+      "factsTitle": "Wrong facts"
     },
     "actions": {
-      "lead": "What to do, the most effective first. Each follows from the findings above.",
+      "lead": "What to do, the most effective first. Each action follows from the sections above and improves one area of your condition.",
       "what": "What to do",
-      "why": "Why",
       "impact": "Expected effect",
       "status": "Status",
       "none": "No open recommendations.",
       "more": "{count} more are on the Actions page of the app.",
       "doneTitle": "Done so far",
       "doneProof": "Visibility on its questions: {before} → {after}",
-      "donePending": "The result shows after the next check"
+      "donePending": "The result shows after the next check",
+      "progress": "{done} of {total} actions done",
+      "parts": {
+        "done": "Done",
+        "started": "In progress",
+        "waiting": "Not started"
+      },
+      "openTitle": "Still to do",
+      "area": "Improves"
     },
     "method": {
       "lead": "How the numbers were collected, so the report can be checked and repeated.",
@@ -216,7 +227,9 @@
       "checksFirst": "Weekly. This is the first check: {date}",
       "brands": "Brands compared",
       "limits": "Limits",
-      "limitsValue": "An AI assistant’s answers vary from one asking to the next, and between its API and its app. The numbers are shares over all {answers} answers of this check; a change of a few points between two checks can be chance. A trend over several checks is more reliable than one week’s change."
+      "limitsValue": "An AI assistant’s answers vary from one asking to the next, and between its API and its app. The numbers are shares over all {answers} answers of this check; a change of a few points between two checks can be chance. A trend over several checks is more reliable than one week’s change.",
+      "condition": "Condition score",
+      "conditionValue": "The mean of {areas} areas, each rated from 0 to 100 from this check’s answers. {good} and above reads good, {fair} and above fair, under {fair} weak. How each area is counted is in the definitions."
     },
     "glossary": {
       "visibility": "The share of answers that name the brand. 42% means 42 of every 100 answers.",
@@ -225,13 +238,26 @@
       "sentiment": "How positively the brand is spoken of, from 0 (negative) to 100 (positive).",
       "usedAsSource": "The share of answers that link to a site. For your own site it shows how much ChatGPT relies on what you publish.",
       "checkTerm": "Check",
-      "check": "One weekly round in which every tracked question is asked several times."
+      "check": "One weekly round in which every tracked question is asked several times.",
+      "numbers": "The five numbers",
+      "conditionTitle": "The condition score",
+      "conditionTerm": "Condition score",
+      "condition": "One number from 0 to 100 for how you stand with ChatGPT: the mean of the {areas} areas below.",
+      "areas": {
+        "visibility": "Your visibility as a number: named in 42% of answers is 42.",
+        "competition": "Your visibility as a share of the most visible tracked brand’s. 100 when you lead.",
+        "coverage": "The share of tracked questions with at least one answer that names you.",
+        "sources": "Of ChatGPT’s citations of sites a business can be listed on (catalogs, maps, news, social pages), the share going to sites that list you.",
+        "accuracy": "Your tone out of 100, less {penalty} points for every wrong fact ChatGPT states about you."
+      },
+      "statusTerm": "Status",
+      "status": "How a score reads: good from {good}, fair from {fair}, weak under {fair}."
     },
     "appendix": {
       "lead": "Every question of this check with the brands its answers name. Open a question to read the answers."
     },
     "changes": {
-      "lead": "The events behind the numbers: your place among the brands, the sites ChatGPT relies on, new wrong facts and the work done this week. The numbers themselves are in the next section.",
+      "lead": "The events behind the numbers: your place among the brands, the sites ChatGPT relies on, new wrong facts and the work done this week. The numbers themselves are in the section before.",
       "first": "This is the first report: there is no earlier check to compare with. From the next report on, what changed shows here.",
       "groups": {
         "brands": "Among the brands",
@@ -254,6 +280,162 @@
       "factsNone": "No new wrong facts this week.",
       "doneNone": "No action was marked done this week.",
       "doneNote": "Their effect shows in the checks after."
+    },
+    "number": "No. {number}",
+    "parts": {
+      "condition": "Condition",
+      "analysis": "Analysis",
+      "decisions": "Decisions",
+      "reference": "Reference"
+    },
+    "status": {
+      "good": "Good",
+      "fair": "Fair",
+      "weak": "Weak"
+    },
+    "areas": {
+      "visibility": "Visibility",
+      "competition": "Competitive position",
+      "coverage": "Question coverage",
+      "sources": "Presence in sources",
+      "accuracy": "Accuracy and tone"
+    },
+    "condition": {
+      "overall": "Overall condition",
+      "byArea": "Condition by area",
+      "score": "Score",
+      "status": "Status",
+      "outOf100": "{score}/100",
+      "gaugeLabel": "Condition score: {score} out of 100, {status}",
+      "first": "First report: nothing to compare with yet",
+      "changeUp": "{points} {points, plural, one {point} other {points}} higher",
+      "changeDown": "{points} {points, plural, one {point} other {points}} lower",
+      "changeSame": "Unchanged",
+      "columnsLabel": "Column chart: the condition score over {count} reports, from {from} to {to}",
+      "reports": "{count, plural, one {# report} other {# reports}}",
+      "scaleGood": "Good: {from}+",
+      "scaleFair": "Fair: {from}–{to}",
+      "scaleWeak": "Weak: 0–{to}",
+      "verdict": "Your overall condition is {status}: {score} out of 100.",
+      "verdictAreas": "Your strongest area is {strongest} ({strongestScore}), your weakest is {weakest} ({weakestScore}).",
+      "conclusion": "Conclusion",
+      "recommended": "Recommended",
+      "inPlan": "Action {number} of the plan, section {section}",
+      "since": "compared with the last report"
+    },
+    "findings": {
+      "visibility": "ChatGPT names you in {you} of every 10 answers ({percent}).",
+      "visibilityUp": "That is {points} points more than in the last report.",
+      "visibilityDown": "That is {points} points less than in the last report.",
+      "visibilitySame": "The same as in the last report.",
+      "competitionBehind": "You rank {rank, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} of {of} tracked brands. {leader} leads with {leaderValue}, {gap} points ahead of you.",
+      "competitionFirst": "You lead the {of} tracked brands. {next} follows with {nextValue}.",
+      "competitionAlone": "No competitors are tracked yet, so there is no one to compare with.",
+      "coverage": "ChatGPT names you in {named} of {total} questions.",
+      "coverageMissing": "In {count, plural, one {# question} other {# questions}} it names competitors and never you.",
+      "coverageAll": "There is no question where it names only competitors.",
+      "weakTopic": "Your weakest topic is “{topic}”: {value} against {leader}’s {leaderValue}.",
+      "sources": "{percent} of ChatGPT’s citations of sites a business can be listed on (catalogs, maps, news, social pages) go to sites that list you.",
+      "sourcesMissing": "{count, plural, one {# such site doesn’t} other {# such sites don’t}} list you; the most cited: {sites}.",
+      "sourcesAll": "You are on every one of them.",
+      "sourcesNoneCited": "ChatGPT cited no site a business can be listed on.",
+      "ownSite": "It links to your own site in {own} of its answers.",
+      "accuracy": "ChatGPT’s tone about you is {score} out of 100 ({tone}).",
+      "accuracyFacts": "It states {count, plural, one {# wrong fact} other {# wrong facts}} about you; each takes {penalty} points off this score.",
+      "accuracyClean": "No wrong facts about you were found.",
+      "accuracyNotNamed": "ChatGPT doesn’t name you, so there is no tone to measure yet."
+    },
+    "events": {
+      "placeUp": "You rose to {now, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} place",
+      "placeDown": "You fell to {now, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} place",
+      "passedYou": "{name} moved ahead of you",
+      "youPassed": "You moved ahead of {name}",
+      "factsNew": "{count, plural, one {# new wrong fact} other {# new wrong facts}}",
+      "done": "{count, plural, one {# action done} other {# actions done}}",
+      "visibilityUp": "Visibility up {points} points",
+      "visibilityDown": "Visibility down {points} points",
+      "competitorUp": "{name} up {points} points",
+      "siteNew": "{site} cited for the first time"
+    },
+    "risks": {
+      "lead": "What may cost you customers, and where you can gain. Each follows from the sections above and points at the action of the plan that answers it.",
+      "risks": "Risks",
+      "opportunities": "Opportunities",
+      "risksNone": "No particular risk shows in this check.",
+      "opportunitiesNone": "No particular opportunity shows in this check.",
+      "levels": {
+        "risk": {
+          "high": "High risk",
+          "medium": "Medium risk",
+          "low": "Low risk"
+        },
+        "opportunity": {
+          "high": "Large gain",
+          "medium": "Medium gain",
+          "low": "Small gain"
+        }
+      },
+      "action": "Action {number} of the plan, section {section}",
+      "quote": "“{text}”",
+      "languages": {
+        "uz": "Uzbek",
+        "ru": "Russian"
+      },
+      "items": {
+        "facts": {
+          "title": "ChatGPT tells customers {count, plural, one {# wrong fact} other {# wrong facts}} about you.",
+          "detail": "For example: “{claim}”. A customer who believes it may not come at all."
+        },
+        "lostTopics": {
+          "title": "ChatGPT never names you in {count, plural, one {the topic} other {the topics}} {topics}.",
+          "detail": "A customer who asks about this hears of {leader}, not of you."
+        },
+        "leaderGap": {
+          "title": "{leader} is {gap} points ahead of you: {leaderValue} against your {you}.",
+          "detail": "It is named in more answers, so more customers hear of it before they hear of you."
+        },
+        "rivalRising": {
+          "title": "{name} gained {points} points in a week and now stands at {value}.",
+          "detail": "If it keeps the pace, it takes answers that name you today."
+        },
+        "falling": {
+          "title": "Your visibility fell {points} points in a week, to {value}.",
+          "detail": "One week can be chance; a second week down is a trend to act on."
+        },
+        "tone": {
+          "title": "ChatGPT’s tone about you is {score} out of 100.",
+          "detail": "It repeats what it reads in reviews. Answering them and fixing their cause moves it."
+        },
+        "listings": {
+          "title": "{count, plural, one {# site ChatGPT relies on doesn’t} other {# sites ChatGPT relies on don’t}} list you: {sites}.",
+          "detail": "The percentage is the share of answers that cite the site. Getting listed is the quickest way into those answers."
+        },
+        "closeTopics": {
+          "title": "The leader is within reach in {count, plural, one {the topic} other {the topics}} {topics}.",
+          "detail": "The nearest is {gap} points away: one strong page on the topic can take it."
+        },
+        "ownSite": {
+          "title": "ChatGPT cites your site in {you} of its answers, and {rival}’s in {rivalValue}.",
+          "detail": "Clear pages on services and prices get cited, and a cited site gets named."
+        },
+        "rivalFalling": {
+          "title": "{name}, ahead of you, lost {points} points this week.",
+          "detail": "A good moment to pass it in the topics you share."
+        },
+        "language": {
+          "title": "In {weak} questions your visibility is {weakValue}; in {strong} ones, {strongValue}.",
+          "detail": "Pages and listings in {weak} close the gap."
+        }
+      }
+    },
+    "letterhead": "AI visibility monitoring",
+    "partTitle": "Part {number}. {title}",
+    "signoff": {
+      "preparedBy": "Prepared by",
+      "preparedByValue": "GEO, the AI visibility monitoring platform",
+      "acknowledged": "Read and acknowledged",
+      "signature": "signature",
+      "nameDate": "name, date"
     }
   },
   "Headline": {
@@ -2864,17 +3046,13 @@
       }
     },
     "reports": {
-      "cover": {
-        "title": "The week's report",
-        "text": "The week's message, your visibility and its line over the weeks. “Open the full report” shows every section; the link, Telegram and PDF are at the top."
-      },
-      "decide": {
-        "title": "For the decision",
-        "text": "What went well, what needs attention and what to do first, at a glance."
+      "latest": {
+        "title": "The latest report",
+        "text": "Your condition this week: the overall score out of 100 with its status and change, and the five areas, each with the fact behind its score. “Open the report” shows every section; the link, Telegram and PDF are at the top."
       },
       "archive": {
-        "title": "Report history",
-        "text": "One report a week, and what happened that week. A row opens that week's report."
+        "title": "All reports",
+        "text": "One status report a week, with the condition it found and what happened that week. A row opens the report; the mark at its end saves it as a PDF."
       },
       "delivery": {
         "title": "Where the report goes",
@@ -2882,54 +3060,50 @@
       }
     },
     "reportDetail": {
-      "cover": {
-        "title": "The report's cover",
-        "text": "The week, its message and your visibility's line; the link, Telegram and PDF at the top."
+      "tools": {
+        "title": "Share and save",
+        "text": "Copy the report’s link, send it in Telegram, or save the report as a PDF."
       },
       "contents": {
         "title": "Contents",
-        "text": "The report's sections: a click goes to one; the one you're reading is marked."
+        "text": "The report’s four parts and twelve sections. A dot shows an area’s status; a click goes to the section, and the one you are reading is marked."
       },
-      "summary": {
-        "title": "The summary",
-        "text": "What matters for the decision: what went well, what needs attention and the three things to do first."
+      "condition": {
+        "title": "The condition",
+        "text": "The overall score with its status, and the five areas it is made of, each with the fact behind its score."
       },
-      "changes": {
-        "title": "What changed",
-        "text": "The events behind the numbers: your place, the sites, new wrong facts and the work done."
+      "decisions": {
+        "title": "Highlights and decisions",
+        "text": "What happened this week, and the three actions the report asks you to decide on first."
       }
     }
   },
   "Reports": {
     "latest": {
-      "title": "This week's report",
-      "description": "The check of {date}, compared with {previous}.",
-      "descriptionFirst": "The check of {date}: the first report.",
-      "open": "Open the report",
-      "shareText": "Share the report with your team: anyone with the link can read it."
+      "kicker": "Latest report",
+      "scope": "{prompts} questions · {answers} answers · {engine}",
+      "inside": "The whole report: {parts} parts and {sections} sections, from the condition and its analysis to risks, opportunities and the action plan.",
+      "open": "Open the report"
     },
     "archive": {
-      "title": "Report history",
-      "description": "One report a week, and what happened that week. A row opens its report.",
+      "title": "All reports",
+      "description": "One status report a week. A row opens that week’s report; the mark at its end saves it as a PDF.",
       "count": "{count, plural, one {# weekly report} other {# weekly reports}}",
       "latest": "Latest report",
       "open": "Open",
-      "placeValue": "{place} of {of}",
       "change": "{points} points since the report before",
       "columns": {
-        "report": "Report",
-        "visibility": "Visibility",
-        "shareOfVoice": "Share of voice",
-        "place": "Place",
-        "tone": "Tone",
-        "events": "The week's events"
+        "number": "No.",
+        "period": "Period",
+        "condition": "Condition",
+        "areas": "Areas",
+        "events": "The week’s events"
       },
       "hints": {
-        "report": "The date of the weekly check. A row opens that week's full report.",
-        "visibility": "The share of answers that name you; beside it, the change since the report before, in points.",
-        "shareOfVoice": "Your share of the tracked brands' mentions; beside it, the change.",
-        "place": "Your place among the brands by visibility: 1 is named most.",
-        "tone": "How positively ChatGPT spoke of you: 0 negative, 100 positive.",
+        "number": "The report’s number in the run of weekly reports.",
+        "period": "The week the report covers: from the check before to its own. A row opens the full report.",
+        "condition": "The overall condition score out of 100, its status, and its change since the report before, in points.",
+        "areas": "The five areas of the condition in the report’s order: visibility, competitive position, question coverage, presence in sources, accuracy and tone. Green is good, amber fair, red weak; rest the mouse on a mark for its score.",
         "events": "What happened that week: your place, who passed whom, new wrong facts, work done, large moves."
       },
       "csvLabel": "Export",
@@ -2942,24 +3116,19 @@
         "tone": "Tone",
         "leader": "Leader",
         "facts": "Wrong facts",
-        "done": "Actions done"
+        "done": "Actions done",
+        "number": "No.",
+        "condition": "Condition, /100",
+        "status": "Status"
       },
       "firstReport": "First report",
       "weekly": "Weekly report",
-      "events": {
-        "placeUp": "You rose to {now, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} place",
-        "placeDown": "You fell to {now, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} place",
-        "passedYou": "{name} moved ahead of you",
-        "youPassed": "You moved ahead of {name}",
-        "factsNew": "{count, plural, one {# new wrong fact} other {# new wrong facts}}",
-        "done": "{count, plural, one {# action done} other {# actions done}}",
-        "visibilityUp": "Visibility up {points} points",
-        "visibilityDown": "Visibility down {points} points",
-        "competitorUp": "{name} up {points} points",
-        "siteNew": "{site} cited for the first time",
-        "quiet": "No notable change",
-        "first": "The first check"
-      }
+      "area": "{area}: {score}/100, {status}",
+      "pdf": "PDF",
+      "pdfHint": "Opens this report as A4 with the print window: choose “Save as PDF”.",
+      "pdfOf": "PDF of report No. {number}",
+      "eventsQuiet": "No notable change",
+      "eventsFirst": "The first check"
     },
     "delivery": {
       "title": "Where the report goes",
@@ -3015,27 +3184,6 @@
     "detail": {
       "title": "Report of {date}",
       "contents": "Contents"
-    },
-    "cover": {
-      "kicker": "Weekly report",
-      "period": "{from} – {to}",
-      "headline": {
-        "up": "ChatGPT names you more often",
-        "down": "ChatGPT names you less often",
-        "steady": "ChatGPT names you as often as before",
-        "first": "How ChatGPT talks about you"
-      },
-      "visibility": "Visibility",
-      "change": {
-        "up": "{points} points more than the last report",
-        "down": "{points} points less than the last report",
-        "steady": "the same as the last report"
-      },
-      "chart": "Visibility over {weeks} checks: from {from} to {to}",
-      "weeks": "{count, plural, one {# week} other {# weeks}}",
-      "open": "Open the full report",
-      "openNote": "{sections} sections: summary, changes, numbers, competitors, sources and recommendations",
-      "scope": "{prompts} questions · {answers} answers · {engine}"
     }
   }
 }

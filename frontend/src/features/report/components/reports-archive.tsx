@@ -1,69 +1,47 @@
 "use client";
 
-import { ArrowDown, ArrowRight, ArrowUp, CalendarDays, CircleCheck, Minus, Plus, TriangleAlert, type LucideIcon } from "lucide-react";
+import { ArrowDown, ArrowRight, ArrowUp, FileDown, Minus } from "lucide-react";
 import { useLocale, useTimeZone, useTranslations } from "next-intl";
 import { CsvButton } from "@/shared/components/csv-button";
 import { Hint } from "@/shared/components/hint";
 import { LinkRow } from "@/shared/components/link-row";
+import { buttonVariants } from "@/shared/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { TIME_ZONE } from "@/shared/constants";
-import { formatIsoDay, formatLongDate } from "@/shared/helpers/dates";
-import { formatPercent } from "@/shared/helpers/numbers";
-import { seriesBrands, toneOf } from "@/shared/helpers/scores";
+import { CONDITION_AREAS, conditionStatus } from "@/shared/helpers/condition";
+import { formatIsoDay, formatLongDate, formatShortDate } from "@/shared/helpers/dates";
+import { seriesBrands } from "@/shared/helpers/scores";
 import { cn } from "@/shared/helpers/utils";
-import type { HistoryPoint, Project, SourceHistoryPoint, Tone } from "@/shared/types/api";
-import { weekEvents, type WeekEvent } from "../helpers/weeks";
+import type { Condition, HistoryPoint, Project, SourceHistoryPoint } from "@/shared/types/api";
+import { STATUS_FILL } from "../constants";
+import { weekEvents } from "../helpers/weeks";
+import { StatusChip } from "./report-parts";
+import { WeekEventLine } from "./week-event";
 
-const TONE_DOTS: Record<Tone, string> = { positive: "bg-positive", neutral: "bg-muted-foreground/60", negative: "bg-negative" };
-
-/** How each kind of event is marked in a row: its way, colored by what it means for the client. */
-const EVENT_ICONS: Record<WeekEvent["kind"], LucideIcon> = {
-  placeUp: ArrowUp,
-  placeDown: ArrowDown,
-  passedYou: ArrowDown,
-  youPassed: ArrowUp,
-  factsNew: TriangleAlert,
-  done: CircleCheck,
-  visibilityUp: ArrowUp,
-  visibilityDown: ArrowDown,
-  competitorUp: ArrowUp,
-  siteNew: Plus,
-};
-const EVENT_COLORS: Record<WeekEvent["tone"], string> = { good: "text-better", bad: "text-worse", neutral: "text-muted-foreground" };
 /** A row tells at most this many of its week's events. */
 const EVENTS_SHOWN = 2;
 
-/** A change in points since the report before: an arrow and its size, green when better, red when worse. */
-function Change({ points, label }: { points: number | null; label: string }) {
-  if (points === null || points === 0) return null;
-  const better = points > 0;
-  return (
-    <span className={cn("inline-flex items-center gap-0.5 text-xs font-medium tabular-nums", better ? "text-better" : "text-worse")}>
-      {better ? <ArrowUp aria-hidden className="size-3" /> : <ArrowDown aria-hidden className="size-3" />}
-      <span aria-hidden>{Math.abs(points)}</span>
-      <span className="sr-only">{label}</span>
-    </span>
-  );
-}
-
 /**
- * Every weekly report, the latest first, as a history of the client's week: the check's date, its
- * visibility (a bar and the change from the report before), share of voice, place and tone, then what
- * happened that week in a sentence or two (its place, who passed whom, new wrong facts, actions done, large
- * moves, a new site). A row opens its report; the table downloads as CSV, the leader and counts included.
+ * Every weekly report as a document in a register, the latest first: its number, the period it covers, the
+ * condition it found (the score, its status and its change from the report before), the five areas as
+ * marks, what happened that week in a sentence or two, and its PDF. A row opens its report; the register
+ * downloads as CSV, with every area's score and the week's main numbers.
  */
 export function ReportsArchive({
   project,
   history,
+  conditionHistory,
   sourceHistory,
   factDates,
   doneDates,
   base,
+  shared,
   filename,
 }: {
   project: Pick<Project, "brand" | "competitors">;
-  /** The checks, oldest first (`Report.history`). */
+  /** The checks, oldest first (`Report.history`), and the condition after each. */
   history: HistoryPoint[];
+  conditionHistory: Condition[];
   /** The cited sites over the same checks. */
   sourceHistory: SourceHistoryPoint[];
   /** When each wrong fact was first found. */
@@ -72,35 +50,39 @@ export function ReportsArchive({
   doneDates: string[];
   /** Hisobotlar's address: a report is under it by its run's id. */
   base: string;
+  /** The shared report's address: `?run=` opens a week's, `&print=1` its print window. */
+  shared: string;
   filename: string;
 }) {
   const t = useTranslations("Reports.archive");
-  const tones = useTranslations("Tone");
+  const report = useTranslations("Report");
   const locale = useLocale();
   const timeZone = useTimeZone() ?? TIME_ZONE;
   const { brand } = project;
   const brands = seriesBrands(project);
   const points = (value: number) => Math.round(value * 100);
   const href = (runId: string) => `${base}/${encodeURIComponent(runId)}`;
-  const top = Math.max(0.01, ...history.flatMap((point) => point.scores.filter((score) => score.brandId === brand.id).map((score) => score.visibility)));
 
   const rows = history
     .map((point, index) => {
       const before = history[index - 1];
       const you = point.scores.find((score) => score.brandId === brand.id);
-      const youBefore = before?.scores.find((score) => score.brandId === brand.id);
       const ranked = [...point.scores].sort((a, b) => b.visibility - a.visibility);
       const leader = ranked[0] && ranked[0].visibility > 0 ? brands.find((candidate) => candidate.id === ranked[0]?.brandId) : undefined;
       const since = before ? Date.parse(before.collectedAt) : -Infinity;
       const until = Date.parse(point.collectedAt);
+      const condition = conditionHistory[index];
+      const conditionBefore = conditionHistory[index - 1];
       return {
         point,
+        number: index + 1,
+        from: before?.collectedAt,
         latest: index === history.length - 1,
         first: index === 0,
+        condition,
+        change: condition && conditionBefore ? condition.score - conditionBefore.score : null,
         visibility: you?.visibility ?? 0,
-        visibilityChange: youBefore && you ? points(you.visibility) - points(youBefore.visibility) : null,
         shareOfVoice: you?.shareOfVoice ?? 0,
-        shareChange: youBefore && you ? points(you.shareOfVoice) - points(youBefore.shareOfVoice) : null,
         place: ranked.findIndex((score) => score.brandId === brand.id) + 1,
         of: ranked.length,
         sentiment: you?.sentiment ?? null,
@@ -113,9 +95,26 @@ export function ReportsArchive({
     .reverse();
 
   const csvRows = () => [
-    [t("csv.date"), t("csv.visibility"), t("csv.shareOfVoice"), t("csv.place"), t("csv.tone"), t("csv.leader"), t("csv.facts"), t("csv.done")],
+    [
+      t("csv.number"),
+      t("csv.date"),
+      t("csv.condition"),
+      t("csv.status"),
+      ...CONDITION_AREAS.map((area) => report(`areas.${area}`)),
+      t("csv.visibility"),
+      t("csv.shareOfVoice"),
+      t("csv.place"),
+      t("csv.tone"),
+      t("csv.leader"),
+      t("csv.facts"),
+      t("csv.done"),
+    ],
     ...rows.map((row) => [
+      row.number,
       formatIsoDay(row.point.collectedAt, timeZone),
+      row.condition?.score ?? null,
+      row.condition ? report(`status.${conditionStatus(row.condition.score)}`) : null,
+      ...CONDITION_AREAS.map((area) => row.condition?.areas[area] ?? null),
       points(row.visibility),
       points(row.shareOfVoice),
       `${row.place}/${row.of}`,
@@ -126,7 +125,7 @@ export function ReportsArchive({
     ]),
   ];
 
-  const heading = (key: "report" | "visibility" | "shareOfVoice" | "place" | "tone" | "events", className?: string) => (
+  const heading = (key: "number" | "period" | "condition" | "areas" | "events", className?: string) => (
     <th scope="col" className={className}>
       <Hint text={t(`hints.${key}`)}>{t(`columns.${key}`)}</Hint>
     </th>
@@ -139,93 +138,115 @@ export function ReportsArchive({
         <CsvButton filename={filename} label={t("csvLabel")} hint={t("csvHint")} rows={csvRows} />
       </div>
       <div className="relative min-w-0 overflow-x-auto">
-        <table className="w-full min-w-[60rem] text-sm">
+        <table className="w-full min-w-232 text-sm">
           <thead>
             <tr className="border-b bg-muted text-left text-muted-foreground [&>th]:px-3 [&>th]:py-2.5 [&>th]:font-normal [&>th:first-child]:pl-4 [&>th:last-child]:pr-4">
-              {heading("report", "w-64")}
-              {heading("visibility", "w-44")}
-              {heading("shareOfVoice", "w-28 text-right")}
-              {heading("place", "w-20 text-right")}
-              {heading("tone", "w-20 text-right")}
+              {heading("number", "w-16")}
+              {heading("period", "w-56")}
+              {heading("condition", "w-60")}
+              {heading("areas", "w-36")}
               {heading("events")}
+              <th scope="col" className="w-12">
+                <span className="sr-only">{t("pdf")}</span>
+              </th>
               <th scope="col" className="w-10">
                 <span className="sr-only">{t("open")}</span>
               </th>
             </tr>
           </thead>
           <tbody className="divide-y">
-            {rows.map((row) => (
-              <LinkRow
-                key={row.point.runId}
-                href={href(row.point.runId)}
-                className={cn("group transition-colors [&>td]:px-3 [&>td]:py-3.5 [&>td:first-child]:pl-4 [&>td:last-child]:pr-4", row.latest ? "bg-you-soft/25 hover:bg-you-soft/40" : "hover:bg-muted/60")}
-              >
-                <td>
-                  <span className="flex items-center gap-3">
-                    <span aria-hidden className={cn("flex size-9 shrink-0 items-center justify-center rounded-lg", row.latest ? "bg-you text-white" : "bg-muted text-muted-foreground")}>
-                      <CalendarDays className="size-4" />
-                    </span>
+            {rows.map((row) => {
+              const Arrow = row.change === null || row.change === 0 ? Minus : row.change > 0 ? ArrowUp : ArrowDown;
+              return (
+                <LinkRow
+                  key={row.point.runId}
+                  href={href(row.point.runId)}
+                  className={cn("group transition-colors [&>td]:px-3 [&>td]:py-3.5 [&>td:first-child]:pl-4 [&>td:last-child]:pr-4", row.latest ? "bg-you-soft/25 hover:bg-you-soft/40" : "hover:bg-muted/60")}
+                >
+                  <td className="font-medium whitespace-nowrap text-muted-foreground tabular-nums">{report("number", { number: row.number })}</td>
+                  <td>
                     <span className="flex min-w-0 flex-col">
                       <Link href={href(row.point.runId)} className="font-medium underline-offset-4 outline-none hover:underline focus-visible:underline">
-                        {formatLongDate(row.point.collectedAt, locale, timeZone)}
+                        {row.from
+                          ? report("meta.periodRange", { from: formatShortDate(row.from, locale, timeZone), to: formatLongDate(row.point.collectedAt, locale, timeZone) })
+                          : formatLongDate(row.point.collectedAt, locale, timeZone)}
                       </Link>
                       <span className="text-xs text-muted-foreground">{row.latest ? t("latest") : row.first ? t("firstReport") : t("weekly")}</span>
                     </span>
-                  </span>
-                </td>
-                <td>
-                  <span className="flex items-center gap-2.5">
-                    {/* Visibility as a bar, so the weeks compare at a glance */}
-                    <span aria-hidden className="h-1.5 w-16 shrink-0 overflow-hidden rounded-full bg-muted">
-                      <span className="block h-full rounded-full bg-you" style={{ width: `${Math.round((row.visibility / top) * 100)}%` }} />
-                    </span>
-                    <span className="font-medium tabular-nums">{formatPercent(row.visibility, locale)}</span>
-                    <Change points={row.visibilityChange} label={t("change", { points: row.visibilityChange ?? 0 })} />
-                  </span>
-                </td>
-                <td className="text-right">
-                  <span className="inline-flex items-baseline gap-1.5">
-                    <span className="tabular-nums">{formatPercent(row.shareOfVoice, locale)}</span>
-                    <Change points={row.shareChange} label={t("change", { points: row.shareChange ?? 0 })} />
-                  </span>
-                </td>
-                <td className="text-right font-medium tabular-nums">{t("placeValue", { place: row.place, of: row.of })}</td>
-                <td className="text-right">
-                  {row.sentiment === null ? (
-                    <span className="text-muted-foreground">—</span>
-                  ) : (
-                    <span className="inline-flex items-center gap-1.5 tabular-nums">
-                      <span aria-hidden className={cn("size-2 rounded-full", TONE_DOTS[toneOf(row.sentiment)])} />
-                      {row.sentiment}
-                      <span className="sr-only">{tones(toneOf(row.sentiment))}</span>
-                    </span>
-                  )}
-                </td>
-                <td>
-                  {row.events.length === 0 ? (
-                    <span className="inline-flex items-center gap-1.5 text-muted-foreground">
-                      <Minus aria-hidden className="size-3.5" />
-                      {t(row.first ? "events.first" : "events.quiet")}
-                    </span>
-                  ) : (
-                    <ul className="flex flex-col gap-1">
-                      {row.events.map((event) => {
-                        const Icon = EVENT_ICONS[event.kind];
-                        return (
-                          <li key={`${event.kind}-${JSON.stringify(event.values)}`} className="flex items-start gap-1.5">
-                            <Icon aria-hidden className={cn("mt-0.5 size-3.5 shrink-0", EVENT_COLORS[event.tone])} />
-                            <span className="text-pretty">{t(`events.${event.kind}`, event.values)}</span>
+                  </td>
+                  <td>
+                    {row.condition ? (
+                      <span className="flex items-center gap-2.5">
+                        <span className="flex items-baseline gap-0.5">
+                          <span className="text-base font-semibold tabular-nums">{row.condition.score}</span>
+                          <span className="text-xs text-muted-foreground">/100</span>
+                        </span>
+                        <StatusChip score={row.condition.score} />
+                        {row.change !== null && row.change !== 0 && (
+                          <span className={cn("inline-flex items-center gap-0.5 text-xs font-medium tabular-nums", row.change > 0 ? "text-better" : "text-worse")}>
+                            <Arrow aria-hidden className="size-3" />
+                            <span aria-hidden>{Math.abs(row.change)}</span>
+                            <span className="sr-only">{t("change", { points: row.change })}</span>
+                          </span>
+                        )}
+                      </span>
+                    ) : (
+                      <span className="text-muted-foreground">—</span>
+                    )}
+                  </td>
+                  <td>
+                    {row.condition && (
+                      <span className="flex items-center gap-1.5">
+                        {CONDITION_AREAS.map((area) => {
+                          const score = row.condition?.areas[area] ?? 0;
+                          const text = t("area", { area: report(`areas.${area}`), score, status: report(`status.${conditionStatus(score)}`) });
+                          return (
+                            <Hint key={area} text={text} focusable={false} described={false}>
+                              <span aria-hidden className={cn("block size-3 rounded-[3px]", STATUS_FILL[conditionStatus(score)])} />
+                              <span className="sr-only">{text}</span>
+                            </Hint>
+                          );
+                        })}
+                      </span>
+                    )}
+                  </td>
+                  <td>
+                    {row.events.length === 0 ? (
+                      <span className="inline-flex items-center gap-1.5 text-muted-foreground">
+                        <Minus aria-hidden className="size-3.5" />
+                        {t(row.first ? "eventsFirst" : "eventsQuiet")}
+                      </span>
+                    ) : (
+                      <ul className="flex flex-col gap-1">
+                        {row.events.map((event) => (
+                          <li key={`${event.kind}-${JSON.stringify(event.values)}`}>
+                            <WeekEventLine event={event} />
                           </li>
-                        );
-                      })}
-                    </ul>
-                  )}
-                </td>
-                <td className="text-right">
-                  <ArrowRight aria-hidden className="ml-auto size-4 text-muted-foreground transition-colors group-hover:text-foreground" />
-                </td>
-              </LinkRow>
-            ))}
+                        ))}
+                      </ul>
+                    )}
+                  </td>
+                  <td>
+                    <Hint text={t("pdfHint")} described={false}>
+                      {() => (
+                        <a
+                          href={`${shared}?run=${encodeURIComponent(row.point.runId)}&print=1`}
+                          target="_blank"
+                          rel="noopener"
+                          aria-label={t("pdfOf", { number: row.number })}
+                          className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "size-8 text-muted-foreground hover:text-foreground")}
+                        >
+                          <FileDown aria-hidden />
+                        </a>
+                      )}
+                    </Hint>
+                  </td>
+                  <td className="text-right">
+                    <ArrowRight aria-hidden className="ml-auto size-4 text-muted-foreground transition-colors group-hover:text-foreground" />
+                  </td>
+                </LinkRow>
+              );
+            })}
           </tbody>
         </table>
       </div>

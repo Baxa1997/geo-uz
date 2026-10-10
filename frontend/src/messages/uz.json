@@ -67,8 +67,8 @@
     "home": "Bosh sahifa"
   },
   "Report": {
-    "metaTitle": "{brand} — AI koʻrinish hisoboti",
-    "kicker": "AI koʻrinish hisoboti",
+    "metaTitle": "{brand} — AI koʻrinish holati hisoboti",
+    "kicker": "AI koʻrinish holati hisoboti",
     "weekly": "Haftalik",
     "tools": "Hisobot amallari",
     "print": "Chop etish yoki PDF",
@@ -82,53 +82,38 @@
       "scope": "Qamrov",
       "scopeValue": "{prompts} ta savol × {samples} ta javob = {answers} ta javob",
       "assistant": "AI yordamchi",
-      "assistantValue": "{engine}, veb-qidiruv bilan"
+      "assistantValue": "{engine}, veb-qidiruv bilan",
+      "number": "Hisobot raqami",
+      "preparedBy": "Tayyorladi",
+      "preparedByValue": "GEO platformasi"
     },
     "sections": {
-      "summary": "Qisqacha xulosa",
-      "changes": "Oldingi hisobotdan beri nima oʻzgardi",
+      "summary": "Rahbar uchun xulosa",
       "scorecard": "Asosiy koʻrsatkichlar",
-      "competitors": "Raqobatchilar orasidagi oʻrningiz",
-      "topics": "Qayerda oldindasiz, qayerda ortdasiz",
+      "changes": "Oldingi hisobotdan beri nima oʻzgardi",
+      "competitors": "Raqobatdagi oʻrin",
+      "topics": "Mavzular va savollar",
       "sources": "ChatGPT tayanadigan manbalar",
-      "accuracy": "Maʼlumotlar toʻgʻriligi",
-      "actions": "Tavsiyalar",
+      "accuracy": "Aniqlik va ohang",
+      "risks": "Xavflar va imkoniyatlar",
+      "actions": "Harakatlar rejasi",
       "method": "Usul va qamrov",
       "glossary": "Atamalar",
       "appendix": "Ilova. Barcha savollar"
     },
     "summary": {
-      "first": "Avval nima qilish kerak",
-      "more": "Barcha tavsiyalar — {section}-boʻlimda.",
-      "noActions": "Kutilayotgan ish yoʻq: hozirgacha berilgan barcha tavsiyalar bajarilgan yoki rad etilgan.",
-      "rankBehind": "Koʻrinish boʻyicha kuzatilayotgan {of} ta brend ichida {rank}-oʻrindasiz. Yetakchi — {leader}: {leaderValue}, sizdan {gap} punkt oldinda.",
-      "rankFirst": "Koʻrinish boʻyicha kuzatilayotgan {of} ta brend ichida birinchisiz. Keyingisi — {next}: {nextValue}.",
-      "rankOnly": "Hozircha raqobatchilar kuzatilmayapti, shuning uchun solishtiradigan brend yoʻq.",
-      "missing": "{total} ta savoldan {count} tasida ChatGPT raqobatchilarni tilga oladi, sizni esa hech qachon.",
-      "missingNone": "ChatGPT faqat raqobatchilarni tilga olgan savol yoʻq.",
-      "weakTopic": "Eng zaif mavzuingiz — “{topic}”: sizda {value}, {leader}da {leaderValue}.",
-      "sources": "ChatGPT tayanadigan {count} ta saytda siz yoʻqsiz. Eng koʻp ishlatiladigani: {sites}.",
-      "sourcesNone": "ChatGPT tayanadigan barcha saytlarda borsiz.",
-      "facts": "ChatGPT siz haqingizda {count} ta notoʻgʻri fakt aytmoqda.",
-      "factsNone": "Javoblarda siz haqingizda notoʻgʻri fakt topilmadi.",
-      "good": "Yaxshi tomonlar",
-      "attention": "Eʼtibor talab qiladi",
-      "goodNone": "Bu hafta alohida yaxshi xabar yoʻq.",
-      "attentionNone": "Jiddiy muammo topilmadi.",
-      "trendUp": "Koʻrinish oldingi tekshiruvga nisbatan {points} punkt oshdi.",
-      "trendDown": "Koʻrinish oldingi tekshiruvga nisbatan {points} punkt kamaydi.",
-      "tonePositive": "ChatGPT siz haqingizda ijobiy gapiradi: ohang {score}/100.",
-      "toneNegative": "ChatGPT siz haqingizda salbiy gapiradi: ohang {score}/100.",
-      "doneWeek": "Bu hafta {count} ta harakat bajarildi: taʼsiri keyingi tekshiruvlarda koʻrinadi.",
-      "namedIn": "{total} ta savoldan {count} tasida ChatGPT sizni tilga oladi.",
-      "voiceUp": "Ovoz ulushingiz {points} punkt oshdi.",
-      "voiceDown": "Ovoz ulushingiz {points} punkt kamaydi."
+      "highlights": "Hafta yangiliklari",
+      "highlightsQuiet": "Bu hafta sezilarli oʻzgarish boʻlmadi.",
+      "highlightsFirst": "Bu birinchi hisobot. Keyingisidan boshlab hafta oʻzgarishlari shu yerda koʻrinadi.",
+      "decisions": "Qaror talab qiladi",
+      "more": "Toʻliq reja — {section}-boʻlimda.",
+      "noActions": "Kutilayotgan ish yoʻq: hozirgacha berilgan barcha tavsiyalar bajarilgan yoki rad etilgan."
     },
     "scorecard": {
-      "lead": "Hisobot kuzatadigan beshta raqam: hozir, oldingi tekshiruvda va eng kuchli raqobatchiga nisbatan.",
+      "lead": "Hisobot kuzatadigan beshta raqam: hozir, oldingi tekshiruvda, eng kuchli raqobatchiga nisbatan va tekshiruvlar davomida.",
       "metric": "Koʻrsatkich",
-      "now": "Bu tekshiruv",
-      "before": "Oldingi tekshiruv",
+      "now": "Hozir",
+      "before": "Oldin",
       "change": "Oʻzgarish",
       "best": "Eng kuchli raqobatchi",
       "about": {
@@ -141,7 +126,13 @@
       "noChange": "oʻzgarmadi",
       "better": "{amount} ga yaxshilandi",
       "worse": "{amount} ga yomonlashdi",
-      "notNamed": "tilga olinmagan"
+      "notNamed": "tilga olinmagan",
+      "gap": "Farq",
+      "ahead": "{amount} ga oldinda",
+      "behind": "{amount} ga ortda",
+      "level": "teng",
+      "trend": "Dinamika",
+      "trendLabel": "{metric} {count} ta tekshiruvda: {from} dan {to} gacha"
     },
     "competitors": {
       "lead": "Oxirgi tekshiruvdagi barcha kuzatilayotgan brendlar, eng koʻp koʻringanidan boshlab.",
@@ -152,11 +143,10 @@
       "you": "siz"
     },
     "topics": {
-      "lead": "Har bir mavzudagi koʻrinishingiz shu mavzudagi eng kuchli raqobatchiga nisbatan. Eng koʻp ortda qolgan mavzular birinchi.",
+      "lead": "Har bir mavzudagi koʻrinishingiz shu mavzudagi eng kuchli raqobatchiniki bilan yonma-yon, ikki chiziq bilan. Eng koʻp ortda qolgan mavzular birinchi.",
       "topic": "Mavzu",
       "questions": "Savollar",
       "you": "Siz",
-      "leader": "Eng kuchli raqobatchi",
       "gap": "Natija",
       "ahead": "{points} punkt oldinda",
       "behind": "{points} punkt ortda",
@@ -166,7 +156,8 @@
       "missingTitle": "Faqat raqobatchilar tilga olingan savollar",
       "missingMore": "va yana {count} ta",
       "missingNone": "Yoʻq: kuzatilayotgan brend tilga olingan har bir savolda siz ham tilga olingansiz.",
-      "named": "Tilga olingan: {brands}"
+      "named": "Tilga olingan: {brands}",
+      "compared": "Siz va eng kuchli raqobatchi"
     },
     "sources": {
       "lead": "ChatGPT eng koʻp havola beradigan saytlar. Ularda boʻlish — javoblarga kirishning eng tez yoʻli.",
@@ -178,28 +169,48 @@
       "notListed": "Yoʻq",
       "own": "Sizning saytingiz",
       "competitor": "Raqobatchi sayti",
-      "summary": "ChatGPT javoblarining {own} qismida saytingizga havola beradi. {missing, plural, =0 {U tayanadigan boshqa barcha saytlarda borsiz.} other {U tayanadigan # ta saytda siz yoʻqsiz.}}",
-      "more": "Yana {count} ta saytga kamroq havola berilgan."
+      "more": "Yana {count} ta saytga kamroq havola berilgan.",
+      "split": "ChatGPT havolalari kimga ishlaydi",
+      "splitLabel": "Havolalar taqsimoti: {parts}",
+      "parts": {
+        "own": "Oʻz saytingiz",
+        "listed": "Siz bor saytlar",
+        "missing": "Siz yoʻq saytlar",
+        "competitors": "Raqobatchilar saytlari"
+      },
+      "sites": "{count} ta sayt",
+      "top": "Eng koʻp keltirilgan saytlar"
     },
     "accuracy": {
-      "lead": "ChatGPT siz haqingizda aytayotgan notoʻgʻri maʼlumotlar. Notoʻgʻri narx yoki manzil mijoz yoʻqotishga olib keladi.",
+      "lead": "ChatGPT siz haqingizda qanday ohangda gapiradi va aytgani toʻgʻrimi. Notoʻgʻri narx yoki manzil mijoz yoʻqotishga olib keladi.",
       "none": "Bu tekshiruvda notoʻgʻri fakt topilmadi.",
       "says": "ChatGPT aytadi",
       "correct": "Toʻgʻrisi",
       "question": "Savol",
-      "since": "Birinchi marta"
+      "since": "Birinchi marta",
+      "toneTitle": "Ohang",
+      "toneNone": "Bu tekshiruvda ChatGPT sizni tilga olmadi, shuning uchun ohangni oʻlchab boʻlmaydi.",
+      "toneOf": "100 dan. Shu tekshiruv javoblarida siz {count} marta tilga olingansiz:",
+      "factsTitle": "Notoʻgʻri faktlar"
     },
     "actions": {
-      "lead": "Nima qilish kerakligi, eng samaralisidan boshlab. Har biri yuqoridagi xulosalardan kelib chiqadi.",
+      "lead": "Nima qilish kerakligi, eng samaralisidan boshlab. Har bir harakat yuqoridagi boʻlimlardan kelib chiqadi va holatingizning bir yoʻnalishini yaxshilaydi.",
       "what": "Nima qilish kerak",
-      "why": "Nima uchun",
       "impact": "Kutilayotgan taʼsir",
       "status": "Holat",
       "none": "Ochiq tavsiyalar yoʻq.",
       "more": "Yana {count} tasi — Harakatlar sahifasida.",
       "doneTitle": "Bajarilganlar",
       "doneProof": "Shu savollardagi koʻrinish: {before} → {after}",
-      "donePending": "Natija keyingi tekshiruvdan keyin koʻrinadi"
+      "donePending": "Natija keyingi tekshiruvdan keyin koʻrinadi",
+      "progress": "{total} ta harakatdan {done} tasi bajarildi",
+      "parts": {
+        "done": "Bajarildi",
+        "started": "Jarayonda",
+        "waiting": "Boshlanmagan"
+      },
+      "openTitle": "Qilinishi kerak",
+      "area": "Yoʻnalish"
     },
     "method": {
       "lead": "Raqamlar qanday yigʻilgani: hisobotni tekshirish va takrorlash mumkin boʻlishi uchun.",
@@ -216,7 +227,9 @@
       "checksFirst": "Har hafta. Bu birinchi tekshiruv: {date}",
       "brands": "Solishtirilgan brendlar",
       "limits": "Cheklovlar",
-      "limitsValue": "AI yordamchining javoblari har safar va API bilan ilova orasida farq qilishi mumkin. Raqamlar — shu tekshiruvdagi barcha {answers} ta javob boʻyicha ulushlar; ikki tekshiruv orasidagi bir necha punktlik farq tasodif boʻlishi mumkin. Bir necha tekshiruv davomidagi yoʻnalish bir haftalik oʻzgarishdan ishonchliroq."
+      "limitsValue": "AI yordamchining javoblari har safar va API bilan ilova orasida farq qilishi mumkin. Raqamlar — shu tekshiruvdagi barcha {answers} ta javob boʻyicha ulushlar; ikki tekshiruv orasidagi bir necha punktlik farq tasodif boʻlishi mumkin. Bir necha tekshiruv davomidagi yoʻnalish bir haftalik oʻzgarishdan ishonchliroq.",
+      "condition": "Holat bahosi",
+      "conditionValue": "{areas} ta yoʻnalishning oʻrtachasi; har biri shu tekshiruv javoblari boʻyicha 0 dan 100 gacha baholanadi. {good} va undan yuqori — yaxshi, {fair} va undan yuqori — oʻrtacha, {fair} dan past — zaif. Har bir yoʻnalish qanday hisoblanishi “Atamalar” boʻlimida."
     },
     "glossary": {
       "visibility": "Brendni tilga olgan javoblar ulushi. 42% — har 100 javobdan 42 tasi.",
@@ -225,13 +238,26 @@
       "sentiment": "Brend haqida qanchalik ijobiy gapirilgani: 0 (salbiy) dan 100 (ijobiy) gacha.",
       "usedAsSource": "Saytga havola bergan javoblar ulushi. Oʻz saytingiz uchun — ChatGPT siz yozgan maʼlumotga qanchalik tayanishini koʻrsatadi.",
       "checkTerm": "Tekshiruv",
-      "check": "Haftalik bir aylanish: unda har bir kuzatilayotgan savol bir necha marta beriladi."
+      "check": "Haftalik bir aylanish: unda har bir kuzatilayotgan savol bir necha marta beriladi.",
+      "numbers": "Beshta koʻrsatkich",
+      "conditionTitle": "Holat bahosi",
+      "conditionTerm": "Holat bahosi",
+      "condition": "ChatGPT’dagi holatingizni koʻrsatadigan 0 dan 100 gacha bitta son: quyidagi {areas} ta yoʻnalish bahosining oʻrtachasi.",
+      "areas": {
+        "visibility": "Koʻrinishingiz son sifatida: javoblarning 42%ida tilga olinsangiz — 42.",
+        "competition": "Koʻrinishingiz eng koʻp koʻringan kuzatilayotgan brendnikiga nisbatan, foizda. Yetakchi boʻlsangiz — 100.",
+        "coverage": "Kuzatilayotgan savollarning necha foizida kamida bitta javob sizni tilga olgani.",
+        "sources": "ChatGPT biznes joylashishi mumkin boʻlgan saytlarga (kataloglar, xaritalar, yangiliklar, ijtimoiy tarmoqlar) bergan havolalarning necha foizi siz bor saytlarga toʻgʻri kelgani.",
+        "accuracy": "Ohangingiz (100 dan); ChatGPT siz haqingizda aytgan har bir notoʻgʻri fakt uchun {penalty} ball ayiriladi."
+      },
+      "statusTerm": "Holat",
+      "status": "Baho qanday oʻqiladi: {good} dan — yaxshi, {fair} dan — oʻrtacha, {fair} dan past — zaif."
     },
     "appendix": {
       "lead": "Bu tekshiruvdagi har bir savol va javoblarida tilga olingan brendlar. Javoblarni oʻqish uchun savolni oching."
     },
     "changes": {
-      "lead": "Raqamlar ortidagi voqealar: brendlar orasidagi oʻrningiz, ChatGPT tayanadigan saytlar, yangi notoʻgʻri faktlar va bu hafta bajarilgan ishlar. Raqamlarning oʻzi keyingi boʻlimda.",
+      "lead": "Raqamlar ortidagi voqealar: brendlar orasidagi oʻrningiz, ChatGPT tayanadigan saytlar, yangi notoʻgʻri faktlar va bu hafta bajarilgan ishlar. Raqamlarning oʻzi oldingi boʻlimda.",
       "first": "Bu birinchi hisobot: solishtirish uchun oldingi tekshiruv yoʻq. Keyingi hisobotdan boshlab bu yerda nima oʻzgargani koʻrinadi.",
       "groups": {
         "brands": "Brendlar orasida",
@@ -254,6 +280,162 @@
       "factsNone": "Bu hafta yangi notoʻgʻri fakt topilmadi.",
       "doneNone": "Bu hafta bajarilgan deb belgilangan harakat yoʻq.",
       "doneNote": "Ularning taʼsiri keyingi tekshiruvlarda koʻrinadi."
+    },
+    "number": "№ {number}",
+    "parts": {
+      "condition": "Holat",
+      "analysis": "Tahlil",
+      "decisions": "Qarorlar",
+      "reference": "Maʼlumotnoma"
+    },
+    "status": {
+      "good": "Yaxshi",
+      "fair": "Oʻrtacha",
+      "weak": "Zaif"
+    },
+    "areas": {
+      "visibility": "Koʻrinish",
+      "competition": "Raqobatdagi oʻrin",
+      "coverage": "Savollar qamrovi",
+      "sources": "Manbalarda borligi",
+      "accuracy": "Aniqlik va ohang"
+    },
+    "condition": {
+      "overall": "Umumiy holat",
+      "byArea": "Yoʻnalishlar boʻyicha holat",
+      "score": "Baho",
+      "status": "Holat",
+      "outOf100": "{score}/100",
+      "gaugeLabel": "Holat bahosi: 100 dan {score}, {status}",
+      "first": "Birinchi hisobot: solishtirish uchun oldingisi yoʻq",
+      "changeUp": "{points} ball yuqori",
+      "changeDown": "{points} ball past",
+      "changeSame": "Oʻzgarmadi",
+      "columnsLabel": "Ustunli grafik: {count} ta hisobotdagi holat bahosi, {from} dan {to} gacha",
+      "reports": "{count} ta hisobot",
+      "scaleGood": "Yaxshi: {from}+",
+      "scaleFair": "Oʻrtacha: {from}–{to}",
+      "scaleWeak": "Zaif: 0–{to}",
+      "verdict": "Umumiy holatingiz — {status}: 100 dan {score} ball.",
+      "verdictAreas": "Eng kuchli yoʻnalishingiz — {strongest} ({strongestScore}), eng zaifi — {weakest} ({weakestScore}).",
+      "conclusion": "Xulosa",
+      "recommended": "Tavsiya",
+      "inPlan": "Rejadagi {number}-harakat, {section}-boʻlim",
+      "since": "oldingi hisobotga nisbatan"
+    },
+    "findings": {
+      "visibility": "ChatGPT sizni har 10 javobdan {you} tasida tilga oladi ({percent}).",
+      "visibilityUp": "Bu oldingi hisobotdagidan {points} punkt koʻp.",
+      "visibilityDown": "Bu oldingi hisobotdagidan {points} punkt kam.",
+      "visibilitySame": "Oldingi hisobotda ham shunday edi.",
+      "competitionBehind": "Kuzatilayotgan {of} ta brend ichida {rank}-oʻrindasiz. Yetakchi — {leader}: {leaderValue}, sizdan {gap} punkt oldinda.",
+      "competitionFirst": "Kuzatilayotgan {of} ta brend ichida birinchisiz. Keyingisi — {next}: {nextValue}.",
+      "competitionAlone": "Hozircha raqobatchilar kuzatilmayapti, shuning uchun solishtiradigan brend yoʻq.",
+      "coverage": "ChatGPT {total} ta savoldan {named} tasida sizni tilga oladi.",
+      "coverageMissing": "{count} ta savolda u faqat raqobatchilarni tilga oladi, sizni esa hech qachon.",
+      "coverageAll": "Faqat raqobatchilar tilga olingan savol yoʻq.",
+      "weakTopic": "Eng zaif mavzuingiz — “{topic}”: sizda {value}, {leader}da {leaderValue}.",
+      "sources": "ChatGPT biznes joylashishi mumkin boʻlgan saytlarga (kataloglar, xaritalar, yangiliklar, ijtimoiy tarmoqlar) bergan havolalarining {percent} qismi siz bor saytlarga toʻgʻri keladi.",
+      "sourcesMissing": "Shunday {count} ta saytda siz yoʻqsiz; eng koʻp keltiriladiganlari: {sites}.",
+      "sourcesAll": "Ularning barchasida borsiz.",
+      "sourcesNoneCited": "ChatGPT biznes joylashishi mumkin boʻlgan birorta saytga havola bermadi.",
+      "ownSite": "Oʻz saytingizga esa u javoblarning {own} qismida havola beradi.",
+      "accuracy": "ChatGPT siz haqingizda gapirgandagi ohang — 100 dan {score} ({tone}).",
+      "accuracyFacts": "U siz haqingizda {count} ta notoʻgʻri fakt aytmoqda; har biri bu bahodan {penalty} ball ayiradi.",
+      "accuracyClean": "Siz haqingizda notoʻgʻri fakt topilmadi.",
+      "accuracyNotNamed": "ChatGPT sizni tilga olmayapti, shuning uchun ohangni hozircha oʻlchab boʻlmaydi."
+    },
+    "events": {
+      "placeUp": "{now}-oʻringa koʻtarildingiz",
+      "placeDown": "{now}-oʻringa tushdingiz",
+      "passedYou": "{name} sizdan oʻtib ketdi",
+      "youPassed": "{name} endi sizdan keyin",
+      "factsNew": "{count} ta yangi notoʻgʻri fakt",
+      "done": "{count} ta harakat bajarildi",
+      "visibilityUp": "Koʻrinish {points} punkt oshdi",
+      "visibilityDown": "Koʻrinish {points} punkt kamaydi",
+      "competitorUp": "{name} {points} punkt oʻsdi",
+      "siteNew": "{site} birinchi marta keltirildi"
+    },
+    "risks": {
+      "lead": "Nima mijoz yoʻqotishga olib kelishi mumkin va qayerda yutish mumkin. Har biri yuqoridagi boʻlimlardan kelib chiqadi va rejadagi tegishli harakatni koʻrsatadi.",
+      "risks": "Xavflar",
+      "opportunities": "Imkoniyatlar",
+      "risksNone": "Bu tekshiruvda alohida xavf koʻrinmadi.",
+      "opportunitiesNone": "Bu tekshiruvda alohida imkoniyat koʻrinmadi.",
+      "levels": {
+        "risk": {
+          "high": "Xavf yuqori",
+          "medium": "Xavf oʻrtacha",
+          "low": "Xavf past"
+        },
+        "opportunity": {
+          "high": "Foydasi katta",
+          "medium": "Foydasi oʻrtacha",
+          "low": "Foydasi kichik"
+        }
+      },
+      "action": "Rejadagi {number}-harakat, {section}-boʻlim",
+      "quote": "“{text}”",
+      "languages": {
+        "uz": "oʻzbek tilidagi",
+        "ru": "rus tilidagi"
+      },
+      "items": {
+        "facts": {
+          "title": "ChatGPT mijozlarga siz haqingizda {count} ta notoʻgʻri fakt aytmoqda.",
+          "detail": "Masalan: “{claim}”. Bunga ishongan mijoz sizga kelmasligi mumkin."
+        },
+        "lostTopics": {
+          "title": "ChatGPT {topics} {count, plural, one {mavzusida} other {mavzularida}} sizni umuman tilga olmaydi.",
+          "detail": "Shu haqda soʻragan mijoz siz haqingizda emas, {leader} haqida eshitadi."
+        },
+        "leaderGap": {
+          "title": "{leader} sizdan {gap} punkt oldinda: unda {leaderValue}, sizda {you}.",
+          "detail": "U koʻproq javobda tilga olinadi, shuning uchun mijozlar avval u haqda eshitadi."
+        },
+        "rivalRising": {
+          "title": "{name} bir haftada {points} punkt oʻsdi, hozir unda {value}.",
+          "detail": "Shu surʼatda davom etsa, bugun sizni tilga olayotgan javoblarni egallaydi."
+        },
+        "falling": {
+          "title": "Koʻrinishingiz bir haftada {points} punkt tushdi: hozir {value}.",
+          "detail": "Bir hafta tasodif boʻlishi mumkin; ikkinchi hafta ham tushsa, bu yoʻnalish — chora koʻrish kerak."
+        },
+        "tone": {
+          "title": "ChatGPT siz haqingizda gapirgandagi ohang — 100 dan {score}.",
+          "detail": "U sharhlarda oʻqiganini takrorlaydi. Sharhlarga javob bering va sababini bartaraf eting — ohang oʻzgaradi."
+        },
+        "listings": {
+          "title": "ChatGPT tayanadigan {count} ta saytda siz yoʻqsiz: {sites}.",
+          "detail": "Foiz — shu saytga havola bergan javoblar ulushi. Ularga joylashish — shu javoblarga kirishning eng tez yoʻli."
+        },
+        "closeTopics": {
+          "title": "{topics} {count, plural, one {mavzusida} other {mavzularida}} yetakchiga yaqinsiz.",
+          "detail": "Eng yaqinida farq — {gap} punkt: shu mavzuda bitta kuchli sahifa yetakchilikni olib berishi mumkin."
+        },
+        "ownSite": {
+          "title": "ChatGPT javoblarning {you} qismida saytingizga havola beradi, {rival} saytiga esa — {rivalValue} qismida.",
+          "detail": "Xizmatlar va narxlar aniq yozilgan sahifalarga koʻproq havola beriladi, havola berilgan sayt esa koʻproq tilga olinadi."
+        },
+        "rivalFalling": {
+          "title": "Sizdan oldinda turgan {name} bu hafta {points} punkt yoʻqotdi.",
+          "detail": "Umumiy mavzularingizda undan oʻtib ketish uchun qulay payt."
+        },
+        "language": {
+          "title": "Koʻrinishingiz {weak} savollarda {weakValue}, {strong} savollarda esa {strongValue}.",
+          "detail": "Bu farqni {weak} sahifalar va kataloglardagi yozuvlar yopadi."
+        }
+      }
+    },
+    "letterhead": "AI koʻrinish monitoringi",
+    "partTitle": "{number} qism. {title}",
+    "signoff": {
+      "preparedBy": "Hisobotni tayyorladi",
+      "preparedByValue": "GEO — AI koʻrinish monitoringi platformasi",
+      "acknowledged": "Hisobot bilan tanishdim",
+      "signature": "imzo",
+      "nameDate": "F.I.Sh., sana"
     }
   },
   "Headline": {
@@ -2864,17 +3046,13 @@
       }
     },
     "reports": {
-      "cover": {
-        "title": "Hafta hisoboti",
-        "text": "Haftaning asosiy xabari, koʻrinishingiz va uning haftalar boʻyicha chizigʻi. “Toʻliq hisobotni ochish” — barcha boʻlimlar; yuqorida — havola, Telegram va PDF."
-      },
-      "decide": {
-        "title": "Qaror uchun",
-        "text": "Nima yaxshi, nimaga eʼtibor berish kerak va birinchi navbatda nima qilish kerak — bir qarashda."
+      "latest": {
+        "title": "Soʻnggi hisobot",
+        "text": "Bu haftadagi holatingiz: 100 dan umumiy baho, uning holati va oʻzgarishi hamda besh yoʻnalish — har birining bahosi ortidagi fakt bilan. “Hisobotni ochish” — barcha boʻlimlar; yuqorida — havola, Telegram va PDF."
       },
       "archive": {
-        "title": "Hisobotlar tarixi",
-        "text": "Har hafta bitta hisobot va oʻsha hafta nima boʻlgani. Qatorni bossangiz, oʻsha haftaning hisoboti ochiladi."
+        "title": "Barcha hisobotlar",
+        "text": "Har hafta bitta holat hisoboti: topilgan holat va oʻsha hafta nima boʻlgani. Qatorni bossangiz, hisobot ochiladi; oxiridagi belgi uni PDF qilib saqlaydi."
       },
       "delivery": {
         "title": "Hisobot qayerga boradi",
@@ -2882,54 +3060,50 @@
       }
     },
     "reportDetail": {
-      "cover": {
-        "title": "Hisobot muqovasi",
-        "text": "Hafta, asosiy xabar va koʻrinishingiz chizigʻi; yuqorida — havola, Telegram va PDF."
+      "tools": {
+        "title": "Ulashish va saqlash",
+        "text": "Hisobot havolasini nusxalang, Telegram’da yuboring yoki hisobotni PDF qilib saqlang."
       },
       "contents": {
         "title": "Mundarija",
-        "text": "Hisobot boʻlimlari: bossangiz, oʻsha boʻlimga oʻtasiz; hozir oʻqilayotgani belgilanadi."
+        "text": "Hisobotning toʻrt qismi va oʻn ikki boʻlimi. Nuqta — yoʻnalish holati; bossangiz, oʻsha boʻlimga oʻtasiz, oʻqilayotgani esa belgilanadi."
       },
-      "summary": {
-        "title": "Qisqacha xulosa",
-        "text": "Qaror uchun eng muhimi: nima yaxshi, nimaga eʼtibor berish kerak va birinchi qilinadigan uchta ish."
+      "condition": {
+        "title": "Holat",
+        "text": "Umumiy baho va uning holati hamda u tashkil topgan besh yoʻnalish — har birining bahosi ortidagi fakt bilan."
       },
-      "changes": {
-        "title": "Nima oʻzgardi",
-        "text": "Raqamlar ortidagi voqealar: oʻrningiz, saytlar, yangi notoʻgʻri faktlar va bajarilgan ishlar."
+      "decisions": {
+        "title": "Yangiliklar va qarorlar",
+        "text": "Bu hafta nima boʻldi va hisobot birinchi navbatda qaror qilishni soʻrayotgan uchta harakat."
       }
     }
   },
   "Reports": {
     "latest": {
-      "title": "Bu haftaning hisoboti",
-      "description": "{date} tekshiruvi, {previous} bilan solishtirilgan.",
-      "descriptionFirst": "{date} tekshiruvi: birinchi hisobot.",
-      "open": "Hisobotni ochish",
-      "shareText": "Hisobotni jamoangiz bilan ulashing: havolasi bor har kim uni oʻqiy oladi."
+      "kicker": "Soʻnggi hisobot",
+      "scope": "{prompts} ta savol · {answers} ta javob · {engine}",
+      "inside": "Toʻliq hisobot: {parts} qism, {sections} boʻlim — holat va uning tahlilidan xavflar, imkoniyatlar va harakatlar rejasigacha.",
+      "open": "Hisobotni ochish"
     },
     "archive": {
-      "title": "Hisobotlar tarixi",
-      "description": "Har hafta bitta hisobot va oʻsha hafta nima boʻlgani. Qatorni bossangiz, hisobot ochiladi.",
+      "title": "Barcha hisobotlar",
+      "description": "Har hafta bitta holat hisoboti. Qatorni bossangiz, oʻsha haftaning hisoboti ochiladi; oxiridagi belgi uni PDF qilib saqlaydi.",
       "count": "{count} ta haftalik hisobot",
-      "latest": "Oxirgi hisobot",
+      "latest": "Soʻnggi hisobot",
       "open": "Ochish",
-      "placeValue": "{place}/{of}",
-      "change": "oldingi hisobotga nisbatan {points} punkt",
+      "change": "oldingi hisobotga nisbatan {points} ball",
       "columns": {
-        "report": "Hisobot",
-        "visibility": "Koʻrinish",
-        "shareOfVoice": "Ovoz ulushi",
-        "place": "Oʻrin",
-        "tone": "Ohang",
+        "number": "№",
+        "period": "Davr",
+        "condition": "Holat",
+        "areas": "Yoʻnalishlar",
         "events": "Hafta voqealari"
       },
       "hints": {
-        "report": "Haftalik tekshiruv sanasi. Qatorni bossangiz, oʻsha haftaning toʻliq hisoboti ochiladi.",
-        "visibility": "Javoblarning necha foizida tilga olingansiz; yonida — oldingi hisobotdan beri oʻzgarishi, punktda.",
-        "shareOfVoice": "Kuzatilayotgan brendlar tilga olinishidan sizning ulushingiz; yonida — oʻzgarishi.",
-        "place": "Koʻrinish boʻyicha brendlar orasidagi oʻrningiz: 1 — eng koʻp tilga olingan.",
-        "tone": "ChatGPT siz haqingizda qanchalik ijobiy gapirgan: 0 — salbiy, 100 — ijobiy.",
+        "number": "Hisobotning haftalik hisobotlar qatoridagi raqami.",
+        "period": "Hisobot qamragan hafta: oldingi tekshiruvdan shu tekshiruvgacha. Qatorni bossangiz, toʻliq hisobot ochiladi.",
+        "condition": "Umumiy holat bahosi (100 dan), uning holati va oldingi hisobotdan beri oʻzgarishi, ballda.",
+        "areas": "Holatning besh yoʻnalishi hisobotdagi tartibda: koʻrinish, raqobatdagi oʻrin, savollar qamrovi, manbalarda borligi, aniqlik va ohang. Yashil — yaxshi, sariq — oʻrtacha, qizil — zaif; bahosini koʻrish uchun belgi ustiga keling.",
         "events": "Oʻsha hafta nima boʻldi: oʻrningiz, kim kimdan oʻtdi, yangi notoʻgʻri faktlar, bajarilgan ishlar, katta oʻzgarishlar."
       },
       "csvLabel": "Eksport",
@@ -2942,24 +3116,19 @@
         "tone": "Ohang",
         "leader": "Yetakchi",
         "facts": "Notoʻgʻri faktlar",
-        "done": "Bajarilgan harakatlar"
+        "done": "Bajarilgan harakatlar",
+        "number": "№",
+        "condition": "Holat bahosi, /100",
+        "status": "Holat"
       },
       "firstReport": "Birinchi hisobot",
       "weekly": "Haftalik hisobot",
-      "events": {
-        "placeUp": "{now}-oʻringa koʻtarildingiz",
-        "placeDown": "{now}-oʻringa tushdingiz",
-        "passedYou": "{name} sizdan oʻtib ketdi",
-        "youPassed": "{name} endi sizdan keyin",
-        "factsNew": "{count} ta yangi notoʻgʻri fakt",
-        "done": "{count} ta harakat bajarildi",
-        "visibilityUp": "Koʻrinish {points} punkt oshdi",
-        "visibilityDown": "Koʻrinish {points} punkt kamaydi",
-        "competitorUp": "{name} {points} punkt oʻsdi",
-        "siteNew": "{site} birinchi marta keltirildi",
-        "quiet": "Sezilarli oʻzgarish yoʻq",
-        "first": "Birinchi tekshiruv"
-      }
+      "area": "{area}: {score}/100, {status}",
+      "pdf": "PDF",
+      "pdfHint": "Shu hisobot A4 koʻrinishida ochiladi va chop etish oynasi chiqadi: “PDF sifatida saqlash”ni tanlang.",
+      "pdfOf": "№ {number} hisobotning PDF fayli",
+      "eventsQuiet": "Sezilarli oʻzgarish yoʻq",
+      "eventsFirst": "Birinchi tekshiruv"
     },
     "delivery": {
       "title": "Hisobot qayerga boradi",
@@ -3015,27 +3184,6 @@
     "detail": {
       "title": "{date} hisoboti",
       "contents": "Mundarija"
-    },
-    "cover": {
-      "kicker": "Haftalik hisobot",
-      "period": "{from} – {to}",
-      "headline": {
-        "up": "ChatGPT sizni koʻproq tilga olmoqda",
-        "down": "ChatGPT sizni kamroq tilga olmoqda",
-        "steady": "ChatGPT sizni avvalgidek tilga olmoqda",
-        "first": "ChatGPT sizni qanday tilga olmoqda"
-      },
-      "visibility": "Koʻrinish",
-      "change": {
-        "up": "oldingi hisobotdan {points} punkt koʻp",
-        "down": "oldingi hisobotdan {points} punkt kam",
-        "steady": "oldingi hisobotdagidek"
-      },
-      "chart": "Koʻrinish {weeks} ta tekshiruvda: {from} dan {to} gacha",
-      "weeks": "{count} hafta",
-      "open": "Toʻliq hisobotni ochish",
-      "openNote": "{sections} boʻlim: xulosa, oʻzgarishlar, raqamlar, raqobatchilar, manbalar va tavsiyalar",
-      "scope": "{prompts} ta savol · {answers} ta javob · {engine}"
     }
   }
 }

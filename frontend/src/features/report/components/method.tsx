@@ -1,10 +1,11 @@
 import { useLocale, useMessages, useTimeZone, useTranslations } from "next-intl";
 import { engineOf, TIME_ZONE } from "@/shared/constants";
+import { CONDITION_AREAS, FAIR_FROM, GOOD_FROM, WRONG_FACT_PENALTY } from "@/shared/helpers/condition";
 import { formatLongDate } from "@/shared/helpers/dates";
 import { labelFor } from "@/shared/helpers/labels";
 import { totalAnswers } from "@/shared/helpers/scores";
 import type { Report } from "@/shared/types/api";
-import { ReportCard } from "./report-parts";
+import { BlockTitle, ReportCard } from "./report-parts";
 
 /** A label beside its text, one under another; on a phone the label goes above. */
 function Rows({ rows }: { rows: { key: string; label: string; value: string }[] }) {
@@ -51,22 +52,42 @@ export function Method({ report }: { report: Report }) {
           value: previous ? t("checksValue", { date: date(method.collectedAt), previous: date(previous) }) : t("checksFirst", { date: date(method.collectedAt) }),
         },
         { key: "brands", label: t("brands"), value: [project.brand, ...project.competitors].map((brand) => brand.name).join(", ") },
+        { key: "condition", label: t("condition"), value: t("conditionValue", { areas: CONDITION_AREAS.length, good: GOOD_FROM, fair: FAIR_FROM }) },
         { key: "limits", label: t("limits"), value: t("limitsValue", { answers: totalAnswers(report.prompts) }) },
       ]}
     />
   );
 }
 
-/** The report's terms in a sentence or two each: the five numbers, and what a check is. */
+/**
+ * The report's terms in a sentence or two each: the five numbers and what a check is, then the condition
+ * score, how each of its areas is counted and where a status begins. A reader on paper has no hover.
+ */
 export function Glossary() {
   const t = useTranslations("Report.glossary");
   const labels = useTranslations("Kpi.labels");
+  const areas = useTranslations("Report.areas");
   return (
-    <Rows
-      rows={[
-        ...(["visibility", "shareOfVoice", "position", "sentiment", "usedAsSource"] as const).map((term) => ({ key: term, label: labels(term), value: t(term) })),
-        { key: "check", label: t("checkTerm"), value: t("check") },
-      ]}
-    />
+    <div className="flex flex-col gap-3.5">
+      <div className="flex flex-col gap-2">
+        <BlockTitle>{t("numbers")}</BlockTitle>
+        <Rows
+          rows={[
+            ...(["visibility", "shareOfVoice", "position", "sentiment", "usedAsSource"] as const).map((term) => ({ key: term, label: labels(term), value: t(term) })),
+            { key: "check", label: t("checkTerm"), value: t("check") },
+          ]}
+        />
+      </div>
+      <div className="flex flex-col gap-2">
+        <BlockTitle>{t("conditionTitle")}</BlockTitle>
+        <Rows
+          rows={[
+            { key: "condition", label: t("conditionTerm"), value: t("condition", { areas: CONDITION_AREAS.length }) },
+            ...CONDITION_AREAS.map((area) => ({ key: area, label: areas(area), value: t(`areas.${area}`, { penalty: WRONG_FACT_PENALTY }) })),
+            { key: "status", label: t("statusTerm"), value: t("status", { good: GOOD_FROM, fair: FAIR_FROM }) },
+          ]}
+        />
+      </div>
+    </div>
   );
 }

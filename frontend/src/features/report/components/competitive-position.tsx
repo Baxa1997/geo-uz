@@ -1,15 +1,15 @@
 import { useLocale, useTranslations } from "next-intl";
 import { formatDecimal, formatPercent } from "@/shared/helpers/numbers";
-import { rankedBrands, seriesBrands } from "@/shared/helpers/scores";
+import { outOf100, rankedBrands, seriesBrands } from "@/shared/helpers/scores";
 import { cn } from "@/shared/helpers/utils";
 import type { Report } from "@/shared/types/api";
-import { Change, ReportCard, ReportTable } from "./report-parts";
+import { BlockTitle, Change, PercentBar, ReportCard, ReportTable } from "./report-parts";
 import { ReportTrend } from "./report-trend";
 
 /**
  * Where the client stands among the tracked brands: all of them in a table, the most visible first, on
- * the four numbers (the client's row marked), and their visibility over the checks as lines. A first check
- * has no lines yet, and no change.
+ * the four numbers (the client's row marked; visibility also as a bar against the whole scale), and their
+ * visibility over the checks as lines. A first check has no lines yet, and no change.
  */
 export function CompetitivePosition({ report }: { report: Report }) {
   const t = useTranslations("Report.competitors");
@@ -20,8 +20,8 @@ export function CompetitivePosition({ report }: { report: Report }) {
   const compared = report.history.length > 1;
 
   return (
-    <div className="flex flex-col gap-4">
-      <ReportCard>
+    <div className="flex flex-col gap-3.5">
+      <ReportCard className="@container print:break-inside-avoid">
         <ReportTable
           head={
             <>
@@ -29,19 +29,19 @@ export function CompetitivePosition({ report }: { report: Report }) {
                 #
               </th>
               <th scope="col">{t("brand")}</th>
-              <th scope="col" className="w-24 sm:w-28">
+              <th scope="col" className="w-20 @xl:w-48">
                 {labels("visibility")}
               </th>
-              <th scope="col" className="hidden w-28 sm:table-cell">
+              <th scope="col" className="hidden w-18 @lg:table-cell">
                 {t("change")}
               </th>
-              <th scope="col" className="hidden w-28 sm:table-cell">
+              <th scope="col" className="hidden w-28 @2xl:table-cell">
                 {labels("shareOfVoice")}
               </th>
-              <th scope="col" className="w-16 sm:w-20">
+              <th scope="col" className="w-16 @lg:w-20">
                 {labels("position")}
               </th>
-              <th scope="col" className="hidden w-20 sm:table-cell">
+              <th scope="col" className="hidden w-16 @lg:table-cell">
                 {labels("sentiment")}
               </th>
             </>
@@ -60,25 +60,30 @@ export function CompetitivePosition({ report }: { report: Report }) {
                 </span>
               </th>
               <td>
-                <span className="block font-semibold tabular-nums">{formatPercent(score.visibility, locale)}</span>
-                {compared && <Change change={Math.round(score.trend * 100)} className="text-xs sm:hidden" />}
+                <span className="flex items-center gap-2.5">
+                  <PercentBar value={outOf100(score.visibility)} color={colors.get(brand.id)} className="hidden w-24 shrink-0 @xl:block" />
+                  <span className="font-semibold tabular-nums">{formatPercent(score.visibility, locale)}</span>
+                </span>
+                {compared && <Change change={Math.round(score.trend * 100)} className="text-xs @lg:hidden" />}
               </td>
-              <td className="hidden sm:table-cell">
+              <td className="hidden @lg:table-cell">
                 <Change change={compared ? Math.round(score.trend * 100) : null} />
               </td>
-              <td className="hidden tabular-nums sm:table-cell">{formatPercent(score.shareOfVoice, locale)}</td>
+              <td className="hidden tabular-nums @2xl:table-cell">{formatPercent(score.shareOfVoice, locale)}</td>
               <td className="tabular-nums">{score.avgPosition === null ? "—" : `#${formatDecimal(score.avgPosition, locale)}`}</td>
-              <td className="hidden tabular-nums sm:table-cell">{score.sentiment === null ? "—" : formatDecimal(score.sentiment, locale)}</td>
+              <td className="hidden tabular-nums @lg:table-cell">{score.sentiment === null ? "—" : formatDecimal(score.sentiment, locale)}</td>
             </tr>
           ))}
         </ReportTable>
       </ReportCard>
 
       {compared && (
-        <ReportCard className="flex flex-col gap-3 p-4 print:break-inside-avoid">
-          <h3 className="text-sm font-medium">{t("chart")}</h3>
-          <ReportTrend history={report.history} brands={brands} label={t("chartLabel", { brands: brands.length, count: report.history.length })} youLabel={t("you")} />
-        </ReportCard>
+        <div className="flex flex-col gap-2 print:break-inside-avoid">
+          <BlockTitle>{t("chart")}</BlockTitle>
+          <ReportCard className="p-4">
+            <ReportTrend history={report.history} brands={brands} label={t("chartLabel", { brands: brands.length, count: report.history.length })} youLabel={t("you")} />
+          </ReportCard>
+        </div>
       )}
     </div>
   );

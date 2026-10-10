@@ -281,10 +281,19 @@
   }
 }
 
-/* The public report is laid out for A4: the print dialog is also how it is saved as a PDF */
+/* The public report is laid out for A4: the print dialog is also how it is saved as a PDF.
+   Each page carries its number at its foot, as an official document does (browsers that don't know
+   page margin boxes leave it out). */
 @page {
   size: A4;
-  margin: 14mm 12mm;
+  margin: 14mm 12mm 16mm;
+
+  @bottom-right {
+    content: counter(page) " / " counter(pages);
+    font-family: system-ui, sans-serif;
+    font-size: 8.5pt;
+    color: #737373;
+  }
 }
 
 @media print {
@@ -297,6 +306,11 @@
   * {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+  }
+
+  /* A table's row is never cut in two by the end of a page */
+  tr {
+    break-inside: avoid;
   }
 }
 

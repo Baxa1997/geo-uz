@@ -11,9 +11,7 @@ import { orNotFound } from "@/shared/api/errors";
 import { TIME_ZONE } from "@/shared/constants";
 import { formatLongDate } from "@/shared/helpers/dates";
 import { DeliveryBanner } from "../components/delivery-banner";
-import { ExecutiveSummary } from "../components/executive-summary";
-import { sectionNumber } from "../components/report-body";
-import { ReportCover } from "../components/report-cover";
+import { LatestReport } from "../components/latest-report";
 import { ReportShare } from "../components/report-share";
 import { ReportsArchive } from "../components/reports-archive";
 
@@ -29,12 +27,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 /**
- * Hisobotlar, built for the first look (the user's correction of Oct 10): this week's report as a cover
- * (the week's message as a headline, the client's visibility large with its change and its line over the
- * checks, the way into the report, its link, Telegram and PDF), then the decision in three cards (what
- * went well, what needs attention, what to do first), then every week's report as a history whose rows say
- * what happened that week, and one line on where the report goes, its settings in a window. The five
- * numbers stay on the Overview and in the report itself.
+ * Hisobotlar: the weekly status reports (the user's correction of Oct 10: "professional business report
+ * about condition, and advanced report structure"). First the latest report's condition: the overall
+ * score with its status and change, the five areas with the fact behind each, and the way into the whole
+ * report, its link, Telegram and PDF. Then every report as a register: its number, period, the condition
+ * it found, the areas as marks, what happened that week, its PDF. Last, one line on where the report
+ * goes, its settings in a window.
  */
 export default async function ReportsPage({ params }: Props) {
   const { locale: segment, id } = await params;
@@ -59,39 +57,27 @@ export default async function ReportsPage({ params }: Props) {
 
   const base = `/projects/${project.id}/reports`;
   const date = formatLongDate(latest.collectedAt, locale, TIME_ZONE);
-  const latestPage = `${base}/${encodeURIComponent(latest.runId)}`;
   const shared = getPathname({ href: `/projects/${project.id}/report`, locale });
 
   return (
     <Page title={t("reports")} engines tour="reports">
-      <div className="flex flex-col gap-8 sm:gap-10">
-        <div className="flex flex-col gap-4">
-          <ReportCover
-            report={report}
-            variant="landing"
-            openHref={latestPage}
-            share={<ReportShare path={shared} text={tReports("share.text", { brand: project.brand.name, date })} onCover />}
-          />
-          <div data-tour="decide">
-            <ExecutiveSummary
-              report={report}
-              actions={actions}
-              actionsSection={sectionNumber("actions")}
-              moreHref={`${getPathname({ href: latestPage, locale })}#actions`}
-              verdict={false}
-              trend={false}
-            />
-          </div>
-        </div>
+      <div className="flex flex-col gap-6 sm:gap-7">
+        <LatestReport
+          report={report}
+          href={`${base}/${encodeURIComponent(latest.runId)}`}
+          share={<ReportShare path={shared} text={tReports("share.text", { brand: project.brand.name, date })} />}
+        />
 
         <PageSection tour="archive" title={tReports("archive.title")} description={tReports("archive.description")}>
           <ReportsArchive
             project={{ brand: project.brand, competitors: project.competitors }}
             history={report.history}
+            conditionHistory={report.conditionHistory}
             sourceHistory={report.sourceHistory}
             factDates={report.wrongFacts.map((fact) => fact.foundAt)}
             doneDates={actions.flatMap((action) => (action.doneAt ? [action.doneAt] : []))}
             base={base}
+            shared={shared}
             filename={`${project.brand.domain}-reports`}
           />
         </PageSection>

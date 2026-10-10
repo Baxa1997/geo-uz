@@ -172,6 +172,33 @@ Any other number makes a new account, which goes through onboarding and gets a p
   cards (what went well, what needs attention, what to do first) in every report; the history's rows say
   what happened that week; the delivery settings moved into a window behind one line; the five numbers
   that repeated the Overview are gone from the page. The report's own page opens with the same cover.
+- **Hisobotlar and the report rebuilt as a status report (10 Oct), with the user's three corrections the
+  same day; merged and pushed that day, when the user chose "commit and push".** The user's correction after the merge:
+  "Reports page and detail page … is not what I expected to see, I want professional business report about
+  condition, and advanced report structure". What was wrong: the pages never rated the client's condition,
+  looked like an app screen under a banner, and ran as tables one after another. Asked with two pictures,
+  the user chose a status document with an overall score, and for the list the latest condition first, then
+  every report. The report now opens with a **condition score** out of 100 (the mean of five areas:
+  visibility, competitive position, question coverage, presence in sources, accuracy and tone; good from 70,
+  fair from 40, weak under), and runs in four parts and twelve numbered sections: the
+  condition (summary, key figures with their lines over the checks, what changed), the analysis (a section
+  per area, each opening with its status and conclusion and closing with the action that answers it), the
+  decisions (a register of risks and opportunities, the action plan with its progress and the area each
+  action improves), the reference (method, definitions, every question). Hisobotlar opens with the latest
+  report's condition (the gauge and the five areas), then every report as a register with its score, the
+  areas as marks, the week's events and its PDF. A report's page has its contents beside it by part, with
+  each area's status. The dark cover is gone. Checked as a PDF, on a phone and in the three
+  languages. The user's first correction to it, the same day ("Mundarija must be somehow designed, too many
+  spacing, and no separation"): the contents are now a white panel of their own, with the report's overall
+  status in its heading, a line between the parts, tight rows and a bar on the section being read. The
+  second ("overall reports page is too many spacing"): both pages were tightened to the app's own density
+  (narrower margins around the sheets, less padding in them, closer blocks and table rows, the title block
+  as one band). The third ("inside of report make as official report page"): the report is now one
+  official paper, not app cards: a letterhead over a double rule, the title in capitals in the middle, a
+  ruled table of its facts, each part on a gray band, section headings in capitals over a rule, ruled
+  square tables, a sign-off (who prepared it, lines to sign that it was read) and page numbers in the PDF
+  (13 pages, the first holding the letterhead and the whole condition). New for the backend: `Report.conditionHistory` and the score's formula (see `backend/PLAN.md`,
+  "The condition score"). The rules are in `frontend/CLAUDE.md`, "The report" and "Scores".
 - **Javoblar (7 Oct), built from Peec's Chats screenshots of 4 Oct; the user has not sent corrections for
   it yet.** Added to the page that existed: CSV export of the answers with their full text, a filter by
   cited site (`?source=` lets other pages link to "the answers citing this site"), hover explanations on the
@@ -249,8 +276,9 @@ Any other number makes a new account, which goes through onboarding and gets a p
   in Peec's Actions layout with its first correction), then `guided-tours` (a tour on every page,
   Harakatlar's second correction, and Savollar's topics column, folded rail and table in Peec's design with
   tags, fact-checking and location), then `hisobotlar-page` (Hisobotlar: this week's report as a cover with
-  three decision cards, every week's report with a page of its own and what changed, where the report goes).
-  Each time the user chose "commit, push" when asked (for Harakatlar: "push everything"). Each page gets its
+  three decision cards, every week's report with a page of its own and what changed, where the report goes),
+  then `hisobotlar-correction` (the report as an official status document with a condition score, Hisobotlar
+  opening on the latest condition). Each time the user chose "commit, push" when asked (for Harakatlar: "push everything"). Each page gets its
   own branch, merged when the user says so.
 
 ## To do, in order
@@ -272,9 +300,9 @@ Any other number makes a new account, which goes through onboarding and gets a p
      Settings › Company (Peec's email report), every other Settings tab including Facts (asked for on 10 Oct;
      the fact-check switch on Prompts came that day and is built). The Fanouts screenshots of 8 Oct need nothing: the question's page already lists the
      searches (decided 6 Oct).
-   - Hisobotlar: built on 10 Oct, reworked for the first look and merged the same day (see "Done");
-     corrections may still come. Peec's Settings › Company (its email report) may still come and change
-     the delivery part.
+   - Hisobotlar: built and merged on 10 Oct, then rebuilt the same day as a status report with a condition
+     score and an official document's look, corrected three times and merged (see "Done"); corrections may
+     still come. Peec's Settings › Company (its email report) may still come and change the delivery part.
    - Notoʻgʻri faktlar: brand facts for the answers to be checked against (Peec's Settings › Facts).
    - Sozlamalar: editing (today it is read-only), then facts, members, billing.
 
@@ -285,7 +313,8 @@ Any other number makes a new account, which goes through onboarding and gets a p
    - Ads: no. ChatGPT ads aren't sold here, and Peec has paused the page itself.
 2. **Parts that are design only:** the GEO AI side panel answers every question with a demo reply; Gemini
    and Yandex are marked "tez orada" in the engine switcher. Hisobotlar's delivery: "Connect Telegram" ties a
-   chat at once in the mocks (the bot doesn't exist yet), and no email is sent. Plans: a project now carries its plan and
+   chat at once in the mocks (the bot doesn't exist yet), and no email is sent. A past week's report shows the
+   latest answers (the mocks keep one run), so its topics and questions are today's. Plans: a project now carries its plan and
    limits, and the question and competitor limits are used, but nothing sets a plan (every mock project is
    on Biznes) and onboarding still allows a fixed 5 competitors.
 3. **Backend.** Begin with step 0 of `backend/PLAN.md`: a small script that measures what one answer costs

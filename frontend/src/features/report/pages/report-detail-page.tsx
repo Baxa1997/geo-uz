@@ -8,11 +8,11 @@ import { setPageLocale } from "@/i18n/page-locale";
 import { api } from "@/shared/api/client";
 import { orNotFound } from "@/shared/api/errors";
 import { TIME_ZONE } from "@/shared/constants";
-import { formatLongDate } from "@/shared/helpers/dates";
-import { REPORT_SECTIONS } from "../constants";
-import { ReportBody, sectionNumber } from "../components/report-body";
-import { ReportContents } from "../components/report-contents";
-import { ReportCover } from "../components/report-cover";
+import { conditionStatus } from "@/shared/helpers/condition";
+import { formatLongDate, formatShortDate } from "@/shared/helpers/dates";
+import { REPORT_PARTS, SECTION_AREAS, sectionNumber, type ReportSectionKey } from "../constants";
+import { ReportBody } from "../components/report-body";
+import { ReportContents, type ContentsPart } from "../components/report-contents";
 import { ReportShare } from "../components/report-share";
 
 type Props = PageProps<"/[locale]/projects/[id]/reports/[runId]">;
@@ -28,11 +28,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 /**
- * One weekly report in the workspace, as it stood after its check: its cover first (the week, the
- * headline, the client's visibility with its change and its line, how much was asked, and its ways out:
- * link, Telegram, PDF), then the numbered contents beside its sections, the same as the shared report's:
- * the answer, what changed since the report before, the evidence, the recommendations, the method, the
- * definitions and every question.
+ * One weekly report in the workspace, as it stood after its check, laid out as an official document: one
+ * white paper on a gray ground, the same as the shared report's (the letterhead, the condition, the analysis
+ * of each area, the decisions, the sign-off, the reference), with its contents beside it as a panel of its own (the
+ * report's overall status, the parts, each section with its area's status, the one being read marked). Its
+ * number, its period and its ways out (link, Telegram, PDF) are in the strip under the page's title.
  */
 export default async function ReportDetailPage({ params }: Props) {
   const { locale: segment, id, runId: rawRunId } = await params;
@@ -58,22 +58,51 @@ export default async function ReportDetailPage({ params }: Props) {
   }
 
   const shared = getPathname({ href: { pathname: `/projects/${project.id}/report`, query: { run: runId } }, locale });
-  const sections = REPORT_SECTIONS.map((key) => ({ id: key, number: sectionNumber(key), title: tReport(`sections.${key}`) }));
+  const condition = report.conditionHistory.at(-1);
+  const before = report.history.at(-2)?.collectedAt;
+  const parts: ContentsPart[] = REPORT_PARTS.map((part) => ({
+    key: part.key,
+    title: tReport(`parts.${part.key}`),
+    sections: part.sections.map((key: ReportSectionKey) => {
+      const area = SECTION_AREAS[key];
+      const score = area && condition ? condition.areas[area] : undefined;
+      return {
+        id: key,
+        number: sectionNumber(key),
+        title: tReport(`sections.${key}`),
+        score,
+        status: score === undefined ? undefined : tReport(`status.${conditionStatus(score)}`),
+      };
+    }),
+  }));
 
   return (
-    <Page title={tReports("detail.title", { date })} crumbs={crumbs} engines tour="reportDetail">
-      <ReportCover report={report} variant="page" share={<ReportShare path={shared} text={tReports("share.text", { brand: project.brand.name, date })} onCover />} />
-      {/* Contents beside the report once the panel is wide enough; it narrows when GEO AI is open */}
-      <div className="@container mt-4">
-        <div className="grid gap-8 @5xl:grid-cols-[13rem_minmax(0,1fr)]">
+    <Page
+      title={tReports("detail.title", { date })}
+      crumbs={crumbs}
+      engines
+      tour="reportDetail"
+      bleed
+      toolbar={
+        <>
+          <p className="mr-auto text-sm text-muted-foreground tabular-nums">
+            {tReport("number", { number: report.history.length })} · {before ? tReport("meta.periodRange", { from: formatShortDate(before, locale, TIME_ZONE), to: date }) : date}
+          </p>
+          <ReportShare path={shared} text={tReports("share.text", { brand: project.brand.name, date })} />
+        </>
+      }
+    >
+      {/* The gray ground the report's paper lies on. The contents stand beside it once the panel is wide enough; it narrows when GEO AI is open */}
+      <div className="@container flex flex-1 flex-col bg-muted/60 p-3 sm:p-4">
+        <div className="mx-auto grid w-full max-w-312 gap-4 @5xl:grid-cols-[15rem_minmax(0,1fr)]">
           <aside className="hidden @5xl:block">
-            <div className="sticky top-20">
-              <ReportContents sections={sections} />
+            <div className="sticky top-[3.75rem]">
+              <ReportContents parts={parts} score={condition?.score} />
             </div>
           </aside>
           {/* Clear of the page's sticky title when the contents jump to a section */}
-          <div className="flex max-w-5xl min-w-0 flex-col gap-10 [&_section]:scroll-mt-20">
-            <ReportBody report={report} actions={actions} cover />
+          <div className="min-w-0 [&_section]:scroll-mt-16">
+            <ReportBody report={report} actions={actions} />
           </div>
         </div>
       </div>

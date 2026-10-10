@@ -105,9 +105,9 @@ export function ReportChanges({ report, actions }: { report: Report; actions: Ac
   ] as const;
 
   return (
-    <div className="grid gap-3 sm:grid-cols-2">
+    <div className="grid gap-3 sm:grid-cols-2 print:grid-cols-2">
       {groups.map(({ key, items, empty, ...rest }) => (
-        <ReportCard key={key} className="flex flex-col gap-3 p-4">
+        <ReportCard key={key} className="flex flex-col gap-3 p-4 print:break-inside-avoid">
           <h3 className="text-sm font-semibold">{t(`groups.${key}`)}</h3>
           {items.length === 0 ? (
             <p className="text-sm text-pretty text-muted-foreground">{empty}</p>

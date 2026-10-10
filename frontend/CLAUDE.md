@@ -284,9 +284,9 @@ frontend/src/
                           #   cards fed with the report over that question, what ChatGPT searched the web for (Peec's
                           #   "query fanouts": each search with the answers that ran it) beside the fixes that list
                           #   the question, then its answers
-    report/               # the client's report (public, no login, no sidebar; prints as A4; `?run=` a past week's,
-                          #   `?print=1` opens the print window) and Hisobotlar (the reports in the workspace, a page
-                          #   per report with its contents): see "The report"
+    report/               # the client's status report (public, no login, no sidebar; prints as A4; `?run=` a past
+                          #   week's, `?print=1` opens the print window) and Hisobotlar (the latest report's condition,
+                          #   the register of reports, a page per report with its contents): see "The report"
   shared/                 # used by 2+ features
     api/                  # client.ts (switches mocks/backend), session.ts (requireUser), query-keys.ts, errors.ts,
                           #   load-report.ts (the report under the URL's filters, for every data page)
@@ -310,8 +310,8 @@ frontend/src/
     hooks/                # use-assistant (open GEO AI from any page), use-logout, use-in-view, use-reduced-motion
     helpers/              # domain (also shortUrl, pathOf, and siteHref + SITE_SLOT: the address of a cited site's
                           #   page as a pattern a server page can hand to a client component), dates, labels, phone,
-                          #   scores (pure functions), history (checks grouped by day, week, month), prompts
-                          #   (isTracked), utils (cn)
+                          #   scores (pure functions), condition (the status report's score: its facts, formula and
+                          #   statuses), history (checks grouped by day, week, month), prompts (isTracked), utils (cn)
     constants/            # app-wide constants (ENGINES, TIME_ZONE, SESSION_COOKIE, phone format, prompt limits)
     types/                # api.ts (API contract types), scores.ts
   i18n/                   # next-intl routing, navigation, request config, setPageLocale, pickMessages (the
@@ -426,10 +426,13 @@ Types:
   scores: BrandScore[], prompts: PromptResult[], topSources: Source[], wrongFacts: WrongFact[],
   history: HistoryPoint[] (past runs, oldest first, ending with this one),
   sourceHistory: SourceHistoryPoint[] (the cited sites over the same runs),
+  conditionHistory: Condition[] (the project's condition after each of the same runs; empty for one question's report),
   untrackedBrands: { name, answers, dismissed }[] (brands the answers name that aren't tracked: new-competitor
   alerts; `dismissed` ones were hidden by the client and are listed apart),
   nextRunAt | null (next weekly run; runs start Monday 06:00 Tashkent; shown on the Overview as a date, not a countdown) }
-- HistoryPoint { collectedAt, scores: BrandScore without trend [] }
+- HistoryPoint { runId, collectedAt, scores: BrandScore without trend [] }
+- Condition { score (0–100, the mean of the areas), areas: { visibility, competition, coverage, sources, accuracy } (each
+  0–100) }: see "Scores", the condition score
 - SourceHistoryPoint { collectedAt, answers (answers of that run), sources: { domain, type, count (answers citing
   it), pages: { url, count }[] }[] } (a site the run didn't cite is left out; the last point's counts are
   `topSources`. The sites chart, a site's own chart and "what changed" are made from it in the frontend)
@@ -476,6 +479,19 @@ Four numbers per brand, shown side by side (the Overview's numbers, its chart ta
 - Sentiment ("Ohang") = mean tone of the brand's mentions, 0–100 (positive 100, neutral 50, negative 0)
 - A source's "used" = answers citing it / all answers; its average citations = citations of its pages / answers citing it
 - "Used as a source" (the client) = answers citing the client's own domain / all answers
+
+**The condition score** (the status report's headline, `Report.conditionHistory`, one per run) is the mean of five
+areas, each a whole number from 0 to 100. The backend computes it; `shared/helpers/condition.ts` holds the same
+formula for the mocks (`rateCondition`), the facts it is counted from (`conditionFacts`, which the report's
+sentences are also written from) and how a score reads (`conditionStatus`: good from 70, fair from 40, weak under).
+- visibility = the client's visibility in percent
+- competition = its visibility as a share of the most visible tracked brand's (100 when it leads)
+- coverage = the share of questions with at least one answer naming it
+- sources = of the citations of sites a business can be listed on (not its own, not competitors'), the share going
+  to sites that list it, a site counted by the answers citing it (100 when none is cited)
+- accuracy = its tone (50 if never named) less 10 for every wrong fact
+A status is green, amber (`--progress`) or red, always with its word beside it. The score appears only in the
+report and on Hisobotlar: the Overview keeps Peec's four numbers.
 
 ## Charts
 - Where every tracked brand is drawn (the Overview's chart and table), each has its own color: `--series-1`
@@ -528,52 +544,81 @@ Four numbers per brand, shown side by side (the Overview's numbers, its chart ta
   ("named in 1 of 3 answers") and the chart's ⓘ says a single answer moves the percentage a lot.
 - Peec's topics × tags heat map is replaced by two bar lists (by topic, by question language), each row with the
   brand that leads there. No heat maps: a cell's shade can't be read as a number.
+- The report's own small charts follow the same rules: the condition score is a half-circle gauge cut where
+  "fair" and "good" begin, with the scale written under it; the score over the reports is columns with their
+  numbers (a column per check, never a curve); a number's line in the scorecard (`SparkLine`) is straight from
+  check to check and shows the way it went, not its size; a split (whom the citations work for, the tones of the
+  mentions, the plan's progress) is one bar with its legend and numbers.
 
 ## The report
-`/projects/[id]/report` is the document a client forwards and prints: public, no sidebar, three languages. It
-follows the order of a standard business report (the user's request, Oct 8: "a standard, internationally
-accepted format, very clear, that helps a business decide"), every section numbered:
+`/projects/[id]/report` is the document a client forwards and prints: public, no sidebar, three languages. Since
+Oct 10 it is a **status report** (the user's correction: "professional business report about condition, and
+advanced report structure"; asked, they chose a status document with an overall score, and for Hisobotlar the
+latest condition first, then every report). It is laid out as an **official document** (the user, the same day:
+"inside of report make as official report page"): one white paper on a gray ground (`ReportPaper`), square at its
+corners, everything on it one under another; on paper it is the pages, each with its number at its foot. Its
+marks of a document: a letterhead over a double rule, the title in capitals in the middle of the page, a ruled
+table of the report's facts, each part named on a gray band ("Part II. Analysis": `PartHeading`), each section's
+heading in capitals over a rule with its area's status at the line's end, tables ruled and square with dark
+headings (`ReportCard`, `ReportTable`), statuses as square tags, and a sign-off. No rounded app cards inside it.
+It runs in four parts, every section numbered (`REPORT_PARTS`, `REPORT_SECTIONS`):
 
-1. **Title block**: what it is, about whom, the period, the date, the scope (questions × answers), the assistant.
-2. **Executive summary**: the answer first. Where the client stands in a sentence, then three cards side by
-   side (since Oct 10): what went well, what needs attention (each finding a sentence with its number: the
-   change of visibility and share of voice, the questions it is named in, tone, place, questions and topic
-   lost, sites missing, wrong facts, actions done that week), and the three things to do first.
-3. **Key figures**: the five numbers, each with what it measures, this check, the previous check, the change
-   and the strongest competitor.
-4. **The evidence**: position among the brands (table and visibility over the checks), topics and question
-   languages won and lost with the questions where only competitors are named, the sites ChatGPT relies on,
-   what it says that is wrong.
-5. **Recommendations**: what to do, the most effective first, each with why, the expected effect and its
-   status; then what is done and what it changed.
-6. **Method and scope**, with the limits of the numbers; **definitions**; **appendix**: every question.
+- **Letterhead** (`ReportLetterhead`): our mark and what we do, the report's number in the run of weekly reports
+  and its date; the document's title with whom it is about; the period, the scope (questions × answers), the
+  assistant and who prepared it as a ruled table.
+- **I. Condition.** 1 Executive summary: the overall condition score as a gauge with its status, its change and its
+  columns over the reports, beside the five areas (a bar, the score, the status and the fact behind it in a
+  sentence: `useAreaFindings`); the conclusion in a sentence; the week's highlights beside the decisions needed (the
+  plan's first three actions). 2 Key figures: the five numbers, each with this check, the previous one, the change,
+  the strongest competitor, how far ahead or behind, and its line over the checks. 3 What changed since the last
+  report: the events behind the numbers.
+- **II. Analysis**, a section per area, each with its status beside its title, opening with its conclusion
+  (`Verdict`) and closing with the plan's action that answers it (`NextStep`): 4 Competitive position (the brands
+  table with bars, visibility over the checks), 5 Topics and questions (the client over the strongest competitor
+  as two bars per topic and per language, the questions where only competitors are named), 6 Sources (whom the
+  citations work for as one bar, the most cited sites), 7 Accuracy and tone (the tone score with its mentions
+  split by tone, the wrong facts).
+- **III. Decisions.** 8 Risks and opportunities: a register made from the report's own numbers
+  (`helpers/risks.ts`), each entry a sentence with its numbers, what it means, its level and the action that
+  answers it. 9 Action plan: how far it has come as one bar, what is still to do in order of effect with the area
+  each action improves (`ACTION_AREAS`), then what is done and what it changed.
+- **Sign-off** (`ReportSignOff`), where the report proper ends: who prepared it and when, and lines for the reader
+  to sign that they have read it.
+- **IV. Reference.** 10 Method and scope with the limits of the numbers, 11 Definitions (the five numbers, then the
+  condition score, each area's formula and where a status begins), 12 Appendix: every question. Last, a line on
+  what the numbers are.
 
-Since Oct 10 a second section follows the summary: **what changed since the report before**, the events behind
-the numbers (the client's place and who passed whom, a competitor that moved a lot, the sites cited for the first
-time, more or less, the wrong facts found that week, the actions done that week). The sections are one list
-(`REPORT_SECTIONS`) drawn by one component (`ReportBody`), so the shared report and Hisobotlar's report page
-never differ.
+The sections are drawn by one component (`ReportBody`), so the shared report and Hisobotlar's report page never
+differ.
 
-**Hisobotlar** (`/projects/[id]/reports`, the user's request of Oct 10: "professional, sections separated
-accurately, advanced, with the detail inside, easy to decide on", then "make it first look impressive") opens
-with this week's report as a dark cover (`ReportCover`: the week, the brand, the week's message as a headline,
-the sentence, the client's visibility large with its change and its line over the checks, "Open the full
-report", and its link, Telegram and PDF), then the summary's three cards. Then the report history: one row a
-week with the client's visibility (a bar and its change), share of voice, place and tone, and what happened
-that week in a sentence or two (`weekEvents`: its place, who passed whom, new wrong facts, actions done, large
-moves, a new site); a row opens its report; CSV. Last, one line on where the report goes, with Telegram in one
-click and the rest (email, language, the agency's name on the Agency plan) in a window. The five numbers are
-not repeated here: they are the Overview's and the report's. A report's page (`/projects/[id]/reports/[runId]`)
-opens with the same cover (how much was asked in place of the sentence), then the numbered contents beside the
-sections, marking the one being read. A past report's recommendations show today's status.
+**Hisobotlar** (`/projects/[id]/reports`) opens with the latest report's condition (`LatestReport`: its number,
+period and scope, the same gauge and areas as the report's summary, "Open the report", and its link, Telegram and
+PDF). Then every report as a register: number, period, the condition it found (score, status, change), the five
+areas as marks, what happened that week (`weekEvents`), its PDF; a row opens its report; CSV with every area's
+score. Last, one line on where the report goes, with Telegram in one click and the rest (email, language, the
+agency's name on the Agency plan) in a window. A report's page (`/projects/[id]/reports/[runId]`) is the document
+inside the workspace: its number, period and ways out in the strip under the title, its contents beside it, then
+the paper. The contents are a panel of their own (`ReportContents`; the user's correction the same day: "too many
+spacing, and no separation"): a white card with a heading that carries the report's overall status, the parts one
+under another with a line between them, each section a tight row with its area's status as a dot, and the one
+being read marked with a bar at its edge. A past report's actions show today's status. The pages keep the app's
+own density (the user, the same day: "overall reports page is too many spacing"): the gray ground is 16px wide
+around the paper, the paper's own margins are those of a document and no wider (32px), and blocks and table rows
+stand close. The list's first screen holds the latest report's whole condition and the start of the register. The dark cover of the first version is gone (the user: "not what I expected").
 
 Rules: a reader who stops after the summary has the decision, and everything after it is evidence for it. No
 number appears without what it is compared with. Nothing depends on hover: the report must read on paper, so a
-term is explained in the definitions and under the scorecard's names, not in a bubble. It is laid out for A4
-(`@page` and the `print:` classes; the tools and filters are `print:hidden`, a section stays on one page where
-it fits, and backgrounds print, or bars and marks would vanish): "Print or save as PDF" is the browser's print
-dialog. A sent PDF (Telegram) will be this same page printed by the backend. Its texts are the `Report`
-namespace; the findings are computed in `features/report/helpers/report.ts` and the shared score helpers.
+term is explained in the definitions and under the scorecard's names, and the scale of the score is written under
+the gauge. Its tables follow the sheet's own width, not the screen's (container queries: `@lg:` and so on), so
+they are right beside the contents, on a phone and on paper, where a sheet is about 700px wide. It is laid out for
+A4 (`@page` and the `print:` classes): the tools and filters are `print:hidden`, backgrounds print (or bars and
+marks would vanish), a section runs on from the one before, its heading and conclusion stay with what follows, a
+short table, a card and a table's row are never cut in two, and every page carries "3 / 13" at its foot (a page
+margin box in `@page`; a browser that doesn't know them leaves it out). The first page holds the letterhead and
+the whole condition: the summary's area rows keep their bar beside the name from 448px (`@md:`) for that. "Print or save as PDF" is the browser's print
+dialog; a sent PDF (Telegram) will be this same page printed by the backend. Its texts are the `Report`
+namespace; the findings are computed in `features/report/helpers` and the shared score helpers. Check a change to
+it as a PDF too (Chrome's `Page.printToPDF` from the test browser), not only on screen.
 
 ## One place for each number
 A number or a block appears once in the app, plus the Overview, which is the summary of the other pages (the
@@ -647,7 +692,8 @@ scrolls. Hint bubbles stay hidden while a tour is open.
 - Shared parts carry their own key: the row of numbers (`KpiStrip`, "kpis"), the first answer of a list
   ("answer"), `PageSection`'s and `LinkRow`'s `tour` prop.
 - Harakatlar keeps its own tour in `ActionBoard` (its steps open an action), started from the book button
-  in its strip of tools, as on Peec. The Hisobotlar placeholder has none until it is built.
+  in its strip of tools, as on Peec. Hisobotlar's tour points at the latest report, the register and the
+  delivery line; a report's page at its tools, contents, condition and decisions.
 
 ## Commands (frontend, from `frontend/`)
 - `npm run dev`

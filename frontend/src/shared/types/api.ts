@@ -180,6 +180,21 @@ export interface HistoryPoint {
   scores: Omit<BrandScore, "trend">[];
 }
 
+/**
+ * What a project's condition is rated on, each from 0 to 100 (the status report):
+ * visibility: how often the answers name the client; competition: its visibility against the most visible
+ * tracked brand's; coverage: the questions that name it at all; sources: how much of what ChatGPT cites
+ * lists it; accuracy: how well and how truly it is spoken of.
+ */
+export type ConditionArea = "visibility" | "competition" | "coverage" | "sources" | "accuracy";
+
+/** A run's condition: the five areas and their mean, the number a status report opens with. */
+export interface Condition {
+  /** The mean of the five areas, a whole number from 0 to 100. */
+  score: number;
+  areas: Record<ConditionArea, number>;
+}
+
 /** A brand the answers name that the project doesn't track: a possible new competitor. */
 export interface UntrackedBrand {
   name: string;
@@ -296,6 +311,8 @@ export interface Report {
   history: HistoryPoint[];
   /** The cited sites over the same runs, oldest first, ending with this one (whose counts are `topSources`). */
   sourceHistory: SourceHistoryPoint[];
+  /** The project's condition after each of the same runs, oldest first, ending with this one; empty for a report over one question. */
+  conditionHistory: Condition[];
   /** Brands named in the answers but not tracked, most named first. */
   untrackedBrands: UntrackedBrand[];
   /** ISO 8601: when the project's questions are asked again (runs are weekly); null when nothing is scheduled. */
