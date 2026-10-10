@@ -1,11 +1,18 @@
 import { CircleCheck, CircleX } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { cn } from "@/shared/helpers/utils";
 import type { Action } from "@/shared/types/api";
 
-/** Why this fix: the evidence from the answers. Shown beside the fix's steps and in the report's recommendations. */
-export function ActionWhy({ action, competitors }: { action: Action; competitors: Map<string, string> }) {
+/**
+ * Why this fix: the evidence from the answers. Shown in an opened action and in the report's
+ * recommendations. `prominent` (the opened action) sets it in the panel's body text, dark and larger,
+ * with a wrong fact's box in full gray.
+ */
+export function ActionWhy({ action, competitors, prominent = false }: { action: Action; competitors: Map<string, string>; prominent?: boolean }) {
   const t = useTranslations("Actions.why");
-  const text = "text-sm text-pretty text-muted-foreground";
+  const text = prominent ? "text-[0.9375rem] leading-[1.45] text-pretty text-foreground" : "text-sm text-pretty text-muted-foreground";
+  const label = prominent ? "text-sm text-muted-foreground" : "text-xs text-muted-foreground";
+  const icon = cn("mt-0.5 shrink-0", prominent ? "size-[1.125rem]" : "size-4");
 
   switch (action.kind) {
     case "listing": {
@@ -20,18 +27,23 @@ export function ActionWhy({ action, competitors }: { action: Action; competitors
     }
     case "fact":
       return (
-        <dl className="flex flex-col gap-1.5 rounded-lg bg-muted/60 p-3 text-sm">
-          <div className="flex items-start gap-2">
-            <CircleX aria-hidden className="mt-0.5 size-4 shrink-0 text-negative" />
+        <dl
+          className={cn(
+            "flex flex-col",
+            prominent ? "gap-3 rounded-xl bg-muted px-4 py-3.5 text-[0.9375rem] leading-[1.45] text-foreground" : "gap-1.5 rounded-lg bg-muted/60 p-3 text-sm",
+          )}
+        >
+          <div className={cn("flex items-start", prominent ? "gap-2.5" : "gap-2")}>
+            <CircleX aria-hidden className={cn(icon, "text-negative")} />
             <div>
-              <dt className="text-xs text-muted-foreground">{t("factSaid")}</dt>
+              <dt className={label}>{t("factSaid")}</dt>
               <dd className="text-pretty">{action.claim}</dd>
             </div>
           </div>
-          <div className="flex items-start gap-2">
-            <CircleCheck aria-hidden className="mt-0.5 size-4 shrink-0 text-positive" />
+          <div className={cn("flex items-start", prominent ? "gap-2.5" : "gap-2")}>
+            <CircleCheck aria-hidden className={cn(icon, "text-positive")} />
             <div>
-              <dt className="text-xs text-muted-foreground">{t("factCorrect")}</dt>
+              <dt className={label}>{t("factCorrect")}</dt>
               <dd className="text-pretty">{action.correct}</dd>
             </div>
           </div>

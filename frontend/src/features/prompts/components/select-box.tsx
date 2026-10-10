@@ -25,7 +25,7 @@ export function SelectBox({
       }}
       onChange={onChange}
       onClick={(event) => event.stopPropagation()}
-      className="size-4 shrink-0 cursor-pointer rounded accent-[var(--you)] align-middle"
+      className="size-4 shrink-0 cursor-pointer rounded accent-you align-middle"
     />
   );
 }

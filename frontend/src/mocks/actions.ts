@@ -5,6 +5,7 @@
 import { ApiError, type ApiClient, type MockResult } from "@/shared/api/client";
 import type {
   AddCompetitorRequest,
+  AddContentActionRequest,
   AnalyzeSiteRequest,
   ArchivePromptRequest,
   CreateProjectRequest,
@@ -25,6 +26,7 @@ import type {
   TelegramAuthRequest,
   TopicRequest,
   UpdateActionRequest,
+  UpdateActionsRequest,
   UpdatePromptRequest,
   UpdatePromptsRequest,
   VerifyCodeRequest,
@@ -158,6 +160,14 @@ export async function getActions(projectId: string) {
 
 export async function updateAction(projectId: string, actionId: string, body: UpdateActionRequest) {
   return run((m) => m.updateAction(projectId, actionId, body));
+}
+
+export async function updateActions(projectId: string, body: UpdateActionsRequest) {
+  return run((m) => m.updateActions(projectId, body));
+}
+
+export async function addContentAction(projectId: string, body: AddContentActionRequest) {
+  return run((m) => m.addContentAction(projectId, body));
 }
 
 export async function createSnapshot(body: SnapshotRequest) {

@@ -1,9 +1,10 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ChevronsUpDown, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useId, useState, type FormEvent } from "react";
+import { FormSelect } from "@/shared/components/form-select";
 import { Button } from "@/shared/components/ui/button";
 import { api } from "@/shared/api/client";
 import { queryKeys } from "@/shared/api/query-keys";
@@ -12,7 +13,7 @@ import { languageOfText, sameText } from "@/shared/helpers/prompts";
 import { cn } from "@/shared/helpers/utils";
 import type { Prompt, PromptLanguage } from "@/shared/types/api";
 import { FileDrop, type ListFile } from "./file-drop";
-import { Modal } from "./modal";
+import { Modal } from "@/shared/components/modal";
 
 type Mode = "write" | "file";
 type LanguageChoice = PromptLanguage | "auto";
@@ -132,14 +133,14 @@ export function AddPromptDialog({
       <label htmlFor={`${id}-topic`} className="text-sm text-muted-foreground">
         {t("topic")}
       </label>
-      <Select id={`${id}-topic`} value={topic} onChange={setTopic}>
+      <FormSelect id={`${id}-topic`} value={topic} onChange={setTopic}>
         {topics.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}
           </option>
         ))}
         <option value={NEW_TOPIC}>{t("newTopicOption")}</option>
-      </Select>
+      </FormSelect>
       {topic === NEW_TOPIC && (
         <input
           aria-label={t("newTopic")}
@@ -221,11 +222,11 @@ export function AddPromptDialog({
               <label htmlFor={`${id}-language`} className="text-sm text-muted-foreground">
                 {t("language")}
               </label>
-              <Select id={`${id}-language`} value={language} onChange={(value) => setLanguage(value as LanguageChoice)}>
+              <FormSelect id={`${id}-language`} value={language} onChange={(value) => setLanguage(value as LanguageChoice)}>
                 {!prompt && <option value="auto">{t("languageAuto")}</option>}
                 <option value="uz">{languages("uz")}</option>
                 <option value="ru">{languages("ru")}</option>
-              </Select>
+              </FormSelect>
             </div>
           </>
         ) : (
@@ -266,22 +267,5 @@ export function AddPromptDialog({
         )}
       </form>
     </Modal>
-  );
-}
-
-/** A choice from a list, in Peec's form: a tall rounded box with up and down arrows. */
-function Select({ id, value, onChange, children }: { id: string; value: string; onChange: (value: string) => void; children: React.ReactNode }) {
-  return (
-    <div className="relative">
-      <select
-        id={id}
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        className="h-11 w-full appearance-none rounded-xl border bg-background pr-10 pl-3 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
-      >
-        {children}
-      </select>
-      <ChevronsUpDown aria-hidden className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-muted-foreground" />
-    </div>
   );
 }

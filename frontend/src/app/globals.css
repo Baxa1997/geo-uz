@@ -210,6 +210,12 @@
   html:has([data-workspace]) {
     overflow: hidden;
   }
+
+  /* What a guided tour points at is scrolled clear of the page's sticky title and tools (two rows on a phone) */
+  [data-tour] {
+    scroll-margin-top: 7rem;
+    scroll-margin-bottom: 1rem;
+  }
   * {
     @apply border-border outline-ring/50;
   }

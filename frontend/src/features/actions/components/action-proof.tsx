@@ -16,8 +16,8 @@ export function ActionProof({ action, nextRunAt }: { action: Action; nextRunAt: 
 
   if (!action.proof) {
     return (
-      <p className="flex items-start gap-2 rounded-lg bg-muted/60 px-3 py-2 text-sm text-pretty">
-        <CircleCheck aria-hidden className="mt-0.5 size-4 shrink-0 text-positive" />
+      <p className="flex items-start gap-2.5 rounded-xl bg-muted px-4 py-3 text-[0.9375rem] leading-[1.45] text-pretty">
+        <CircleCheck aria-hidden className="mt-0.5 size-[1.125rem] shrink-0 text-positive" />
         <span>
           {done}
           {done && " · "}
@@ -33,15 +33,15 @@ export function ActionProof({ action, nextRunAt }: { action: Action; nextRunAt: 
   const change = outOf100(after) - outOf100(before);
   const Icon = change > 0 ? ArrowUp : change < 0 ? ArrowDown : Minus;
   return (
-    <div className="flex flex-col gap-1 rounded-lg bg-muted/60 px-3 py-2 text-sm">
-      <p className="flex items-center gap-2 font-medium">
+    <div className="flex flex-col gap-1 rounded-xl bg-muted px-4 py-3 text-[0.9375rem] leading-[1.45]">
+      <p className="flex items-center gap-2.5 font-semibold">
         <Icon
           aria-hidden
-          className={cn("size-4 shrink-0", change > 0 ? "text-positive" : change < 0 ? "text-negative" : "text-muted-foreground")}
+          className={cn("size-[1.125rem] shrink-0", change > 0 ? "text-positive" : change < 0 ? "text-negative" : "text-muted-foreground")}
         />
         {t("proof", { before: formatPercent(before, locale), after: formatPercent(after, locale) })}
       </p>
-      <p className="pl-6 text-xs text-muted-foreground">
+      <p className="pl-7 text-sm text-muted-foreground">
         {done}
         {done && " · "}
         {t("proofRuns", { runs })}

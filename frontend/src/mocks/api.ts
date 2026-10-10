@@ -6,6 +6,7 @@ import { ACTION_STEP_COUNT, PROMPT_TEXT_MAX_LENGTH, PROMPT_TEXT_MIN_LENGTH } fro
 import { isValidDomain, normalizeDomain } from "@/shared/helpers/domain";
 import { isTracked, sameText } from "@/shared/helpers/prompts";
 import type {
+  Action,
   Brand,
   DemoRequest,
   Project,
@@ -18,7 +19,7 @@ import type {
   SupportMessage,
   User,
 } from "@/shared/types/api";
-import { buildActions, type ActionState } from "./action-items";
+import { buildActions, pageAction, type ActionState } from "./action-items";
 import { DEMO_USER } from "./accounts";
 import { ARCHIVED_PROMPT, BRANDS, DEFAULT_PLAN, OTHER_CLINICS, PLAN_LIMITS, PROJECT, PROMPTS, SUGGESTED_PROMPTS } from "./data";
 import * as onboarding from "./onboarding";
@@ -61,6 +62,8 @@ interface MockState {
   snapshots: Map<string, Snapshot>;
   /** Project id → action id → what the client changed on it. */
   actionStates: Map<string, Map<string, ActionState>>;
+  /** Project id → the actions the client made with "Add content". */
+  addedActions: Map<string, Action[]>;
   /** Project id → its topics in order, once the client added, renamed or deleted one (else they come from its questions). */
   topics: Map<string, string[]>;
   /** Project id → the suggested questions waiting for the client, newest first. */
@@ -76,7 +79,7 @@ interface MockState {
 
 // Kept on globalThis so hot reloads and separate route bundles share one copy.
 // Bump the version when MockState changes: a hot reload then starts fresh instead of reading old data.
-const STATE_KEY = "__geoMockState_v14";
+const STATE_KEY = "__geoMockState_v15";
 const globalForMocks = globalThis as typeof globalThis & { [STATE_KEY]?: MockState };
 const state: MockState = (globalForMocks[STATE_KEY] ??= {
   accounts: [{ user: DEMO_USER }],
@@ -87,6 +90,7 @@ const state: MockState = (globalForMocks[STATE_KEY] ??= {
   runs: new Map([[PROJECT.id, { id: "run_seeded", projectId: PROJECT.id, run: SEEDED_RUN, startedAt: 0 }]]),
   snapshots: new Map(),
   actionStates: new Map(),
+  addedActions: new Map(),
   topics: new Map(),
   suggestions: new Map(),
   rejectedSuggestions: new Map(),
@@ -581,14 +585,15 @@ export const mockApi: ApiClient = {
   getActions: async (projectId) => {
     const project = findProject(projectId);
     const report = buildReport(project, trackedOf(projectId), "week", finishedRun(projectId));
-    return respond(buildActions(report, state.actionStates.get(projectId)));
+    return respond(buildActions(report, state.actionStates.get(projectId), state.addedActions.get(projectId)));
   },
 
   updateAction: async (projectId, actionId, { status, stepsDone }) => {
     const project = await findOwnProject(projectId);
     const report = buildReport(project, trackedOf(projectId), "week", finishedRun(projectId));
     const changed = state.actionStates.get(projectId) ?? new Map<string, ActionState>();
-    const action = buildActions(report, changed).find((candidate) => candidate.id === actionId);
+    const added = state.addedActions.get(projectId) ?? [];
+    const action = buildActions(report, changed, added).find((candidate) => candidate.id === actionId);
     if (!action) throw new ApiError(404, `Action ${actionId} not found`);
     if (stepsDone?.some((step) => !Number.isInteger(step) || step < 0 || step >= ACTION_STEP_COUNT)) {
       throw new ApiError(422, `Steps must be whole numbers from 0 to ${ACTION_STEP_COUNT - 1}`);
@@ -597,8 +602,43 @@ export const mockApi: ApiClient = {
     const doneAt = next !== "done" ? null : action.status === "done" ? action.doneAt : new Date().toISOString();
     const steps = stepsDone ? [...new Set(stepsDone)].sort((a, b) => a - b) : action.stepsDone;
     state.actionStates.set(projectId, changed.set(actionId, { status: next, doneAt, stepsDone: steps }));
-    const updated = buildActions(report, changed).find((candidate) => candidate.id === actionId);
+    const updated = buildActions(report, changed, added).find((candidate) => candidate.id === actionId);
     return respond(updated ?? action);
+  },
+
+  // One status for several; their checked steps stay as they were
+  updateActions: async (projectId, { ids, status }) => {
+    const project = await findOwnProject(projectId);
+    const report = buildReport(project, trackedOf(projectId), "week", finishedRun(projectId));
+    const changed = state.actionStates.get(projectId) ?? new Map<string, ActionState>();
+    const added = state.addedActions.get(projectId) ?? [];
+    const all = buildActions(report, changed, added);
+    const chosen = [...new Set(ids)].map((actionId) => {
+      const action = all.find((candidate) => candidate.id === actionId);
+      if (!action) throw new ApiError(404, `Action ${actionId} not found`);
+      return action;
+    });
+    const now = new Date().toISOString();
+    for (const action of chosen) {
+      const doneAt = status !== "done" ? null : action.status === "done" ? action.doneAt : now;
+      changed.set(action.id, { status, doneAt, stepsDone: action.stepsDone });
+    }
+    state.actionStates.set(projectId, changed);
+    const updated = buildActions(report, changed, added);
+    return respond(chosen.map((action) => updated.find((candidate) => candidate.id === action.id) ?? action));
+  },
+
+  // The backend reads the page (or the text) and writes the brief; here it comes from the topic
+  addContentAction: async (projectId, { url, document, pageType, topic }) => {
+    const project = await findOwnProject(projectId);
+    const typed = url?.trim() ?? "";
+    const address = typed ? (/^https?:\/\//i.test(typed) ? typed : `https://${typed}`) : null;
+    if (!address && !document?.trim()) throw new ApiError(422, "A page's address or its text is needed");
+    if (!cleanName(topic)) throw new ApiError(422, "A topic is needed");
+    const report = buildReport(project, trackedOf(projectId), "week", finishedRun(projectId));
+    const action = pageAction(report, { url: address, pageType, topic: cleanName(topic) }, newId("act_page"));
+    state.addedActions.set(projectId, [...(state.addedActions.get(projectId) ?? []), action]);
+    return respond(action, 1500);
   },
 
   createSnapshot: (body) => {

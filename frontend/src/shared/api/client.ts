@@ -2,6 +2,7 @@ import { SESSION_COOKIE } from "@/shared/constants";
 import type {
   Action,
   AddCompetitorRequest,
+  AddContentActionRequest,
   AnalyzeSiteRequest,
   ArchivePromptRequest,
   CompetitorSuggestion,
@@ -33,6 +34,7 @@ import type {
   TelegramAuthRequest,
   TopicRequest,
   UpdateActionRequest,
+  UpdateActionsRequest,
   UpdatePromptRequest,
   UpdatePromptsRequest,
   User,
@@ -89,6 +91,10 @@ export interface ApiClient {
   getReport(projectId: string, period?: ReportPeriod, filters?: ReportFilters): Promise<Report>;
   getActions(projectId: string): Promise<Action[]>;
   updateAction(projectId: string, actionId: string, body: UpdateActionRequest): Promise<Action>;
+  /** One status for several actions: accept all, decline all, the rows picked. */
+  updateActions(projectId: string, body: UpdateActionsRequest): Promise<Action[]>;
+  /** "Add content": an action with a brief for a page of the client's, from its address or its text. */
+  addContentAction(projectId: string, body: AddContentActionRequest): Promise<Action>;
   createSnapshot(body: SnapshotRequest): Promise<Snapshot>;
   getSnapshot(id: string): Promise<Snapshot>;
   analyzeSite(body: AnalyzeSiteRequest): Promise<SiteAnalysis>;
@@ -177,6 +183,8 @@ const httpApi: ApiClient = {
   getActions: (projectId) => request(`/projects/${id(projectId)}/actions`),
   updateAction: (projectId, actionId, body) =>
     send("PATCH", `/projects/${id(projectId)}/actions/${id(actionId)}`, body),
+  updateActions: (projectId, body) => send("PATCH", `/projects/${id(projectId)}/actions`, body),
+  addContentAction: (projectId, body) => send("POST", `/projects/${id(projectId)}/actions`, body),
   createSnapshot: (body) => send("POST", "/snapshot", body),
   getSnapshot: (snapshotId) => request(`/snapshot/${id(snapshotId)}`),
   analyzeSite: (body) => send("POST", "/onboarding/analyze-site", body),
@@ -239,6 +247,8 @@ export const api: ApiClient = USE_MOCKS
       getActions: (projectId) => mocks().then((m) => unwrap(m.getActions(projectId))),
       updateAction: (projectId, actionId, body) =>
         mocks().then((m) => unwrap(m.updateAction(projectId, actionId, body))),
+      updateActions: (projectId, body) => mocks().then((m) => unwrap(m.updateActions(projectId, body))),
+      addContentAction: (projectId, body) => mocks().then((m) => unwrap(m.addContentAction(projectId, body))),
       createSnapshot: (body) => mocks().then((m) => unwrap(m.createSnapshot(body))),
       getSnapshot: (snapshotId) => mocks().then((m) => unwrap(m.getSnapshot(snapshotId))),
       analyzeSite: (body) => mocks().then((m) => unwrap(m.analyzeSite(body))),

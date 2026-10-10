@@ -97,6 +97,28 @@ Any other number makes a new account, which goes through onboarding and gets a p
   (`/prompts/discovery`: services, customer types, extra context, languages → new suggestions with new
   topics). New for the backend: batches, topics, three ways to suggest, `SuggestedPrompt.source`,
   `Project.customers` (see `backend/PLAN.md`, change log).
+- **Harakatlar in Peec's layout with all of its Actions page (10 Oct), with the user's first correction the
+  same day; merged and pushed that day, when the user said "push everything".** The user's correction, with Peec's opened action as the
+  picture: "text clearly seen and color more visible, only design". The opened action now has Peec's type
+  sizes (a 22px title, 15px body text in the body's color, gray labels at the same size), the topic and the
+  assistant one under the other, steps in full-gray rows with larger boxes that stay clearly ticked once done,
+  and larger cards. The user also asked not to make test builds: a change is checked with the type check
+  and the linter, and a look on the running dev server. The user sent 18 screenshots of Peec's Actions ("every element
+  and page"). The page now spans the whole panel: a strip of tools (statuses; all filters: topic, where the
+  work is, kind of site, kind of work; group by goal, kind of work, impact, where, topic; a guided tour of
+  seven steps that starts by itself once per browser; export as CSV or JSON; "Add a page"; "Accept all"), a
+  heading, the four goal tiles with a ring and the open count, then the list by status, goal and kind of work
+  (sub-groups when a goal has two or more), five rows and "Show all", boxes to pick rows and a footer with the
+  open count and "Decline all" (or what to do with the rows picked). An action opens beside the list (over
+  the screen on a phone): "Copy for ChatGPT", summary, topic, assistant, why it matters, the brief for a page
+  (headlines, meta title and description against their length, what it must prove, evidence, "Write with GEO
+  AI"), the steps to tick, the pages ChatGPT reads, the questions it should move with how the client does on
+  each, the expected effect or fix → proof; Decline / Accept, then Cancel / Done, and a toast with a link to
+  the group it went to. "Add a page" takes a page's address or a Markdown file, its type and topic, and makes
+  an action with a brief to rework it. Left out of Peec's: models, platforms and page types as filters, XLSX
+  export, Peec Agent (GEO AI takes its place). Also fixed for every page: a hint's bubble no longer blocks
+  clicks on what is under it. New for the backend: briefs, `PATCH` and `POST /projects/{id}/actions` (see
+  `backend/PLAN.md`, change log).
 - **Javoblar (7 Oct), built from Peec's Chats screenshots of 4 Oct; the user has not sent corrections for
   it yet.** Added to the page that existed: CSV export of the answers with their full text, a filter by
   cited site (`?source=` lets other pages link to "the answers citing this site"), hover explanations on the
@@ -170,9 +192,9 @@ Any other number makes a new account, which goes through onboarding and gets a p
   and pushed on 6 Oct, Savollar on 7 Oct, and on 8 Oct Javoblar with the second Savollar correction, then
   Raqobatchilar, then `manbalar-page` (the review for repeats, Manbalar with a page per cited site, the
   report), then `manbalar-correction` (Manbalar and every page's top in Peec's layout); on 10 Oct
-  `savollar-correction` (Savollar with all of Peec's Prompts features). Each time the user chose "commit,
-  push" when asked. Each page gets its own branch,
-  merged when the user says so.
+  `savollar-correction` (Savollar with all of Peec's Prompts features), then `harakatlar-page` (Harakatlar
+  in Peec's Actions layout with its first correction). Each time the user chose "commit, push" when asked
+  (for Harakatlar: "push everything"). Each page gets its own branch, merged when the user says so.
 
 ## To do, in order
 
@@ -185,13 +207,14 @@ Any other number makes a new account, which goes through onboarding and gets a p
    - The report: rewritten and merged (see "Done"); corrections may still come.
    - Savollar: laid out like Peec's with all of its Prompts features on 8 Oct and merged on 10 Oct (see "Done");
      corrections may still come.
-   - Next, as the user asked on 8 Oct ("we need actions, and reports, need to be corrected"): Harakatlar, then
-     Hisobotlar. Their Peec trial ends about 11 Oct, so the remaining Peec screens are captured in one go
-     (on 10 Oct the user chose to send them that day): Actions (with an opened action), Impact, Settings ›
-     Company (Peec's email report) and the export menus, every other Settings tab including Facts, and the
-     fact-check switch on Prompts. The Fanouts screenshots of 8 Oct need nothing: the question's page already
-     lists the searches (decided 6 Oct).
-   - Harakatlar: marks on the chart where a fix started and was done (Peec's Impact as a block).
+   - Harakatlar: laid out like Peec's Actions on 10 Oct, corrected once and merged the same day (see "Done");
+     more corrections may still come. Still to come on it: marks on the chart where a fix started and was done (Peec's Impact as a block), once Impact's
+     screenshots arrive.
+   - Next, as the user asked on 8 Oct ("we need actions, and reports, need to be corrected"): Hisobotlar.
+     Their Peec trial ends about 11 Oct, so the remaining Peec screens are captured in one go: Impact,
+     Settings › Company (Peec's email report), every other Settings tab including Facts, and the fact-check
+     switch on Prompts. The Fanouts screenshots of 8 Oct need nothing: the question's page already lists the
+     searches (decided 6 Oct).
    - Hisobotlar: a placeholder today that links to the report. When its turn comes: the list of past
      checks' reports (needs a report per run from the backend), sending to Telegram, the agency's name on it.
    - Notoʻgʻri faktlar: brand facts for the answers to be checked against (Peec's Settings › Facts).

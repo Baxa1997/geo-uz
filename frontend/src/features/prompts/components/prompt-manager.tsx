@@ -45,7 +45,7 @@ import { matchesFilter, PROMPTS_FILTERS, promptsSummary, promptStats, type Promp
 import { AddPromptDialog } from "./add-prompt-dialog";
 import { ArchiveTable } from "./archive-table";
 import { ImportKeywordsDialog } from "./import-keywords-dialog";
-import { ConfirmModal } from "./modal";
+import { ConfirmModal } from "@/shared/components/modal";
 import { SelectBox } from "./select-box";
 import { SuggestionsTable } from "./suggestions-table";
 import { TopicsColumn, type TopicItem } from "./topics-column";

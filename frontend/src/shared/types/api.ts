@@ -218,6 +218,28 @@ interface ActionBase {
   proof: { before: number; after: number; runs: number } | null;
 }
 
+/** What a page of the client's website is, for an action that reworks it. */
+export type PageType = "home" | "service" | "prices" | "article" | "about" | "other";
+
+/**
+ * What to write, for an action that writes or reworks a page, as Peec's brief: the backend writes it
+ * with a model from the answers that name competitors and not the client.
+ */
+export interface ContentBrief {
+  /** What the page is and whom it is for. */
+  summary: string;
+  /** Titles to choose from. */
+  headlines: string[];
+  /** The page's title for search engines and AI; the frontend counts it against 60 characters. */
+  metaTitle: string;
+  /** Its description; counted against 155. */
+  metaDescription: string;
+  /** The one thing the page must make clear. */
+  argue: string;
+  /** Facts the page should show: prices, years, names, numbers. */
+  proofPoints: string[];
+}
+
 /** A recommended fix, made from the weekly report. Steps are written by the frontend from `kind` and its fields. */
 export type Action = ActionBase &
   (
@@ -231,7 +253,14 @@ export type Action = ActionBase &
         competitorIds: string[];
       }
     | { kind: "fact"; claim: string; correct: string }
-    | { kind: "content"; topic: string }
+    | {
+        kind: "content";
+        topic: string;
+        /** A page of the client's to rework (made with "Add content"); null for a page to write. */
+        url: string | null;
+        pageType: PageType | null;
+        brief: ContentBrief | null;
+      }
     | { kind: "technical"; check: SiteCheck }
   );
 
@@ -378,6 +407,24 @@ export interface DiscoverPromptsRequest {
 /** Keywords from a file (an SEO tool's export, first column): the backend makes questions customers ask about them. */
 export interface ImportKeywordsRequest {
   keywords: string[];
+}
+
+/** Several actions at once: "Accept all", "Decline all", or the rows picked. */
+export interface UpdateActionsRequest {
+  ids: string[];
+  status: ActionStatus;
+}
+
+/**
+ * Peec's "Add content": a page of the client's website (its address) or its text (a Markdown or text
+ * file), what kind of page it is and the topic it should win. The backend reads it and writes an action
+ * with a brief.
+ */
+export interface AddContentActionRequest {
+  url?: string;
+  document?: string;
+  pageType: PageType;
+  topic: string;
 }
 
 /** Either field or both; what's left out stays as it was. */

@@ -373,14 +373,10 @@
     }
   },
   "Actions": {
-    "planTitle": "ChatGPT javoblarida koʻproq chiqish uchun 4 yoʻl",
-    "intro": "Eng katta taʼsir qiladiganlari birinchi. Roʻyxat har haftalik tekshiruvdan keyin yangilanadi.",
-    "progress": "{total} ta harakatdan {done} tasi bajarildi",
-    "progressLabel": "Bajarilgan harakatlar",
     "status": {
       "new": "Yangi",
       "in_progress": "Jarayonda",
-      "done": "Bajarildi",
+      "done": "Bajarilgan",
       "declined": "Rad etilgan"
     },
     "impact": {
@@ -398,7 +394,8 @@
       "ai_bots_blocked": "AI qidiruv botlariga saytni oching",
       "prices_as_images": "Narxlarni rasm emas, matn qilib yozing",
       "no_business_markup": "Saytga biznes maʼlumotlari belgisini qoʻshing",
-      "contacts_missing": "Manzil, telefon va ish vaqtini matn qilib yozing"
+      "contacts_missing": "Manzil, telefon va ish vaqtini matn qilib yozing",
+      "rework": "“{topic}” uchun sahifangizni yaxshilang"
     },
     "why": {
       "listing": "ChatGPT {answers} ta javobda {domain} saytiga tayangan. Bu javoblarda {competitors} tilga olingan, siz esa u yerda yoʻqsiz.",
@@ -411,7 +408,6 @@
       "no_business_markup": "Saytingizda biznes belgisi (schema.org) topilmadi. U AI’ga manzil, ish vaqti va xizmatlaringizni aniq oʻqishga yordam beradi.",
       "contacts_missing": "Saytingizda manzil, telefon yoki ish vaqti matn sifatida topilmadi."
     },
-    "how": "Qanday qilinadi",
     "steps": {
       "directory": {
         "s1": "{domain} saytida kompaniyangiz kartochkasini oching yoki egaligingizni tasdiqlang.",
@@ -462,10 +458,13 @@
         "s1": "Har sahifaning pastki qismiga manzil, telefon va ish vaqtini matn qilib yozing.",
         "s2": "Aloqa sahifasiga xarita va moʻljalni qoʻshing.",
         "s3": "Xuddi shu maʼlumotlar 2GIS va boshqa kataloglarda ham bir xil boʻlsin."
+      },
+      "rework": {
+        "s1": "Sahifani shu mavzudagi savollarga toʻgʻridan-toʻgʻri javob beradigan qilib qayta yozing — oʻzbek va rus tillarida.",
+        "s2": "Topshiriqdagi sarlavhalardan birini, meta sarlavha va tavsifni qoʻllang.",
+        "s3": "Topshiriqdagi dalillarni qoʻshing: narxlar, raqamlar, rasmlar, sharhlar."
       }
     },
-    "questions": "Taʼsir qiladigan savollar",
-    "start": "Boshlash",
     "markDone": "Bajarildi",
     "decline": "Rad etish",
     "reopen": "Qayta ochish",
@@ -477,7 +476,6 @@
     "proofPendingDate": "Natija keyingi tekshiruvdan keyin koʻrinadi: {date}.",
     "changed": "{title}: {status}",
     "saveFailed": "Holatni saqlab boʻlmadi. Qayta urinib koʻring.",
-    "emptyTodo": "Hozircha qiladigan ish yoʻq.",
     "noneTitle": "Harakatlar yoʻq",
     "noneText": "ChatGPT savollaringizning hammasida sizni tilga oladi va muhim saytlarning hammasida borsiz.",
     "managedTitle": "Buni oʻzingiz qilishni xohlamaysizmi?",
@@ -494,33 +492,260 @@
       "technical": "Saytni AI uchun sozlash"
     },
     "goalCounts": {
-      "fact": "{count} ta xato",
-      "listing": "{count} ta sayt",
-      "content": "{count} ta sahifa",
-      "technical": "{count} ta tuzatish"
+      "fact": "{count} ta faktni tuzatish kerak",
+      "listing": "{count} ta saytga chiqish kerak",
+      "content": "{count} ta sahifa yozish kerak",
+      "technical": "{count} ta tuzatish kiritish kerak"
     },
-    "goalHint": "Hali bajarilmagan harakatlar. Bosing — roʻyxatda faqat shular qoladi.",
     "showAll": "Hammasini koʻrsatish ({count})",
     "showLess": "Kamroq koʻrsatish",
-    "questionCount": "{count} ta savol",
-    "stepsCount": "Qadamlar: {done}/{total}",
     "stepsProgress": "{total} ta qadamdan {done} tasi bajarildi",
-    "allStepsDone": "Hamma qadamlar bajarildi — harakatni “Bajarildi” deb belgilang.",
-    "stepSaved": "{title}: {done}/{total} qadam",
-    "whyTitle": "Nima uchun",
-    "close": "Yopish",
     "emptyGoal": "Bu yoʻnalishda bajarilmagan harakat yoʻq.",
-    "csv": "Eksport",
-    "csvHint": "Harakatlarni CSV faylda yuklab olish",
     "csvHeaders": {
       "action": "Harakat",
-      "goal": "Yoʻnalish",
+      "goal": "Maqsad",
       "impact": "Taʼsiri",
       "status": "Holat",
       "steps": "Qadamlar",
       "questions": "Savollar soni",
-      "doneAt": "Bajarilgan sana"
-    }
+      "doneAt": "Bajarilgan sana",
+      "category": "Ish turi",
+      "owner": "Qayerda",
+      "topic": "Mavzu",
+      "createdAt": "Qoʻshilgan sana"
+    },
+    "heading": "ChatGPT sizni tilga olishi uchun nima qilish kerak",
+    "subtitle": "Avval notoʻgʻri faktlarni tuzating, keyin ChatGPT oʻqiydigan saytlarga chiqing, yetishmayotgan sahifalarni yozing va saytingizni AI oʻqiy oladigan qiling. Roʻyxat har haftalik tekshiruvdan keyin yangilanadi.",
+    "goalHints": {
+      "fact": "ChatGPT narxingiz, manzilingiz yoki ish vaqtingiz haqida notoʻgʻri aytgan joylar. Ularni birinchi tuzating: notoʻgʻri narx yoki manzil mijozni yoʻqotadi.",
+      "listing": "ChatGPT javob yozishda tayanadigan, lekin sizni tilga olmaydigan saytlar: kataloglar, nashrlar, ijtimoiy tarmoqlar. U yerda paydo boʻlsangiz, ChatGPT sizni ham koʻradi.",
+      "content": "Faqat raqobatchilar tilga olinadigan mavzular: saytingizda shu savollarga javob beradigan sahifa yozing yoki borini yaxshilang.",
+      "technical": "Saytingizdagi ChatGPT oʻqiy olmaydigan narsalar: yopiq botlar, rasm koʻrinishidagi narxlar, matn sifatida yozilmagan manzil va telefon."
+    },
+    "categories": {
+      "fact": "Notoʻgʻri fakt",
+      "directory": "Katalog va xaritalar",
+      "news": "Nashrlar",
+      "social": "Ijtimoiy tarmoqlar",
+      "other": "Boshqa saytlar",
+      "newPage": "Yangi sahifa",
+      "rework": "Sahifani yaxshilash",
+      "access": "AI botlarga ruxsat",
+      "markup": "Matn va belgilash"
+    },
+    "siteKinds": {
+      "directory": "Katalog va xaritalar",
+      "news": "Nashrlar",
+      "social": "Ijtimoiy tarmoqlar",
+      "other": "Boshqa saytlar"
+    },
+    "owners": {
+      "own": "Oʻz saytingizda",
+      "earned": "Boshqa saytlarda",
+      "everywhere": "Hamma joyda"
+    },
+    "ownerBadges": {
+      "own": "Saytingiz",
+      "earned": "Boshqa sayt",
+      "everywhere": "Hamma joyda"
+    },
+    "ownerHints": {
+      "own": "Bu ish oʻz saytingizda qilinadi.",
+      "earned": "Bu ish boshqa saytda qilinadi: u yerda roʻyxatdan oʻting yoki siz haqingizda yozishlariga erishing.",
+      "everywhere": "Toʻgʻri maʼlumotni saytingizga ham, ChatGPT oʻqigan boshqa saytlarga ham yozing."
+    },
+    "groupBy": {
+      "goal": "Maqsad",
+      "category": "Ish turi",
+      "impact": "Taʼsir",
+      "owner": "Qayerda",
+      "topic": "Mavzu"
+    },
+    "groupByLabel": "Guruhlash: {by}",
+    "filterGroups": {
+      "topics": "Mavzular",
+      "owners": "Qayerda qilinadi",
+      "sourceTypes": "Sayt turi",
+      "categories": "Ish turi"
+    },
+    "filterBy": "Filtrlash",
+    "filterAll": "Barchasi",
+    "filtersAll": "Barcha filtrlar",
+    "filtersSome": "Filtrlar: {count}",
+    "clearFilters": "Filtrlarni tozalash",
+    "statusAll": "Barcha holatlar",
+    "statusSome": "{count} ta holat",
+    "guide": "Qanday ishlaydi",
+    "guideHint": "Sahifa boʻylab qisqa tur: maqsadlar, taʼsir, harakat ichida nima bor va uni qanday bajarish",
+    "export": "Yuklab olish",
+    "exportHint": "Koʻrsatilgan harakatlarni CSV (Excel) yoki JSON fayl qilib yuklab oling",
+    "exportFormat": "Fayl turi",
+    "addContent": "Sahifa qoʻshish",
+    "acceptAll": "Hammasini qabul qilish",
+    "accept": "Qabul qilish",
+    "cancel": "Bekor qilish",
+    "declineAll": "Hammasini rad etish",
+    "declineAllTitle": "{count} ta yangi harakatni rad etasizmi?",
+    "declineAllText": "Ular «Rad etilgan» guruhiga oʻtadi. Istalganini u yerdan qaytarish mumkin.",
+    "openCount": "{count} ta ochiq harakat",
+    "picked": "{count} ta tanlandi",
+    "clearPicks": "Tanlovni tozalash",
+    "pickOne": "Tanlash: {title}",
+    "pickGroup": "Hammasini tanlash: {group}",
+    "fold": "Yigʻish: {group}",
+    "unfold": "Ochish: {group}",
+    "emptyGroup": "Bu yerda hozircha hech narsa yoʻq",
+    "emptyFiltered": "Bu filtrlarga mos harakat yoʻq.",
+    "noTopic": "Mavzusiz",
+    "changedMany": "{count} ta harakat: {status}",
+    "added": "Yangi harakat qoʻshildi: {title}",
+    "stepsHint": "Belgilangan qadamlar, uchtadan",
+    "closePanel": "Yopish",
+    "copy": "ChatGPT uchun nusxalash",
+    "copied": "Nusxalandi",
+    "copyHint": "Harakatni topshiriq matni qilib nusxalaydi: uni ChatGPT yoki boshqa yordamchiga qoʻying, u har bir qadamni batafsil tushuntiradi.",
+    "sections": {
+      "overview": "Umumiy",
+      "topic": "Mavzu",
+      "model": "AI yordamchi",
+      "why": "Nima uchun muhim",
+      "brief": "Topshiriq",
+      "steps": "Qanday qilinadi",
+      "page": "Sahifa",
+      "sitePages": "ChatGPT oʻqigan sahifalar",
+      "questions": "Taʼsir qiladigan savollar",
+      "outcome": "Kutilayotgan natija"
+    },
+    "overview": {
+      "fact": "ChatGPT javoblarida siz haqingizda notoʻgʻri maʼlumot bor. Toʻgʻrisini saytingizga va ChatGPT tayanadigan saytlarga yozing.",
+      "directory": "{domain} — ChatGPT tayanadigan katalog. U yerda toʻliq maʼlumot bilan turgan biznesni ChatGPT tavsiya qila oladi.",
+      "news": "{domain} — ChatGPT keltiradigan nashr. U yerda siz haqingizda maqola yoki reyting chiqsa, ChatGPT sizni ham tilga oladi.",
+      "social": "ChatGPT javob yozishda {domain} sahifalarini oʻqiydi. Rasmiy sahifangiz toʻliq va faol boʻlsin.",
+      "other": "ChatGPT {domain} saytiga tayanadi, lekin u yerda siz haqingizda hech narsa yoʻq.",
+      "newPage": "Bu mavzudagi savollarga saytingizda javob yoʻq, shuning uchun ChatGPT faqat raqobatchilarni tilga oladi. Shu savollarga javob beradigan sahifa yozing.",
+      "rework": "Siz qoʻshgan sahifa shu mavzudagi savollarga yaxshiroq javob beradigan qilib qayta yoziladi.",
+      "access": "AI qidiruv botlarini saytingizga kiriting, shunda ChatGPT sahifalaringizni oʻqib, ularga havola bera oladi.",
+      "markup": "Maʼlumotlaringizni AI aniq oʻqiy oladigan qilib yozing: narx, manzil, telefon va ish vaqti matn boʻlsin, biznes belgisi bilan."
+    },
+    "brief": {
+      "headlines": "Sarlavha uchun variantlar",
+      "metaTitle": "Meta sarlavha (title)",
+      "metaDescription": "Meta tavsif (description)",
+      "argue": "Sahifa nimani isbotlashi kerak",
+      "proofPoints": "Sahifaga qoʻyiladigan dalillar",
+      "assistant": "GEO AI bilan yozish",
+      "metaTitleHint": "Qidiruv va AI natijalarida taxminan {max} belgigacha koʻrinadi; uzunini qisqartiring.",
+      "metaDescriptionHint": "Qidiruv natijalarida taxminan {max} belgigacha koʻrinadi; uzunini qisqartiring."
+    },
+    "assistantQuestion": "«{title}» uchun sahifa matnini topshiriq boʻyicha yozib ber.",
+    "sitePagesHint": "{domain} saytining oxirgi tekshiruvda ChatGPT keltirgan sahifalari va har birini keltirgan javoblar ulushi.",
+    "pageShare": "Oxirgi tekshiruvdagi javoblarning shu sahifani keltirgan ulushi",
+    "questionsHint": "Bu harakat koʻtarishi kerak boʻlgan savollar. Raqam: oxirgi tekshiruvda sizni tilga olgan javoblar, uchtadan. Bosilsa, savol sahifasi ochiladi.",
+    "namedHint": "{total} ta javobdan {named} tasida tilga olingansiz",
+    "notAskedHint": "Hali soʻralmagan: keyingi tekshiruvda soʻraladi",
+    "relativeImpact": "Boshqa harakatlaringizga nisbatan taʼsiri",
+    "impactLevels": {
+      "high": "Yuqori",
+      "medium": "Oʻrtacha",
+      "low": "Past"
+    },
+    "prompt": {
+      "intro": "Men {brand} ({domain}) biznesini yuritaman. ChatGPT javoblarida koʻproq tilga olinishim uchun quyidagi ishni qilishim kerak.",
+      "task": "Vazifa: {title}",
+      "why": "Nima uchun: {why}",
+      "steps": "Qadamlar:",
+      "brief": "Sahifa topshirigʻi:",
+      "questions": "Mijozlar ChatGPT’dan soʻraydigan savollar:",
+      "ask": "Har bir qadamni qanday bajarishni oddiy tilda batafsil tushuntirib ber; sahifa kerak boʻlsa, uning matnini yozib ber."
+    },
+    "toast": {
+      "titles": {
+        "new": "{count, plural, one {Harakat yangilarga qaytdi} other {# ta harakat yangilarga qaytdi}}",
+        "in_progress": "{count, plural, one {Harakat qabul qilindi} other {# ta harakat qabul qilindi}}",
+        "done": "{count, plural, one {Bajarildi deb belgilandi} other {# ta harakat bajarildi deb belgilandi}}",
+        "declined": "{count, plural, one {Harakat rad etildi} other {# ta harakat rad etildi}}"
+      },
+      "texts": {
+        "new": "{count, plural, one {Uni} other {Ularni}} <link>{group}</link> guruhida topasiz.",
+        "in_progress": "Qadamlarini belgilab boring. {count, plural, one {Uni} other {Ularni}} <link>{group}</link> guruhida topasiz.",
+        "done": "Natijasi keyingi haftalik tekshiruvdan keyin koʻrinadi. {count, plural, one {Uni} other {Ularni}} <link>{group}</link> guruhida topasiz.",
+        "declined": "{count, plural, one {Uni} other {Ularni}} <link>{group}</link> guruhidan qaytarish mumkin."
+      }
+    },
+    "add": {
+      "title": "Sahifa uchun harakat qoʻshish",
+      "description": "Saytingizdagi sahifa manzilini yozing yoki uning matnini fayl qilib yuklang, turini va mavzusini tanlang: uni shu mavzudagi savollarga solishtirib, qanday yaxshilashni aytadigan harakat tuzamiz.",
+      "content": "Sahifa",
+      "sources": {
+        "url": "Manzil",
+        "document": "Fayl"
+      },
+      "urlLabel": "Sahifa manzili",
+      "urlPlaceholder": "saytingiz.uz/sahifa",
+      "dropTitle": "Faylni shu yerga tashlang yoki <browse>tanlang</browse>",
+      "dropHint": "Markdown (.md) yoki matn (.txt), 200 KB gacha",
+      "another": "Boshqa fayl tanlash",
+      "pageType": "Sahifa turi",
+      "pageTypePlaceholder": "Sahifa turini tanlang",
+      "topic": "Mavzu",
+      "topicPlaceholder": "Mavzuni tanlang",
+      "cancel": "Bekor qilish",
+      "create": "Harakat yaratish",
+      "creating": "Sahifa oʻqilmoqda…",
+      "urlInvalid": "Sahifa manzilini toʻliq yozing, masalan saytingiz.uz/narxlar.",
+      "fileType": "Faqat .md yoki .txt fayl.",
+      "fileLarge": "Fayl juda katta: 200 KB gacha boʻlsin.",
+      "fileEmpty": "Fayl boʻsh.",
+      "fileRequired": "Sahifa matni bilan fayl tanlang.",
+      "pageTypeRequired": "Sahifa turini tanlang.",
+      "topicRequired": "Mavzuni tanlang.",
+      "failed": "Harakatni yaratib boʻlmadi. Qaytadan urinib koʻring."
+    },
+    "pageTypes": {
+      "home": "Bosh sahifa",
+      "service": "Xizmat sahifasi",
+      "prices": "Narxlar",
+      "article": "Maqola yoki blog",
+      "about": "Biz haqimizda",
+      "other": "Boshqa"
+    },
+    "tour": {
+      "skip": "Turni yopish",
+      "back": "Orqaga",
+      "next": "Keyingi",
+      "done": "Tushunarli",
+      "goals": {
+        "title": "Qayerdan boshlashni tanlang",
+        "text": "Toʻrt maqsad: tuzatiladigan xato faktlar, chiqish kerak boʻlgan saytlar, yoziladigan sahifalar va saytingizdagi tuzatishlar. Bittasini bossangiz, faqat uning harakatlari qoladi; doira ular bajarilgan sari toʻladi."
+      },
+      "impact": {
+        "title": "Eng foydalisini koʻring",
+        "text": "Ustunchalar kutilayotgan taʼsirni boshqa harakatlaringizga nisbatan koʻrsatadi: uchta ustuncha eng koʻp yordam beradi."
+      },
+      "row": {
+        "title": "Harakatni oching",
+        "text": "Harakat roʻyxat yonida ochiladi: nima uchun muhim, qadamlar va u koʻtarishi kerak boʻlgan savollar.",
+        "action": "Ochish"
+      },
+      "why": {
+        "title": "Nima uchun muhim",
+        "text": "ChatGPT javoblaridan olingan dalil: u tayangan sayt, notoʻgʻri aytgan gapi yoki faqat raqobatchilar tilga olingan savollar."
+      },
+      "brief": {
+        "title": "Topshiriq boʻyicha yozing",
+        "text": "Yoziladigan sahifaning topshirigʻi bor: sarlavha variantlari, qidiruvda koʻrinadigan sarlavha va tavsif, sahifa nimani isbotlashi va qaysi dalillarni qoʻyish kerakligi."
+      },
+      "assistant": {
+        "title": "GEO AI bilan yozing",
+        "text": "GEO AI topshiriqni va uning ortidagi raqamlarni allaqachon biladi: undan sahifa matnini soʻrang."
+      },
+      "decide": {
+        "title": "Qabul qiling, keyin bajaring",
+        "text": "Ishga olganingizda harakatni qabul qiling, qadamlarini belgilab boring va bajarildi deb belgilang. Koʻrinishingizga taʼsiri keyingi haftalik tekshiruvdan keyin koʻrinadi."
+      }
+    },
+    "impactHint": "{impact}: boshqa harakatlaringizga nisbatan kutilayotgan taʼsir. Ustuncha qancha koʻp boʻlsa, foydasi shuncha katta.",
+    "uploadedText": "Yuklangan matn"
   },
   "WrongFacts": {
     "title": "Siz haqingizdagi notoʻgʻri maʼlumotlar",

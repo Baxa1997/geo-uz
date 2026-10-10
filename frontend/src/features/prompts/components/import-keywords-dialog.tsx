@@ -10,7 +10,7 @@ import { queryKeys } from "@/shared/api/query-keys";
 import { sameText } from "@/shared/helpers/prompts";
 import type { SuggestedPrompt } from "@/shared/types/api";
 import { FileDrop, type ListFile } from "./file-drop";
-import { Modal } from "./modal";
+import { Modal } from "@/shared/components/modal";
 
 /** Keywords sent at most: an SEO tool's export can hold thousands; the first are the ones that matter. */
 const MAX_KEYWORDS = 50;

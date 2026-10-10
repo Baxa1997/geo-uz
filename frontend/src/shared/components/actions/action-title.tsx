@@ -24,7 +24,8 @@ export function useActionTitle() {
       case "fact":
         return t("fact");
       case "content":
-        return t("content", { topic: labelFor(messages.Topics, action.topic) });
+        // A page the client added ("Add a page") is reworked, not written
+        return t(action.url !== null || action.pageType !== null ? "rework" : "content", { topic: labelFor(messages.Topics, action.topic) });
       case "technical":
         return t(action.check);
     }

@@ -4,7 +4,7 @@
 import { ACTION_STEP_COUNT } from "@/shared/constants";
 import { normalizeDomain } from "@/shared/helpers/domain";
 import { answersNaming, promptsWithoutYou } from "@/shared/helpers/scores";
-import type { Action, ActionImpact, ActionKind, ActionStatus, PromptResult, Report, SourceType } from "@/shared/types/api";
+import type { Action, ActionImpact, ActionKind, ActionStatus, ContentBrief, PageType, PromptResult, Report, SourceType } from "@/shared/types/api";
 import { PROJECT } from "./data";
 import { siteChecks } from "./site-checks";
 
@@ -66,6 +66,47 @@ function listing(report: Report, domain: string, sourceType: SourceType, answers
   };
 }
 
+/** How the briefs name a topic, in Uzbek: a brief is data the backend writes, in the clinic's language. */
+const TOPIC_NAMES: Record<string, string> = {
+  best: "eng yaxshi stomatologiya",
+  implants: "implant qoʻyish",
+  kids: "bolalar stomatologiyasi",
+  emergency: "shoshilinch tish davolash",
+  braces: "breket va elaynerlar",
+  whitening: "tish oqartirish",
+  location: "yaqin atrofdagi stomatologiya",
+  installment: "tish davolashni boʻlib toʻlash",
+  prices: "stomatologiya narxlari",
+  painless: "ogʻriqsiz davolash",
+  veneers: "vinirlar",
+  root_canal: "kanal davolash",
+};
+
+const upper = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
+
+/**
+ * What to write for a topic, as the backend's model would from the answers: a page to write, or (`rework`)
+ * a page of the client's to rework so it answers the topic's questions.
+ */
+function briefFor(topic: string, brand: string, rework = false): ContentBrief {
+  const name = TOPIC_NAMES[topic] ?? topic.toLowerCase();
+  return {
+    summary: rework
+      ? `Bu sahifani “${name}” haqida soʻraydiganlarga javob beradigan qilish kerak: ChatGPT bu savollarda raqobatchilar sahifalariga tayanmoqda, sizning sahifangizda esa aniq narx, muddat va kafolat yoʻq.`
+      : `Toshkentda ${name} haqida soʻraydiganlar uchun sahifa: narxlar, muddatlar, shifokorlar va kafolat bir joyda. ChatGPT bu savollarga javob berayotganda raqobatchilar sahifalariga tayanmoqda.`,
+    headlines: [`${upper(name)} Toshkentda: narxlar, muddat va kafolat`, `${upper(name)} ${brand} klinikasida qanday oʻtadi`],
+    metaTitle: `${upper(name)} Toshkentda — narxlar va kafolat | ${brand}`,
+    metaDescription: `${brand}da ${name}: narxlar soʻmda, davolash muddati, shifokorlar tajribasi va yozma kafolat. Toshkent, har kuni 9:00–21:00.`,
+    argue: `${brand} — ${name} boʻyicha Toshkentdagi ochiq tanlov: narxi oldindan maʼlum, kafolati yozma, shifokorlari tajribali.`,
+    proofPoints: [
+      "Narxlar soʻmda, aniq summalar bilan",
+      "Shifokorlarning ismi va necha yillik tajribasi",
+      "Kafolat muddati yozma shaklda",
+      "Manzil, telefon va ish vaqti matn koʻrinishida",
+    ],
+  };
+}
+
 const base = (report: Report) => ({
   status: "new" as const,
   createdAt: report.method.collectedAt,
@@ -108,6 +149,9 @@ function suggested(report: Report): Action[] {
       ...base(report),
       kind: "content",
       topic,
+      url: null,
+      pageType: null,
+      brief: briefFor(topic, brand.name),
       promptIds,
       impact: promptIds.length > 1 ? "high" : "medium",
     };
@@ -164,17 +208,36 @@ function sampleHistory(report: Report): Action[] {
   ];
 }
 
+/** "Add content": an action that reworks one of the client's pages (by address, or its uploaded text) for a topic. */
+export function pageAction(report: Report, page: { url: string | null; pageType: PageType; topic: string }, id: string): Action {
+  return {
+    id,
+    ...base(report),
+    createdAt: new Date().toISOString(),
+    kind: "content",
+    topic: page.topic,
+    url: page.url,
+    pageType: page.pageType,
+    brief: briefFor(page.topic, report.project.brand.name, true),
+    promptIds: report.prompts.filter((result) => result.prompt.topic === page.topic).map((result) => result.prompt.id),
+    impact: "medium",
+  };
+}
+
 const byPriority = (a: Action, b: Action) =>
   IMPACT_ORDER.indexOf(a.impact) - IMPACT_ORDER.indexOf(b.impact) ||
   KIND_ORDER.indexOf(a.kind) - KIND_ORDER.indexOf(b.kind) ||
   (b.kind === "listing" ? b.answers : 0) - (a.kind === "listing" ? a.answers : 0);
 
-/** The project's actions with the client's changes applied, most important first. None before the first run. */
-export function buildActions(report: Report, changed: ReadonlyMap<string, ActionState> = new Map()): Action[] {
+/**
+ * The project's actions with the client's changes applied, most important first; `added` are the ones
+ * the client made with "Add content". None before the first run.
+ */
+export function buildActions(report: Report, changed: ReadonlyMap<string, ActionState> = new Map(), added: Action[] = []): Action[] {
   if (report.prompts.length === 0) return [];
   const sample = report.project.id === PROJECT.id;
   const history = sample ? sampleHistory(report) : [];
-  const actions = [...history, ...suggested(report).filter((action) => !history.some((past) => past.id === action.id))];
+  const actions = [...history, ...suggested(report).filter((action) => !history.some((past) => past.id === action.id)), ...added];
   return actions
     .map((action): Action => {
       const initial = sample ? SAMPLE_STATES[action.id] : undefined;

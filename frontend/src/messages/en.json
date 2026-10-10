@@ -373,10 +373,6 @@
     }
   },
   "Actions": {
-    "planTitle": "Four ways to show up more in ChatGPT’s answers",
-    "intro": "Most important first. The list is updated after every weekly check.",
-    "progress": "{done} of {total} done",
-    "progressLabel": "Actions done",
     "status": {
       "new": "New",
       "in_progress": "In progress",
@@ -398,7 +394,8 @@
       "ai_bots_blocked": "Open your site to AI search bots",
       "prices_as_images": "Write prices as text, not images",
       "no_business_markup": "Add business markup to your site",
-      "contacts_missing": "Write your address, phone and hours as text"
+      "contacts_missing": "Write your address, phone and hours as text",
+      "rework": "Improve your page for “{topic}”"
     },
     "why": {
       "listing": "ChatGPT relied on {domain} in {answers} answers. They name {competitors}, and you aren’t there.",
@@ -411,7 +408,6 @@
       "no_business_markup": "No business markup (schema.org) was found on your site. It helps AI read your address, hours and services exactly.",
       "contacts_missing": "Your address, phone or opening hours weren’t found on your site as text."
     },
-    "how": "How to do it",
     "steps": {
       "directory": {
         "s1": "Create your business listing on {domain}, or claim the existing one.",
@@ -462,10 +458,13 @@
         "s1": "Write your address, phone and opening hours as text at the bottom of every page.",
         "s2": "Add a map and a landmark to the contact page.",
         "s3": "Make sure 2GIS and other directories show the same details."
+      },
+      "rework": {
+        "s1": "Rewrite the page so it answers this topic’s questions directly, in Uzbek and Russian.",
+        "s2": "Use one of the headlines, the meta title and the description from the brief.",
+        "s3": "Add the evidence from the brief: prices, numbers, photos, reviews."
       }
     },
-    "questions": "Questions it should move",
-    "start": "Start",
     "markDone": "Mark done",
     "decline": "Decline",
     "reopen": "Reopen",
@@ -477,7 +476,6 @@
     "proofPendingDate": "The result shows after the next check: {date}.",
     "changed": "{title}: {status}",
     "saveFailed": "Couldn’t save the status. Try again.",
-    "emptyTodo": "Nothing to do for now.",
     "noneTitle": "No actions",
     "noneText": "ChatGPT names you in all your questions, and you’re on every site that matters.",
     "managedTitle": "Rather not do it yourself?",
@@ -494,24 +492,15 @@
       "technical": "Make your site readable to AI"
     },
     "goalCounts": {
-      "fact": "{count, plural, one {# wrong fact} other {# wrong facts}}",
-      "listing": "{count, plural, one {# site} other {# sites}}",
-      "content": "{count, plural, one {# page} other {# pages}}",
-      "technical": "{count, plural, one {# fix} other {# fixes}}"
+      "fact": "{count, plural, one {# wrong fact to correct} other {# wrong facts to correct}}",
+      "listing": "{count, plural, one {# site to get onto} other {# sites to get onto}}",
+      "content": "{count, plural, one {# page to write} other {# pages to write}}",
+      "technical": "{count, plural, one {# fix to make} other {# fixes to make}}"
     },
-    "goalHint": "Actions still to do. Click to show only these.",
     "showAll": "Show all {count}",
     "showLess": "Show fewer",
-    "questionCount": "{count, plural, one {# question} other {# questions}}",
-    "stepsCount": "Steps: {done}/{total}",
     "stepsProgress": "{done} of {total} steps done",
-    "allStepsDone": "All steps are done — mark the action as done.",
-    "stepSaved": "{title}: {done}/{total} steps",
-    "whyTitle": "Why",
-    "close": "Close",
     "emptyGoal": "Nothing left to do for this goal.",
-    "csv": "Export",
-    "csvHint": "Download the actions as a CSV file",
     "csvHeaders": {
       "action": "Action",
       "goal": "Goal",
@@ -519,8 +508,244 @@
       "status": "Status",
       "steps": "Steps",
       "questions": "Questions",
-      "doneAt": "Done on"
-    }
+      "doneAt": "Done on",
+      "category": "Kind of work",
+      "owner": "Where",
+      "topic": "Topic",
+      "createdAt": "Added on"
+    },
+    "heading": "What to do so ChatGPT names you",
+    "subtitle": "Correct the wrong facts first, then get onto the sites ChatGPT reads, write the pages it’s missing and make your site readable to AI. The list is updated after every weekly check.",
+    "goalHints": {
+      "fact": "Where ChatGPT gets your prices, address or hours wrong. Correct these first: a wrong price or address loses customers.",
+      "listing": "Sites ChatGPT relies on when it answers that don’t mention you: directories, publications, social networks. Appear there and ChatGPT sees you too.",
+      "content": "Topics where only competitors are named: write a page on your site that answers these questions, or improve one you have.",
+      "technical": "What ChatGPT can’t read on your site: blocked bots, prices as images, an address and phone that aren’t text."
+    },
+    "categories": {
+      "fact": "Wrong fact",
+      "directory": "Directories and maps",
+      "news": "Publications",
+      "social": "Social networks",
+      "other": "Other sites",
+      "newPage": "New page",
+      "rework": "Rework a page",
+      "access": "Access for AI bots",
+      "markup": "Text and markup"
+    },
+    "siteKinds": {
+      "directory": "Directories and maps",
+      "news": "Publications",
+      "social": "Social networks",
+      "other": "Other sites"
+    },
+    "owners": {
+      "own": "On your site",
+      "earned": "On other sites",
+      "everywhere": "Everywhere"
+    },
+    "ownerBadges": {
+      "own": "Your site",
+      "earned": "Other site",
+      "everywhere": "Everywhere"
+    },
+    "ownerHints": {
+      "own": "This is done on your own site.",
+      "earned": "This is done on another site: get listed there or get written about.",
+      "everywhere": "Write the correct details on your site and on the other sites ChatGPT read."
+    },
+    "groupBy": {
+      "goal": "Goal",
+      "category": "Kind of work",
+      "impact": "Impact",
+      "owner": "Where",
+      "topic": "Topic"
+    },
+    "groupByLabel": "Group by: {by}",
+    "filterGroups": {
+      "topics": "Topics",
+      "owners": "Where the work is",
+      "sourceTypes": "Kind of site",
+      "categories": "Kind of work"
+    },
+    "filterBy": "Filter by",
+    "filterAll": "All",
+    "filtersAll": "All filters",
+    "filtersSome": "Filters: {count}",
+    "clearFilters": "Clear filters",
+    "statusAll": "All statuses",
+    "statusSome": "{count} statuses",
+    "guide": "How it works",
+    "guideHint": "A short tour of the page: the goals, the impact, what an action holds and how to get it done",
+    "export": "Export",
+    "exportHint": "Download the actions shown as a CSV (Excel) or JSON file",
+    "exportFormat": "Format",
+    "addContent": "Add a page",
+    "acceptAll": "Accept all",
+    "accept": "Accept",
+    "cancel": "Cancel",
+    "declineAll": "Decline all",
+    "declineAllTitle": "Decline {count, plural, one {# new action} other {# new actions}}?",
+    "declineAllText": "They move to the Declined group, where you can restore any of them.",
+    "openCount": "{count, plural, one {# open action} other {# open actions}}",
+    "picked": "{count} selected",
+    "clearPicks": "Clear selection",
+    "pickOne": "Select: {title}",
+    "pickGroup": "Select all: {group}",
+    "fold": "Fold: {group}",
+    "unfold": "Unfold: {group}",
+    "emptyGroup": "Nothing here for now",
+    "emptyFiltered": "No actions match these filters.",
+    "noTopic": "No topic",
+    "changedMany": "{count} actions: {status}",
+    "added": "New action added: {title}",
+    "stepsHint": "Steps ticked off, out of three",
+    "closePanel": "Close",
+    "copy": "Copy for ChatGPT",
+    "copied": "Copied",
+    "copyHint": "Copies the action as a task: paste it into ChatGPT or another assistant and it explains every step in detail.",
+    "sections": {
+      "overview": "Summary",
+      "topic": "Topic",
+      "model": "AI assistant",
+      "why": "Why it matters",
+      "brief": "Brief",
+      "steps": "How to do it",
+      "page": "The page",
+      "sitePages": "Pages ChatGPT reads",
+      "questions": "Questions it should move",
+      "outcome": "Expected effect"
+    },
+    "overview": {
+      "fact": "ChatGPT’s answers say something wrong about you. Write the correct details on your site and on the sites it relies on.",
+      "directory": "{domain} is a directory ChatGPT relies on. A business with a complete listing there is one ChatGPT can recommend.",
+      "news": "{domain} is a publication ChatGPT cites. An article or ranking there that names you lets ChatGPT name you too.",
+      "social": "ChatGPT reads pages on {domain} when it answers. Keep your official page there complete and active.",
+      "other": "ChatGPT relies on {domain}, and there is nothing about you on it.",
+      "newPage": "Your site has no answer to this topic’s questions, so ChatGPT names only competitors. Write a page that answers them.",
+      "rework": "The page you added, reworked to answer this topic’s questions better.",
+      "access": "Let AI search bots into your site so ChatGPT can read your pages and cite them.",
+      "markup": "Write your details so AI reads them exactly: prices, address, phone and hours as text, with business markup."
+    },
+    "brief": {
+      "headlines": "Possible headlines",
+      "metaTitle": "Meta title",
+      "metaDescription": "Meta description",
+      "argue": "What the page must prove",
+      "proofPoints": "Evidence to include",
+      "assistant": "Write with GEO AI",
+      "metaTitleHint": "Search and AI results show about {max} characters; shorten anything longer.",
+      "metaDescriptionHint": "Search results show about {max} characters; shorten anything longer."
+    },
+    "assistantQuestion": "Write the page for “{title}” from its brief.",
+    "sitePagesHint": "The pages of {domain} ChatGPT cited in the latest check, and the share of answers citing each.",
+    "pageShare": "Share of the latest check’s answers citing this page",
+    "questionsHint": "The questions this action should move. The number: answers of the latest check that named you, out of three. Click to open the question.",
+    "namedHint": "Named in {named} of {total} answers",
+    "notAskedHint": "Not asked yet: it will be in the next check",
+    "relativeImpact": "Impact compared with your other actions",
+    "impactLevels": {
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "prompt": {
+      "intro": "I run {brand} ({domain}). To be named more often in ChatGPT’s answers, I need to do the following.",
+      "task": "Task: {title}",
+      "why": "Why: {why}",
+      "steps": "Steps:",
+      "brief": "The page’s brief:",
+      "questions": "Questions customers ask ChatGPT:",
+      "ask": "Explain in plain words how to do each step; if a page is needed, write its text."
+    },
+    "toast": {
+      "titles": {
+        "new": "{count, plural, one {Action back in New} other {# actions back in New}}",
+        "in_progress": "{count, plural, one {Action accepted} other {# actions accepted}}",
+        "done": "{count, plural, one {Marked as done} other {# actions marked as done}}",
+        "declined": "{count, plural, one {Action declined} other {# actions declined}}"
+      },
+      "texts": {
+        "new": "{count, plural, one {You’ll find it} other {You’ll find them}} under <link>{group}</link>.",
+        "in_progress": "Tick off the steps as you go. {count, plural, one {You’ll find it} other {You’ll find them}} under <link>{group}</link>.",
+        "done": "The effect shows after the next weekly check. {count, plural, one {You’ll find it} other {You’ll find them}} under <link>{group}</link>.",
+        "declined": "{count, plural, one {You can restore it} other {You can restore them}} from <link>{group}</link>."
+      }
+    },
+    "add": {
+      "title": "Add an action for a page",
+      "description": "Give the address of a page on your site or upload its text as a file, then pick its type and topic: we compare it with that topic’s questions and make an action that says how to improve it.",
+      "content": "Page",
+      "sources": {
+        "url": "Address",
+        "document": "File"
+      },
+      "urlLabel": "Page address",
+      "urlPlaceholder": "yoursite.uz/page",
+      "dropTitle": "Drop the file here or <browse>choose one</browse>",
+      "dropHint": "Markdown (.md) or text (.txt), up to 200 KB",
+      "another": "Choose another file",
+      "pageType": "Page type",
+      "pageTypePlaceholder": "Pick a page type",
+      "topic": "Topic",
+      "topicPlaceholder": "Pick a topic",
+      "cancel": "Cancel",
+      "create": "Create the action",
+      "creating": "Reading the page…",
+      "urlInvalid": "Write the page’s full address, for example yoursite.uz/prices.",
+      "fileType": "Only a .md or .txt file.",
+      "fileLarge": "The file is too large: 200 KB at most.",
+      "fileEmpty": "The file is empty.",
+      "fileRequired": "Choose a file with the page’s text.",
+      "pageTypeRequired": "Pick the page type.",
+      "topicRequired": "Pick the topic.",
+      "failed": "Couldn’t create the action. Try again."
+    },
+    "pageTypes": {
+      "home": "Home page",
+      "service": "Service page",
+      "prices": "Prices",
+      "article": "Article or blog post",
+      "about": "About us",
+      "other": "Other"
+    },
+    "tour": {
+      "skip": "Skip the tour",
+      "back": "Back",
+      "next": "Next",
+      "done": "Got it",
+      "goals": {
+        "title": "Pick where to start",
+        "text": "Four goals: wrong facts to correct, sites to get onto, pages to write and fixes on your site. Click one to keep only its actions; the ring fills as they get done."
+      },
+      "impact": {
+        "title": "See what helps most",
+        "text": "The bars show the expected effect compared with your other actions: three bars help most."
+      },
+      "row": {
+        "title": "Open an action",
+        "text": "An action opens beside the list: why it matters, its steps and the questions it should move.",
+        "action": "Open it"
+      },
+      "why": {
+        "title": "Why it matters",
+        "text": "The evidence from ChatGPT’s answers: the site it relied on, what it said that is wrong, or the questions where only competitors are named."
+      },
+      "brief": {
+        "title": "Write from the brief",
+        "text": "A page to write comes with its brief: possible headlines, the title and description search shows, what the page must prove and the evidence to put in it."
+      },
+      "assistant": {
+        "title": "Draft it with GEO AI",
+        "text": "GEO AI already knows the brief and the numbers behind it: ask it for the page’s text."
+      },
+      "decide": {
+        "title": "Accept it, then get it done",
+        "text": "Accept an action when you take it on, tick its steps as you go and mark it done. Its effect on your visibility shows after the next weekly check."
+      }
+    },
+    "impactHint": "{impact}: the expected effect compared with your other actions. The more bars, the more it helps.",
+    "uploadedText": "Uploaded text"
   },
   "WrongFacts": {
     "title": "Wrong facts about you",

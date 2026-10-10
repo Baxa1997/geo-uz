@@ -52,8 +52,10 @@ open questions): add to it each time a page is finished.
   each; the questions each competitor wins, and stop tracking a competitor); Sources (Sites and Pages views,
   each: the most cited over time, what changed beside whether they work for the client, the table with a gaps
   switch; a page per cited site); Wrong facts (numbers and a
-  table); Harakatlar (four goal tiles, the list by status and goal, a side panel with steps to tick, fix →
-  proof); Settings (sections: brand profile, tracked brands, interface language; editing later); sidebar
+  table); Harakatlar, laid out like Peec's Actions (statuses, filters, grouping, guided tour, export, "Add a
+  page", "Accept all"; the four goals as tiles; the list by status, goal and kind of work with boxes to pick
+  rows; an action opened beside the list with its brief, steps, questions and Accept → Done; fix → proof);
+  Settings (sections: brand profile, tracked brands, interface language; editing later); sidebar
   sections with a start checklist; site checks in the free check; public report; language + topic filters as
   dropdown chips; the next weekly check date on the Overview and Questions.
 - Next (after first paying clients): the backend (including the rules that make Harakatlar from real data and
@@ -138,9 +140,13 @@ same"), through `Page` (shared/components/page.tsx):
    that says what the cards show and how to read them, outside the cards, then the cards. A part's switch
    (Peec's gap analysis) sits on the right of its heading. A table's card has its tools on top (search on the
    left, filters and an icon-only CSV on the right), a grey heading row and its row count at the bottom.
-   A page laid out across the whole panel, like Peec's prompts page (`bleed`: Savollar, Discovery), brings its
-   own columns instead, with a footer that stays in view (`sticky bottom-0`): the panel scrolls and the page
-   grows with its content, so nothing scrolls inside it but its wide table, sideways.
+   A page laid out across the whole panel, like Peec's prompts page (`bleed`: Savollar, Discovery, Harakatlar),
+   brings its own columns instead, with a footer that stays in view (`sticky bottom-0`): the panel scrolls and
+   the page grows with its content, so nothing scrolls inside it but its wide table, sideways. Harakatlar's
+   opened action is the one part that scrolls on its own: it sits beside the list (`sticky`, under the page's
+   tools, which stick too from that width), and covers the screen on a phone.
+   Anything `absolute` inside a part that scrolls on its own (a screen reader's hidden label) needs that part to
+   be `relative`, or it stretches the panel and the page scrolls past its end.
 
 A strip of facts across the whole panel (a site's page) steps out of the page's padding (`-mx-4 sm:-mx-6`).
 
@@ -214,9 +220,27 @@ frontend/src/
                           #   names when it cites the site, its pages' table. Answers: SiteAnswers. A site the
                           #   latest check no longer cites keeps its page from the history, without tabs
     wrong-facts/          # Wrong facts: numbers, then claim, correct value, question, date found as a table
-    actions/              # Harakatlar: recommended fixes (sites to get onto, wrong facts, pages to write, site fixes):
-                          #   four goal tiles, the list by status then goal, a side panel (?action=) with steps to tick,
-                          #   status new → in progress → done / declined, and fix → proof on each done one; CSV
+    actions/              # Harakatlar: recommended fixes (wrong facts, sites to get onto, pages to write, site fixes),
+                          #   laid out like Peec's Actions across the panel (Page `bleed`; the user's screenshots of
+                          #   Oct 10): ActionBoard's strip of tools (statuses, All filters: topics, where the work is,
+                          #   kind of site, kind of work; Group by: goal, kind of work, impact, where, topic; the
+                          #   guided tour (shared Tour, starts by itself once per browser), export as CSV or JSON,
+                          #   "Add a page" (AddContentDialog: a page's address or a Markdown/text file, its type and
+                          #   topic → an action with its brief), "Accept all"); a heading and GoalTiles; the list by
+                          #   status, then group, then kind of work when a goal has two or more (helpers/grouping.ts),
+                          #   the first group of each level open, five rows then "Show all"; boxes to pick rows (one
+                          #   kind of work at once with its box) and a footer that stays in view: the open count and
+                          #   "Decline all", or what to do with the rows picked. ActionPanel (?action= opens one):
+                          #   "Copy for ChatGPT" (the action written as a prompt), what it is, topic, assistant, why
+                          #   it matters, the brief for a page (headlines, meta title and description against their
+                          #   length, what it must prove, evidence; "Write with GEO AI"), the steps to tick, the pages
+                          #   ChatGPT reads (a listing's site, or the client's own), the questions it should move,
+                          #   the expected effect or fix → proof; at the bottom Decline / Accept, then Cancel / Done.
+                          #   Accepting opens "In progress" on the action and folds "New", as Peec's; every change
+                          #   shows a toast with a link to its group (ActionToast). Changes show at once and go back
+                          #   if saving fails. Left out of Peec's: models, platforms and page types as filters (one
+                          #   assistant; the backend doesn't classify pages), XLSX (CSV opens in Excel), Peec Agent
+                          #   (our GEO AI panel takes its place)
     dashboard/            # project list
     projects/             # project setup: new project form, onboarding wizard (website → brand profile → competitors
                           #   → topics → questions; form left, live preview of the app right from lg) and the first
@@ -355,6 +379,12 @@ Auth: the backend sets an httpOnly session cookie `geo_session` on login. The br
   important first; recomputed after every weekly run, keeping the statuses the client set)
 - `PATCH /projects/{id}/actions/{actionId}` → Action (body: status and/or stepsDone; marking done sets doneAt,
   and the proof appears after the next run; the frontend sends status in_progress with the first ticked step)
+- `PATCH /projects/{id}/actions` → Action[] (body: ids[], status: several at once, "Accept all", "Decline all"
+  and the rows picked; their ticked steps stay as they were)
+- `POST /projects/{id}/actions` → Action (body: url? or document? (a page's Markdown or text, at most 200 KB),
+  pageType, topic: "Add a page". The backend reads the page against that topic's questions and their answers and
+  returns a new content action with url/pageType set and a brief for reworking it; 422 without an address or a
+  text, or for an unknown topic)
 - `POST /snapshot` → Snapshot (free analysis: domain → 10 prompts; category and city are optional,
   the backend detects them from the website when omitted and returns them in the Snapshot; it also reads the
   website: siteChecks)
@@ -413,8 +443,13 @@ Types:
   stepsDone: number[] (how-to steps ticked off, by index below ACTION_STEP_COUNT = 3),
   proof: { before, after (visibility 0–1 on promptIds), runs } | null, and by kind:
   listing { domain, sourceType, answers (citing it), competitorIds[] (named in those answers) } ·
-  fact { claim, correct } · content { topic } · technical { check: "ai_bots_blocked"|"prices_as_images"|
-  "no_business_markup"|"contacts_missing" } }. Titles and steps are written by the frontend in the interface language.
+  fact { claim, correct } · content { topic, url | null, pageType: "home"|"service"|"prices"|"article"|"about"|
+  "other" | null (both set for a page the client added: it is reworked, not written), brief: ContentBrief | null } ·
+  technical { check: "ai_bots_blocked"|"prices_as_images"|"no_business_markup"|"contacts_missing" } }. Titles and
+  steps are written by the frontend in the interface language; a brief comes written by the backend, in Uzbek
+  (the page's language is the client's choice; the questions are in Uzbek and Russian).
+- ContentBrief { summary, headlines: string[] (two or three), metaTitle (about 60 characters), metaDescription
+  (about 155), argue (what the page must prove), proofPoints: string[] (the evidence to put on it) }
 - RunProgress { id, projectId, status: "queued"|"running"|"analyzing"|"done"|"failed",
   answered (answers collected so far), total (prompts × samples) }
 
@@ -553,8 +588,11 @@ over the element on hover, on keyboard focus and on a tap (phones have no hover)
   function and gets the description's id for `aria-describedby`. Marks repeated in every row pass
   `focusable={false}` (reached by the mouse and a tap, not by Tab) and `described={false}` when a hidden label
   already says the same.
-- Done on Savollar, a question's page, Javoblar (the table and the opened answer), Raqobatchilar, Manbalar and
-  a cited site's page, and in the shared brands table, tone icons, site-kind dots and export buttons. The other pages' tables get
+- Done on Savollar, a question's page, Javoblar (the table and the opened answer), Raqobatchilar, Manbalar,
+  a cited site's page and Harakatlar (goal tiles, impact bars, where the work is done, steps, the opened
+  action's figures), and in the shared brands table, tone icons, site-kind dots and export buttons.
+- A hint's bubble and its frame let the pointer through (`pointer-events-none`): a menu or a row under an
+  open bubble stays clickable. The other pages' tables get
   theirs when their turn comes.
 
 ## Commands (frontend, from `frontend/`)
