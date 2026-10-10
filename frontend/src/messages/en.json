@@ -2484,9 +2484,7 @@
       "pricePlain": "UZS {amount} a month",
       "facts": {
         "cycle": "Billing cycle",
-        "renews": "Renews",
-        "prompts": "Questions",
-        "competitors": "Competitors"
+        "renews": "Renews"
       },
       "cycles": {
         "month": "Monthly",
@@ -2496,7 +2494,6 @@
       "assistantsBase": "In the plan",
       "assistantsAddOn": "Add-on",
       "assistantsAdd": "Add an assistant",
-      "assistantsNote": "Gemini and Yandex are coming: they will be added to a plan for a fee.",
       "baseTitle": "Base plan",
       "baseText": "Your plan; the assistants are added above.",
       "cycleLabel": "Pay monthly or yearly",
@@ -2505,20 +2502,13 @@
         "year": "Yearly"
       },
       "price": "<b>{amount}</b> UZS / month",
-      "priceFrom": "from <b>{amount}</b> UZS / month",
+      "priceFrom": "<b>{amount}+</b> UZS / month",
       "yearTotal": "UZS {amount} a year: {free} months free",
       "managed": "Managed GEO",
-      "for": {
-        "start": "For a small business with one location.",
-        "business": "For a business that wants to grow.",
-        "agency": "For agencies and networks with several brands.",
-        "managed": "Our team does the fixes for you."
-      },
       "limits": {
         "prompts": "Tracked questions",
         "brands": "Brands",
-        "competitors": "Competitors",
-        "facts": "Brand facts"
+        "competitors": "Competitors"
       },
       "cancel": "Cancel subscription",
       "contact": "Talk to us",
@@ -2531,10 +2521,10 @@
       "engineSoon": "{engine}, coming soon",
       "features": {
         "users": "Unlimited users",
-        "reports": "Weekly report in Telegram and PDF",
+        "reports": "Telegram and PDF reports",
         "wrongFacts": "Wrong facts checked",
         "actions": "Recommended actions",
-        "agencyName": "Reports under your agency’s name",
+        "agencyName": "Agency-branded reports",
         "done": "Our team does the fixes"
       },
       "notIncluded": "not included",
@@ -3386,7 +3376,7 @@
     "settingsPlan": {
       "current": {
         "title": "Your plan",
-        "text": "Your plan and how much of it the project uses: questions, competitors, facts."
+        "text": "Your plan, its price, how it is paid and when it renews; on the right, the AI assistants it tracks."
       },
       "plans": {
         "title": "Every plan",

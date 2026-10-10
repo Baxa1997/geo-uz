@@ -2484,9 +2484,7 @@
       "pricePlain": "{amount} soʻm / oy",
       "facts": {
         "cycle": "Toʻlov davri",
-        "renews": "Keyingi toʻlov",
-        "prompts": "Savollar",
-        "competitors": "Raqobatchilar"
+        "renews": "Keyingi toʻlov"
       },
       "cycles": {
         "month": "Oylik",
@@ -2496,7 +2494,6 @@
       "assistantsBase": "Tarifda",
       "assistantsAddOn": "Qoʻshimcha",
       "assistantsAdd": "Yordamchi qoʻshish",
-      "assistantsNote": "Gemini va Yandex tez orada: ular tarifga qoʻshimcha toʻlov bilan qoʻshiladi.",
       "baseTitle": "Asosiy tarif",
       "baseText": "Tarifingiz; yordamchilar yuqorida qoʻshiladi.",
       "cycleLabel": "Oylik yoki yillik toʻlov",
@@ -2505,20 +2502,13 @@
         "year": "Yillik"
       },
       "price": "<b>{amount}</b> soʻm / oy",
-      "priceFrom": "<b>{amount}</b> soʻmdan / oy",
+      "priceFrom": "<b>{amount}+</b> soʻm / oy",
       "yearTotal": "Yiliga {amount} soʻm: {free} oy bepul",
       "managed": "Managed GEO",
-      "for": {
-        "start": "Bitta filiali bor kichik biznes uchun.",
-        "business": "Oʻsishni istagan biznes uchun.",
-        "agency": "Bir nechta brendli agentlik va tarmoqlar uchun.",
-        "managed": "Tuzatishlarni jamoamiz siz uchun bajaradi."
-      },
       "limits": {
         "prompts": "Kuzatiladigan savollar",
         "brands": "Brendlar",
-        "competitors": "Raqobatchilar",
-        "facts": "Brend faktlari"
+        "competitors": "Raqobatchilar"
       },
       "cancel": "Obunani bekor qilish",
       "contact": "Bogʻlanish",
@@ -2530,11 +2520,11 @@
       "soonChip": "Tez orada",
       "engineSoon": "{engine}, tez orada",
       "features": {
-        "users": "Foydalanuvchilar cheklanmagan",
-        "reports": "Haftalik hisobot Telegram’da va PDF",
+        "users": "Cheksiz foydalanuvchilar",
+        "reports": "Telegram va PDF hisobotlar",
         "wrongFacts": "Notoʻgʻri faktlar tekshiruvi",
         "actions": "Tavsiya etilgan harakatlar",
-        "agencyName": "Hisobotlar agentligingiz nomi bilan",
+        "agencyName": "Agentlik nomidagi hisobotlar",
         "done": "Tuzatishlarni jamoamiz bajaradi"
       },
       "notIncluded": "kirmaydi",
@@ -3386,7 +3376,7 @@
     "settingsPlan": {
       "current": {
         "title": "Tarifingiz",
-        "text": "Tarifingiz va loyiha undan qanchasini ishlatyapti: savollar, raqobatchilar, faktlar."
+        "text": "Tarifingiz, uning narxi, toʻlov davri va keyingi toʻlov sanasi; oʻng tomonda u kuzatadigan AI yordamchilar."
       },
       "plans": {
         "title": "Barcha tariflar",

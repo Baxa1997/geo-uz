@@ -15,24 +15,23 @@ export function PlanBilling() {
         </h2>
         <p className="text-[0.9375rem] text-pretty text-muted-foreground">{t("billingText")}</p>
       </header>
-      <ul className="grid gap-3 md:grid-cols-2">
+      <ul className="grid gap-4 md:grid-cols-2">
         {(
           [
             ["payment", CreditCard],
             ["invoices", FileText],
           ] as const
         ).map(([key, Icon]) => (
-          <li key={key} className="flex items-center gap-4 rounded-2xl bg-card px-5 py-4 ring-1 ring-foreground/10">
+          <li key={key} className="flex items-center gap-4 rounded-2xl bg-card p-5 ring-1 ring-foreground/10">
             <span aria-hidden className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-muted text-muted-foreground">
               <Icon className="size-5" />
             </span>
-            <div className="flex min-w-0 flex-col gap-0.5">
-              <p className="flex flex-wrap items-center gap-2 text-[0.9375rem] font-medium">
-                {t(`${key}.title`)}
-                <span className="rounded-md bg-muted px-1.5 py-0.5 text-[0.65rem] font-normal text-muted-foreground">{t("soon")}</span>
-              </p>
-              <p className="text-sm text-pretty text-muted-foreground">{t(`${key}.text`)}</p>
+            <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+              <p className="text-[1.0625rem] font-medium">{t(`${key}.title`)}</p>
+              <p className="text-[0.9375rem] text-pretty text-muted-foreground">{t(`${key}.text`)}</p>
             </div>
+            {/* Billing isn't built: the card says so instead of opening */}
+            <span className="shrink-0 rounded-full border px-2.5 py-0.5 text-sm text-muted-foreground">{t("soonChip")}</span>
           </li>
         ))}
       </ul>

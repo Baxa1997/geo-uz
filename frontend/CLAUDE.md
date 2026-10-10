@@ -262,10 +262,12 @@ frontend/src/
                           #   questions' tags with counts, create several, rename, delete; a row opens Savollar on
                           #   `?tag=`), general-page (AccountCard: the user's name, phone and Telegram; the interface
                           #   language), members-page (MembersTable: role, status, projects; invite by phone,
-                          #   remove), plan-page (Peec's Plans: PlanOverview, the plan "Current", its price, cycle,
-                          #   renewal and what the project uses, beside the assistants it asks; PlanCards, "Base
-                          #   plan" with Monthly / Yearly and the plans and Managed GEO side by side: price, limits
-                          #   with marks, the button (the current plan's cancels, the others switch: a request
+                          #   remove), plan-page (Peec's Plans & Billing, as the user asked twice on Oct 10:
+                          #   PlanOverview, the plan "Current", its price, cycle and renewal, beside how many
+                          #   assistants it asks and "Add an assistant" (soon); PlanCards, "Base plan" with Monthly
+                          #   / Yearly and the plans and Managed GEO four in a row (two by two under a 64rem panel),
+                          #   level with each other: name, price, three limits with marks (questions, brands,
+                          #   competitors), the button (the current plan's cancels, the others switch: a request
                           #   reaches us), assistants, ✓ / — features; PlanBilling: payment and invoices "soon").
                           #   Settings' parts (SettingsCard, SettingsRow, SaveBar) in settings-parts.tsx.
                           #   account-settings-page: /settings with no project open, the interface language.

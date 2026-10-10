@@ -228,7 +228,13 @@ Any other number makes a new account, which goes through onboarding and gets a p
   "tez orada"); then "Base plan" with Monthly / Yearly and the four cards side by side (price, numbers with
   their marks, the button: the current plan's cancels it, the others switch, Managed GEO talks to us; the
   assistants; what each includes, ✓ or a dash); then payment and invoices, "tez orada". A year paid ahead costs
-  10 months, "2 months free" (`YEARLY_MONTHS_PAID`; the user's decision, 10 Oct).
+  10 months, "2 months free" (`YEARLY_MONTHS_PAID`; the user's decision, 10 Oct). After the merge, a second
+  correction with Peec's Plans & Billing again ("pricing, design must be the same"), on the branch
+  `plan-billing-correction`, merged and pushed the same day when the user said "push everything": the plans stand four in a row and level with each other, as Peec's (they
+  were two by two on a laptop); the plan's card keeps Peec's two facts (how it is paid, when it renews) and the
+  number of assistants; each card has Peec's three limits (questions, brands, competitors; the facts limit stays
+  on Faktlar), no line on whom it is for, Peec's chips and smaller assistant tiles; Managed GEO reads
+  "3 000 000+ soʻm / oy"; the payment and invoice cards are Peec's size.
 - **Savollar and a question's page in Peec's design, and brands' logos (10 Oct), on the same branch; merged
   and pushed that day; corrections may still come.** The user sent Peec's prompts list, a prompt's page and its chart's tooltip ("make the prompts
   design the same, spacing, and colors … inside Prompt make the design the same, and add some filters that do
@@ -322,7 +328,7 @@ Any other number makes a new account, which goes through onboarding and gets a p
   then `hisobotlar-correction` (the report as an official status document with a condition score, Hisobotlar
   opening on the latest condition), then `report-detail-width` (the report fills the panel's width), then
   `settings-and-overview` (Sozlamalar in Peec's layout, the Overview tightened, Savollar and a question's page in
-  Peec's design, brands' logos). Each time the user chose "commit, push" when asked (for Harakatlar: "push everything"). Each page gets its
+  Peec's design, brands' logos), then `plan-billing-correction` (Tarif's plans four in a row, as Peec's). Each time the user chose "commit, push" when asked (for Harakatlar: "push everything"). Each page gets its
   own branch, merged when the user says so.
 
 ## To do, in order
