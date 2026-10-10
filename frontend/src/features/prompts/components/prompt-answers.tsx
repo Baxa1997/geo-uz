@@ -60,7 +60,7 @@ export function PromptAnswers({
                 type="button"
                 aria-haspopup="dialog"
                 onClick={() => setOpen(index)}
-                className="flex w-full flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 text-left text-sm transition-colors outline-none hover:bg-muted/40 focus-visible:bg-muted/40"
+                className="relative flex w-full flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 text-left text-sm transition-colors outline-none hover:bg-muted/40 focus-visible:bg-muted/40"
               >
                 <span className="flex min-w-0 flex-1 basis-72 items-start gap-2.5">
                   <EngineIcon engine={engineOf(engine)} className="mt-0.5 text-muted-foreground" />
@@ -71,9 +71,10 @@ export function PromptAnswers({
                     </span>
                   </span>
                 </span>
-                <span className="flex shrink-0 items-center gap-3">
+                {/* On a phone the brands go under the excerpt and wrap, the place staying at the line's end */}
+                <span className="flex max-w-full min-w-0 items-center gap-3">
                   {named.length > 0 ? (
-                    <span className="flex flex-wrap gap-1">
+                    <span className="flex min-w-0 flex-wrap gap-1">
                       {named.map((brand) => (
                         <span
                           key={brand.id}
@@ -90,7 +91,7 @@ export function PromptAnswers({
                   ) : (
                     <span className="text-muted-foreground">{t("nobody")}</span>
                   )}
-                  <span className="flex w-16 items-center justify-end gap-1.5 font-medium tabular-nums">
+                  <span className="flex w-16 shrink-0 items-center justify-end gap-1.5 font-medium tabular-nums">
                     {own ? (
                       <>
                         <ToneIcon tone={own.tone} className="size-4" />

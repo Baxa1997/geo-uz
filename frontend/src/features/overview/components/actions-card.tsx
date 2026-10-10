@@ -7,7 +7,7 @@ import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle }
 import { Link } from "@/i18n/navigation";
 import type { Action } from "@/shared/types/api";
 
-const SHOWN = 3;
+const SHOWN = 4;
 
 /** The top fixes still to do, so the overview never ends on a number alone. Each opens on the actions page. */
 export function ActionsCard({ actions, href }: { actions: Action[]; href: (actionId?: string) => string }) {

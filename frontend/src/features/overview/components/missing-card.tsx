@@ -6,7 +6,7 @@ import { Link } from "@/i18n/navigation";
 import { namedBrands, promptsWithoutYou } from "@/shared/helpers/scores";
 import type { Report } from "@/shared/types/api";
 
-const SHOWN = 4;
+const SHOWN = 5;
 
 /** Questions where ChatGPT names competitors and not the client: the first things to work on. Each opens its answers. */
 export function MissingCard({

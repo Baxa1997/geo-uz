@@ -13,6 +13,12 @@ export interface Brand {
   /** Other spellings, Latin and Cyrillic, e.g. "Oq Tabassum", "Ок Табассум". */
   aliases: string[];
   domain: string;
+  /**
+   * The brand's logo, an image address we serve: the backend finds it on the brand's website (its icon or
+   * the logo it declares) when the brand is added, and keeps a copy. Absent or null when none was found:
+   * the brand's first letter stands in.
+   */
+  logo?: string | null;
 }
 
 /** The paid plans (names in messages/Plans). The free check has no project. */
@@ -27,6 +33,8 @@ export interface ProjectLimits {
   prompts: number;
   /** Competitors it may track. */
   competitors: number;
+  /** Brand facts it may keep for the answers to be checked against (Sozlamalar › Faktlar). */
+  facts: number;
 }
 
 export interface Project {
@@ -42,9 +50,20 @@ export interface Project {
   services: string[];
   /** Who buys it, as the client wrote it in Discovery ("Ota-onalar", "Tishi ogʻriyotganlar"); steers suggested questions too. */
   customers: string[];
+  /** Words the brand wants to be known by ("Oilaviy", "Ogʻriqsiz"), Peec's brand identity; steers suggested questions too. */
+  identity: string[];
   plan: Plan;
   limits: ProjectLimits;
+  billing: ProjectBilling;
 }
+
+/** How the plan is paid: monthly or for a year ahead, and when the period paid for ends (null until billing exists). */
+export interface ProjectBilling {
+  cycle: BillingCycle;
+  renewsAt: string | null;
+}
+
+export type BillingCycle = "month" | "year";
 
 export interface Prompt {
   id: string;
@@ -193,6 +212,74 @@ export interface Condition {
   /** The mean of the five areas, a whole number from 0 to 100. */
   score: number;
   areas: Record<ConditionArea, number>;
+}
+
+/**
+ * A change to the project's brand profile (Sozlamalar › Profil): any of the fields, the rest stay. The
+ * name, spellings and website change what counts as the brand from the next check; the profile steers the
+ * suggested questions, which are written again.
+ */
+export interface UpdateProjectRequest {
+  name?: string;
+  domain?: string;
+  aliases?: string[];
+  description?: string;
+  category?: string;
+  city?: string;
+  services?: string[];
+  customers?: string[];
+  identity?: string[];
+}
+
+/** A change to a tracked competitor (Sozlamalar › Brendlar): its name, its spellings, its website. */
+export type UpdateBrandRequest = Partial<Pick<Brand, "name" | "aliases" | "domain">>;
+
+/** The project's brand facts, one statement each, replaced as a whole (Sozlamalar › Faktlar). */
+export interface FactsRequest {
+  facts: string[];
+}
+
+/** A tag of the project's questions, with how many tracked questions carry it (Sozlamalar › Teglar). */
+export interface TagSummary {
+  name: string;
+  prompts: number;
+}
+
+/** New tags, several at once; a name the project has already is skipped. */
+export interface CreateTagsRequest {
+  names: string[];
+}
+
+/** Someone with access to the account's projects (Sozlamalar › A'zolar). */
+export interface Member {
+  id: string;
+  name: string | null;
+  /** E.164; null for someone who joined with Telegram. */
+  phone: string | null;
+  telegramUsername: string | null;
+  /** The owner pays and can't be removed; members see and change the projects. */
+  role: "owner" | "member";
+  /** Invited: the SMS with the link was sent and they haven't logged in yet. */
+  status: "active" | "invited";
+  /** The projects they can open. */
+  projectIds: string[];
+}
+
+/** An invitation by phone number: the backend sends an SMS with a link to log in. */
+export interface InviteMemberRequest {
+  phone: string;
+}
+
+/** A request to change the plan, or to cancel it. Billing isn't built: it reaches us, and we change the plan by hand. */
+export interface PlanRequest {
+  plan: Plan | "managed" | "cancel";
+  /** Paid monthly or for a year ahead; the project's own cycle when left out. */
+  cycle?: BillingCycle;
+}
+
+/** A change to the logged-in user (Sozlamalar › Umumiy). */
+export interface UpdateMeRequest {
+  name: string;
 }
 
 /** A brand the answers name that the project doesn't track: a possible new competitor. */

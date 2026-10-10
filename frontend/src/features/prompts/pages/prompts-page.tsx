@@ -30,7 +30,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
  * The questions we ask ChatGPT, each with the latest run's result, laid out like Peec's prompts page
  * across the whole panel (`bleed`): topics on the left, the questions on the right with a footer that
  * stays in view. `?view=suggested|archived` opens a tab; `&new=` marks that many of the newest
- * suggestions as just made (Discovery comes back with it). A question opens its own page (prompt-page).
+ * suggestions as just made (Discovery comes back with it); `?tag=` starts the list on one tag (Sozlamalar ›
+ * Teglar links it). A question opens its own page (prompt-page).
  */
 export default async function PromptsPage({ params, searchParams }: Props) {
   const { locale: segment, id } = await params;
@@ -48,7 +49,7 @@ export default async function PromptsPage({ params, searchParams }: Props) {
   const fresh = typeof query.new === "string" ? Math.max(0, Number.parseInt(query.new, 10) || 0) : 0;
 
   return (
-    <Page title={t("prompts")} engines tour="prompts" bleed toolbar={prompts.length > 0 && <ReportFilterBar topics={topics} topicFilter={false} />}>
+    <Page title={t("prompts")} engines tour="prompts" bleed>
       <PromptManager
         projectId={report.project.id}
         plan={plan}
@@ -57,6 +58,9 @@ export default async function PromptsPage({ params, searchParams }: Props) {
         initialSuggestions={suggestions}
         initialTopics={topicList}
         initialView={view}
+        initialTag={typeof query.tag === "string" ? query.tag : ""}
+        // The language filter stands in the search's row, as Peec's filters do: no strip of its own
+        filterBar={prompts.length > 0 ? <ReportFilterBar key="filters" topics={topics} topicFilter={false} /> : undefined}
         initialTopicsFolded={cookieStore.get(TOPICS_COOKIE)?.value === "folded"}
         freshCount={fresh}
         results={report.prompts}

@@ -119,7 +119,7 @@ export function SourceHeader({
       </div>
 
       {/* Across the whole panel, as on Peec: out of the page's padding, a line above and below */}
-      <div className="@container -mx-4 overflow-hidden border-y sm:-mx-6">
+      <div className="@container -mx-4 overflow-hidden border-y sm:-mx-5">
         {/* Every cell draws its left and top border; the ones on the outer edges fall outside and are clipped */}
         <dl className={cn("-mt-px -ml-px grid grid-cols-2", facts.length === 5 ? "@3xl:grid-cols-5" : facts.length === 4 ? "@2xl:grid-cols-4" : "@2xl:grid-cols-3")}>
           {facts.map(({ key, label, hint, value }, index) => (
@@ -127,7 +127,7 @@ export function SourceHeader({
               key={key}
               // An odd last fact fills the rest of its line while the facts stand two to a line
               className={cn(
-                "flex min-w-0 flex-col gap-1.5 border-t border-l px-4 py-3.5 sm:px-6",
+                "flex min-w-0 flex-col gap-1.5 border-t border-l px-4 py-3.5 sm:px-5",
                 index === facts.length - 1 && facts.length % 2 === 1 && (facts.length === 5 ? "col-span-2 @3xl:col-span-1" : "col-span-2 @2xl:col-span-1"),
               )}
             >

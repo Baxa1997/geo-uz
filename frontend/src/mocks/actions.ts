@@ -4,6 +4,13 @@
 // Next.js server. With NEXT_PUBLIC_USE_MOCKS=false this file is never used.
 import { ApiError, type ApiClient, type MockResult } from "@/shared/api/client";
 import type {
+  CreateTagsRequest,
+  FactsRequest,
+  InviteMemberRequest,
+  PlanRequest,
+  UpdateBrandRequest,
+  UpdateMeRequest,
+  UpdateProjectRequest,
   AddCompetitorRequest,
   AddContentActionRequest,
   AnalyzeSiteRequest,
@@ -213,4 +220,60 @@ export async function createDemoRequest(body: DemoRequest) {
 
 export async function sendSupportMessage(body: SupportMessage) {
   return run((m) => m.sendSupportMessage(body));
+}
+
+export async function updateMe(body: UpdateMeRequest) {
+  return run((m) => m.updateMe(body));
+}
+
+export async function updateProject(projectId: string, body: UpdateProjectRequest) {
+  return run((m) => m.updateProject(projectId, body));
+}
+
+export async function updateCompetitor(projectId: string, brandId: string, body: UpdateBrandRequest) {
+  return run((m) => m.updateCompetitor(projectId, brandId, body));
+}
+
+export async function getFacts(projectId: string) {
+  return run((m) => m.getFacts(projectId));
+}
+
+export async function updateFacts(projectId: string, body: FactsRequest) {
+  return run((m) => m.updateFacts(projectId, body));
+}
+
+export async function suggestFacts(projectId: string) {
+  return run((m) => m.suggestFacts(projectId));
+}
+
+export async function getTags(projectId: string) {
+  return run((m) => m.getTags(projectId));
+}
+
+export async function createTags(projectId: string, body: CreateTagsRequest) {
+  return run((m) => m.createTags(projectId, body));
+}
+
+export async function renameTag(projectId: string, tag: string, body: TopicRequest) {
+  return run((m) => m.renameTag(projectId, tag, body));
+}
+
+export async function deleteTag(projectId: string, tag: string) {
+  return run((m) => m.deleteTag(projectId, tag));
+}
+
+export async function getMembers() {
+  return run((m) => m.getMembers());
+}
+
+export async function inviteMember(body: InviteMemberRequest) {
+  return run((m) => m.inviteMember(body));
+}
+
+export async function removeMember(memberId: string) {
+  return run((m) => m.removeMember(memberId));
+}
+
+export async function requestPlan(projectId: string, body: PlanRequest) {
+  return run((m) => m.requestPlan(projectId, body));
 }

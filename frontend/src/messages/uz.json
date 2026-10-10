@@ -1647,7 +1647,6 @@
     "location": "Joylashuv"
   },
   "PromptPage": {
-    "label": "Savol",
     "facts": {
       "added": "Qoʻshilgan",
       "topic": "Mavzu",
@@ -1721,6 +1720,24 @@
       "used": "{total} ta javobdan {count} tasida qidirgan",
       "empty": "ChatGPT bu savolga internetdan qidirmasdan javob bergan.",
       "row": "{total} ta javobdan {count} tasida shu soʻrov qidirilgan"
+    },
+    "filters": {
+      "periodLabel": "Tekshiruvlar",
+      "periods": {
+        "all": "Barcha tekshiruvlar",
+        "8": "Oxirgi 8 hafta",
+        "4": "Oxirgi 4 hafta"
+      },
+      "all": "Barcha filtrlar",
+      "brands": "Solishtiriladigan raqobatchilar",
+      "kinds": "Sayt turlari",
+      "reset": "Filtrlarni tozalash"
+    },
+    "sections": {
+      "overview": "Umumiy koʻrinish",
+      "overviewText": "Shu savolga javoblardagi brendlar: har tekshiruvda har biri qanchalik tez-tez tilga olingani va hozir qaysi oʻrinda turgani. Yuqoridagi filtrlar koʻrsatiladigan haftalar va raqobatchilarni tanlaydi.",
+      "sources": "Manbalar taqsimoti",
+      "sourcesText": "Oxirgi tekshiruvda ChatGPT shu savolga javob yozishda tayangan saytlar va ularning turlari. Chiziq qancha uzun boʻlsa, saytni shuncha koʻp javob keltirgan."
     }
   },
   "Plans": {
@@ -2034,7 +2051,7 @@
           "f1": "75 ta savol, har hafta",
           "f2": "5 ta raqobatchi",
           "f3": "Notoʻgʻri faktlar",
-          "f4": "Tavsiyalar va sayt auditi — tez orada"
+          "f4": "Tavsiya etilgan harakatlar; sayt auditi tez orada"
         },
         "agency": {
           "name": "Agentlik",
@@ -2236,45 +2253,312 @@
         "actions": "Birinchi harakatni tanlang"
       },
       "left": "Qolgan qadamlar"
+    },
+    "settingsNav": {
+      "label": "Sozlamalar",
+      "groups": {
+        "project": "Loyiha",
+        "account": "Hisob"
+      },
+      "profile": "Profil",
+      "facts": "Faktlar",
+      "brands": "Brendlar",
+      "tags": "Teglar",
+      "account": "Umumiy",
+      "members": "Aʼzolar",
+      "plan": "Tarif"
     }
   },
   "Settings": {
     "languageTitle": "Interfeys tili",
     "languageDescription": "Menyu va sahifalar shu tilda koʻrsatiladi.",
-    "profileTitle": "Brend profili",
-    "profileText": "Loyihani sozlashda saqlangan maʼlumotlar. Tahrirlash tez orada.",
-    "profileFields": {
-      "name": "Brend nomi",
-      "domain": "Sayt",
-      "description": "Tavsif",
-      "category": "Soha",
-      "city": "Shahar",
-      "aliases": "Boshqa yozilishlar",
-      "services": "Xizmatlar",
-      "competitors": "Raqobatchilar"
+    "save": {
+      "saved": "Saqlandi.",
+      "cancel": "Bekor qilish",
+      "save": "Saqlash",
+      "saving": "Saqlanmoqda…"
     },
-    "nav": {
-      "label": "Sozlamalar boʻlimlari",
-      "project": "Loyiha",
-      "account": "Hisob",
-      "profile": "Brend profili",
-      "brands": "Brendlar",
-      "facts": "Faktlar",
-      "language": "Interfeys tili",
-      "members": "Aʼzolar",
-      "billing": "Toʻlov",
-      "soon": "tez orada"
+    "profile": {
+      "title": "Brend profili",
+      "text": "Brendingiz kim, kimga va qayerda xizmat qiladi. Oʻzgarishlar taklif qilinadigan savollarni yozishda ishlatiladi.",
+      "editBrand": "Nomi va sayti",
+      "aliasesLine": "Yana shunday qidiriladi: {aliases}",
+      "description": "Tavsif",
+      "descriptionHint": "Brendingiz haqida.",
+      "descriptionInfo": "Nima qilasiz va kim uchun, bir-ikki gapda. Taklif qilinadigan savollar va yangi sahifalar uchun brief'lar shundan yoziladi.",
+      "category": "Soha",
+      "categoryHint": "Brendingiz ishlaydigan soha.",
+      "categoryInfo": "Mijozlar siznikiga oʻxshash bizneslar haqida qanday savollar berishini belgilaydi.",
+      "identity": "Brend qiyofasi",
+      "identityHint": "Brendingizni taʼriflaydigan soʻzlar.",
+      "identityInfo": "Sizni qanday bilishlarini xohlaysiz: oilaviy, ogʻriqsiz, zamonaviy. Savollar shular atrofida taklif qilinadi, keyinroq ChatGPT sizni shunday taʼriflayaptimi, tekshiramiz.",
+      "services": "Xizmatlar",
+      "servicesHint": "Brendingiz nimalarni taklif qiladi.",
+      "servicesInfo": "Har bir xizmat taklif qilinadigan savollar mavzusiga aylanadi.",
+      "customers": "Mijoz turlari",
+      "customersHint": "Brendingiz kimlar uchun.",
+      "customersInfo": "Ota-onalar, talabalar, sayyohlar… Savollar har biri qanday soʻrashi boʻyicha taklif qilinadi.",
+      "markets": "Maqsadli bozor",
+      "marketsHint": "Brendingiz qayerda ishlaydi: savollar shu shahardagi mijoz nomidan beriladi.",
+      "city": "Shahar",
+      "mapLarge": "Xaritani kattalashtirish",
+      "mapCities": "Savol beriladigan shaharlar",
+      "saveNote": "Oʻzgarishlarni saqlash savol takliflarini yangilaydi.",
+      "invalid": "Profilda nimadir notoʻgʻri.",
+      "failed": "Saqlab boʻlmadi. Qayta urinib koʻring."
+    },
+    "facts": {
+      "title": "Brend faktlari",
+      "text": "Siz haqingizdagi toʻgʻri maʼlumotlar: narx, manzil, ish vaqti. ChatGPT javoblari shular bilan solishtiriladi, ularga zid gaplar <link>Notoʻgʻri faktlar</link> sahifasida chiqadi.",
+      "count": "{max} tadan {count} ta",
+      "fromSite": "Saytdan toʻldirish",
+      "reading": "Sayt oʻqilmoqda…",
+      "empty": "Hali fakt yoʻq. Pastda yozing yoki saytingizdan toʻldiring.",
+      "factLabel": "{number}-fakt",
+      "remove": "{number}-faktni olib tashlash",
+      "full": "{plan} tarifidagi {max} ta faktning hammasi band. Yangisini qoʻshish uchun bittasini oʻchiring.",
+      "newLabel": "Yangi fakt",
+      "placeholder": "Masalan: Har kuni 9:00–21:00 ishlaymiz",
+      "add": "Qoʻshish",
+      "foundTitle": "Saytingizda topildi",
+      "foundText": "Toʻgʻri va tekshirishga arziydiganlarini qoʻshing.",
+      "foundNone": "Yangi narsa yoʻq: topilganlarning hammasi roʻyxatingizda bor.",
+      "addAll": "Hammasini qoʻshish",
+      "saveNote": "Keyingi tekshiruvdan boshlab javoblar shu faktlar bilan solishtiriladi.",
+      "overLimit": "Tarif {max} ta faktga ruxsat beradi.",
+      "tooLong": "Fakt koʻpi bilan {max} ta belgi boʻladi.",
+      "failed": "Saqlab boʻlmadi. Qayta urinib koʻring.",
+      "notInPlan": "{plan} tarifida notoʻgʻri faktlar tekshirilmaydi, shuning uchun brend faktlari ham yoʻq. Ular Biznes tarifidan boshlanadi: <link>tariflarni koʻring</link>."
     },
     "brands": {
-      "title": "Kuzatilayotgan brendlar · {count}",
-      "hint": "Har bir brendning grafiklardagi rangi, javoblarda qidiriladigan yozilishlari, sayti va oxirgi tekshiruvda nechta javobda tilga olingani.",
-      "soon": "Tahrirlash tez orada",
-      "color": "Rang",
-      "name": "Brend",
-      "aliases": "Qidiriladigan yozilishlar",
-      "domain": "Sayt",
-      "mentions": "Javoblarda",
-      "you": "Siz"
+      "title": "Kuzatilayotgan brendlar",
+      "count": "{max} ta raqobatchidan {count} ta",
+      "usage": "{plan} tarifi sizdan tashqari {max} tagacha raqobatchini kuzatadi.",
+      "search": "Brend qidirish",
+      "add": "Brend qoʻshish",
+      "addHint": "Yana bitta raqobatchini kuzatish: uning raqamlari yigʻilgan javoblardan hisoblanadi.",
+      "full": "{plan} tarifi {max} tagacha raqobatchini kuzatadi. Yangisini qoʻshish uchun bittasini kuzatishni toʻxtating.",
+      "columns": {
+        "color": "Rang",
+        "name": "Brend",
+        "aliases": "Qidiriladigan yozilishlar",
+        "domain": "Sayt",
+        "mentions": "Javoblarda",
+        "actions": "Amallar"
+      },
+      "hints": {
+        "color": "Brendning barcha grafiklardagi rangi. Siz har doim koʻksiz.",
+        "name": "Hisobotlarda brend shu nom bilan yoziladi.",
+        "aliases": "Javoblar nomni yana qanday yozishi mumkin, lotin va kirillda. Javobda ulardan biri boʻlsa, brend tilga olingan.",
+        "domain": "Brendning oʻz sayti: unga havola bergan javoblar brendga havola bergan deb sanaladi.",
+        "mentions": "Oxirgi tekshiruvda brendni tilga olgan javoblar soni."
+      },
+      "you": "Siz",
+      "mentionsOf": "Oxirgi tekshiruvdagi {total} ta javobdan {count} tasida tilga olingan",
+      "menu": "{name} uchun amallar",
+      "edit": "Tahrirlash",
+      "untrack": "Kuzatishni toʻxtatish",
+      "noMatch": "Qidiruvga mos brend yoʻq.",
+      "note": "Ranglar brendlar qoʻshilgan tartibda beriladi, shuning uchun brend har bir grafikda oʻz rangini saqlaydi.",
+      "suggestionsTitle": "Taklif etilgan brendlar",
+      "suggestionsText": "ChatGPT tilga oladigan, lekin siz kuzatmayotgan brendlar, eng koʻp tilga olingani birinchi. ✓ kuzatadi, ✕ yashiradi.",
+      "suggestionsNone": "ChatGPT siz kuzatmaydigan brendni tilga olmayapti.",
+      "failed": "Saqlab boʻlmadi. Qayta urinib koʻring.",
+      "answers": "{count} ta javobda",
+      "hide": "{name}ni yashirish: u raqobatchi emas",
+      "track": "{name}ni kuzatish",
+      "untrackTitle": "{name}ni kuzatish toʻxtatilsinmi?",
+      "untrackText": "Hech narsa yoʻqolmaydi: javoblar uni tilga olishda davom etadi, u takliflarga qaytadi va bir bosishda yana kuzatiladi.",
+      "cancel": "Bekor qilish",
+      "taken": "{name} allaqachon kuzatilmoqda.",
+      "invalid": "Sayt manzili notoʻgʻri yoki nom boʻsh.",
+      "editTitle": "{name}ni tahrirlash",
+      "addTitle": "Brend qoʻshish",
+      "editOwnText": "Sizning brendingiz: Profildagi bilan bir xil.",
+      "editText": "Yangi yozilish yoki sayt keyingi tekshiruvdan hisobga olinadi.",
+      "addText": "Solishtirish uchun raqobatchi. Uning raqamlari yigʻilgan javoblardan hisoblanadi.",
+      "save": "Saqlash",
+      "addButton": "Brendni qoʻshish",
+      "fields": {
+        "name": "Nomi",
+        "domain": "Sayt",
+        "aliases": "Boshqa yozilishlar",
+        "aliasesHint": "Lotin va kirill: javobda ulardan biri boʻlsa, brend tilga olingan."
+      }
+    },
+    "tags": {
+      "create": "Teg yaratish",
+      "emptyTitle": "Hali teg yoʻq",
+      "emptyText": "Teglar savollarni mavzulardan qatʼi nazar guruhlaydi, masalan, “narxlar” yoki “bolalar”: Savollar sahifasida ular boʻyicha saralash va solishtirish mumkin.",
+      "title": "Savol teglari",
+      "text": "Teg savollarni mavzulardan qatʼi nazar guruhlaydi. Savollarga teg <link>Savollar</link> sahifasida qoʻshiladi; bu yerdagi qator oʻsha savollarni ochadi.",
+      "columns": {
+        "tag": "Teg",
+        "prompts": "Savollar",
+        "actions": "Amallar"
+      },
+      "hints": {
+        "tag": "Teg nomi. Bossangiz, Savollar faqat shu tegli savollar bilan ochiladi.",
+        "prompts": "Shu teg qoʻyilgan kuzatilayotgan savollar soni."
+      },
+      "menu": "{name} uchun amallar",
+      "rename": "Nomini oʻzgartirish",
+      "delete": "Oʻchirish",
+      "deleteTitle": "“{name}” oʻchirilsinmi?",
+      "deleteText": "{count, plural, =0 {Bu teg hech bir savolda yoʻq.} other {Teg # ta savoldan olinadi; savollar qoladi.}}",
+      "cancel": "Bekor qilish",
+      "createTitle": "Teg yaratish",
+      "createText": "Savollarni mavzulardan qatʼi nazar guruhlaydigan belgilar. Ularni Savollar sahifasida savollarga qoʻshing.",
+      "fieldLabel": "Teg",
+      "fieldNumber": "{number}-teg",
+      "placeholder": "Masalan: narxlar",
+      "removeField": "{number}-tegni olib tashlash",
+      "addField": "Yana teg",
+      "failed": "Saqlab boʻlmadi. Qayta urinib koʻring.",
+      "taken": "“{name}” allaqachon bor.",
+      "renameTitle": "Teg nomini oʻzgartirish",
+      "renameText": "{count, plural, =0 {Bu teg hali hech bir savolda yoʻq.} other {Yangi nom shu tegli # ta savolga qoʻyiladi.}}",
+      "save": "Saqlash"
+    },
+    "account": {
+      "title": "Hisobingiz",
+      "text": "Qanday kirasiz va aʼzolar hamda hisobotlar qaysi nomni koʻradi.",
+      "name": "Ismingiz",
+      "nameHint": "Siz taklif qilgan aʼzolarga koʻrinadi.",
+      "save": "Saqlash",
+      "failed": "Saqlab boʻlmadi.",
+      "saved": "Saqlandi",
+      "phone": "Telefon raqami",
+      "phoneHint": "Shu raqam bilan kirasiz: SMS orqali kod yuboramiz.",
+      "telegram": "Telegram",
+      "telegramHint": "U orqali ham kirishingiz mumkin.",
+      "none": "Ulanmagan"
+    },
+    "members": {
+      "title": "Aʼzolar",
+      "text": "Loyihalaringizga kira oladigan odamlar.",
+      "search": "Aʼzo qidirish",
+      "invite": "Taklif qilish",
+      "columns": {
+        "member": "Aʼzo",
+        "role": "Rol",
+        "status": "Holat",
+        "projects": "Loyihalar",
+        "actions": "Amallar"
+      },
+      "hints": {
+        "member": "Ismi va kirish uchun telefon raqami yoki Telegrami.",
+        "role": "Egasi tarif uchun toʻlaydi va uni olib tashlab boʻlmaydi. Aʼzolar loyihalarni koʻradi va oʻzgartiradi.",
+        "status": "Taklif yuborilgan: havolali SMS yuborildi, u hali kirmagan.",
+        "projects": "U ocha oladigan loyihalar. Nomini koʻrish uchun belgi ustiga keling."
+      },
+      "roles": {
+        "owner": "Egasi",
+        "member": "Aʼzo"
+      },
+      "statuses": {
+        "active": "Faol",
+        "invited": "Taklif yuborilgan"
+      },
+      "ownerStays": "Egasini olib tashlab boʻlmaydi",
+      "remove": "{name}ni olib tashlash",
+      "noMatch": "Qidiruvga mos aʼzo yoʻq.",
+      "note": "Har bir tarifda foydalanuvchilar soni cheklanmagan.",
+      "removeTitle": "{name} olib tashlansinmi?",
+      "removeText": "U loyihalarga kirish huquqini darhol yoʻqotadi. Uni yana taklif qilishingiz mumkin.",
+      "removeConfirm": "Olib tashlash",
+      "cancel": "Bekor qilish",
+      "already": "Bu raqam allaqachon aʼzo.",
+      "badPhone": "Bu Oʻzbekiston mobil raqami emas.",
+      "failed": "Yuborib boʻlmadi. Qayta urinib koʻring.",
+      "inviteTitle": "Aʼzo taklif qilish",
+      "inviteText": "Havolali SMS yuboramiz. U shu raqam bilan kiradi va loyihalaringizni koʻradi.",
+      "send": "Taklif yuborish",
+      "phone": "Telefon raqami"
+    },
+    "plan": {
+      "plansTitle": "Tariflar",
+      "plansText": "Biznesingizning har bir bosqichi uchun. Kerakli narsani topa olmasangiz, Telegram’da yozing.",
+      "yourPlan": "Tarifingiz",
+      "current": "Joriy",
+      "pricePlain": "{amount} soʻm / oy",
+      "facts": {
+        "cycle": "Toʻlov davri",
+        "renews": "Keyingi toʻlov",
+        "prompts": "Savollar",
+        "competitors": "Raqobatchilar"
+      },
+      "cycles": {
+        "month": "Oylik",
+        "year": "Yillik"
+      },
+      "assistantsTitle": "Kuzatiladigan yordamchilar",
+      "assistantsBase": "Tarifda",
+      "assistantsAddOn": "Qoʻshimcha",
+      "assistantsAdd": "Yordamchi qoʻshish",
+      "assistantsNote": "Gemini va Yandex tez orada: ular tarifga qoʻshimcha toʻlov bilan qoʻshiladi.",
+      "baseTitle": "Asosiy tarif",
+      "baseText": "Tarifingiz; yordamchilar yuqorida qoʻshiladi.",
+      "cycleLabel": "Oylik yoki yillik toʻlov",
+      "cycleSwitch": {
+        "month": "Oylik",
+        "year": "Yillik"
+      },
+      "price": "<b>{amount}</b> soʻm / oy",
+      "priceFrom": "<b>{amount}</b> soʻmdan / oy",
+      "yearTotal": "Yiliga {amount} soʻm: {free} oy bepul",
+      "managed": "Managed GEO",
+      "for": {
+        "start": "Bitta filiali bor kichik biznes uchun.",
+        "business": "Oʻsishni istagan biznes uchun.",
+        "agency": "Bir nechta brendli agentlik va tarmoqlar uchun.",
+        "managed": "Tuzatishlarni jamoamiz siz uchun bajaradi."
+      },
+      "limits": {
+        "prompts": "Kuzatiladigan savollar",
+        "brands": "Brendlar",
+        "competitors": "Raqobatchilar",
+        "facts": "Brend faktlari"
+      },
+      "cancel": "Obunani bekor qilish",
+      "contact": "Bogʻlanish",
+      "switch": "Oʻtish",
+      "assistants": "AI yordamchilar",
+      "weekly": "Haftalik",
+      "webSearch": "Veb-qidiruv bilan",
+      "assistantCount": "{count} ta yordamchi",
+      "soonChip": "Tez orada",
+      "engineSoon": "{engine}, tez orada",
+      "features": {
+        "users": "Foydalanuvchilar cheklanmagan",
+        "reports": "Haftalik hisobot Telegram’da va PDF",
+        "wrongFacts": "Notoʻgʻri faktlar tekshiruvi",
+        "actions": "Tavsiya etilgan harakatlar",
+        "agencyName": "Hisobotlar agentligingiz nomi bilan",
+        "done": "Tuzatishlarni jamoamiz bajaradi"
+      },
+      "notIncluded": "kirmaydi",
+      "requested": "{plan} tarifiga soʻrovingiz bizga yetib keldi. Bir ish kuni ichida Telegram yoki telefon orqali bogʻlanamiz.",
+      "cancelRequested": "Bekor qilish soʻrovingiz bizga yetib keldi. Telegram’da tasdiqlaymiz; hisobotlar toʻlangan davr oxirigacha kelaveradi.",
+      "askTitle": "{plan} tarifiga oʻtilsinmi?",
+      "askText": "Toʻlov: {cycle}. Onlayn toʻlov hali tayyor emas: soʻrovingiz bizga keladi, tarifni oʻzgartirib, toʻlov maʼlumotlarini yuboramiz.",
+      "askConfirm": "Soʻrov yuborish",
+      "cancelTitle": "{plan} tarifi bekor qilinsinmi?",
+      "cancelText": "Tekshiruvlar toʻlangan davr tugaganda toʻxtaydi; maʼlumotlaringiz saqlanadi, istalgan vaqt qaytishingiz mumkin.",
+      "cancelConfirm": "Obunani bekor qilish",
+      "back": "Orqaga",
+      "failed": "Yuborib boʻlmadi. Qayta urinib koʻring.",
+      "billingTitle": "Toʻlov",
+      "billingText": "Toʻlov usuli va hisob-fakturalar.",
+      "payment": {
+        "title": "Toʻlov usuli",
+        "text": "Click, Payme yoki bank oʻtkazmasi."
+      },
+      "invoices": {
+        "title": "Hisob-fakturalar",
+        "text": "Har bir toʻlovning hisob-fakturasi, yuklab olish uchun."
+      },
+      "soon": "tez orada"
     }
   },
   "Check": {
@@ -2890,6 +3174,10 @@
       }
     },
     "prompt": {
+      "filters": {
+        "title": "Filtrlar",
+        "text": "Grafiklar koʻrsatadigan haftalarni tanlang, “Barcha filtrlar”da esa solishtiriladigan raqobatchilar va hisoblanadigan sayt turlarini."
+      },
       "header": {
         "title": "Shu savol",
         "text": "Uning tili, mavzusi va har hafta berilayotgani. Uni berishni toʻxtatish uchun arxivlang: javoblari saqlanadi."
@@ -2900,7 +3188,11 @@
       },
       "trend": {
         "title": "Shu savol haftalar davomida",
-        "text": "Umumiy koʻrinishdagi grafiklar faqat shu savol uchun: har tekshiruvdagi brendlar, reyting va keltirilgan saytlar."
+        "text": "Shu savol uchun umumiy koʻrinish grafiklari: har tekshiruvdagi brendlar va ularning reytingi."
+      },
+      "sources": {
+        "title": "Shu savol manbalari",
+        "text": "ChatGPT shu savolga javob berganda keltiradigan saytlar. Raqobatchilaringizni tilga oladiganlariga joylashing."
       },
       "searches": {
         "title": "ChatGPT nimani qidirdi",
@@ -3028,21 +3320,77 @@
       }
     },
     "settings": {
-      "nav": {
-        "title": "Boʻlimlar boʻyicha sozlamalar",
-        "text": "Avval loyiha, keyin hisob sozlamalari. “tez orada” deb belgilanganlari yaqinda qoʻshiladi."
+      "settingsNav": {
+        "title": "Sozlamalar menyusi",
+        "text": "Avval loyihangiz, keyin hisobingiz sozlamalari. Yuqoridagi “Umumiy koʻrinish” loyihaga qaytaradi."
       },
-      "profile": {
+      "brand": {
         "title": "Brendingiz",
-        "text": "Boshlaganingizda aytganlaringiz: nom, sayt, shahar va xizmatlar. Savollar shular asosida tuziladi."
+        "text": "Nomi, sayti va javoblarda qidiriladigan yozilishlari: “Nomi va sayti” ularni oʻzgartiradi."
       },
+      "business": {
+        "title": "Biznes haqida",
+        "text": "Tavsif, soha, qiyofa, xizmatlar va mijozlar. Taklif qilinadigan savollar shulardan yoziladi; pastda saqlang."
+      },
+      "markets": {
+        "title": "Maqsadli bozor",
+        "text": "Savollar beriladigan shahar: roʻyxatdan yoki xaritadan tanlang."
+      }
+    },
+    "settingsFacts": {
+      "facts": {
+        "title": "Faktlaringiz",
+        "text": "Siz haqingizdagi toʻgʻri maʼlumotlar, har biri bir qatorda. ChatGPT javoblari shular bilan solishtiriladi; “Saytdan toʻldirish” taklif beradi."
+      },
+      "found": {
+        "title": "Saytingizdan",
+        "text": "Saytda topilganlar: tekshirishga arziydiganlarini qoʻshing va saqlang."
+      }
+    },
+    "settingsBrands": {
       "brands": {
         "title": "Kuzatilayotgan brendlar",
-        "text": "Siz va kuzatayotgan raqobatchilaringiz, ChatGPT har birini qanchalik tez-tez tilga olishi bilan."
+        "text": "Siz va raqobatchilaringiz. Qatordagi ⋯ brendni tahrirlaydi yoki kuzatishni toʻxtatadi; “Brend qoʻshish” tarifda joy boʻlsa qoʻshadi."
+      },
+      "suggestions": {
+        "title": "Taklif etilgan brendlar",
+        "text": "ChatGPT tilga oladigan, siz kuzatmaydigan brendlar: ✓ kuzatadi, ✕ yashiradi."
+      }
+    },
+    "settingsTags": {
+      "tags": {
+        "title": "Savol teglari",
+        "text": "Teglar savollarni mavzulardan qatʼi nazar guruhlaydi. Ularni shu yerda yoki Savollarda yarating; qator oʻz savollarini ochadi."
+      }
+    },
+    "settingsAccount": {
+      "account": {
+        "title": "Hisobingiz",
+        "text": "Ismingiz hamda kirish uchun telefon raqamingiz va Telegramingiz."
       },
       "language": {
         "title": "Interfeys tili",
-        "text": "Siz koʻradigan ekranlar uchun oʻzbek, rus yoki ingliz tili. Savollar oʻz tilida qoladi."
+        "text": "Ekranlar oʻzbek, rus yoki ingliz tilida."
+      }
+    },
+    "settingsMembers": {
+      "members": {
+        "title": "Aʼzolar",
+        "text": "Loyihalaringizga kira oladigan hamma, roli va holati bilan."
+      },
+      "invite": {
+        "title": "Taklif qilish",
+        "text": "Hamkasbingizni telefon raqami orqali qoʻshing: unga havolali SMS yuboramiz."
+      }
+    },
+    "settingsPlan": {
+      "current": {
+        "title": "Tarifingiz",
+        "text": "Tarifingiz va loyiha undan qanchasini ishlatyapti: savollar, raqobatchilar, faktlar."
+      },
+      "plans": {
+        "title": "Barcha tariflar",
+        "text": "Tariflarni solishtiring va oʻtishni soʻrang: tarifni oʻzgartirib, toʻlov maʼlumotlarini yuboramiz."
       }
     },
     "reports": {

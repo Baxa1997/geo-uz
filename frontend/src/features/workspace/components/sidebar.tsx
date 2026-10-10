@@ -1,6 +1,6 @@
 "use client";
 
-import { LayoutGrid, LifeBuoy, Menu, PanelLeft } from "lucide-react";
+import { ChevronLeft, LayoutGrid, LifeBuoy, Menu, PanelLeft } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -11,7 +11,7 @@ import { usePathname } from "@/i18n/navigation";
 import { parseReportFilters, withFilters } from "@/shared/helpers/report-filters";
 import { cn } from "@/shared/helpers/utils";
 import type { Project, User } from "@/shared/types/api";
-import { NAV_GROUPS, SETTINGS, type NavItem } from "../constants";
+import { NAV_GROUPS, SETTINGS, SETTINGS_GROUPS, type NavItem } from "../constants";
 import { useProjects } from "../hooks/use-projects";
 import { AccountBlock } from "./account-block";
 import { NavLink } from "./nav-link";
@@ -24,7 +24,10 @@ interface SidebarProps {
   onHelp: () => void;
 }
 
-/** Logo, project card, the project's pages by section, then the start checklist, settings, help and the account. */
+/**
+ * Logo, project card, the project's pages by section, then the start checklist, settings, help and the
+ * account. On a settings page the settings' own menu takes its place (SettingsMenu), as on Peec.
+ */
 function SidebarContent({
   projects: initialProjects,
   user,
@@ -41,6 +44,9 @@ function SidebarContent({
   const isActive = (path: string) => (path === "" ? section === "" : section === path || section.startsWith(`${path}/`));
   // The language and topic filters follow the user from one data page to the next
   const filters = parseReportFilters(Object.fromEntries(useSearchParams()));
+  if (current && base && (section === SETTINGS.path || section.startsWith(`${SETTINGS.path}/`))) {
+    return <SettingsMenu project={current} base={base} section={section} user={user} onHelp={onHelp} collapsed={collapsed} onToggle={onToggle} onNavigate={onNavigate} />;
+  }
   const link = (item: NavItem, projectBase: string) => (
     <NavLink
       key={item.key}
@@ -143,6 +149,99 @@ function SidebarContent({
             {!collapsed && t("help")}
           </button>
         </div>
+        <AccountBlock user={user} collapsed={collapsed} />
+      </div>
+    </div>
+  );
+}
+
+/**
+ * The sidebar on a settings page, laid out like Peec's: a way back to the project at the top, the project's
+ * name, its settings (profile, facts, brands with their count, tags), the account's (general, members,
+ * plan), then help and the account at the foot.
+ */
+function SettingsMenu({
+  project,
+  base,
+  section,
+  user,
+  onHelp,
+  collapsed,
+  onToggle,
+  onNavigate,
+}: {
+  project: Project;
+  base: string;
+  section: string;
+  user: User;
+  onHelp: () => void;
+  collapsed: boolean;
+  onToggle?: () => void;
+  onNavigate?: () => void;
+}) {
+  const t = useTranslations("Sidebar");
+  return (
+    <div className={cn("flex h-full flex-col gap-4 py-4", collapsed ? "px-2" : "px-3")}>
+      <div className={cn("flex items-center gap-2", collapsed ? "flex-col" : "justify-between")}>
+        <NavLink href={base} label={t("overview")} icon={<ChevronLeft aria-hidden />} active={false} collapsed={collapsed} onNavigate={onNavigate} className="flex-1 font-semibold text-foreground" />
+        {onToggle && (
+          <button
+            type="button"
+            onClick={onToggle}
+            aria-label={collapsed ? t("expand") : t("collapse")}
+            aria-expanded={!collapsed}
+            className="flex size-8 shrink-0 items-center justify-center rounded-lg border bg-background text-foreground/70 shadow-xs transition-colors hover:text-foreground"
+          >
+            <PanelLeft aria-hidden className="size-4" />
+          </button>
+        )}
+      </div>
+
+      <nav aria-label={t("settingsNav.label")} data-tour="settingsNav" className="relative -mx-1 flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto px-1">
+        {SETTINGS_GROUPS.map((group, index) => (
+          <div key={group.key} role="group" aria-labelledby={`settings-${group.key}`} className="flex flex-col gap-0.5">
+            {collapsed ? (
+              index > 0 && <hr aria-hidden className="mx-2 my-1.5 border-foreground/10" />
+            ) : (
+              <p id={`settings-${group.key}`} className={cn("flex min-w-0 items-baseline gap-1.5 px-2.5 pb-1 text-xs font-medium text-foreground/50", index > 0 && "pt-3")}>
+                {t(`settingsNav.groups.${group.key}`)}
+                {/* Which project the project's settings are for: an agency has several */}
+                {group.key === "project" && <span className="min-w-0 truncate font-normal">· {project.brand.name}</span>}
+              </p>
+            )}
+            {group.items.map((item) => (
+              <NavLink
+                key={item.key}
+                href={`${base}${item.path}`}
+                label={t(`settingsNav.${item.key}`)}
+                icon={<item.icon aria-hidden />}
+                active={item.path === SETTINGS.path ? section === SETTINGS.path : section === item.path || section.startsWith(`${item.path}/`)}
+                collapsed={collapsed}
+                badge={item.key === "brands" ? String(project.competitors.length + 1) : undefined}
+                onNavigate={onNavigate}
+              />
+            ))}
+          </div>
+        ))}
+      </nav>
+
+      <div className="flex flex-col gap-2">
+        <button
+          type="button"
+          onClick={() => {
+            onNavigate?.();
+            onHelp();
+          }}
+          aria-label={collapsed ? t("help") : undefined}
+          title={collapsed ? t("help") : undefined}
+          className={cn(
+            "flex h-9 items-center gap-3 rounded-lg px-2.5 text-sm text-foreground/70 transition-colors hover:bg-black/[0.04] hover:text-foreground",
+            collapsed && "justify-center px-0",
+          )}
+        >
+          <LifeBuoy aria-hidden className="size-[18px]" />
+          {!collapsed && t("help")}
+        </button>
         <AccountBlock user={user} collapsed={collapsed} />
       </div>
     </div>

@@ -25,6 +25,7 @@ import { useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
 import { CsvButton } from "@/shared/components/csv-button";
 import { FilterMenu } from "@/shared/components/filter-menu";
+import { BrandLogo } from "@/shared/components/scores/brand-logo";
 import { Hint } from "@/shared/components/hint";
 import { MethodLabel } from "@/shared/components/scores/method-label";
 import { Switch } from "@/shared/components/switch";
@@ -123,6 +124,7 @@ export function PromptManager({
   initialSuggestions,
   initialTopics,
   initialView,
+  initialTag,
   initialTopicsFolded,
   freshCount,
   results,
@@ -138,6 +140,7 @@ export function PromptManager({
   wrongFactsHref,
   discoveryHref,
   city,
+  filterBar,
 }: {
   projectId: string;
   plan: Plan;
@@ -150,6 +153,8 @@ export function PromptManager({
   initialTopics: string[];
   /** The tab to open (`?view=`). */
   initialView: View;
+  /** The tag the list starts on (`?tag=`); one no question carries is ignored. */
+  initialTag: string;
   /** The topics column folded to a rail, as the user left it (a cookie). */
   initialTopicsFolded: boolean;
   /** How many of the newest suggestions Discovery just made, to mark as new. */
@@ -176,6 +181,8 @@ export function PromptManager({
   discoveryHref: string;
   /** The project's city: where a new question is asked from unless the client picks another. */
   city: string;
+  /** The language filter (ReportFilterBar), in the search's row as on Peec rather than in a strip of its own. */
+  filterBar?: React.ReactNode;
 }) {
   const t = useTranslations("PromptManager");
   const tones = useTranslations("Tone");
@@ -197,7 +204,7 @@ export function PromptManager({
   const { data: topicList } = useQuery({ queryKey: queryKeys.topics(projectId), queryFn: () => api.getTopics(projectId), initialData: initialTopics });
   const [view, setView] = useState<View>(initialView);
   const [topicSort, setTopicSort] = useState<TopicSort>("added");
-  const [tagFilter, setTagFilter] = useState("");
+  const [tagFilter, setTagFilter] = useState(initialTag);
   const [topicsFolded, setTopicsFolded] = useState(initialTopicsFolded);
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<PromptsFilter>("all");
@@ -525,7 +532,7 @@ export function PromptManager({
   const visibility = (row: Row) =>
     row.stats ? (
       <Hint text={t("visibilityHint", { count: row.stats.named, total: row.stats.total })} focusable={false} described={false} className="items-baseline gap-1 tabular-nums">
-        <span className={cn("font-semibold", row.stats.named === 0 && "text-muted-foreground")}>
+        <span className={cn(row.stats.named === 0 && "text-muted-foreground")}>
           {formatPercent(row.stats.total ? row.stats.named / row.stats.total : 0, locale)}
         </span>
         <span className="text-xs text-muted-foreground">
@@ -539,8 +546,8 @@ export function PromptManager({
     );
   const position = ({ stats }: Row) =>
     stats?.position ? (
-      <span className="font-medium tabular-nums">
-        <span aria-hidden className="font-normal text-muted-foreground">
+      <span className="tabular-nums">
+        <span aria-hidden className="text-muted-foreground">
           #
         </span>
         {formatDecimal(stats.position, locale)}
@@ -549,11 +556,11 @@ export function PromptManager({
       dash
     );
   const voice = ({ stats }: Row) =>
-    stats && stats.shareOfVoice !== null ? <span className="font-medium tabular-nums">{formatPercent(stats.shareOfVoice, locale)}</span> : dash;
+    stats && stats.shareOfVoice !== null ? <span className="tabular-nums">{formatPercent(stats.shareOfVoice, locale)}</span> : dash;
   const webSearch = ({ stats }: Row) =>
     stats ? (
       <Hint text={t("webSearchCell", { count: stats.searched, total: stats.total })} focusable={false} className="items-baseline gap-1 tabular-nums">
-        <span className={cn("font-medium", stats.searched === 0 && "text-muted-foreground")}>{formatPercent(stats.total ? stats.searched / stats.total : 0, locale)}</span>
+        <span className={cn(stats.searched === 0 && "text-muted-foreground")}>{formatPercent(stats.total ? stats.searched / stats.total : 0, locale)}</span>
         <span className="text-xs text-muted-foreground">
           {stats.searched}/{stats.total}
         </span>
@@ -624,7 +631,7 @@ export function PromptManager({
     const score = stats ? toneScore(stats.tones) : null;
     if (score === null) return dash;
     return (
-      <Hint text={t("toneCell", { tone: tones(toneOf(score)), score })} focusable={false} described={false} className="items-center gap-1.5 font-medium tabular-nums">
+      <Hint text={t("toneCell", { tone: tones(toneOf(score)), score })} focusable={false} described={false} className="items-center gap-1.5 tabular-nums">
         <span aria-hidden className={cn("size-2 shrink-0 rounded-full", TONE_DOTS[toneOf(score)])} />
         {score}
         <span className="sr-only">{t("toneCell", { tone: tones(toneOf(score)), score })}</span>
@@ -637,17 +644,11 @@ export function PromptManager({
     ) : named.length === 0 ? (
       <span className="text-muted-foreground">{t("nobody")}</span>
     ) : (
-      <ul className="flex flex-wrap gap-1">
+      <ul className="flex flex-wrap items-center gap-1">
         {named.map((brand) => (
           <li key={brand.id} className="flex">
-            <Hint
-              text={brand.isYou ? `${brand.name} (${t("you")})` : brand.name}
-              focusable={false}
-              described={false}
-              className={cn("h-6 items-center gap-1 rounded-md px-1.5 text-[0.7rem] font-semibold", brand.isYou ? "bg-you-soft/60 ring-1 ring-you/30" : "bg-muted")}
-            >
-              <span aria-hidden className="size-2 rounded-full" style={{ background: brand.color }} />
-              <span aria-hidden>{brand.name.charAt(0).toUpperCase()}</span>
+            <Hint text={brand.isYou ? `${brand.name} (${t("you")})` : brand.name} focusable={false} described={false} className={cn("rounded-md", brand.isYou && "ring-2 ring-you/50 ring-offset-1")}>
+              <BrandLogo name={brand.name} logo={brand.logo} className="size-6" />
               <span className="sr-only">{brand.name}</span>
             </Hint>
           </li>
@@ -662,8 +663,8 @@ export function PromptManager({
     ) : stats.leader.id === youId ? (
       <span className="rounded-md bg-you-soft px-1.5 py-0.5 text-xs font-medium ring-1 ring-you/40">{t("you")}</span>
     ) : (
-      <span className="flex min-w-0 items-center gap-1.5">
-        <span aria-hidden className="size-2 shrink-0 rounded-full" style={{ background: byId.get(stats.leader.id)?.color }} />
+      <span className="flex min-w-0 items-center gap-2">
+        <BrandLogo name={stats.leader.name} logo={byId.get(stats.leader.id)?.logo} />
         <span className="truncate">{stats.leader.name}</span>
       </span>
     );
@@ -738,7 +739,7 @@ export function PromptManager({
   const allPicked = visibleIds.length > 0 && visibleIds.every((id) => pickedSet.has(id));
 
   const searchBox = (
-    <div className="relative w-full min-w-40 @md:w-64">
+    <div className="relative w-full min-w-40 @md:w-40">
       <Search aria-hidden className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
       <label htmlFor="prompts-search" className="sr-only">
         {t("search")}
@@ -884,9 +885,10 @@ export function PromptManager({
         </div>
 
         {/* The tab's tools: search, filters, and on the tracked questions the client's numbers over the rows shown */}
-        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b px-4 py-2.5">
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-b px-4 py-2.5">
           <div className="flex min-w-0 flex-wrap items-center gap-2">
             {searchBox}
+            {filterBar}
             {topicsSheet}
             {view === "tracked" && (
               <FilterMenu
@@ -918,19 +920,19 @@ export function PromptManager({
             )}
           </div>
           {view === "tracked" && (
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
-              <dl data-tour="summary" className="flex flex-wrap items-center gap-x-4 gap-y-1 text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-x-1.5 gap-y-2 text-sm">
+              <dl data-tour="summary" className="flex flex-wrap items-center gap-y-1 text-muted-foreground [&>div]:px-2 [&>div+div]:border-l [&>div+div]:border-foreground/15">
                 <div className="flex items-center gap-1.5">
                   <dt>
                     <Hint text={t("hints.summary.visibility")}>{t("columns.visibility")}</Hint>
                   </dt>
-                  <dd className="font-semibold text-foreground tabular-nums">{summary.visibility !== null ? `${summary.visibility}%` : "—"}</dd>
+                  <dd className="font-medium text-foreground tabular-nums">{summary.visibility !== null ? `${summary.visibility}%` : "—"}</dd>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <dt>
                     <Hint text={t("hints.summary.tone")}>{t("columns.tone")}</Hint>
                   </dt>
-                  <dd className="flex items-center gap-1 font-semibold text-foreground tabular-nums">
+                  <dd className="flex items-center gap-1 font-medium text-foreground tabular-nums">
                     {summary.sentiment !== null && <span aria-hidden className={cn("size-2 rounded-full", TONE_DOTS[toneOf(summary.sentiment)])} />}
                     {summary.sentiment ?? "—"}
                   </dd>
@@ -939,13 +941,13 @@ export function PromptManager({
                   <dt>
                     <Hint text={t("hints.summary.position")}>{t("columns.position")}</Hint>
                   </dt>
-                  <dd className="font-semibold text-foreground tabular-nums">{summary.position !== null ? `#${formatDecimal(summary.position, locale)}` : "—"}</dd>
+                  <dd className="font-medium text-foreground tabular-nums">{summary.position !== null ? `#${formatDecimal(summary.position, locale)}` : "—"}</dd>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <dt>
                     <Hint text={t("hints.summary.webSearch")}>{t("columns.webSearch")}</Hint>
                   </dt>
-                  <dd className="font-semibold text-foreground tabular-nums">{searchedShare !== null ? formatPercent(searchedShare, locale) : "—"}</dd>
+                  <dd className="font-medium text-foreground tabular-nums">{searchedShare !== null ? formatPercent(searchedShare, locale) : "—"}</dd>
                 </div>
               </dl>
               {rows.length > 0 && <CsvButton iconOnly filename={filename} label={t("csv")} hint={t("csvHint")} rows={csvRows} className="h-9 w-9" />}
@@ -1033,7 +1035,7 @@ export function PromptManager({
                     onScroll={(event) => event.currentTarget.toggleAttribute("data-scrolled", event.currentTarget.scrollLeft > 0)}
                     className="group/table relative hidden min-w-0 overflow-x-auto @4xl:block"
                   >
-                    <table className="w-full min-w-[141rem] table-fixed text-sm">
+                    <table className="w-full min-w-[141rem] table-fixed text-[0.9375rem]">
                       <thead>
                         <tr className="border-b bg-muted text-left text-muted-foreground [&>th]:px-3 [&>th]:py-2.5 [&>th]:font-normal [&>th:first-child]:pl-4 [&>th:last-child]:pr-4">
                           <th scope="col" aria-sort={sortState("question") ?? undefined} className={cn(PINNED, "w-[22rem] bg-muted")}>

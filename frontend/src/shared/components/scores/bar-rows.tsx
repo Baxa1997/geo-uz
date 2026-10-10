@@ -14,6 +14,8 @@ export interface BarRow {
   detail?: React.ReactNode;
   /** Where the row leads: the whole row is then a link (a cited site's own page). */
   href?: string;
+  /** For the row itself: a row that only a wide card shows. */
+  className?: string;
 }
 
 /**
@@ -24,7 +26,7 @@ export interface BarRow {
 export function BarRows({ rows, className }: { rows: BarRow[]; className?: string }) {
   return (
     <ul className={cn("flex flex-col gap-1.5", className)}>
-      {rows.map(({ key, label, value, size, mark, detail, href }) => {
+      {rows.map(({ key, label, value, size, mark, detail, href, className: rowClass }) => {
         const line = (
           <>
             <span className="relative flex h-9 min-w-0 flex-1 items-center">
@@ -40,7 +42,7 @@ export function BarRows({ rows, className }: { rows: BarRow[]; className?: strin
           </>
         );
         return (
-          <li key={key} className="flex flex-col gap-1">
+          <li key={key} className={cn("flex flex-col gap-1", rowClass)}>
             {href ? (
               <Link href={href} className="group/row flex items-center gap-3 rounded-lg outline-none focus-visible:ring-3 focus-visible:ring-ring/50">
                 {line}

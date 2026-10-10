@@ -2,13 +2,15 @@
 // reaches it through ./actions.ts). Changes last until the dev server restarts.
 import { randomUUID } from "node:crypto";
 import { ApiError, type ApiClient } from "@/shared/api/client";
-import { ACTION_STEP_COUNT, PROMPT_TEXT_MAX_LENGTH, PROMPT_TEXT_MIN_LENGTH } from "@/shared/constants";
+import { ACTION_STEP_COUNT, FACT_MAX_LENGTH, PLAN_LIMITS, PROMPT_TEXT_MAX_LENGTH, PROMPT_TEXT_MIN_LENGTH } from "@/shared/constants";
 import { isValidDomain, normalizeDomain } from "@/shared/helpers/domain";
 import { isTracked, sameText } from "@/shared/helpers/prompts";
 import type {
   Action,
   Brand,
   DemoRequest,
+  Member,
+  Plan,
   Project,
   Prompt,
   ReportSettings,
@@ -18,11 +20,12 @@ import type {
   SuggestedPrompt,
   SuggestionSource,
   SupportMessage,
+  TagSummary,
   User,
 } from "@/shared/types/api";
 import { buildActions, pageAction, type ActionState } from "./action-items";
 import { DEMO_USER } from "./accounts";
-import { ARCHIVED_PROMPT, BRANDS, DEFAULT_PLAN, OTHER_CLINICS, PLAN_LIMITS, PROJECT, PROMPTS, SUGGESTED_PROMPTS } from "./data";
+import { ARCHIVED_PROMPT, BRAND_FACTS, BRANDS, DEFAULT_PLAN, OTHER_CLINICS, PROJECT, PROMPTS, SAMPLE_MEMBER, SITE_FACTS, SUGGESTED_PROMPTS } from "./data";
 import * as onboarding from "./onboarding";
 import { discoveryDrafts, keywordDrafts, KNOWN_TOPICS, poolFor, type Draft } from "./suggestions";
 import { buildPromptReport, buildReport, buildSnapshot, firstRun, METHOD, NO_RUN, pastReport, SEEDED_RUN, type MockRun } from "./report";
@@ -75,6 +78,14 @@ interface MockState {
   dismissedBrands: Map<string, Set<string>>;
   /** Project id → where its weekly report goes, once the client changed it. */
   reportSettings: Map<string, ReportSettings>;
+  /** Project id → its brand facts, once the client saved them. */
+  facts: Map<string, string[]>;
+  /** Project id → tags made in Sozlamalar that no question carries yet. */
+  tags: Map<string, string[]>;
+  /** Owner's user id → the members they invited, once the list changed. */
+  members: Map<string, Member[]>;
+  /** Plan changes asked for: billing doesn't exist, so they reach us. */
+  planRequests: { projectId: string; plan: Plan | "managed" | "cancel"; cycle: "month" | "year"; userId: string; at: string }[];
   demoRequests: DemoRequest[];
   supportMessages: (SupportMessage & { userId: string })[];
   nextId: number;
@@ -82,7 +93,7 @@ interface MockState {
 
 // Kept on globalThis so hot reloads and separate route bundles share one copy.
 // Bump the version when MockState changes: a hot reload then starts fresh instead of reading old data.
-const STATE_KEY = "__geoMockState_v17";
+const STATE_KEY = "__geoMockState_v21";
 const globalForMocks = globalThis as typeof globalThis & { [STATE_KEY]?: MockState };
 const state: MockState = (globalForMocks[STATE_KEY] ??= {
   accounts: [{ user: DEMO_USER }],
@@ -99,6 +110,10 @@ const state: MockState = (globalForMocks[STATE_KEY] ??= {
   rejectedSuggestions: new Map(),
   dismissedBrands: new Map(),
   reportSettings: new Map(),
+  facts: new Map(),
+  tags: new Map(),
+  members: new Map(),
+  planRequests: [],
   demoRequests: [],
   supportMessages: [],
   nextId: 1,
@@ -272,6 +287,50 @@ function replacePrompt(projectId: string, prompt: Prompt) {
   );
 }
 
+/** The project's brand facts: the sample clinic starts with the ones it wrote. */
+const factsOf = (projectId: string) => state.facts.get(projectId) ?? (projectId === PROJECT.id ? BRAND_FACTS : []);
+
+/** The same name, whatever its letters' case. */
+const sameName = (a: string, b: string) => a.toLowerCase() === b.toLowerCase();
+
+/** The project's tags, made ones and the questions' (archived ones too), each with its tracked questions. */
+function tagsOf(projectId: string): TagSummary[] {
+  const names: string[] = [];
+  for (const tag of [...(state.tags.get(projectId) ?? []), ...promptsOf(projectId).flatMap((prompt) => prompt.tags)]) {
+    if (!names.some((name) => sameName(name, tag))) names.push(tag);
+  }
+  const tracked = trackedOf(projectId);
+  return names
+    .map((name) => ({ name, prompts: tracked.filter((prompt) => prompt.tags.some((tag) => sameName(tag, name))).length }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+/** Changes a tag on every question of the project: renames it, or takes it off (`to` null). */
+function retag(projectId: string, from: string, to: string | null) {
+  state.prompts.set(
+    projectId,
+    promptsOf(projectId).map((prompt) =>
+      prompt.tags.some((tag) => sameName(tag, from))
+        ? { ...prompt, tags: cleanTags(prompt.tags.flatMap((tag) => (sameName(tag, from) ? (to === null ? [] : [to]) : [tag]))) }
+        : prompt,
+    ),
+  );
+}
+
+/** The account's owner as a member, from the user, with every project they own. */
+const ownerMember = (user: User): Member => ({
+  id: `mbr_${user.id}`,
+  name: user.name,
+  phone: user.phone,
+  telegramUsername: user.telegramUsername,
+  role: "owner",
+  status: "active",
+  projectIds: state.projects.filter((project) => state.owners.get(project.id) === user.id).map((project) => project.id),
+});
+
+/** The members an owner invited: the sample account starts with its marketer. */
+const invitedOf = (user: User) => state.members.get(user.id) ?? (user.id === DEMO_USER.id ? [SAMPLE_MEMBER] : []);
+
 const runDuration = (answers: number) => RUN_QUEUED_MS + answers * RUN_MS_PER_ANSWER + RUN_ANALYZING_MS;
 
 function progressOf({ id, projectId, run, startedAt }: StoredRun): RunProgress {
@@ -362,8 +421,11 @@ export const mockApi: ApiClient = {
       description: description.trim(),
       services,
       customers: [],
+      identity: [],
       plan: DEFAULT_PLAN,
       limits: PLAN_LIMITS[DEFAULT_PLAN],
+      // A month from today; billing doesn't exist, so nothing is charged
+      billing: { cycle: "month", renewsAt: new Date(Date.now() + 30 * DAY_MS).toISOString() },
     };
     state.projects.push(project);
     state.owners.set(project.id, user.id);
@@ -389,6 +451,8 @@ export const mockApi: ApiClient = {
       name: known?.name ?? name.trim(),
       aliases: aliases ?? known?.aliases ?? [],
       domain: domain ? normalizeDomain(domain) : (known?.domain ?? ""),
+      // The backend finds the logo on the website; the mock knows the sample clinics'
+      logo: known?.logo ?? null,
     };
     if (!competitor.name) throw new ApiError(422, "A brand needs a name");
     if ([project.brand, ...project.competitors].some((brand) => brand.name.toLowerCase() === competitor.name.toLowerCase())) {
@@ -731,6 +795,162 @@ export const mockApi: ApiClient = {
   sendSupportMessage: async (body) => {
     const user = await currentUser();
     state.supportMessages.push({ ...body, userId: user.id });
+    return respond(undefined, 600);
+  },
+
+  updateMe: async ({ name }) => {
+    const user = await currentUser();
+    const clean = cleanName(name);
+    if (!clean) throw new ApiError(422, "A name is needed");
+    const account = state.accounts.find((candidate) => candidate.user.id === user.id);
+    if (!account) throw new ApiError(401, "Not logged in");
+    account.user = { ...account.user, name: clean };
+    return respond(account.user);
+  },
+
+  // The suggested questions are the backend's to write again from the new profile
+  updateProject: async (projectId, body) => {
+    const project = await findOwnProject(projectId);
+    const name = body.name === undefined ? project.brand.name : cleanName(body.name);
+    if (!name) throw new ApiError(422, "A brand needs a name");
+    const domain = body.domain === undefined ? project.brand.domain : normalizeDomain(body.domain);
+    if (body.domain !== undefined && !isValidDomain(domain)) throw new ApiError(422, "Not a website");
+    const list = (values: string[] | undefined, current: string[]) => (values === undefined ? current : cleanTags(values));
+    const updated: Project = {
+      ...project,
+      brand: { ...project.brand, name, domain, aliases: list(body.aliases, project.brand.aliases) },
+      description: body.description === undefined ? project.description : body.description.trim(),
+      category: body.category ?? project.category,
+      city: body.city ?? project.city,
+      services: list(body.services, project.services),
+      customers: list(body.customers, project.customers),
+      identity: list(body.identity, project.identity),
+    };
+    replaceProject(updated);
+    return respond(updated);
+  },
+
+  updateCompetitor: async (projectId, brandId, body) => {
+    const project = await findOwnProject(projectId);
+    const competitor = project.competitors.find((candidate) => candidate.id === brandId);
+    if (!competitor) throw new ApiError(404, `Brand ${brandId} not found`);
+    const name = body.name === undefined ? competitor.name : cleanName(body.name);
+    if (!name) throw new ApiError(422, "A brand needs a name");
+    if ([project.brand, ...project.competitors].some((brand) => brand.id !== brandId && sameName(brand.name, name))) {
+      throw new ApiError(409, `${name} is already tracked`);
+    }
+    const domain = body.domain === undefined ? competitor.domain : normalizeDomain(body.domain);
+    if (domain && !isValidDomain(domain)) throw new ApiError(422, "Not a website");
+    const changed: Brand = { ...competitor, name, domain, aliases: body.aliases === undefined ? competitor.aliases : cleanTags(body.aliases) };
+    const updated: Project = { ...project, competitors: project.competitors.map((candidate) => (candidate.id === brandId ? changed : candidate)) };
+    replaceProject(updated);
+    return respond(updated);
+  },
+
+  getFacts: async (projectId) => {
+    await findOwnProject(projectId);
+    return respond(factsOf(projectId));
+  },
+
+  updateFacts: async (projectId, { facts }) => {
+    const project = await findOwnProject(projectId);
+    const clean: string[] = [];
+    for (const fact of facts.map(cleanName).filter(Boolean)) if (!clean.some((kept) => sameName(kept, fact))) clean.push(fact);
+    if (clean.some((fact) => fact.length > FACT_MAX_LENGTH)) throw new ApiError(422, `A fact is at most ${FACT_MAX_LENGTH} characters`);
+    if (clean.length > project.limits.facts) throw new ApiError(409, `The plan allows ${project.limits.facts} facts`);
+    state.facts.set(projectId, clean);
+    return respond(clean);
+  },
+
+  // The backend reads the website; the mock knows the sample clinic's, and writes a few lines for any other
+  suggestFacts: async (projectId) => {
+    const project = await findOwnProject(projectId);
+    const found =
+      projectId === PROJECT.id
+        ? SITE_FACTS
+        : [
+            ...(project.description ? [project.description] : []),
+            ...project.services.slice(0, 3).map((service) => `${project.brand.name}: ${service}`),
+            `Sayt: ${project.brand.domain}`,
+          ];
+    const have = factsOf(projectId);
+    return respond(found.filter((fact) => !have.some((kept) => sameName(kept, fact))), 900);
+  },
+
+  getTags: async (projectId) => {
+    await findOwnProject(projectId);
+    return respond(tagsOf(projectId));
+  },
+
+  createTags: async (projectId, { names }) => {
+    await findOwnProject(projectId);
+    const made = [...(state.tags.get(projectId) ?? [])];
+    const existing = tagsOf(projectId).map((tag) => tag.name);
+    for (const name of names.map(cleanName).filter(Boolean)) {
+      if (![...existing, ...made].some((tag) => sameName(tag, name))) made.push(name);
+    }
+    state.tags.set(projectId, made);
+    return respond(tagsOf(projectId));
+  },
+
+  renameTag: async (projectId, tag, { name }) => {
+    await findOwnProject(projectId);
+    const current = tagsOf(projectId).find((candidate) => sameName(candidate.name, tag));
+    if (!current) throw new ApiError(404, `Tag ${tag} not found`);
+    const next = cleanName(name);
+    if (!next) throw new ApiError(422, "A tag needs a name");
+    if (tagsOf(projectId).some((candidate) => !sameName(candidate.name, tag) && sameName(candidate.name, next))) {
+      throw new ApiError(409, `${next} exists`);
+    }
+    state.tags.set(projectId, (state.tags.get(projectId) ?? []).map((made) => (sameName(made, tag) ? next : made)));
+    retag(projectId, current.name, next);
+    return respond(tagsOf(projectId));
+  },
+
+  deleteTag: async (projectId, tag) => {
+    await findOwnProject(projectId);
+    state.tags.set(projectId, (state.tags.get(projectId) ?? []).filter((made) => !sameName(made, tag)));
+    retag(projectId, tag, null);
+    return respond(undefined);
+  },
+
+  getMembers: async () => {
+    const user = await currentUser();
+    return respond([ownerMember(user), ...invitedOf(user)]);
+  },
+
+  // The backend sends the SMS with the link; the member is "invited" until they log in
+  inviteMember: async ({ phone }) => {
+    const user = await currentUser();
+    if (!UZ_PHONE.test(phone)) throw new ApiError(422, "Not an Uzbek mobile number");
+    const invited = invitedOf(user);
+    if (phone === user.phone || invited.some((member) => member.phone === phone)) throw new ApiError(409, "Already a member");
+    const member: Member = {
+      id: newId("mbr"),
+      name: null,
+      phone,
+      telegramUsername: null,
+      role: "member",
+      status: "invited",
+      projectIds: ownerMember(user).projectIds,
+    };
+    state.members.set(user.id, [...invited, member]);
+    return respond(member);
+  },
+
+  removeMember: async (memberId) => {
+    const user = await currentUser();
+    if (memberId === ownerMember(user).id) throw new ApiError(403, "The owner can't be removed");
+    const invited = invitedOf(user);
+    if (!invited.some((member) => member.id === memberId)) throw new ApiError(404, `Member ${memberId} not found`);
+    state.members.set(user.id, invited.filter((member) => member.id !== memberId));
+    return respond(undefined);
+  },
+
+  requestPlan: async (projectId, { plan, cycle }) => {
+    const user = await currentUser();
+    const project = await findOwnProject(projectId);
+    state.planRequests.push({ projectId, plan, cycle: cycle ?? project.billing.cycle, userId: user.id, at: new Date().toISOString() });
     return respond(undefined, 600);
   },
 };

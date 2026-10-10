@@ -8,7 +8,7 @@ import { sliceShare, slicesBy, type Slice } from "@/shared/helpers/scores";
 import type { PromptLanguage, PromptResult, ReportFilters } from "@/shared/types/api";
 import type { SeriesBrand } from "@/shared/types/scores";
 
-/** The card lists this many topics, strongest first; its large view lists them all. */
+/** The card lists this many topics, strongest first, and twice as many in two columns once it is wide; its large view lists them all. */
 const TOPICS_SHOWN = 6;
 
 interface Row {
@@ -25,8 +25,10 @@ interface Row {
 /**
  * Where the client is visible and where it isn't: its visibility on each topic's questions and in each
  * question language, as bars, each with the brand that leads there. Our plain version of Peec's
- * "performance matrix", and the one split no other tool has: Uzbek against Russian. The footer says the
- * strongest and weakest topic and the two languages in words; ⤢ lists every topic with its counts.
+ * "performance matrix", and the one split no other tool has: Uzbek against Russian. Under the languages,
+ * where the card would stand empty, it says the strongest and weakest topic and the two languages in
+ * words; ⤢ lists every topic with its counts. A wide card (the user's correction of Oct 10: "make the full
+ * page, not too many spacing") runs the topics in two columns and shows twice as many.
  */
 export function BreakdownCard({
   results,
@@ -75,30 +77,47 @@ export function BreakdownCard({
     uz && ru ? t("takeawayLanguages", { uz: percent(uz.you), ru: percent(ru.you) }) : null,
   ].filter((sentence) => sentence !== null);
 
-  /** One list of bars under its column headings. The card may show only the first `limit` rows. */
-  function list(heading: string, all: Row[], detailed: boolean, limit = all.length) {
-    const rows = all.slice(0, limit);
+  /**
+   * One list of bars under its column headings. The card may show only the first `limit` rows; with
+   * `columns`, a wide card runs the list in two columns and shows `limit` rows in each.
+   */
+  function list(heading: string, all: Row[], detailed: boolean, limit = all.length, columns = false) {
+    const rows = all.slice(0, columns ? limit * 2 : limit);
+    const shown = Math.min(limit, all.length);
     return (
       <section className="@container flex min-w-0 flex-col">
         {/* Column headings over the bars: whose number ends the row, and who the name beside it is */}
-        <div className="flex items-center gap-3 px-3 pt-3 text-xs text-muted-foreground">
-          <h3 className="min-w-0 flex-1 truncate px-2.5 font-medium text-foreground">
-            {heading}
-            {/* Says when only the strongest ones are listed: the rest are behind ⤢ */}
-            {rows.length < all.length && (
-              <span className="font-normal text-muted-foreground tabular-nums">
-                {" "}
-                · {rows.length}/{all.length}
-              </span>
-            )}
-          </h3>
-          <span className="hidden w-40 shrink-0 @md:block">{t("leader")}</span>
-          <span className="w-11 shrink-0 text-right">{t("you")}</span>
+        <div className="flex items-center gap-x-5 px-3 pt-3 text-xs text-muted-foreground">
+          <div className="flex min-w-0 flex-1 items-center gap-3">
+            <h3 className="min-w-0 flex-1 truncate px-2.5 font-medium text-foreground">
+              {heading}
+              {/* Says when only the strongest ones are listed: the rest are behind ⤢ */}
+              {shown < all.length && (
+                <span className={columns && rows.length === all.length ? "font-normal text-muted-foreground tabular-nums @7xl/breakdown:hidden" : "font-normal text-muted-foreground tabular-nums"}>
+                  {" "}
+                  · {shown}
+                  {columns && rows.length < all.length && <span className="hidden @7xl/breakdown:inline">–{rows.length}</span>}/{all.length}
+                </span>
+              )}
+            </h3>
+            <span className="hidden w-40 shrink-0 @md:block">{t("leader")}</span>
+            <span className="w-11 shrink-0 text-right">{t("you")}</span>
+          </div>
+          {/* The same headings over the second column */}
+          {columns && rows.length > limit && (
+            <div aria-hidden className="hidden min-w-0 flex-1 items-center gap-3 @7xl/breakdown:flex">
+              <span className="min-w-0 flex-1" />
+              <span className="w-40 shrink-0">{t("leader")}</span>
+              <span className="w-11 shrink-0 text-right">{t("you")}</span>
+            </div>
+          )}
         </div>
         <BarRows
-          className="p-3 pt-2"
-          rows={rows.map(({ slice, label, you, leader, href }) => ({
+          className={columns ? "p-3 pt-2 @7xl/breakdown:block @7xl/breakdown:columns-2 @7xl/breakdown:gap-x-5 @7xl/breakdown:[&>li]:mb-1.5 @7xl/breakdown:[&>li]:break-inside-avoid" : "p-3 pt-2"}
+          rows={rows.map(({ slice, label, you, leader, href }, index) => ({
             key: slice.key,
+            // The second column's rows wait for a wide card
+            className: index >= limit ? "hidden @7xl/breakdown:flex" : undefined,
             // Against the whole scale, not the best row: 20% mustn't look like a full bar
             size: you,
             value: percent(you),
@@ -147,7 +166,6 @@ export function BreakdownCard({
     <Panel
       title={t("title")}
       hint={t("hint")}
-      footer={takeaway.length > 0 ? <p className="text-sm text-pretty text-foreground">{takeaway.join(" ")}</p> : undefined}
       expand={{
         takeaway: takeaway.length > 0 ? takeaway.map((sentence) => <p key={sentence}>{sentence}</p>) : undefined,
         guide: <p>{t("guide")}</p>,
@@ -160,11 +178,15 @@ export function BreakdownCard({
         ),
       }}
     >
-      {/* Side by side while there is room; the topics take more of it */}
-      <div className="@container">
-        <div className="grid divide-y @3xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] @3xl:divide-x @3xl:divide-y-0">
-          {list(t("topics"), topics, false, TOPICS_SHOWN)}
-          {list(t("languages"), languages, false)}
+      {/* Side by side while there is room; the topics take more of it, and two columns once the card is wide */}
+      <div className="@container/breakdown">
+        <div className="grid divide-y @3xl/breakdown:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] @3xl/breakdown:divide-x @3xl/breakdown:divide-y-0 @7xl/breakdown:grid-cols-[minmax(0,1fr)_30rem]">
+          {list(t("topics"), topics, false, TOPICS_SHOWN, true)}
+          <div className="flex min-w-0 flex-col">
+            {list(t("languages"), languages, false)}
+            {/* What the bars say, in the room the two languages leave under them */}
+            {takeaway.length > 0 && <p className="mx-3 mt-auto mb-3 rounded-lg bg-muted px-3 py-2.5 text-sm text-pretty">{takeaway.join(" ")}</p>}
+          </div>
         </div>
       </div>
     </Panel>

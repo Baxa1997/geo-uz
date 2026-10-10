@@ -55,7 +55,8 @@ open questions): add to it each time a page is finished.
   table); Harakatlar, laid out like Peec's Actions (statuses, filters, grouping, guided tour, export, "Add a
   page", "Accept all"; the four goals as tiles; the list by status, goal and kind of work with boxes to pick
   rows; an action opened beside the list with its brief, steps, questions and Accept → Done; fix → proof);
-  Settings (sections: brand profile, tracked brands, interface language; editing later); sidebar
+  Settings (since Oct 10 from Peec's Settings screenshots, with its own menu in the sidebar's place: Profile,
+  Facts, Brands, Tags, then General, Members, Plan; all editable); sidebar
   sections with a start checklist; site checks in the free check; public report; language + topic filters as
   dropdown chips; the next weekly check date on the Overview and Questions.
 - Next (after first paying clients): the backend (including the rules that make Harakatlar from real data and
@@ -148,7 +149,7 @@ same"), through `Page` (shared/components/page.tsx):
    Anything `absolute` inside a part that scrolls on its own (a screen reader's hidden label) needs that part to
    be `relative`, or it stretches the panel and the page scrolls past its end.
 
-A strip of facts across the whole panel (a site's page) steps out of the page's padding (`-mx-4 sm:-mx-6`).
+A strip of facts across the whole panel (a site's page) steps out of the page's padding (`-mx-4 sm:-mx-5`).
 
 ## Key rules
 - The frontend NEVER calls AI providers and never holds API keys. It only calls the Python backend.
@@ -245,7 +246,32 @@ frontend/src/
     projects/             # project setup: new project form, onboarding wizard (website → brand profile → competitors
                           #   → topics → questions; form left, live preview of the app right from lg) and the first
                           #   run's progress screen (the engines in a ring that fills with the answers)
-    settings/             # Settings: sections (brand profile, tracked brands, interface language; more "coming soon")
+    settings/             # Settings, laid out like Peec's (the user's screenshots of Oct 10: "take what we need"):
+                          #   on /projects/[id]/settings/* the sidebar becomes the settings' own menu (workspace
+                          #   SettingsMenu: "‹ Overview" back, Project · its name: Profile, Facts, Brands with its
+                          #   count, Tags; Account: General, Members, Plan). Each section a page of its own:
+                          #   settings-page (Profile: ProfileForm, Peec's brand profile in the page's middle: a
+                          #   banner with the brand's initial, name, website and other spellings (BrandDialog to
+                          #   edit them), description, field, brand identity, services, customer types, then the
+                          #   target market: the city from a list or on MarketMap (Uzbekistan and its neighbours,
+                          #   constants/map.ts, Natural Earth outlines; ⤢ opens it large); a SaveBar at the panel's
+                          #   foot), facts-page (FactsEditor: brand facts, one a
+                          #   row, against the plan's limits.facts; "Fill from the website"), brands-page
+                          #   (BrandsManager: Peec's brands table with ⋯ edit / stop tracking, "Add a brand" in a
+                          #   window, the brand suggestions beside it, ✓ / ✕), tags-page (TagsManager: the
+                          #   questions' tags with counts, create several, rename, delete; a row opens Savollar on
+                          #   `?tag=`), general-page (AccountCard: the user's name, phone and Telegram; the interface
+                          #   language), members-page (MembersTable: role, status, projects; invite by phone,
+                          #   remove), plan-page (Peec's Plans: PlanOverview, the plan "Current", its price, cycle,
+                          #   renewal and what the project uses, beside the assistants it asks; PlanCards, "Base
+                          #   plan" with Monthly / Yearly and the plans and Managed GEO side by side: price, limits
+                          #   with marks, the button (the current plan's cancels, the others switch: a request
+                          #   reaches us), assistants, ✓ / — features; PlanBilling: payment and invoices "soon").
+                          #   Settings' parts (SettingsCard, SettingsRow, SaveBar) in settings-parts.tsx.
+                          #   account-settings-page: /settings with no project open, the interface language.
+                          #   Left out of Peec's: social channels and brand colors to pick, source tags, Projects
+                          #   (the project list is the dashboard), API keys, early access, model add-ons (Gemini
+                          #   and Yandex show "soon")
     overview/             # project home: a sentence on where the client stands (Verdict), five numbers, weekly trend
                           #   beside the brands table, top sites beside their kinds, visibility by topic and by question
                           #   language (BreakdownCard; these five cards open large, ⤢), then recommended actions and
@@ -280,8 +306,12 @@ frontend/src/
                           #   Left out of Peec's: volume (no data), intent and branding (need classifying in the
                           #   backend), free tags (we have topics), location (one city), the topics column's sort.
                           #   pages/prompt-page: one question (/prompts/[promptId], opened from the list, the archive
-                          #   and an answer's chat): facts row, a sentence counted in answers, then the Overview's
-                          #   cards fed with the report over that question, what ChatGPT searched the web for (Peec's
+                          #   and an answer's chat), in Peec's design: PromptFilters in the page's strip (the checks
+                          #   shown, ?period=8|4; "All filters": competitors to compare, ?brands=, and kinds of
+                          #   sites, ?kinds=; helpers/prompt-filters.ts), the question with its facts in a strip
+                          #   across the panel, then "Overview" (a sentence counted in answers, the chart, the
+                          #   brands) and "Source distribution" (the sites, their kinds) as PageSections, fed with
+                          #   the report over that question, what ChatGPT searched the web for (Peec's
                           #   "query fanouts": each search with the answers that ran it) beside the fixes that list
                           #   the question, then its answers
     report/               # the client's status report (public, no login, no sidebar; prints as A4; `?run=` a past
@@ -385,6 +415,24 @@ Auth: the backend sets an httpOnly session cookie `geo_session` on login. The br
   column, at most 50; questions customers ask about them)
 - `GET  /projects/{id}/reports/{runId}` → Report as it stood after that run (Hisobotlar; the runs are `Report.history`,
   each with its `runId`); readable without login, like the report.
+- `PATCH /auth/me` → User (body: name; Sozlamalar › Umumiy)
+- `PATCH /projects/{id}` → Project (body: any of name, domain, aliases[], description, category, city, services[],
+  customers[], identity[]; Sozlamalar › Profil. 422 for an empty name or a bad website. Name, spellings and website count from
+  the next check; the suggested questions are written again from the new profile)
+- `PATCH /projects/{id}/competitors/{brandId}` → Project (body: name?, aliases[]?, domain?; 409 when the name is
+  tracked already, 422 for a bad website)
+- `GET  /projects/{id}/facts` → string[]; `PUT` (body: facts[]) → string[] (the brand facts the answers are checked
+  against, one statement each, replaced as a whole; 409 above `limits.facts`, 422 for one over 300 characters);
+  `POST /projects/{id}/facts/suggest` → string[] (statements read from the brand's website, not saved, without the
+  ones the project has)
+- `GET  /projects/{id}/tags` → TagSummary[] (every tag, those no question carries yet too, with its tracked
+  questions); `POST` (body: names[]) → TagSummary[]; `PATCH /projects/{id}/tags/{tag}` (body: name; renames it on
+  every question; 409 when taken) → TagSummary[]; `DELETE` → 204 (takes it off every question)
+- `GET  /members` → Member[] (the account's people, the owner first); `POST /members` (body: phone; an SMS with a
+  link; 409 when a member already, 422 for a number that isn't Uzbek) → Member; `DELETE /members/{id}` → 204 (403
+  for the owner)
+- `POST /projects/{id}/plan-requests` → 204 (body: plan, "managed" or "cancel", and cycle "month"|"year"; billing
+  isn't built: it reaches us)
 - `GET  /projects/{id}/report-settings` → ReportSettings; `PATCH` with `email`, `language`, `agencyName` (the Agency plan
   only, else 403) or `telegram: "connect" | "disconnect"` → ReportSettings.
 - `GET  /projects/{id}/report?period=week&language=uz&topic=implants` → Report over the tracked questions (language
@@ -417,10 +465,13 @@ Types:
 - User { id, name | null, phone | null, telegramUsername | null }
 - Project { id, brand: Brand, competitors: Brand[], category, city, languages: ("uz"|"ru")[], description ("" if none),
   services: string[] (as the client wrote them), customers: string[] (customer types, from Discovery),
-  plan: "start"|"business"|"agency", limits: { prompts (questions
-  tracked at once), competitors } }. The Questions page reads `limits.prompts` and the Competitors page
+  identity: string[] (Peec's brand identity: a few words on what the brand stands for, from Sozlamalar › Profil),
+  plan: "start"|"business"|"agency", billing: { cycle: "month"|"year", renewsAt | null }, limits: { prompts (questions
+  tracked at once), competitors, facts } }. The Questions page reads `limits.prompts` and the Competitors page
   `limits.competitors`; onboarding, which runs before a project and its plan exist, still uses a fixed 5
-- Brand { id, name, aliases: string[], domain }
+- Brand { id, name, aliases: string[], domain, logo: string | null (its logo's address, found by the backend on the
+  brand's website (the site's icon); shown in the chart's tooltip, the brands table and Savollar, the initial where
+  there is none) }
 - Prompt { id, text, language: "uz"|"ru", topic, createdAt, archivedAt | null }
 - Report { project, period, method: { engine, model, webSearch: boolean, samples, collectedAt },
   scores: BrandScore[], prompts: PromptResult[], topSources: Source[], wrongFacts: WrongFact[],
@@ -431,6 +482,10 @@ Types:
   alerts; `dismissed` ones were hidden by the client and are listed apart),
   nextRunAt | null (next weekly run; runs start Monday 06:00 Tashkent; shown on the Overview as a date, not a countdown) }
 - HistoryPoint { runId, collectedAt, scores: BrandScore without trend [] }
+- ProjectLimits { prompts, competitors, facts } (from PLAN_LIMITS in shared/constants: 25/3/0, 75/5/20, 300/5/50;
+  Start checks no wrong facts, so it keeps no facts)
+- TagSummary { name, prompts }; Member { id, name | null, phone | null, telegramUsername | null, role: "owner"|
+  "member", status: "active"|"invited", projectIds[] }
 - Condition { score (0–100, the mean of the areas), areas: { visibility, competition, coverage, sources, accuracy } (each
   0–100) }: see "Scores", the condition score
 - SourceHistoryPoint { collectedAt, answers (answers of that run), sources: { domain, type, count (answers citing
@@ -643,6 +698,9 @@ user's correction, Oct 8: "some infos are repetitive").
 - Before adding a block, check where its numbers already appear.
 
 ## Clickable rows
+A click in a menu or window a row opens (drawn outside the table, in a portal) still reaches the row through
+React; `LinkRow` ignores it (since Oct 10: a tag's ⋯ › Rename used to open Savollar too).
+
 Whatever acts on a click shows the hand cursor: a base rule in `globals.css` gives it to buttons, tabs and menu
 items (Tailwind 4 leaves them with the arrow). A table row that opens something opens on a click anywhere on
 it and shows the hand too: `LinkRow` (shared/components) for a row that leads to a page, `cursor-pointer` with
@@ -695,6 +753,8 @@ scrolls. Hint bubbles stay hidden while a tour is open.
   so it still fills its row. A step whose element isn't on the page (a tab not open, a narrow screen) is passed over.
 - Shared parts carry their own key: the row of numbers (`KpiStrip`, "kpis"), the first answer of a list
   ("answer"), `PageSection`'s and `LinkRow`'s `tour` prop.
+- Each settings section has its own (`settings` for Profile, `settingsFacts` and so on); the Profile's first step
+  frames the settings' menu in the sidebar (`data-tour="settingsNav"`).
 - Harakatlar keeps its own tour in `ActionBoard` (its steps open an action), started from the book button
   in its strip of tools, as on Peec. Hisobotlar's tour points at the latest report, the register and the
   delivery line; a report's page at its tools, contents, condition and decisions.

@@ -14,7 +14,8 @@ export function addChip(values: string[], value: string): string[] {
 /**
  * A list of short values as chips: each with its own remove button, and a dashed "Add" chip that turns
  * into a field. Enter or leaving the field adds what was typed; Escape cancels. The onboarding's brand
- * profile and the questions' Discovery use it.
+ * profile and the questions' Discovery use it. `bare` leaves the name and the hint to the screen reader,
+ * for a form that writes them beside the chips (Sozlamalar).
  */
 export function ChipInput({
   id,
@@ -22,6 +23,7 @@ export function ChipInput({
   hint,
   values,
   max,
+  bare = false,
   onChange,
 }: {
   id: string;
@@ -29,6 +31,7 @@ export function ChipInput({
   hint: string;
   values: string[];
   max: number;
+  bare?: boolean;
   onChange: (values: string[]) => void;
 }) {
   const t = useTranslations("Common");
@@ -43,13 +46,13 @@ export function ChipInput({
 
   return (
     <div role="group" aria-labelledby={`${id}-label`} aria-describedby={`${id}-hint`} className="flex flex-col gap-1">
-      <p id={`${id}-label`} className="text-sm font-medium">
+      <p id={`${id}-label`} className={bare ? "sr-only" : "text-sm font-medium"}>
         {label}
       </p>
-      <p id={`${id}-hint`} className="text-sm text-pretty text-muted-foreground">
+      <p id={`${id}-hint`} className={bare ? "sr-only" : "text-sm text-pretty text-muted-foreground"}>
         {hint}
       </p>
-      <ul className="mt-2 flex flex-wrap gap-2">
+      <ul className={bare ? "flex flex-wrap gap-2" : "mt-2 flex flex-wrap gap-2"}>
         {values.map((value) => (
           <li key={value} className="flex h-8 items-center rounded-md border bg-muted/40 text-sm">
             <span className="px-2.5">{value}</span>

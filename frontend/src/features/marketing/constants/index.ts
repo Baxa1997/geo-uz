@@ -16,6 +16,7 @@ import {
   Wrench,
   type LucideIcon,
 } from "lucide-react";
+import { MANAGED_PRICE_FROM, PLAN_PRICES } from "@/shared/constants";
 import type { DemoSector } from "@/shared/types/api";
 
 /** Steps of the progress screen on /check; keys in messages/Check. */
@@ -118,15 +119,15 @@ export const PRICING: {
   target: SectionId;
 }[] = [
   { key: "free", price: 0, target: SECTION.check },
-  { key: "start", price: 199_000, period: "month", target: SECTION.demo },
-  { key: "business", price: 490_000, period: "month", recommended: true, target: SECTION.demo },
-  { key: "agency", price: 1_490_000, period: "month", target: SECTION.demo },
+  { key: "start", price: PLAN_PRICES.start, period: "month", target: SECTION.demo },
+  { key: "business", price: PLAN_PRICES.business, period: "month", recommended: true, target: SECTION.demo },
+  { key: "agency", price: PLAN_PRICES.agency, period: "month", target: SECTION.demo },
 ];
 
 export type PlanKey = "free" | "start" | "business" | "agency";
 
-/** "Managed GEO": the Business plan plus us applying the fixes; price per month from. */
-export const MANAGED_PRICE_FROM = 3_000_000;
+/** "Managed GEO": the Business plan plus us applying the fixes; price per month from (shared/constants). */
+export { MANAGED_PRICE_FROM };
 
 export const PRICING_FEATURES = ["f1", "f2", "f3", "f4"] as const;
 
@@ -188,7 +189,7 @@ export const PLAN_TABLE: {
   {
     group: "act",
     rows: [
-      { key: "actions", cells: [false, false, "soon", "soon"] },
+      { key: "actions", cells: [false, false, true, true] },
       { key: "audit", cells: [false, false, "soon", "soon"] },
     ],
   },

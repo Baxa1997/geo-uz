@@ -65,7 +65,7 @@ export function Page({
       {toolbar && <div className="flex shrink-0 flex-wrap items-center gap-2 border-b px-4 py-2 sm:px-6">{toolbar}</div>}
       {tabs && <div className="shrink-0 border-b px-4 sm:px-6">{tabs}</div>}
       {/* Bleed: the page fills the panel and grows with its content, so its own sticky parts follow the scroll */}
-      <div className={cn(bleed ? "flex flex-1 flex-col" : "flex w-full flex-col gap-4 p-4 sm:gap-5 sm:p-6")}>{children}</div>
+      <div className={cn(bleed ? "flex flex-1 flex-col" : "flex w-full flex-1 flex-col gap-4 p-4 sm:p-5")}>{children}</div>
     </>
   );
 }

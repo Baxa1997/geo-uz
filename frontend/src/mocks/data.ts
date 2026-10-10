@@ -1,31 +1,37 @@
 // Mock data: one Tashkent dental clinic and three competitors.
 // All clinic names, domains, prices and facts are fictional.
-import type { Brand, CreatePromptRequest, NewBrand, Plan, Project, ProjectLimits, Prompt, SourceType } from "@/shared/types/api";
+import { PLAN_LIMITS } from "@/shared/constants";
+import type { Brand, CreatePromptRequest, NewBrand, Plan, Project, Prompt, SourceType } from "@/shared/types/api";
 
+/** The sample clinics; their logos are placeholders drawn for the mocks (public/mock/logos): the clinics are made up. */
 export const BRANDS = {
   oq: {
     id: "brd_oqtabassum",
     name: "Oq Tabassum",
     aliases: ["Oq Tabassum", "Ok Tabassum", "Оқ Табассум", "Ок Табассум"],
     domain: "oqtabassum.uz",
+    logo: "/mock/logos/oqtabassum.svg",
   },
   samo: {
     id: "brd_samodent",
     name: "Samo Dent",
     aliases: ["SamoDent", "Samo Dent Clinic", "Само Дент", "Самодент"],
     domain: "samodent.uz",
+    logo: "/mock/logos/samodent.svg",
   },
   nur: {
     id: "brd_nurstom",
     name: "Nur Stomatologiya",
     aliases: ["Nur Stom", "Nur Dental", "Нур Стоматология", "Нур Стом"],
     domain: "nurstom.uz",
+    logo: "/mock/logos/nurstom.svg",
   },
   reg: {
     id: "brd_registandental",
     name: "Registan Dental",
     aliases: ["Registan Dent", "Регистан Дентал", "Регистан Дент"],
     domain: "registandental.uz",
+    logo: "/mock/logos/registandental.svg",
   },
 } satisfies Record<string, Brand>;
 
@@ -36,19 +42,14 @@ export type BrandKey = keyof typeof BRANDS;
  * a project can track them (onboarding suggests them), and then they get neutral Mentions.
  */
 export const OTHER_CLINICS = {
-  "Kamalak Dent": { name: "Kamalak Dent", aliases: ["Kamalak Dental", "Камалак Дент"], domain: "kamalakdent.uz" },
-  "Yulduz Stom": { name: "Yulduz Stom", aliases: ["Yulduz Stomatologiya", "Юлдуз Стом"], domain: "yulduzstom.uz" },
-  "Denta Lux": { name: "Denta Lux", aliases: ["DentaLux", "Дента Люкс"], domain: "dentalux.uz" },
+  "Kamalak Dent": { name: "Kamalak Dent", aliases: ["Kamalak Dental", "Камалак Дент"], domain: "kamalakdent.uz", logo: "/mock/logos/kamalakdent.svg" },
+  "Yulduz Stom": { name: "Yulduz Stom", aliases: ["Yulduz Stomatologiya", "Юлдуз Стом"], domain: "yulduzstom.uz", logo: "/mock/logos/yulduzstom.svg" },
+  "Denta Lux": { name: "Denta Lux", aliases: ["DentaLux", "Дента Люкс"], domain: "dentalux.uz", logo: "/mock/logos/dentalux.svg" },
 } satisfies Record<string, NewBrand>;
 
 export type OtherClinic = keyof typeof OTHER_CLINICS;
 
 /** What each plan allows, as on the pricing table. */
-export const PLAN_LIMITS: Record<Plan, ProjectLimits> = {
-  start: { prompts: 25, competitors: 3 },
-  business: { prompts: 75, competitors: 5 },
-  agency: { prompts: 300, competitors: 5 },
-};
 
 /** Billing doesn't exist yet: every mock project is on the recommended plan. */
 export const DEFAULT_PLAN: Plan = "business";
@@ -64,8 +65,11 @@ export const PROJECT: Project = {
     "Toshkentdagi oilaviy stomatologiya klinikasi: implantlar, breketlar, bolalar stomatologiyasi va tish oqartirish. Har kuni 9:00–21:00 ishlaydi.",
   services: ["Implantlar", "Breketlar", "Bolalar stomatologiyasi", "Tish oqartirish", "Professional gigiyena"],
   customers: [],
+  identity: ["Oilaviy", "Ogʻriqsiz", "Zamonaviy", "Ishonchli"],
   plan: DEFAULT_PLAN,
   limits: PLAN_LIMITS[DEFAULT_PLAN],
+  // Paid monthly since 5 October
+  billing: { cycle: "month", renewsAt: "2026-11-05T00:00:00Z" },
 };
 
 /** The sample project was set up a few days before its first weekly check (10 August). */
@@ -260,4 +264,32 @@ export const PREVIOUS_VISIBILITY: Record<string, number> = {
   [BRANDS.samo.id]: 0.75,
   [BRANDS.nur.id]: 0.43,
   [BRANDS.reg.id]: 0.22,
+};
+
+/** The sample clinic's brand facts, as the client would write them in Sozlamalar › Faktlar. */
+export const BRAND_FACTS = [
+  "Klinika har kuni, jumladan yakshanba ham, 9:00–21:00 ishlaydi",
+  "Implant oʻrnatish 450 $ dan (Osstem); Straumann implanti 900 $",
+  "Manzil: Toshkent, Yunusobod tumani, Amir Temur shoh koʻchasi, 108",
+  "Bolalar stomatologi har kuni qabul qiladi",
+];
+
+/** What "Fill from the website" finds on the sample clinic's site, beside what the client wrote. */
+export const SITE_FACTS = [
+  "Klinika har kuni, jumladan yakshanba ham, 9:00–21:00 ishlaydi",
+  "Breket oʻrnatish 8 mln soʻmdan (metall) va 14 mln soʻmdan (keramika)",
+  "Tish oqartirish (ZOOM) 1,5 mln soʻm",
+  "Birinchi koʻrik va maslahat bepul",
+  "Click, Payme va karta orqali toʻlov qabul qilinadi",
+];
+
+/** Another member of the sample account: the clinic's marketer, invited by the owner. */
+export const SAMPLE_MEMBER = {
+  id: "mbr_malika",
+  name: "Malika Yusupova",
+  phone: "+998934567890",
+  telegramUsername: null,
+  role: "member" as const,
+  status: "active" as const,
+  projectIds: ["prj_oqtabassum"],
 };

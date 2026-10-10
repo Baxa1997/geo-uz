@@ -1,5 +1,14 @@
 import { SESSION_COOKIE } from "@/shared/constants";
 import type {
+  CreateTagsRequest,
+  FactsRequest,
+  InviteMemberRequest,
+  Member,
+  PlanRequest,
+  TagSummary,
+  UpdateBrandRequest,
+  UpdateMeRequest,
+  UpdateProjectRequest,
   Action,
   AddCompetitorRequest,
   AddContentActionRequest,
@@ -109,6 +118,33 @@ export interface ApiClient {
   getRunProgress(id: string): Promise<RunProgress>;
   createDemoRequest(body: DemoRequest): Promise<void>;
   sendSupportMessage(body: SupportMessage): Promise<void>;
+  /** Sozlamalar: the user's own name. */
+  updateMe(body: UpdateMeRequest): Promise<User>;
+  /** Sozlamalar › Profil: the brand profile; 422 for an empty name or a bad website. */
+  updateProject(projectId: string, body: UpdateProjectRequest): Promise<Project>;
+  /** Sozlamalar › Brendlar: a competitor's name, spellings or website; 409 when the name is tracked already. */
+  updateCompetitor(projectId: string, brandId: string, body: UpdateBrandRequest): Promise<Project>;
+  /** Sozlamalar › Faktlar: the brand facts the answers are checked against. */
+  getFacts(projectId: string): Promise<string[]>;
+  /** Replaces them; 409 above the plan's `limits.facts`, 422 for one too long. */
+  updateFacts(projectId: string, body: FactsRequest): Promise<string[]>;
+  /** Statements read from the brand's website for the client to pick from; nothing is saved. */
+  suggestFacts(projectId: string): Promise<string[]>;
+  /** Sozlamalar › Teglar: the questions' tags, those on no question yet too, with how many questions carry each. */
+  getTags(projectId: string): Promise<TagSummary[]>;
+  createTags(projectId: string, body: CreateTagsRequest): Promise<TagSummary[]>;
+  /** Renames a tag on all its questions; 409 when the name is taken. */
+  renameTag(projectId: string, tag: string, body: TopicRequest): Promise<TagSummary[]>;
+  /** Deletes a tag and takes it off its questions. */
+  deleteTag(projectId: string, tag: string): Promise<void>;
+  /** Sozlamalar › A'zolar: the people with access to the account's projects, the owner first. */
+  getMembers(): Promise<Member[]>;
+  /** Invites someone by phone number (an SMS with a link); 409 when they are a member already. */
+  inviteMember(body: InviteMemberRequest): Promise<Member>;
+  /** Takes their access away; 403 for the owner. */
+  removeMember(memberId: string): Promise<void>;
+  /** Sozlamalar › Tarif: asks to change the project's plan; we change it by hand until billing exists. */
+  requestPlan(projectId: string, body: PlanRequest): Promise<void>;
 }
 
 export class ApiError extends Error {
@@ -202,6 +238,20 @@ const httpApi: ApiClient = {
   getRunProgress: (runId) => request(`/runs/${id(runId)}/progress`),
   createDemoRequest: (body) => send("POST", "/demo-requests", body),
   sendSupportMessage: (body) => send("POST", "/support-messages", body),
+  updateMe: (body) => send("PATCH", "/auth/me", body),
+  updateProject: (projectId, body) => send("PATCH", `/projects/${id(projectId)}`, body),
+  updateCompetitor: (projectId, brandId, body) => send("PATCH", `/projects/${id(projectId)}/competitors/${id(brandId)}`, body),
+  getFacts: (projectId) => request(`/projects/${id(projectId)}/facts`),
+  updateFacts: (projectId, body) => send("PUT", `/projects/${id(projectId)}/facts`, body),
+  suggestFacts: (projectId) => send("POST", `/projects/${id(projectId)}/facts/suggest`),
+  getTags: (projectId) => request(`/projects/${id(projectId)}/tags`),
+  createTags: (projectId, body) => send("POST", `/projects/${id(projectId)}/tags`, body),
+  renameTag: (projectId, tag, body) => send("PATCH", `/projects/${id(projectId)}/tags/${id(tag)}`, body),
+  deleteTag: (projectId, tag) => send("DELETE", `/projects/${id(projectId)}/tags/${id(tag)}`),
+  getMembers: () => request("/members"),
+  inviteMember: (body) => send("POST", "/members", body),
+  removeMember: (memberId) => send("DELETE", `/members/${id(memberId)}`),
+  requestPlan: (projectId, body) => send("POST", `/projects/${id(projectId)}/plan-requests`, body),
 };
 
 /** What the mock bridge returns: server actions can't carry an ApiError's status across. */
@@ -269,5 +319,19 @@ export const api: ApiClient = USE_MOCKS
       getRunProgress: (runId) => mocks().then((m) => unwrap(m.getRunProgress(runId))),
       createDemoRequest: (body) => mocks().then((m) => unwrap(m.createDemoRequest(body))),
       sendSupportMessage: (body) => mocks().then((m) => unwrap(m.sendSupportMessage(body))),
+      updateMe: (body) => mocks().then((m) => unwrap(m.updateMe(body))),
+      updateProject: (projectId, body) => mocks().then((m) => unwrap(m.updateProject(projectId, body))),
+      updateCompetitor: (projectId, brandId, body) => mocks().then((m) => unwrap(m.updateCompetitor(projectId, brandId, body))),
+      getFacts: (projectId) => mocks().then((m) => unwrap(m.getFacts(projectId))),
+      updateFacts: (projectId, body) => mocks().then((m) => unwrap(m.updateFacts(projectId, body))),
+      suggestFacts: (projectId) => mocks().then((m) => unwrap(m.suggestFacts(projectId))),
+      getTags: (projectId) => mocks().then((m) => unwrap(m.getTags(projectId))),
+      createTags: (projectId, body) => mocks().then((m) => unwrap(m.createTags(projectId, body))),
+      renameTag: (projectId, tag, body) => mocks().then((m) => unwrap(m.renameTag(projectId, tag, body))),
+      deleteTag: (projectId, tag) => mocks().then((m) => unwrap(m.deleteTag(projectId, tag))),
+      getMembers: () => mocks().then((m) => unwrap(m.getMembers())),
+      inviteMember: (body) => mocks().then((m) => unwrap(m.inviteMember(body))),
+      removeMember: (memberId) => mocks().then((m) => unwrap(m.removeMember(memberId))),
+      requestPlan: (projectId, body) => mocks().then((m) => unwrap(m.requestPlan(projectId, body))),
     }
   : httpApi;

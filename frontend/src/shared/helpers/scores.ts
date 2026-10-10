@@ -153,12 +153,13 @@ const SERIES_COLORS = [2, 3, 4, 5, 6].map((slot) => `var(--series-${slot})`);
  */
 export function seriesBrands({ brand, competitors }: Pick<Project, "brand" | "competitors">): SeriesBrand[] {
   return [
-    { id: brand.id, name: brand.name, isYou: true, color: "var(--series-1)" },
+    { id: brand.id, name: brand.name, isYou: true, color: "var(--series-1)", logo: brand.logo ?? null },
     ...competitors.map((competitor, index) => ({
       id: competitor.id,
       name: competitor.name,
       isYou: false,
       color: SERIES_COLORS[index] ?? "var(--rival-strong)",
+      logo: competitor.logo ?? null,
     })),
   ];
 }

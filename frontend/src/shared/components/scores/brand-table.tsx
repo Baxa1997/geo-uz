@@ -8,6 +8,7 @@ import { Panel } from "@/shared/components/panel";
 import { formatDecimal } from "@/shared/helpers/numbers";
 import { byMetric, lowerIsBetter, METRICS, metricUnit, metricValue, scoreOf, toneOf } from "@/shared/helpers/scores";
 import { cn } from "@/shared/helpers/utils";
+import { BrandLogo } from "./brand-logo";
 import type { HistoryPoint } from "@/shared/types/api";
 import type { Metric, SeriesBrand } from "@/shared/types/scores";
 import { StandingLine } from "./standing-line";
@@ -132,6 +133,7 @@ export function BrandTable({
               <th scope="row" className="py-3 pr-2 text-left font-medium">
                 <span className="flex items-center gap-2">
                   <span aria-hidden className="size-2.5 shrink-0 rounded-[3px]" style={{ background: brand.color }} />
+                  <BrandLogo name={brand.name} logo={brand.logo} />
                   <span className="truncate">{brand.name}</span>
                   {brand.isYou && <span className="hidden shrink-0 font-normal text-muted-foreground @md:inline">{t("you")}</span>}
                 </span>

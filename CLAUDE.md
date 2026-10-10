@@ -65,7 +65,7 @@ Any other number makes a new account, which goes through onboarding and gets a p
 - **Every page exists on mock data:** landing page, free check, login (phone and code, Telegram),
   onboarding in five steps, the first check's progress screen, project list, Overview, Savollar (questions),
   Javoblar (answers), Raqobatchilar (competitors), Manbalar (sources), Notoʻgʻri faktlar (wrong facts),
-  Harakatlar (actions), Sozlamalar (settings, read-only), and the public report.
+  Harakatlar (actions), Hisobotlar (reports), Sozlamalar (settings), and the public report.
 - **Overview, finished with the user's corrections (5–6 Oct).** In order: one sentence on where the client
   stands, five numbers with their weekly change, the chart card laid out like Peec's (four metrics, a day /
   week / month switch), brand ranking, cited sites and their kinds, visibility by topic and by question
@@ -203,6 +203,44 @@ Any other number makes a new account, which goes through onboarding and gets a p
   at the width of a sheet, with gray beside it and between it and the contents); merged and pushed the
   same day, when the user chose "commit and push". New for the backend: `Report.conditionHistory` and the score's formula (see `backend/PLAN.md`,
   "The condition score"). The rules are in `frontend/CLAUDE.md`, "The report" and "Scores".
+- **Sozlamalar in Peec's layout, and the Overview tightened (10 Oct), on the branch `settings-and-overview`;
+  merged and pushed that day with the entry below, when the user chose "commit and push".** The user sent Peec's Settings screenshots (Profile,
+  Brands, Tags, Company, Projects, API keys, Members, Billing) with "take what we need, and for overview make the
+  full page, not too many spacing", and chose, when asked, our Overview page and Peec's own settings menu. On a
+  settings page the sidebar becomes the settings' menu ("‹ Umumiy koʻrinish" back; Loyiha: Profil, Faktlar,
+  Brendlar, Teglar; Hisob: Umumiy, Aʼzolar, Tarif), and every section is editable: the brand profile in rows
+  across the page with a save bar at the foot; brand facts, one a row, against the plan (Biznes 20, Agentlik 50;
+  Start checks no wrong facts, so it keeps none), filled from the website; Peec's brands table (edit, stop tracking, add a brand) with the brand suggestions beside it; the
+  questions' tags (create, rename, delete; a row opens Savollar on that tag); the account's name and logins with
+  the interface language; members (invite by phone, remove); the plan with what the project uses of it and every
+  plan to switch to (a request reaches us; payment and invoices "tez orada"). Left out of Peec's: social channels,
+  brand colors to pick, source tags, Projects, API keys, early access. The
+  Overview: every page's padding is a step smaller, the chart stands over the kinds of sites and the brands table
+  over the sites, two columns that end level, the topics card runs in two columns on a wide screen with its
+  sentence under the languages, and the lists under it show a row more. Also fixed for every page: a click in a
+  row's ⋯ menu no longer opens the row's page. New for the backend: see `backend/PLAN.md`, change log.
+  The user's first correction, with Peec's Billing and Profile pages ("Billing make the same, and Profile page
+  make the same as screenshot"): Profil is now Peec's brand profile in the middle of the page (a gray banner with
+  the brand's initial, its name, site and other spellings with a button to edit them; description, field, brand
+  identity, services and customer types, each with its ⓘ; "Target market": the city picked from a list or on a
+  map of Uzbekistan with its neighbours, which opens large). Tarif is Peec's Plans: the plan with "Joriy", its
+  price, how it is paid, when it renews, what the project uses, and the assistants it asks (Gemini and Yandex
+  "tez orada"); then "Base plan" with Monthly / Yearly and the four cards side by side (price, numbers with
+  their marks, the button: the current plan's cancels it, the others switch, Managed GEO talks to us; the
+  assistants; what each includes, ✓ or a dash); then payment and invoices, "tez orada". A year paid ahead costs
+  10 months, "2 months free" (`YEARLY_MONTHS_PAID`; the user's decision, 10 Oct).
+- **Savollar and a question's page in Peec's design, and brands' logos (10 Oct), on the same branch; merged
+  and pushed that day; corrections may still come.** The user sent Peec's prompts list, a prompt's page and its chart's tooltip ("make the prompts
+  design the same, spacing, and colors … inside Prompt make the design the same, and add some filters that do
+  not exist in ours, and hover of statistics show the companies' logos"). Every tracked brand has a logo
+  (`Brand.logo`; the initial where there is none): in the chart's tooltip with the brand's full name, the brands
+  table, Savollar's "named" and "leader" columns. Savollar: the language filter moved into the tools' row, which
+  holds the search, the filters and the client's numbers in one line on a wide screen; the table in the body's
+  size and weight. A question's page: its filters in the strip under the title, as Peec's (the checks shown: all,
+  the last 8 or 4 weeks; "Barcha filtrlar": the competitors to compare with and the kinds of sites to count; kept
+  in the address), its facts in a strip across the panel (the city with its flag, the status as a green chip),
+  then "Umumiy koʻrinish" (the sentence, the chart, the brands) and "Manbalar taqsimoti" (the sites and their
+  kinds) as headed sections. Also fixed: an answer's brands wrap on a phone (they ran past the card's edge).
 - **Javoblar (7 Oct), built from Peec's Chats screenshots of 4 Oct; the user has not sent corrections for
   it yet.** Added to the page that existed: CSV export of the answers with their full text, a filter by
   cited site (`?source=` lets other pages link to "the answers citing this site"), hover explanations on the
@@ -282,7 +320,9 @@ Any other number makes a new account, which goes through onboarding and gets a p
   tags, fact-checking and location), then `hisobotlar-page` (Hisobotlar: this week's report as a cover with
   three decision cards, every week's report with a page of its own and what changed, where the report goes),
   then `hisobotlar-correction` (the report as an official status document with a condition score, Hisobotlar
-  opening on the latest condition), then `report-detail-width` (the report fills the panel's width). Each time the user chose "commit, push" when asked (for Harakatlar: "push everything"). Each page gets its
+  opening on the latest condition), then `report-detail-width` (the report fills the panel's width), then
+  `settings-and-overview` (Sozlamalar in Peec's layout, the Overview tightened, Savollar and a question's page in
+  Peec's design, brands' logos). Each time the user chose "commit, push" when asked (for Harakatlar: "push everything"). Each page gets its
   own branch, merged when the user says so.
 
 ## To do, in order
@@ -300,15 +340,18 @@ Any other number makes a new account, which goes through onboarding and gets a p
    - Harakatlar: laid out like Peec's Actions on 10 Oct, corrected twice and merged the same day (see "Done");
      more corrections may still come. Still to come on it: marks on the chart where a fix started and was done (Peec's Impact as a block), once Impact's
      screenshots arrive.
-   - Asked for on 10 Oct, before the Peec trial ends about 11 Oct, in one go: Impact,
-     Settings › Company (Peec's email report), every other Settings tab including Facts (asked for on 10 Oct;
-     the fact-check switch on Prompts came that day and is built). The Fanouts screenshots of 8 Oct need nothing: the question's page already lists the
+   - Asked for on 10 Oct, before the Peec trial ends about 11 Oct, in one go: Impact, Settings › Facts (the
+     other Settings tabs came the same day and are built). Settings › Company showed Peec's email report: a
+     switch per project and "every 2 weeks"; ours stays in Hisobotlar's delivery window. The Fanouts screenshots of 8 Oct need nothing: the question's page already lists the
      searches (decided 6 Oct).
    - Hisobotlar: built and merged on 10 Oct, then rebuilt the same day as a status report with a condition
      score and an official document's look, corrected four times and merged (see "Done"); corrections may
      still come. Peec's Settings › Company (its email report) may still come and change the delivery part.
-   - Notoʻgʻri faktlar: brand facts for the answers to be checked against (Peec's Settings › Facts).
-   - Sozlamalar: editing (today it is read-only), then facts, members, billing.
+   - Sozlamalar: built from Peec's Settings screenshots on 10 Oct, on the branch `settings-and-overview`, with the
+     Overview tightened, Profil and Tarif then made Peec's, and Savollar with a question's page in Peec's design;
+     merged and pushed on 10 Oct (see "Done"); corrections may still come.
+   - Notoʻgʻri faktlar: the brand facts now exist (Sozlamalar › Faktlar); the page should say which fact each wrong
+     claim contradicts. Peec's Settings › Facts screens never came; ours is built from the teardown.
 
    Peec pages that get no page of ours (the user agreed on 6 Oct; Discovery left this list on 8 Oct, when the
    user asked for all of Peec's Prompts features: it is "Find questions" on Savollar):

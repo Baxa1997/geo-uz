@@ -1,5 +1,8 @@
 import {
+  Building2,
   CircleAlert,
+  CreditCard,
+  FileCheck2,
   FileText,
   Globe,
   LayoutDashboard,
@@ -7,7 +10,11 @@ import {
   MessageCircleQuestion,
   MessagesSquare,
   Settings,
+  SlidersHorizontal,
+  Tag,
+  UserRound,
   Users,
+  UsersRound,
   type LucideIcon,
 } from "lucide-react";
 
@@ -49,6 +56,30 @@ export const NAV_GROUPS: { key: "home" | "monitor" | "improve" | "share"; items:
 
 /** At the bottom of the sidebar, above help and the account. */
 export const SETTINGS: NavItem = { key: "settings", path: "/settings", icon: Settings };
+
+/**
+ * The settings' own menu, which takes the sidebar's place on a settings page, as Peec's does: the
+ * project's settings, then the account's. `path` follows /projects/[id]; labels in messages/Sidebar.settingsNav.
+ */
+export const SETTINGS_GROUPS: { key: "project" | "account"; items: { key: "profile" | "facts" | "brands" | "tags" | "account" | "members" | "plan"; path: string; icon: LucideIcon }[] }[] = [
+  {
+    key: "project",
+    items: [
+      { key: "profile", path: "/settings", icon: UserRound },
+      { key: "facts", path: "/settings/facts", icon: FileCheck2 },
+      { key: "brands", path: "/settings/brands", icon: Building2 },
+      { key: "tags", path: "/settings/tags", icon: Tag },
+    ],
+  },
+  {
+    key: "account",
+    items: [
+      { key: "account", path: "/settings/account", icon: SlidersHorizontal },
+      { key: "members", path: "/settings/members", icon: UsersRound },
+      { key: "plan", path: "/settings/plan", icon: CreditCard },
+    ],
+  },
+];
 
 /**
  * The "Start here" checklist at the foot of the sidebar: the pages that give a new client their first

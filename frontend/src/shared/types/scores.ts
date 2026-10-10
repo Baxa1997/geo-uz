@@ -22,4 +22,6 @@ export interface SeriesBrand {
   isYou: boolean;
   /** A CSS color, e.g. "var(--series-2)". */
   color: string;
+  /** Its logo (Brand.logo), shown beside its name in a chart's tooltip and in tables. */
+  logo?: string | null;
 }

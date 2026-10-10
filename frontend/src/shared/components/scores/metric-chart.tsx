@@ -10,6 +10,7 @@ import type { Grain } from "@/shared/helpers/history";
 import { formatDecimal } from "@/shared/helpers/numbers";
 import { byMetric, metricUnit, metricValue, scoreOf } from "@/shared/helpers/scores";
 import { cn } from "@/shared/helpers/utils";
+import { BrandLogo } from "./brand-logo";
 import type { HistoryPoint } from "@/shared/types/api";
 import type { Metric, SeriesBrand } from "@/shared/types/scores";
 import { GrainSwitch } from "./grain-switch";
@@ -159,8 +160,9 @@ export function MetricChart({
                   <p className="font-medium">{heading(history[index]?.collectedAt ?? "")}</p>
                   {ranked(index).map((line) => (
                     <p key={line.id} className="flex items-center gap-2">
-                      <span aria-hidden className="size-2 shrink-0 rounded-full" style={{ background: line.color }} />
-                      <span className="min-w-0 flex-1 truncate text-background/75">{line.name}</span>
+                      <span aria-hidden className="size-2 shrink-0 rounded-[2px]" style={{ background: line.color }} />
+                      <BrandLogo name={line.name} logo={line.logo} className="size-4 rounded bg-background" />
+                      <span className="min-w-0 flex-1 truncate pr-2 text-background/75">{line.name}</span>
                       <span className="font-semibold tabular-nums">{text(line.values[index] ?? null)}</span>
                     </p>
                   ))}
@@ -465,7 +467,7 @@ export function LinePlot({
             <div className={cn(FOLLOWS, "z-10")} style={{ translate: `${x(active)}% 0` }}>
               <div
                 // Beside the marker line, on the side with more room
-                className="absolute top-1 flex w-44 flex-col gap-1.5 rounded-xl bg-foreground p-3 text-xs text-background shadow-xl"
+                className="absolute top-1 flex w-max max-w-64 min-w-44 flex-col gap-1.5 rounded-xl bg-foreground p-3 text-xs text-background shadow-xl"
                 style={x(active) <= 50 ? { left: "0.75rem" } : { right: "calc(100% + 0.75rem)" }}
               >
                 {tooltip(active)}

@@ -10,6 +10,7 @@ export function NavLink({
   collapsed,
   badge,
   onNavigate,
+  className,
 }: {
   href: string;
   label: string;
@@ -18,6 +19,7 @@ export function NavLink({
   collapsed: boolean;
   badge?: string;
   onNavigate?: () => void;
+  className?: string;
 }) {
   return (
     <Link
@@ -32,6 +34,7 @@ export function NavLink({
           ? "bg-black/[0.06] font-medium text-foreground"
           : "text-foreground/70 hover:bg-black/[0.04] hover:text-foreground",
         collapsed && "justify-center px-0",
+        className,
       )}
     >
       {icon}

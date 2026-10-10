@@ -1647,7 +1647,6 @@
     "location": "Location"
   },
   "PromptPage": {
-    "label": "Question",
     "facts": {
       "added": "Added",
       "topic": "Topic",
@@ -1721,6 +1720,24 @@
       "used": "Searched for {count} of {total} answers",
       "empty": "ChatGPT answered this question without searching the web.",
       "row": "This search was run for {count} of {total} answers"
+    },
+    "filters": {
+      "periodLabel": "Checks",
+      "periods": {
+        "all": "All checks",
+        "8": "Last 8 weeks",
+        "4": "Last 4 weeks"
+      },
+      "all": "All filters",
+      "brands": "Competitors to compare",
+      "kinds": "Kinds of sites",
+      "reset": "Clear filters"
+    },
+    "sections": {
+      "overview": "Overview",
+      "overviewText": "The brands in the answers to this question: how often each was named at every check, and where each stands now. The filters above pick the weeks and the competitors shown.",
+      "sources": "Source distribution",
+      "sourcesText": "The sites ChatGPT relied on to answer this question in the latest check, and their kinds. The longer the bar, the more answers cited the site."
     }
   },
   "Plans": {
@@ -2034,7 +2051,7 @@
           "f1": "75 questions every week",
           "f2": "5 competitors",
           "f3": "Wrong facts",
-          "f4": "Recommendations and site audit — coming soon"
+          "f4": "Recommended actions; site audit coming soon"
         },
         "agency": {
           "name": "Agency",
@@ -2236,45 +2253,312 @@
         "actions": "Choose your first fix"
       },
       "left": "Steps left"
+    },
+    "settingsNav": {
+      "label": "Settings",
+      "groups": {
+        "project": "Project",
+        "account": "Account"
+      },
+      "profile": "Profile",
+      "facts": "Facts",
+      "brands": "Brands",
+      "tags": "Tags",
+      "account": "General",
+      "members": "Members",
+      "plan": "Plan"
     }
   },
   "Settings": {
     "languageTitle": "Interface language",
     "languageDescription": "Menus and pages are shown in this language.",
-    "profileTitle": "Brand profile",
-    "profileText": "What was saved when the project was set up. Editing is coming soon.",
-    "profileFields": {
-      "name": "Brand name",
-      "domain": "Website",
-      "description": "Description",
-      "category": "Field",
-      "city": "City",
-      "aliases": "Other spellings",
-      "services": "Services",
-      "competitors": "Competitors"
+    "save": {
+      "saved": "Saved.",
+      "cancel": "Cancel",
+      "save": "Save changes",
+      "saving": "Saving…"
     },
-    "nav": {
-      "label": "Settings sections",
-      "project": "Project",
-      "account": "Account",
-      "profile": "Brand profile",
-      "brands": "Brands",
-      "facts": "Facts",
-      "language": "Interface language",
-      "members": "Members",
-      "billing": "Billing",
-      "soon": "soon"
+    "profile": {
+      "title": "Brand profile",
+      "text": "Who your brand is, whom it serves and where. Changes are used to write the suggested questions.",
+      "editBrand": "Name and website",
+      "aliasesLine": "Also searched for as: {aliases}",
+      "description": "Description",
+      "descriptionHint": "Context of your brand.",
+      "descriptionInfo": "A sentence or two on what you do and for whom. The suggested questions and the briefs for new pages are written from it.",
+      "category": "Field",
+      "categoryHint": "The area your brand works in.",
+      "categoryInfo": "Decides which questions customers ask about businesses like yours.",
+      "identity": "Brand identity",
+      "identityHint": "Words that describe your brand.",
+      "identityInfo": "How you want to be known: family, painless, modern. Questions are suggested around them, and later we check whether ChatGPT describes you this way.",
+      "services": "Services",
+      "servicesHint": "What your brand offers.",
+      "servicesInfo": "Each service becomes a topic of suggested questions.",
+      "customers": "Customer types",
+      "customersHint": "Whom your brand is for.",
+      "customersInfo": "Parents, students, tourists… Questions are suggested as each of them would ask.",
+      "markets": "Target market",
+      "marketsHint": "Where your brand works: the questions are asked as a customer in this city.",
+      "city": "City",
+      "mapLarge": "Open the map large",
+      "mapCities": "Cities to ask from",
+      "saveNote": "Saving changes writes new question suggestions.",
+      "invalid": "Something in the profile isn’t valid.",
+      "failed": "Couldn’t save. Try again."
+    },
+    "facts": {
+      "title": "Brand facts",
+      "text": "True statements about you: a price, the address, the hours. ChatGPT’s answers are checked against them, and what contradicts them shows on <link>Wrong facts</link>.",
+      "count": "{count} of {max}",
+      "fromSite": "Fill from the website",
+      "reading": "Reading the site…",
+      "empty": "No facts yet. Write one below, or fill them from your website.",
+      "factLabel": "Fact {number}",
+      "remove": "Remove fact {number}",
+      "full": "All {max} facts of the {plan} plan are used. Remove one to add another.",
+      "newLabel": "A new fact",
+      "placeholder": "For example: Open every day, 9:00–21:00",
+      "add": "Add",
+      "foundTitle": "Found on your website",
+      "foundText": "Add the ones that are true and worth checking.",
+      "foundNone": "Nothing new: everything we found is on your list already.",
+      "addAll": "Add all",
+      "saveNote": "From the next check on, the answers are checked against these facts.",
+      "overLimit": "The plan allows {max} facts.",
+      "tooLong": "A fact is at most {max} characters.",
+      "failed": "Couldn’t save. Try again.",
+      "notInPlan": "The {plan} plan doesn’t check wrong facts, so it keeps no brand facts. They come with Business: <link>see the plans</link>."
     },
     "brands": {
-      "title": "Tracked brands · {count}",
-      "hint": "Each brand’s color in the charts, the spellings the answers are searched for, its website, and how many answers of the latest check name it.",
-      "soon": "Editing is coming soon",
-      "color": "Color",
-      "name": "Brand",
-      "aliases": "Spellings searched for",
-      "domain": "Website",
-      "mentions": "In answers",
-      "you": "You"
+      "title": "Tracked brands",
+      "count": "{count} of {max} competitors",
+      "usage": "The {plan} plan tracks up to {max} competitors besides you.",
+      "search": "Search brands",
+      "add": "Add a brand",
+      "addHint": "Track one more competitor: its numbers are counted from the answers already collected.",
+      "full": "The {plan} plan tracks up to {max} competitors. Stop tracking one to add another.",
+      "columns": {
+        "color": "Color",
+        "name": "Brand",
+        "aliases": "Spellings searched for",
+        "domain": "Website",
+        "mentions": "In answers",
+        "actions": "Actions"
+      },
+      "hints": {
+        "color": "The brand’s color in every chart. You are always blue.",
+        "name": "The brand as the reports name it.",
+        "aliases": "Other ways the answers may write the name, Latin and Cyrillic. An answer naming any of them names the brand.",
+        "domain": "The brand’s own site: answers citing it count as citing the brand.",
+        "mentions": "Answers of the latest check that name the brand."
+      },
+      "you": "You",
+      "mentionsOf": "Named in {count} of {total} answers of the latest check",
+      "menu": "Actions for {name}",
+      "edit": "Edit",
+      "untrack": "Stop tracking",
+      "noMatch": "No brand matches the search.",
+      "note": "Colors follow the order the brands were added in, so a brand keeps its color in every chart.",
+      "suggestionsTitle": "Brand suggestions",
+      "suggestionsText": "Brands ChatGPT names that you don’t track, the most named first. ✓ tracks one, ✕ hides it.",
+      "suggestionsNone": "ChatGPT names no brand you don’t track.",
+      "failed": "Couldn’t save. Try again.",
+      "answers": "{count, plural, one {# answer} other {# answers}}",
+      "hide": "Hide {name}: it isn’t a competitor",
+      "track": "Track {name}",
+      "untrackTitle": "Stop tracking {name}?",
+      "untrackText": "Nothing is lost: the answers keep naming it, and it comes back to the suggestions, where one click tracks it again.",
+      "cancel": "Cancel",
+      "taken": "{name} is tracked already.",
+      "invalid": "That website isn’t valid, or the name is empty.",
+      "editTitle": "Edit {name}",
+      "addTitle": "Add a brand",
+      "editOwnText": "Your brand: the same as in Profile.",
+      "editText": "A new spelling or website counts from the next check.",
+      "addText": "A competitor to compare with. Its numbers are counted from the answers already collected.",
+      "save": "Save",
+      "addButton": "Add the brand",
+      "fields": {
+        "name": "Name",
+        "domain": "Website",
+        "aliases": "Other spellings",
+        "aliasesHint": "Latin and Cyrillic: an answer naming any of them names the brand."
+      }
+    },
+    "tags": {
+      "create": "Create tags",
+      "emptyTitle": "No tags yet",
+      "emptyText": "Tags group questions across topics, for example “prices” or “children”, so you can filter and compare them on Questions.",
+      "title": "Question tags",
+      "text": "A tag groups questions across topics. Add tags to questions on <link>Questions</link>; a row here opens its questions.",
+      "columns": {
+        "tag": "Tag",
+        "prompts": "Questions",
+        "actions": "Actions"
+      },
+      "hints": {
+        "tag": "The tag’s name. A click opens Questions with only this tag’s questions.",
+        "prompts": "Tracked questions that carry the tag."
+      },
+      "menu": "Actions for {name}",
+      "rename": "Rename",
+      "delete": "Delete",
+      "deleteTitle": "Delete “{name}”?",
+      "deleteText": "{count, plural, =0 {No question carries it.} one {It comes off # question; the question stays.} other {It comes off # questions; the questions stay.}}",
+      "cancel": "Cancel",
+      "createTitle": "Create tags",
+      "createText": "Labels that group questions across topics. Add them to questions on Questions.",
+      "fieldLabel": "Tag",
+      "fieldNumber": "Tag {number}",
+      "placeholder": "For example: prices",
+      "removeField": "Remove tag {number}",
+      "addField": "Add a tag",
+      "failed": "Couldn’t save. Try again.",
+      "taken": "“{name}” exists already.",
+      "renameTitle": "Rename the tag",
+      "renameText": "{count, plural, =0 {No question carries it yet.} one {The new name goes on its # question.} other {The new name goes on its # questions.}}",
+      "save": "Save"
+    },
+    "account": {
+      "title": "Your account",
+      "text": "How you log in, and the name members and reports see.",
+      "name": "Your name",
+      "nameHint": "Shown to the members you invite.",
+      "save": "Save",
+      "failed": "Couldn’t save.",
+      "saved": "Saved",
+      "phone": "Phone number",
+      "phoneHint": "You log in with it: we send a code by SMS.",
+      "telegram": "Telegram",
+      "telegramHint": "You can log in with it too.",
+      "none": "Not connected"
+    },
+    "members": {
+      "title": "Members",
+      "text": "People with access to your projects.",
+      "search": "Search members",
+      "invite": "Invite",
+      "columns": {
+        "member": "Member",
+        "role": "Role",
+        "status": "Status",
+        "projects": "Projects",
+        "actions": "Actions"
+      },
+      "hints": {
+        "member": "Their name, and the phone number or Telegram they log in with.",
+        "role": "The owner pays for the plan and can’t be removed. Members see and change the projects.",
+        "status": "Invited: the SMS with the link was sent and they haven’t logged in yet.",
+        "projects": "The projects they can open. Rest the mouse on a mark for its name."
+      },
+      "roles": {
+        "owner": "Owner",
+        "member": "Member"
+      },
+      "statuses": {
+        "active": "Active",
+        "invited": "Invited"
+      },
+      "ownerStays": "The owner can’t be removed",
+      "remove": "Remove {name}",
+      "noMatch": "No member matches the search.",
+      "note": "Every plan has unlimited users.",
+      "removeTitle": "Remove {name}?",
+      "removeText": "They lose access to the projects at once. You can invite them again.",
+      "removeConfirm": "Remove",
+      "cancel": "Cancel",
+      "already": "This number is a member already.",
+      "badPhone": "That isn’t an Uzbek mobile number.",
+      "failed": "Couldn’t send. Try again.",
+      "inviteTitle": "Invite a member",
+      "inviteText": "We send an SMS with a link. They log in with this number and see your projects.",
+      "send": "Send the invitation",
+      "phone": "Phone number"
+    },
+    "plan": {
+      "plansTitle": "Plans",
+      "plansText": "For every stage of your business. If you can’t find what you need, write to us in Telegram.",
+      "yourPlan": "Your plan",
+      "current": "Current",
+      "pricePlain": "UZS {amount} a month",
+      "facts": {
+        "cycle": "Billing cycle",
+        "renews": "Renews",
+        "prompts": "Questions",
+        "competitors": "Competitors"
+      },
+      "cycles": {
+        "month": "Monthly",
+        "year": "Yearly"
+      },
+      "assistantsTitle": "Assistants tracked",
+      "assistantsBase": "In the plan",
+      "assistantsAddOn": "Add-on",
+      "assistantsAdd": "Add an assistant",
+      "assistantsNote": "Gemini and Yandex are coming: they will be added to a plan for a fee.",
+      "baseTitle": "Base plan",
+      "baseText": "Your plan; the assistants are added above.",
+      "cycleLabel": "Pay monthly or yearly",
+      "cycleSwitch": {
+        "month": "Monthly",
+        "year": "Yearly"
+      },
+      "price": "<b>{amount}</b> UZS / month",
+      "priceFrom": "from <b>{amount}</b> UZS / month",
+      "yearTotal": "UZS {amount} a year: {free} months free",
+      "managed": "Managed GEO",
+      "for": {
+        "start": "For a small business with one location.",
+        "business": "For a business that wants to grow.",
+        "agency": "For agencies and networks with several brands.",
+        "managed": "Our team does the fixes for you."
+      },
+      "limits": {
+        "prompts": "Tracked questions",
+        "brands": "Brands",
+        "competitors": "Competitors",
+        "facts": "Brand facts"
+      },
+      "cancel": "Cancel subscription",
+      "contact": "Talk to us",
+      "switch": "Switch",
+      "assistants": "AI assistants",
+      "weekly": "Weekly",
+      "webSearch": "With web search",
+      "assistantCount": "{count, plural, one {# assistant} other {# assistants}}",
+      "soonChip": "Coming",
+      "engineSoon": "{engine}, coming soon",
+      "features": {
+        "users": "Unlimited users",
+        "reports": "Weekly report in Telegram and PDF",
+        "wrongFacts": "Wrong facts checked",
+        "actions": "Recommended actions",
+        "agencyName": "Reports under your agency’s name",
+        "done": "Our team does the fixes"
+      },
+      "notIncluded": "not included",
+      "requested": "Your request for {plan} has reached us. We’ll be in touch within one working day, in Telegram or by phone.",
+      "cancelRequested": "Your request to cancel has reached us. We’ll confirm in Telegram; the reports keep coming until the paid period ends.",
+      "askTitle": "Switch to {plan}?",
+      "askText": "Billing: {cycle}. Online payment isn’t ready yet: your request comes to us, and we switch the plan and send the payment details.",
+      "askConfirm": "Send the request",
+      "cancelTitle": "Cancel the {plan} plan?",
+      "cancelText": "The checks stop when the paid period ends; your data stays, and you can come back any time.",
+      "cancelConfirm": "Cancel the subscription",
+      "back": "Back",
+      "failed": "Couldn’t send. Try again.",
+      "billingTitle": "Billing",
+      "billingText": "Your payment method and invoices.",
+      "payment": {
+        "title": "Payment method",
+        "text": "Click, Payme or a bank transfer."
+      },
+      "invoices": {
+        "title": "Invoices",
+        "text": "Every payment’s invoice, to download."
+      },
+      "soon": "soon"
     }
   },
   "Check": {
@@ -2890,6 +3174,10 @@
       }
     },
     "prompt": {
+      "filters": {
+        "title": "Filters",
+        "text": "Pick the weeks the charts show, and in “All filters” the competitors to compare with and the kinds of sites to count."
+      },
       "header": {
         "title": "This question",
         "text": "Its language, its topic and whether it's asked every week. Archive it to stop asking it: its answers stay."
@@ -2900,7 +3188,11 @@
       },
       "trend": {
         "title": "This question over the weeks",
-        "text": "The overview's charts for this one question: the brands at each check, the ranking and the sites cited."
+        "text": "The overview's charts for this one question: the brands at each check and how they rank."
+      },
+      "sources": {
+        "title": "Sources for this question",
+        "text": "The sites ChatGPT cites when it answers this question. Get onto the ones that name your competitors."
       },
       "searches": {
         "title": "What ChatGPT searched for",
@@ -3028,21 +3320,77 @@
       }
     },
     "settings": {
-      "nav": {
-        "title": "Settings by section",
-        "text": "Your project's settings, then your account's. The ones marked “coming soon” are on their way."
+      "settingsNav": {
+        "title": "The settings’ menu",
+        "text": "Your project’s settings, then your account’s. “Overview” at the top takes you back to the project."
       },
-      "profile": {
+      "brand": {
         "title": "Your brand",
-        "text": "What you told us when you started: name, site, city and services. The questions are written from it."
+        "text": "Its name and website, and the spellings the answers are searched for: “Name and website” changes them."
       },
+      "business": {
+        "title": "About the business",
+        "text": "Description, field, identity, services and customers. The suggested questions are written from them; save at the bottom."
+      },
+      "markets": {
+        "title": "Target market",
+        "text": "The city the questions are asked from: choose it in the list or on the map."
+      }
+    },
+    "settingsFacts": {
+      "facts": {
+        "title": "Your facts",
+        "text": "True statements about you, one a row. ChatGPT’s answers are checked against them; “Fill from the website” offers some."
+      },
+      "found": {
+        "title": "From your website",
+        "text": "What we found on the site: add the ones worth checking, then save."
+      }
+    },
+    "settingsBrands": {
       "brands": {
-        "title": "Brands you track",
-        "text": "You and the competitors you follow, with how often ChatGPT names each."
+        "title": "Tracked brands",
+        "text": "You and your competitors. ⋯ on a row edits a brand or stops tracking it; “Add a brand” adds one while the plan has room."
+      },
+      "suggestions": {
+        "title": "Brand suggestions",
+        "text": "Brands ChatGPT names that you don’t track: ✓ tracks one, ✕ hides it."
+      }
+    },
+    "settingsTags": {
+      "tags": {
+        "title": "Question tags",
+        "text": "Tags group questions across topics. Make them here or on Questions; a row opens its questions."
+      }
+    },
+    "settingsAccount": {
+      "account": {
+        "title": "Your account",
+        "text": "Your name, and the phone number and Telegram you log in with."
       },
       "language": {
         "title": "Interface language",
-        "text": "Uzbek, Russian or English, for the screens you see. The questions keep their own languages."
+        "text": "Uzbek, Russian or English, for the screens you see."
+      }
+    },
+    "settingsMembers": {
+      "members": {
+        "title": "Members",
+        "text": "Everyone with access to your projects, with their role and status."
+      },
+      "invite": {
+        "title": "Invite",
+        "text": "Add a colleague by phone number: we send them an SMS with a link."
+      }
+    },
+    "settingsPlan": {
+      "current": {
+        "title": "Your plan",
+        "text": "Your plan and how much of it the project uses: questions, competitors, facts."
+      },
+      "plans": {
+        "title": "Every plan",
+        "text": "Compare the plans and ask to switch: we change it and send the payment details."
       }
     },
     "reports": {
