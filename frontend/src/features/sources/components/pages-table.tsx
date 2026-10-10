@@ -100,15 +100,17 @@ export function PagesTable({
       description={t(site ? "sections.pages.descriptionSite" : "sections.pages.description")}
       actions={
         canGap && (
-          <GapSwitch
-            on={gaps}
-            onChange={(on) => {
-              setGaps(on);
-              setRival("");
-            }}
-            label={t("gaps.label")}
-            hint={t("gaps.hint.pages")}
-          />
+          <span data-tour="gaps" className="flex">
+            <GapSwitch
+              on={gaps}
+              onChange={(on) => {
+                setGaps(on);
+                setRival("");
+              }}
+              label={t("gaps.label")}
+              hint={t("gaps.hint.pages")}
+            />
+          </span>
         )
       }
     >

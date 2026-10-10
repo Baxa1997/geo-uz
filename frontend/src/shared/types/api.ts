@@ -59,6 +59,15 @@ export interface Prompt {
    * and doesn't count toward the plan's limit. It can be tracked again.
    */
   archivedAt: string | null;
+  /**
+   * The city it is asked from, a key of messages/Cities: the web search answers as it would someone there
+   * (the search tool's approximate user location). The project's city unless the client chose another.
+   */
+  location: string;
+  /** Whether its answers are checked against the brand's facts for wrong ones (Peec's fact-checking switch); on for a new question. */
+  factCheck: boolean;
+  /** The client's own labels on it, beside its topic: a branch, a campaign. */
+  tags: string[];
 }
 
 export interface ReportMethod {
@@ -338,7 +347,8 @@ export interface DismissBrandRequest {
   dismissed: boolean;
 }
 
-export type CreatePromptRequest = Pick<Prompt, "text" | "language" | "topic">;
+/** `location` left out: the project's city. */
+export type CreatePromptRequest = Pick<Prompt, "text" | "language" | "topic"> & { location?: string };
 
 /** Several questions at once: the lines of the Add window, or a file's first column. All are added, or none. */
 export interface CreatePromptsRequest {
@@ -352,11 +362,14 @@ export interface ArchivePromptRequest {
   archived: boolean;
 }
 
-/** Several questions at once: archive them, track them again, or move them to a topic. */
+/** Several questions at once: archive them, track them again, move them to a topic; or one question's tags or fact-checking. */
 export interface UpdatePromptsRequest {
   ids: string[];
   archived?: boolean;
   topic?: string;
+  /** Replaces their tags. */
+  tags?: string[];
+  factCheck?: boolean;
 }
 
 /** A topic's name: a new topic, or a new name for one. */

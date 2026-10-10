@@ -65,7 +65,7 @@ export default async function AnswersPage({ params, searchParams }: Props) {
   const searched = answers.filter((answer) => answer.searches.length > 0).length;
 
   return (
-    <Page title={t("answers")} engines toolbar={<ReportFilterBar topics={topics} />}>
+    <Page title={t("answers")} engines tour="answers" toolbar={<ReportFilterBar topics={topics} />}>
       <KpiStrip
         items={[
           {

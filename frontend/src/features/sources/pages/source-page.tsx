@@ -108,14 +108,16 @@ export default async function SourcePage({ params, searchParams }: Props) {
   const here = withFilters(`${base}/sources/${encodeURIComponent(domain)}`, filters);
   const tab = source && query.tab === "answers" ? "answers" : "pages";
   const tabs = source && (
-    <PageTabs
-      label={tPage("tabs.label")}
-      current={tab}
-      tabs={[
-        { key: "pages", label: tPage("tabs.pages"), href: here, hint: tPage("tabHints.pages") },
-        { key: "answers", label: tPage("tabs.answers"), href: withFilters(`${base}/sources/${encodeURIComponent(domain)}`, filters, { tab: "answers" }), hint: tPage("tabHints.answers") },
-      ]}
-    />
+    <div data-tour="views" className="w-fit max-w-full">
+      <PageTabs
+        label={tPage("tabs.label")}
+        current={tab}
+        tabs={[
+          { key: "pages", label: tPage("tabs.pages"), href: here, hint: tPage("tabHints.pages") },
+          { key: "answers", label: tPage("tabs.answers"), href: withFilters(`${base}/sources/${encodeURIComponent(domain)}`, filters, { tab: "answers" }), hint: tPage("tabHints.answers") },
+        ]}
+      />
+    </div>
   );
 
   if (source && tab === "answers") {
@@ -152,29 +154,33 @@ export default async function SourcePage({ params, searchParams }: Props) {
   const movers = pageMovers(history, domain);
 
   return (
-    <Page title={domain} crumbs={crumbs} engines toolbar={toolbar} tabs={tabs}>
-      <SourceHeader
-        domain={domain}
-        type={type}
-        source={source}
-        now={percentIn(history.at(-1), domain)}
-        before={history.length > 1 ? percentIn(history.at(-2), domain) : null}
-        owner={owner}
-        lastCited={source ? null : (last?.point.collectedAt ?? null)}
-      />
-      <SourceVerdict
-        domain={domain}
-        source={source}
-        share={source && total > 0 ? source.count / total : 0}
-        named={named}
-        rivals={rivals}
-        owner={owner}
-        collectedAt={report.method.collectedAt}
-        lastCited={source ? null : (last?.point.collectedAt ?? null)}
-        actionHref={action && source && !source.brandListed ? withFilters(`${base}/actions`, filters, { action: action.id }) : undefined}
-      />
+    <Page title={domain} crumbs={crumbs} engines tour="source" toolbar={toolbar} tabs={tabs}>
+      <div data-tour="header">
+        <SourceHeader
+          domain={domain}
+          type={type}
+          source={source}
+          now={percentIn(history.at(-1), domain)}
+          before={history.length > 1 ? percentIn(history.at(-2), domain) : null}
+          owner={owner}
+          lastCited={source ? null : (last?.point.collectedAt ?? null)}
+        />
+      </div>
+      <div data-tour="verdict">
+        <SourceVerdict
+          domain={domain}
+          source={source}
+          share={source && total > 0 ? source.count / total : 0}
+          named={named}
+          rivals={rivals}
+          owner={owner}
+          collectedAt={report.method.collectedAt}
+          lastCited={source ? null : (last?.point.collectedAt ?? null)}
+          actionHref={action && source && !source.brandListed ? withFilters(`${base}/actions`, filters, { action: action.id }) : undefined}
+        />
+      </div>
       <div className="mt-3 flex flex-col gap-8 sm:gap-10">
-        <PageSection title={tSources("sections.overview.title")} description={tPage(lines.length > 1 ? "sections.overview" : "sections.overviewOne")}>
+        <PageSection tour="chart" title={tSources("sections.overview.title")} description={tPage(lines.length > 1 ? "sections.overview" : "sections.overviewOne")}>
           <SourcesChart
             title={tPage("chart.title")}
             hint={tPage("chart.hint")}
@@ -185,7 +191,7 @@ export default async function SourcePage({ params, searchParams }: Props) {
         </PageSection>
         {source && (
           <>
-            <PageSection title={tSources("sections.movers.title")} description={<MoversDescription comparedWith={movers?.comparedWith ?? null} scope="site" />}>
+            <PageSection tour="movers" title={tSources("sections.movers.title")} description={<MoversDescription comparedWith={movers?.comparedWith ?? null} scope="site" />}>
               {/* Two cards side by side once the panel is wide enough; it narrows when GEO AI is open */}
               <div className="@container">
                 <div className="grid gap-4 @3xl:grid-cols-2">

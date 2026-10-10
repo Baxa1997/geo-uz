@@ -710,13 +710,13 @@
       "other": "Other"
     },
     "tour": {
-      "skip": "Skip the tour",
-      "back": "Back",
-      "next": "Next",
-      "done": "Got it",
       "goals": {
         "title": "Pick where to start",
         "text": "Four goals: wrong facts to correct, sites to get onto, pages to write and fixes on your site. Click one to keep only its actions; the ring fills as they get done."
+      },
+      "status": {
+        "title": "Filter by status",
+        "text": "Show the new actions, the ones in progress, done or declined, or any mix of them."
       },
       "impact": {
         "title": "See what helps most",
@@ -1142,7 +1142,12 @@
       "webSearch": "Web search",
       "wrongFacts": "Wrong facts",
       "added": "Added",
-      "archivedOn": "Archived"
+      "archivedOn": "Archived",
+      "branded": "Branding",
+      "language": "Language",
+      "factCheck": "Fact-checking",
+      "tags": "Tags",
+      "location": "Location"
     },
     "queued": "Queued",
     "you": "You",
@@ -1166,7 +1171,11 @@
       "added": "Added",
       "shareOfVoice": "Share of voice, %",
       "webSearch": "Answers with a web search",
-      "wrongFacts": "Wrong facts"
+      "wrongFacts": "Wrong facts",
+      "branded": "Branding",
+      "factCheck": "Fact-checking",
+      "tags": "Tags",
+      "location": "Location"
     },
     "topics": "Topics",
     "allTopics": "All topics",
@@ -1201,7 +1210,7 @@
       "topics": "Questions are grouped by topic; the number is how many questions a topic has. Click a topic to show only its questions.",
       "question": "The question we ask ChatGPT. Click the row to open the question’s page: its answers, brands, sources and the searches ChatGPT ran.",
       "visibility": "In how many of the answers to this question you were named in the latest check. For example, 2/3 means 2 of 3 answers.",
-      "tone": "How ChatGPT speaks of you in each answer that names you: positive, neutral or negative. One icon per answer.",
+      "tone": "How positively ChatGPT speaks of you in the answers that name you: 0 negative, 100 positive. The dot: green positive, gray neutral, red negative.",
       "position": "Where you are named in the answers, on average. 1 is first; the smaller the number, the better.",
       "named": "The tracked brands named in the answers to this question. Hover a mark to see the brand’s name.",
       "leader": "The brand named in the most answers to this question. “You” means you lead.",
@@ -1224,7 +1233,14 @@
       "webSearch": "In how many of the answers to this question ChatGPT searched the web. When it searches, the answer leans on websites, so being on those sites matters.",
       "wrongFacts": "How many wrong facts about you were found in the answers to this question. Every question is checked.",
       "added": "When the question was added. Its results start with the first weekly check after that.",
-      "archivedOn": "When the question was archived: it hasn’t been asked since."
+      "archivedOn": "When the question was archived: it hasn’t been asked since.",
+      "branded": "Whether the question names your brand. Non-branded questions matter more: the customer asks before knowing you, and ChatGPT has to find you itself.",
+      "brandedYes": "The question names your brand: it checks whether ChatGPT knows you.",
+      "brandedNo": "The question doesn't name your brand: ChatGPT has to find you itself.",
+      "languageColumn": "The language the question is asked in: UZ Uzbek, RU Russian.",
+      "factCheck": "When on, the answers to this question are checked against the facts about your brand, and the number of wrong facts found shows beside it. Turned off, they aren't checked from the next check on.",
+      "tags": "Your own labels on questions, such as a branch or a campaign. The “Tag” filter narrows the list by them.",
+      "location": "The city the question is asked from: ChatGPT searches as if answering someone there. Changed in the question's window."
     },
     "webSearchCell": "ChatGPT searched the web for {count} of {total} answers",
     "wrongFactsSome": "{count, plural, one {# wrong fact} other {# wrong facts}}: click to see",
@@ -1318,17 +1334,11 @@
     "topicsColumn": {
       "label": "Topics",
       "title": "Topics",
-      "hint": "The questions are grouped in topics: click one to list only its questions. ⋯ renames or deletes it.",
+      "hint": "The questions are grouped in topics: click one to list only its questions. The title changes the order of the topics; the pencil opens a topic to edit it.",
       "new": "New topic",
-      "newLabel": "The new topic’s name",
       "namePlaceholder": "Topic name",
-      "keepHint": "Enter to keep, Esc to cancel",
-      "nameRequired": "Type a name.",
       "failed": "It couldn’t be saved.",
       "taken": "That topic exists already.",
-      "renameLabel": "A new name for “{name}”",
-      "menu": "Actions for “{name}”",
-      "rename": "Rename",
       "delete": "Delete",
       "yours": "Your topics",
       "suggested": "Suggested topics",
@@ -1338,7 +1348,49 @@
       "renamedNote": "The topic is now “{name}”.",
       "deletedNote": "The topic “{name}” is deleted.",
       "deleteTitle": "Delete the topic “{name}”?",
-      "deleteText": "{count, plural, =0 {The topic has no tracked questions.} one {Its tracked question goes to the archive: it stops being asked, its answers stay.} other {Its # tracked questions go to the archive: they stop being asked, their answers stay.}}"
+      "deleteText": "{count, plural, =0 {The topic has no tracked questions.} one {Its tracked question goes to the archive: it stops being asked, its answers stay.} other {Its # tracked questions go to the archive: they stop being asked, their answers stay.}}",
+      "sort": {
+        "label": "Order of topics",
+        "added": "In the order added",
+        "name": "By name",
+        "count": "By number of questions"
+      },
+      "collapse": "Fold the topics column",
+      "expand": "Open the topics column",
+      "dialog": {
+        "editTitle": "Edit the “{name}” topic",
+        "editText": "Rename the topic. Leave your brand's name out of it: a topic says what customers ask about.",
+        "newTitle": "New topic",
+        "newText": "A topic groups questions, such as “Prices”. Leave your brand's name out of it.",
+        "name": "Topic name",
+        "questions": "Tracked questions in this topic",
+        "save": "Save",
+        "add": "Add",
+        "saving": "Saving…",
+        "cancel": "Cancel",
+        "delete": "Delete topic"
+      }
+    },
+    "branded": {
+      "yes": "Branded",
+      "no": "Non-branded"
+    },
+    "toneCell": "Tone: {tone}, {score}/100",
+    "tags": {
+      "add": "Add tags",
+      "edit": "Tags of “{text}”",
+      "placeholder": "Find or type a tag",
+      "create": "Add the tag “{tag}”",
+      "empty": "No tags yet: type one and press Enter."
+    },
+    "tagFilter": {
+      "label": "Tag",
+      "all": "All tags"
+    },
+    "factCheckLabel": "Fact-checking: {text}",
+    "factCheckValues": {
+      "on": "Yes",
+      "off": "No"
     }
   },
   "PromptForm": {
@@ -1381,7 +1433,8 @@
     "textShortLine": "Too short: “{text}”. A question needs at least 5 characters.",
     "textLong": "A question can’t be longer than {max} characters.",
     "editOne": "Edit one question at a time.",
-    "noRoom": "{count, plural, one {# question} other {# questions}} don’t fit the plan: {room} places left."
+    "noRoom": "{count, plural, one {# question} other {# questions}} don’t fit the plan: {room} places left.",
+    "location": "Location"
   },
   "PromptPage": {
     "label": "Question",
@@ -2560,6 +2613,232 @@
       "languages": "Pick the languages: the questions come in Uzbek and Russian.",
       "after": "The new questions land in the Suggested tab: you choose which to track, and only those take places in the plan.",
       "existing": "Go on with the existing topics"
+    }
+  },
+  "Tour": {
+    "guide": "How it works",
+    "hint": "A short tour of the page: what each part shows",
+    "skip": "Skip the tour",
+    "back": "Back",
+    "next": "Next",
+    "done": "Got it"
+  },
+  "Tours": {
+    "overview": {
+      "filters": {
+        "title": "Filter the page",
+        "text": "Show the numbers for the questions in one language, or on one topic. The filters stay on as you go to the other pages."
+      },
+      "share": {
+        "title": "Share the results",
+        "text": "Copy a link to the report, open it to print or save as a PDF, or download the numbers as CSV."
+      },
+      "verdict": {
+        "title": "Where you stand",
+        "text": "One sentence on how ChatGPT talks about your business this week, next to your strongest competitor."
+      },
+      "kpis": {
+        "title": "Your five numbers",
+        "text": "How often ChatGPT names you, your share among the brands, your place in its lists, its tone and how often it relies on your site, each with the change since last week. ⓘ explains a number."
+      },
+      "trend": {
+        "title": "Over the weeks",
+        "text": "Every brand at each weekly check. Switch the measure above the chart; ⤢ opens it large, with how to read it."
+      },
+      "sources": {
+        "title": "The sites ChatGPT relies on",
+        "text": "The sites its answers cite most. Being named on them is the surest way into its answers; a site opens its own page."
+      },
+      "topics": {
+        "title": "By topic and language",
+        "text": "Where ChatGPT names you and where it doesn't. Start with a weak topic: it opens its questions."
+      },
+      "todo": {
+        "title": "What to do next",
+        "text": "The fixes that should help most, drawn from the answers above. Each opens in Actions with its steps."
+      }
+    },
+    "prompts": {
+      "topics": {
+        "title": "Questions by topic",
+        "text": "Pick a topic to see its questions. “New topic” adds one; the pencil beside a topic opens it to rename or delete it."
+      },
+      "tabs": {
+        "title": "Tracked, suggested, archived",
+        "text": "Tracked questions are asked every week. Suggested ones are worth adding. Archived ones are no longer asked, but keep their answers."
+      },
+      "add": {
+        "title": "Add questions",
+        "text": "The ring shows how many questions your plan holds. Add your own, or let “Find questions” suggest them from your services."
+      },
+      "summary": {
+        "title": "Your numbers on these questions",
+        "text": "Visibility, tone, position and web search over the questions shown. They change with the search and the filters."
+      },
+      "row": {
+        "title": "One question",
+        "text": "A click opens its page: its answers, its charts and the fixes that should move it."
+      },
+      "footer": {
+        "title": "Several at once",
+        "text": "Tick questions to move them to a topic, archive or track them: this bar acts on the ones you picked."
+      }
+    },
+    "prompt": {
+      "header": {
+        "title": "This question",
+        "text": "Its language, its topic and whether it's asked every week. Archive it to stop asking it: its answers stay."
+      },
+      "verdict": {
+        "title": "What its answers say",
+        "text": "One sentence on the latest answers to this question: who ChatGPT names, and how often you're among them."
+      },
+      "trend": {
+        "title": "This question over the weeks",
+        "text": "The overview's charts for this one question: the brands at each check, the ranking and the sites cited."
+      },
+      "searches": {
+        "title": "What ChatGPT searched for",
+        "text": "The web searches behind its answers: the words your pages should answer."
+      },
+      "todo": {
+        "title": "Fixes for this question",
+        "text": "The actions that should move it, the most useful first. Each opens in Actions."
+      },
+      "answers": {
+        "title": "Its answers",
+        "text": "The answers of the latest check, word for word, with the brands named and the sites cited."
+      }
+    },
+    "discovery": {
+      "intro": {
+        "title": "How it works",
+        "text": "Tell us what you sell and who buys it: we write the questions such customers ask ChatGPT, with topics for them."
+      },
+      "form": {
+        "title": "Two short steps",
+        "text": "Your services and customers first, then the languages of the questions."
+      },
+      "buttons": {
+        "title": "Get the questions",
+        "text": "They arrive in Suggested on the questions page: track the ones you want, reject the rest."
+      }
+    },
+    "answers": {
+      "kpis": {
+        "title": "The answers in numbers",
+        "text": "How many answers ChatGPT gave, and how many name you, speak badly of you, name no brand at all, or searched the web first."
+      },
+      "tools": {
+        "title": "Find answers",
+        "text": "Search their text, or filter them by brand, status and cited site. CSV downloads them with their full text."
+      },
+      "answer": {
+        "title": "One answer",
+        "text": "Each question comes with its three answers. A click opens one like a chat, with the sites it cites."
+      },
+      "analyze": {
+        "title": "Ask GEO AI",
+        "text": "GEO AI reads these answers for you and says what stands out and what to do about it."
+      }
+    },
+    "competitors": {
+      "kpis": {
+        "title": "Where you stand",
+        "text": "Your place among the brands, the gap to the leader, the topics you lead and the questions you're missing from."
+      },
+      "ranking": {
+        "title": "The brands side by side",
+        "text": "Every brand on the four measures, with the change since last week. ⤢ opens the table large."
+      },
+      "topics": {
+        "title": "Who leads each topic",
+        "text": "The brand ChatGPT names most on each topic, and your place there. A topic opens its questions."
+      },
+      "untracked": {
+        "title": "Brands you don't track yet",
+        "text": "Brands ChatGPT names that aren't on your list. Track one to follow it here, or hide it."
+      },
+      "rivals": {
+        "title": "Where each competitor wins",
+        "text": "The questions where a competitor is named and you aren't. A question opens its page."
+      }
+    },
+    "sources": {
+      "views": {
+        "title": "Sites or pages",
+        "text": "See the sites ChatGPT cites, or their pages one by one."
+      },
+      "chart": {
+        "title": "The most cited",
+        "text": "The five sites cited most, at each weekly check."
+      },
+      "movers": {
+        "title": "What changed",
+        "text": "Sites cited for the first time, more or less than at the last check, and whether those citations work for you."
+      },
+      "gaps": {
+        "title": "Places to get listed",
+        "text": "“Gaps” keeps only the sites where competitors are named and you aren't: the first places to get onto."
+      },
+      "site": {
+        "title": "One site",
+        "text": "A click opens the site's page: how often it's cited, who's named there and how to get listed."
+      }
+    },
+    "source": {
+      "header": {
+        "title": "This site",
+        "text": "What kind of site it is, how often ChatGPT cites it now and at the last check, and whose site it is."
+      },
+      "verdict": {
+        "title": "What it means for you",
+        "text": "Whether you're named on it, which competitors are, and the fix that gets you listed."
+      },
+      "chart": {
+        "title": "Over the checks",
+        "text": "The site and its pages at each weekly check."
+      },
+      "movers": {
+        "title": "What changed here",
+        "text": "Its pages cited more or less since the last check, and who ChatGPT names when it cites this site."
+      },
+      "views": {
+        "title": "Pages and answers",
+        "text": "Its pages one by one, or the answers that cite it, word for word."
+      }
+    },
+    "wrongFacts": {
+      "kpis": {
+        "title": "Wrong facts in numbers",
+        "text": "How many wrong things ChatGPT says about you, in how many questions, and since when."
+      },
+      "table": {
+        "title": "Each wrong fact",
+        "text": "What ChatGPT said, what is true, and the question it came up in. The question opens its answers."
+      },
+      "fix": {
+        "title": "Plan the fixes",
+        "text": "Each wrong fact has an action: where to correct it and how. They wait for you in Actions."
+      }
+    },
+    "settings": {
+      "nav": {
+        "title": "Settings by section",
+        "text": "Your project's settings, then your account's. The ones marked “coming soon” are on their way."
+      },
+      "profile": {
+        "title": "Your brand",
+        "text": "What you told us when you started: name, site, city and services. The questions are written from it."
+      },
+      "brands": {
+        "title": "Brands you track",
+        "text": "You and the competitors you follow, with how often ChatGPT names each."
+      },
+      "language": {
+        "title": "Interface language",
+        "text": "Uzbek, Russian or English, for the screens you see. The questions keep their own languages."
+      }
     }
   }
 }

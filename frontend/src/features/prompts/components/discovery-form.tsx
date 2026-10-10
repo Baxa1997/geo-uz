@@ -72,7 +72,7 @@ export function DiscoveryForm({
 
   return (
     <div className="flex min-h-full flex-col">
-      <div className="flex flex-1 flex-col gap-6 px-5 py-8 sm:px-10 sm:py-12">
+      <div data-tour="form" className="flex flex-1 flex-col gap-6 px-5 py-8 sm:px-10 sm:py-12">
         <p className="text-xs font-medium text-muted-foreground tabular-nums">{t("step", { step, steps: 2 })}</p>
         {step === 1 ? (
           <>
@@ -156,7 +156,7 @@ export function DiscoveryForm({
       </div>
 
       {/* The step's buttons stay at the bottom, as on Peec */}
-      <div className="sticky bottom-0 flex items-center justify-between gap-3 border-t bg-background px-5 py-4 sm:px-10">
+      <div data-tour="buttons" className="sticky bottom-0 flex items-center justify-between gap-3 border-t bg-background px-5 py-4 sm:px-10">
         {step === 2 ? (
           <Button variant="ghost" size="lg" onClick={() => setStep(1)}>
             <ArrowLeft aria-hidden data-icon="inline-start" />

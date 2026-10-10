@@ -104,13 +104,13 @@ export function AnswersTable({
       title={t("table.title")}
       hint={t("table.hint")}
       actions={
-        <Button variant="outline" className="h-8" onClick={() => openAssistant(t("analyzeQuestion"))}>
+        <Button data-tour="analyze" variant="outline" className="h-8" onClick={() => openAssistant(t("analyzeQuestion"))}>
           <Sparkles aria-hidden data-icon="inline-start" />
           {t("analyze")}
         </Button>
       }
     >
-      <div className="flex flex-wrap items-center gap-2 border-b p-3">
+      <div data-tour="tools" className="flex flex-wrap items-center gap-2 border-b p-3">
         <div className="relative min-w-48 flex-1 sm:max-w-xs">
           <Search aria-hidden className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
           <label htmlFor="answers-search" className="sr-only">

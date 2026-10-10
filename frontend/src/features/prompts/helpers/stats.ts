@@ -36,6 +36,10 @@ export function promptStats(result: PromptResult, brands: Brand[], youId: string
   };
 }
 
+/** The tone of the answers naming the client as a score out of 100 (as the report's sentiment); null when none names it. */
+export const toneScore = (tones: Tone[]) =>
+  tones.length ? Math.round(tones.reduce((sum, tone) => sum + TONE_POINTS[tone], 0) / tones.length) : null;
+
 /** The client's numbers over a set of questions, as shown: visibility in percent, tone 0–100, mean position. */
 export interface PromptsSummary {
   visibility: number | null;

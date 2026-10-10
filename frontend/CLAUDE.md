@@ -224,7 +224,7 @@ frontend/src/
                           #   laid out like Peec's Actions across the panel (Page `bleed`; the user's screenshots of
                           #   Oct 10): ActionBoard's strip of tools (statuses, All filters: topics, where the work is,
                           #   kind of site, kind of work; Group by: goal, kind of work, impact, where, topic; the
-                          #   guided tour (shared Tour, starts by itself once per browser), export as CSV or JSON,
+                          #   guided tour (shared Tour; see "Guided tours"), export as CSV or JSON,
                           #   "Add a page" (AddContentDialog: a page's address or a Markdown/text file, its type and
                           #   topic → an action with its brief), "Accept all"); a heading and GoalTiles; the list by
                           #   status, then group, then kind of work when a goal has two or more (helpers/grouping.ts),
@@ -253,13 +253,22 @@ frontend/src/
                           #   date. Numbers and charts come right after the sentence (the user's order, Oct 5)
     prompts/              # Questions, laid out like Peec's prompts page across the whole panel (Page `bleed`; the
                           #   user's correction of Oct 8: Add as a window, "Suggest more", and the rest of Peec's
-                          #   features): the topics column (TopicsColumn: "New topic +", each topic's ⋯ renames or
-                          #   deletes it, suggested topics apart on the Suggested tab; a sheet on a phone); tracked /
+                          #   features): the topics column in Peec's design (TopicsColumn: the title's ⌃⌄ sorts the
+                          #   topics as added, by name or by count; "New topic +" and "All topics" in rows of their
+                          #   own; each topic's pencil opens it in a window, as Peec's (TopicDialog: its name, its
+                          #   tracked questions, "Delete topic"), and "New topic" opens one empty; suggested topics apart on the Suggested
+                          #   tab; « at its foot folds it to Peec's closed rail, kept in the geo_topics cookie: ⌃⌄,
+                          #   the count of all, +, each topic as its count with its name on hover); tracked /
                           #   suggested / archived tabs with the plan's ring (Project.limits.prompts; at the limit
-                          #   nothing can be added, tracked or restored) and the page's buttons; a table that scrolls
-                          #   sideways under the pinned question, like Peec's: visibility, share of voice, tone,
-                          #   position, brands named, leader, web search, wrong facts found (our version of Peec's
-                          #   fact-checking switch), date added, the client's numbers over the rows shown
+                          #   nothing can be added, tracked or restored) and the page's buttons; Peec's table (gray
+                          #   headings in the body's size, the numbers at the right, the pinned question's edge
+                          #   shadowed once it scrolls sideways): the question (sorts A to Z), visibility, share of
+                          #   voice, tone (a dot and the score out of 100), position, brands named, leader, web
+                          #   search, branding (whether the question names the client's brand, as Peec's), Peec's
+                          #   fact-checking switch (Prompt.factCheck; the wrong facts found beside it), tags
+                          #   (Prompt.tags; TagsCell finds or makes one; a "Tag" filter over the list), language,
+                          #   location (Prompt.location, the city it is asked from, picked in its window), date
+                          #   added; the client's numbers over the rows shown
                           #   (helpers/stats.ts); boxes to pick rows, and a footer that stays in view: when they are
                           #   asked again and "Archive all", or what to do with the rows picked (move to a topic,
                           #   archive; track or reject suggestions; track archived ones again). AddPromptDialog (one
@@ -594,6 +603,25 @@ over the element on hover, on keyboard focus and on a tap (phones have no hover)
 - A hint's bubble and its frame let the pointer through (`pointer-events-none`): a menu or a row under an
   open bubble stays clickable. The other pages' tables get
   theirs when their turn comes.
+
+## Guided tours
+Every workspace page has a short tour, laid out like Peec's (the user's correction with Peec's screenshots,
+Oct 10): each step frames one section of the page in a dark border while the rest fades, and a dark bubble
+beside it, its pointer on the section, says what the section shows and what to do with it ("Skip tour",
+Back, Next). The bubble goes under the section, else over it, else beside it, and follows it when the page
+scrolls. Hint bubbles stay hidden while a tour is open.
+
+- The tour starts by itself on the first visit to a page, once per browser (`localStorage` `geo-tour:<page>`),
+  unless a window is open then; the book button at the end of the page's top bar shows it again.
+- A page names its tour with `Page`'s `tour` prop. The steps are the page's entries in `messages/Tours`, in
+  their order (keep it the page's order, top to bottom); each points at the element marked with
+  `data-tour="<key>"`. Frame whole sections, as Peec does: a card, a strip of numbers, a table's tools or its
+  first row, not a section taller than the screen. A card in a grid is wrapped in `<div data-tour className="grid">`
+  so it still fills its row. A step whose element isn't on the page (a tab not open, a narrow screen) is passed over.
+- Shared parts carry their own key: the row of numbers (`KpiStrip`, "kpis"), the first answer of a list
+  ("answer"), `PageSection`'s and `LinkRow`'s `tour` prop.
+- Harakatlar keeps its own tour in `ActionBoard` (its steps open an action), started from the book button
+  in its strip of tools, as on Peec. The Hisobotlar placeholder has none until it is built.
 
 ## Commands (frontend, from `frontend/`)
 - `npm run dev`

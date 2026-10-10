@@ -47,11 +47,11 @@ export default async function DiscoveryPage({ params, searchParams }: Props) {
   ];
 
   return (
-    <Page title={t("title")} crumbs={[{ href: prompts, label: tSidebar("prompts") }]} engines bleed>
+    <Page title={t("title")} crumbs={[{ href: prompts, label: tSidebar("prompts") }]} engines tour="discovery" bleed>
       <div className="grid flex-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,34rem)]">
         <section className="flex items-center justify-center border-b px-5 py-10 sm:px-10 lg:border-r lg:border-b-0">
           <div className="flex max-w-md flex-col items-center gap-5 text-center">
-            <div className="w-full rounded-3xl border bg-muted/40 p-6 text-left shadow-xs">
+            <div data-tour="intro" className="w-full rounded-3xl border bg-muted/40 p-6 text-left shadow-xs">
               <p className="inline-flex items-center gap-1.5 rounded-md border bg-background px-2 py-0.5 text-xs font-medium">
                 <span aria-hidden className="size-1.5 rounded-full bg-positive" />
                 {t("title")}

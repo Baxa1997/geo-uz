@@ -2,7 +2,7 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useMessages, useTranslations } from "next-intl";
 import { useId, useState, type FormEvent } from "react";
 import { FormSelect } from "@/shared/components/form-select";
 import { Button } from "@/shared/components/ui/button";
@@ -38,8 +38,9 @@ function linesOf(text: string): string[] {
  * Adds questions, laid out like Peec's "Add prompt" window, or edits one (`prompt`). Two ways to add,
  * switched at the top: written, one question per line (Peec: "Every line will be a separate prompt"),
  * or from a file (Peec's "Bulk upload": a CSV's first column or a text file's lines). Then the topic (one
- * of the project's, or a new one) and the language, guessed from each question's letters unless chosen.
- * Peec's location and tags are left out: a project has one city, and topics group the questions.
+ * of the project's, or a new one), where the questions are asked from (the project's city unless another
+ * is picked, as Peec's location) and the language, guessed from each question's letters unless chosen.
+ * Tags are added in the table, as on Peec.
  *
  * Written questions are added only if every one is fine; a file's questions that are too short, too
  * long or asked already are skipped and counted. Neither may pass the plan's room (`room`).
@@ -51,6 +52,7 @@ export function AddPromptDialog({
   prompt,
   topics,
   defaultTopic,
+  defaultLocation,
   existing,
   room,
   onSaved,
@@ -62,6 +64,8 @@ export function AddPromptDialog({
   prompt?: Prompt;
   topics: TopicOption[];
   defaultTopic: string;
+  /** Where a new question is asked from: the project's city. */
+  defaultLocation: string;
   /** Every question of the project, archived ones too: none may be added twice. */
   existing: Prompt[];
   /** How many more questions the plan takes. */
@@ -70,6 +74,7 @@ export function AddPromptDialog({
 }) {
   const t = useTranslations("PromptForm");
   const languages = useTranslations("Locales");
+  const messages = useMessages();
   const id = useId();
   const queryClient = useQueryClient();
   const [mode, setMode] = useState<Mode>("write");
@@ -77,6 +82,7 @@ export function AddPromptDialog({
   const [language, setLanguage] = useState<LanguageChoice>(prompt?.language ?? "auto");
   const [topic, setTopic] = useState(prompt?.topic ?? (defaultTopic || topics[0]?.value || NEW_TOPIC));
   const [newTopic, setNewTopic] = useState("");
+  const [location, setLocation] = useState(prompt?.location ?? defaultLocation);
   const [file, setFile] = useState<ListFile | null>(null);
   const [error, setError] = useState("");
 
@@ -93,9 +99,9 @@ export function AddPromptDialog({
       const languageOf = (line: string) => (language === "auto" ? languageOfText(line) : language);
       if (prompt) {
         const [line = ""] = lines;
-        return [await api.updatePrompt(projectId, prompt.id, { text: line, language: languageOf(line), topic: chosenTopic })];
+        return [await api.updatePrompt(projectId, prompt.id, { text: line, language: languageOf(line), topic: chosenTopic, location })];
       }
-      return api.createPrompts(projectId, { prompts: lines.map((line) => ({ text: line, language: languageOf(line), topic: chosenTopic })) });
+      return api.createPrompts(projectId, { prompts: lines.map((line) => ({ text: line, language: languageOf(line), topic: chosenTopic, location })) });
     },
     onSuccess: (saved) => {
       queryClient.setQueryData<Prompt[]>(queryKeys.prompts(projectId), (list = []) =>
@@ -151,6 +157,22 @@ export function AddPromptDialog({
           className="h-11 rounded-xl border bg-background px-3 text-sm outline-none placeholder:text-muted-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
         />
       )}
+    </div>
+  );
+
+  // Where the questions are asked from, as Peec's location: a city of the country, the project's by default
+  const locationField = (
+    <div className="flex flex-col gap-2">
+      <label htmlFor={`${id}-location`} className="text-sm text-muted-foreground">
+        {t("location")}
+      </label>
+      <FormSelect id={`${id}-location`} value={location} onChange={setLocation}>
+        {Object.entries(messages.Cities).map(([value, label]) => (
+          <option key={value} value={value}>
+            {label}
+          </option>
+        ))}
+      </FormSelect>
     </div>
   );
 
@@ -218,15 +240,19 @@ export function AddPromptDialog({
               />
             </div>
             {topicField}
-            <div className="flex flex-col gap-2">
-              <label htmlFor={`${id}-language`} className="text-sm text-muted-foreground">
-                {t("language")}
-              </label>
-              <FormSelect id={`${id}-language`} value={language} onChange={(value) => setLanguage(value as LanguageChoice)}>
-                {!prompt && <option value="auto">{t("languageAuto")}</option>}
-                <option value="uz">{languages("uz")}</option>
-                <option value="ru">{languages("ru")}</option>
-              </FormSelect>
+            {/* Location and language side by side, as in Peec's window */}
+            <div className="grid gap-5 sm:grid-cols-2 sm:gap-3">
+              {locationField}
+              <div className="flex flex-col gap-2">
+                <label htmlFor={`${id}-language`} className="text-sm text-muted-foreground">
+                  {t("language")}
+                </label>
+                <FormSelect id={`${id}-language`} value={language} onChange={(value) => setLanguage(value as LanguageChoice)}>
+                  {!prompt && <option value="auto">{t("languageAuto")}</option>}
+                  <option value="uz">{languages("uz")}</option>
+                  <option value="ru">{languages("ru")}</option>
+                </FormSelect>
+              </div>
             </div>
           </>
         ) : (
@@ -257,6 +283,7 @@ export function AddPromptDialog({
               </div>
             )}
             {topicField}
+            {locationField}
             <p className="text-xs text-pretty text-muted-foreground">{t("fileLanguage")}</p>
           </>
         )}

@@ -71,7 +71,7 @@ export default async function CompetitorsPage({ params, searchParams }: Props) {
   const withoutYou = promptsWithoutYou(report.prompts, brand.id, competitors.map((competitor) => competitor.id)).length;
 
   return (
-    <Page title={t("competitors")} engines toolbar={<ReportFilterBar topics={topics} />}>
+    <Page title={t("competitors")} engines tour="competitors" toolbar={<ReportFilterBar topics={topics} />}>
       <KpiStrip
         items={[
           {
@@ -104,31 +104,37 @@ export default async function CompetitorsPage({ params, searchParams }: Props) {
           },
         ]}
       />
-      <BrandTable
-        expandable
-        history={report.history}
-        brands={series}
-        title={tTable("titleShort")}
-        // A first run has no week before it to compare with
-        description={tTable(report.history.length > 1 ? "description" : "descriptionFirst")}
-      />
-      <TopicRankings
-        rankings={rankings}
-        places={series.length}
-        questionsHref={(topic) => withFilters(`${base}/prompts`, { ...filters, topic })}
-      />
-      {report.untrackedBrands.length > 0 && (
-        <UntrackedBrands
-          projectId={report.project.id}
-          brands={report.untrackedBrands}
-          totalAnswers={totalAnswers}
-          tracked={competitors.length}
-          limit={report.project.limits.competitors}
-          plan={report.project.plan}
+      <div data-tour="ranking">
+        <BrandTable
+          expandable
+          history={report.history}
+          brands={series}
+          title={tTable("titleShort")}
+          // A first run has no week before it to compare with
+          description={tTable(report.history.length > 1 ? "description" : "descriptionFirst")}
         />
+      </div>
+      <div data-tour="topics">
+        <TopicRankings
+          rankings={rankings}
+          places={series.length}
+          questionsHref={(topic) => withFilters(`${base}/prompts`, { ...filters, topic })}
+        />
+      </div>
+      {report.untrackedBrands.length > 0 && (
+        <div data-tour="untracked">
+          <UntrackedBrands
+            projectId={report.project.id}
+            brands={report.untrackedBrands}
+            totalAnswers={totalAnswers}
+            tracked={competitors.length}
+            limit={report.project.limits.competitors}
+            plan={report.project.plan}
+          />
+        </div>
       )}
       {competitors.length > 0 && (
-        <section aria-labelledby="ahead-title" className="flex flex-col gap-3">
+        <section aria-labelledby="ahead-title" data-tour="rivals" className="flex flex-col gap-3">
           <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-1">
             <div className="flex flex-col gap-1">
               <h2 id="ahead-title" className="font-medium">

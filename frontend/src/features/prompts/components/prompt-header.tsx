@@ -39,7 +39,7 @@ export function PromptHeader({
     { key: "added", label: t("facts.added"), hint: t("hints.added"), value: formatLongDate(prompt.createdAt, locale, timeZone) },
     { key: "topic", label: t("facts.topic"), hint: t("hints.topic"), value: labelFor(messages.Topics, prompt.topic) },
     { key: "language", label: t("facts.language"), hint: t("hints.language"), value: t(`languages.${prompt.language}`) },
-    { key: "city", label: t("facts.city"), hint: t("hints.city"), value: labelFor(messages.Cities, project.city) },
+    { key: "city", label: t("facts.city"), hint: t("hints.city"), value: labelFor(messages.Cities, prompt.location) },
     {
       key: "status",
       label: t("facts.status"),

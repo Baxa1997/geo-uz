@@ -25,7 +25,7 @@ export function GoalTiles({ counts, value, onChange }: { counts: Record<ActionKi
   const common = useTranslations("Common");
 
   return (
-    <div role="group" aria-label={t("goalsLabel")} data-tour="goals" className="grid grid-cols-2 border-y @3xl:grid-cols-4">
+    <div role="group" aria-label={t("goalsLabel")} className="grid grid-cols-2 border-y @3xl:grid-cols-4">
       {GOALS.map((goal, index) => {
         const Icon = ACTION_KIND_ICONS[goal];
         const pressed = value === goal;

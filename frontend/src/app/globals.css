@@ -22,6 +22,7 @@
   --color-source-social: var(--source-social);
   --color-positive: var(--positive);
   --color-negative: var(--negative);
+  --color-progress: var(--progress);
   --color-better: var(--better);
   --color-worse: var(--worse);
   --color-telegram: var(--telegram);
@@ -121,6 +122,8 @@
   /* Tone: status colors, always paired with an icon and a label */
   --positive: #0ca30c;
   --negative: #d03b3b;
+  /* Work under way (an action in progress): amber, beside its label, 3:1 on white */
+  --progress: #cc8800;
   /* A change since last week, as an arrow with its number: up and green for better, down and red for
      worse. Darker than the two above, so the small number passes 4.5:1 on white (5.3:1 both) */
   --better: #0a7d0a;
@@ -159,6 +162,7 @@
   --source-social: #008300;
   --positive: #0ca30c;
   --negative: #d03b3b;
+  --progress: #e0a020;
   --better: #2fbf2f;
   --worse: #f07070;
   --telegram: #1979bc;

@@ -119,6 +119,39 @@ Any other number makes a new account, which goes through onboarding and gets a p
   export, Peec Agent (GEO AI takes its place). Also fixed for every page: a hint's bubble no longer blocks
   clicks on what is under it. New for the backend: briefs, `PATCH` and `POST /projects/{id}/actions` (see
   `backend/PLAN.md`, change log).
+- **Guided tours on every page, Harakatlar's second correction (10 Oct); merged and pushed that day, with
+  the Savollar corrections below, when the user chose "commit, push".** The user sent Peec's tour again: "it must show with border the section, and every page must
+  have the tour … with pointer as in screenshot". Our frame did not show (the shadow that fades the page
+  covered its ring). Now each step frames a whole section in a dark border while the rest of the page
+  fades, and a dark bubble with a pointer sits under, over or beside it, as on Peec. Every workspace page
+  has its own tour: Overview, Savollar, a question's page, Find questions, Javoblar, Raqobatchilar,
+  Manbalar, a site's page, Notoʻgʻri faktlar, Harakatlar and Sozlamalar. It starts by itself on the first
+  visit, and the book button in the page's top bar shows it again. Harakatlar's tour gained Peec's
+  status-filter step and frames the heading with the goals. Also: "In progress" is now Peec's amber ring
+  with its right half filled, and the "Add a page" window has a close cross. The rule is in
+  `frontend/CLAUDE.md`, "Guided tours".
+- **Savollar's topics column in Peec's design (10 Oct), on the branch `guided-tours`; merged and pushed that day.**
+  The user sent Peec's topics column ("make the same UI design"). The title has Peec's ⌃⌄, which sorts the
+  topics as added, by name or by number of questions (Peec's switches to tags, which we leave out). "New
+  topic +" and "All topics" with its count sit in rows of their own. The topics are compact rows with
+  their counts in gray, and the one picked sits on a gray rounded ground. « at the column's foot, level
+  with the list's footer, folds it to a rail. The page remembers that in a cookie, and the topics are then
+  a button in the tools row. Then, with Peec's "Edit topic" window as the picture ("will open a modal, not
+  Enter and Esc"): a topic's pencil opens it in a window with its name, its tracked questions and "Delete
+  topic" in red at the foot, with Cancel and Save; "New topic" opens the same window empty. Nothing is
+  typed in place any more. Peec's location and language per topic are left out: the city is the
+  project's, and each question keeps its own language. Then Peec's closed column and full table ("closed version of prompts
+  and full table design"): folded, the column is Peec's rail (⌃⌄, the count of all, +, each topic as its
+  count with its name on hover, » at the foot). The table has Peec's look: gray headings in the body's
+  size, the numbers at the right under theirs, the question sorting A to Z, tone as a dot and a score out
+  of 100, web search in percent, and the question's edge shadowed once the table scrolls sideways. It
+  gained Peec's "Branding" (worked out from whether the question names the client's brand) and the
+  question's language in the place of Peec's "Location" (UZ / RU). Then, when the user asked for
+  "tag adding, fact checking, location": each question has its own tags ("+ Add tags" in the row opens a
+  small window to find or type a tag; a "Tag" filter over the list), Peec's fact-checking switch (on by
+  default; the wrong facts found show beside it) and a location, the city it is asked from (a round flag
+  and the city; picked in the question's window, the project's city by default). Volume and intent stay
+  out of the table: the user chose that when asked.
 - **Javoblar (7 Oct), built from Peec's Chats screenshots of 4 Oct; the user has not sent corrections for
   it yet.** Added to the page that existed: CSV export of the answers with their full text, a filter by
   cited site (`?source=` lets other pages link to "the answers citing this site"), hover explanations on the
@@ -193,8 +226,10 @@ Any other number makes a new account, which goes through onboarding and gets a p
   Raqobatchilar, then `manbalar-page` (the review for repeats, Manbalar with a page per cited site, the
   report), then `manbalar-correction` (Manbalar and every page's top in Peec's layout); on 10 Oct
   `savollar-correction` (Savollar with all of Peec's Prompts features), then `harakatlar-page` (Harakatlar
-  in Peec's Actions layout with its first correction). Each time the user chose "commit, push" when asked
-  (for Harakatlar: "push everything"). Each page gets its own branch, merged when the user says so.
+  in Peec's Actions layout with its first correction), then `guided-tours` (a tour on every page,
+  Harakatlar's second correction, and Savollar's topics column, folded rail and table in Peec's design with
+  tags, fact-checking and location). Each time the user chose "commit, push" when asked (for Harakatlar:
+  "push everything"). Each page gets its own branch, merged when the user says so.
 
 ## To do, in order
 
@@ -205,15 +240,16 @@ Any other number makes a new account, which goes through onboarding and gets a p
    - Manbalar: rebuilt after Peec's Domains screenshots, laid out like Peec's on 8 Oct, confirmed by the
      user and merged (see "Done"). Peec's URLs page was not among the screenshots; our Pages tab stands in.
    - The report: rewritten and merged (see "Done"); corrections may still come.
-   - Savollar: laid out like Peec's with all of its Prompts features on 8 Oct and merged on 10 Oct (see "Done");
-     corrections may still come.
-   - Harakatlar: laid out like Peec's Actions on 10 Oct, corrected once and merged the same day (see "Done");
+   - Savollar: laid out like Peec's with all of its Prompts features on 8 Oct and merged on 10 Oct, then its
+     topics column, folded rail and table in Peec's design with tags, fact-checking and location, merged the
+     same day (see "Done"); corrections may still come.
+   - Harakatlar: laid out like Peec's Actions on 10 Oct, corrected twice and merged the same day (see "Done");
      more corrections may still come. Still to come on it: marks on the chart where a fix started and was done (Peec's Impact as a block), once Impact's
      screenshots arrive.
    - Next, as the user asked on 8 Oct ("we need actions, and reports, need to be corrected"): Hisobotlar.
      Their Peec trial ends about 11 Oct, so the remaining Peec screens are captured in one go: Impact,
-     Settings › Company (Peec's email report), every other Settings tab including Facts, and the fact-check
-     switch on Prompts. The Fanouts screenshots of 8 Oct need nothing: the question's page already lists the
+     Settings › Company (Peec's email report), every other Settings tab including Facts (asked for on 10 Oct;
+     the fact-check switch on Prompts came that day and is built). The Fanouts screenshots of 8 Oct need nothing: the question's page already lists the
      searches (decided 6 Oct).
    - Hisobotlar: a placeholder today that links to the report. When its turn comes: the list of past
      checks' reports (needs a report per run from the backend), sending to Telegram, the agency's name on it.

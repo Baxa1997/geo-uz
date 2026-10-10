@@ -103,6 +103,8 @@ export function AnswersList({
                   </LinkRow>
                 )}
                 <tr
+                  // The first answer is what a page's guided tour points at
+                  data-tour={index === 0 ? "answer" : undefined}
                   // The whole row opens the answer; its button stays the way in for the keyboard
                   onClick={(event) => {
                     if (event.target instanceof Element && event.target.closest("a, button")) return;

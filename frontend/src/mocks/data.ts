@@ -100,10 +100,16 @@ const SEEDED_PROMPTS: (CreatePromptRequest & { id: string })[] = [
   { id: "prm_20", language: "ru", topic: "root_canal", text: "Где в Ташкенте лечат каналы под микроскопом?" },
 ];
 
+/** A few of the sample's questions carry the client's own tags: a branch, a campaign. */
+const SAMPLE_TAGS: Record<string, string[]> = { prm_01: ["Asosiy"], prm_02: ["Aksiya"], prm_07: ["Chilonzor filiali"] };
+
 export const PROMPTS: Prompt[] = SEEDED_PROMPTS.map((prompt) => ({
   ...prompt,
   createdAt: ADDED_LATER[prompt.id] ?? SETUP_AT,
   archivedAt: null,
+  location: "tashkent",
+  factCheck: true,
+  tags: SAMPLE_TAGS[prompt.id] ?? [],
 }));
 
 /** A question the sample client stopped tracking after six checks. */
@@ -114,6 +120,9 @@ export const ARCHIVED_PROMPT: Prompt = {
   text: "Toshkentda tishni professional tozalash qayerda arzon?",
   createdAt: SETUP_AT,
   archivedAt: "2026-09-16T08:40:00Z",
+  location: "tashkent",
+  factCheck: true,
+  tags: [],
 };
 
 /** It has no answers of its own: its last check reuses those of the question on the same subject. */

@@ -68,32 +68,38 @@ export default async function PromptPage({ params, searchParams }: Props) {
   const tracked = prompts.filter(isTracked).length;
 
   return (
-    <Page title={prompt.text} crumbs={[{ href: withFilters(`${base}/prompts`, filters), label: t("prompts") }]} engines>
-      <PromptHeader
-        prompt={prompt}
-        project={project}
-        asked={Boolean(result)}
-        nextRunAt={report.nextRunAt}
-        // Tracking it again needs room in the plan
-        full={tracked >= project.limits.prompts}
-      />
+    <Page title={prompt.text} crumbs={[{ href: withFilters(`${base}/prompts`, filters), label: t("prompts") }]} engines tour={result ? "prompt" : undefined}>
+      <div data-tour="header">
+        <PromptHeader
+          prompt={prompt}
+          project={project}
+          asked={Boolean(result)}
+          nextRunAt={report.nextRunAt}
+          // Tracking it again needs room in the plan
+          full={tracked >= project.limits.prompts}
+        />
+      </div>
 
       {!result ? (
         <PromptQueued archived={!isTracked(prompt)} nextRunAt={report.nextRunAt} />
       ) : (
         <>
-          <PromptVerdict report={report} result={result} />
+          <div data-tour="verdict">
+            <PromptVerdict report={report} result={result} />
+          </div>
 
           {/* Columns follow the panel's width, which shrinks when GEO AI is open */}
           <div className="@container">
             <div className="grid gap-4 sm:gap-5 @4xl:grid-cols-2">
-              <TrendPanel
-                expandable
-                title={tOverview("trendTitle")}
-                hint={tPage("trendHint", { samples: report.method.samples })}
-                history={report.history}
-                brands={brands}
-              />
+              <div data-tour="trend" className="grid">
+                <TrendPanel
+                  expandable
+                  title={tOverview("trendTitle")}
+                  hint={tPage("trendHint", { samples: report.method.samples })}
+                  history={report.history}
+                  brands={brands}
+                />
+              </div>
               <BrandTable
                 expandable
                 history={report.history}
@@ -118,24 +124,30 @@ export default async function PromptPage({ params, searchParams }: Props) {
           {/* The searches behind the answers, then what to do: it follows from the numbers above. An archived question has nothing to do */}
           <div className="@container">
             <div className={cn("grid gap-4 sm:gap-5", isTracked(prompt) && "@4xl:grid-cols-2")}>
-              <PromptSearches result={result} />
+              <div data-tour="searches" className="grid">
+                <PromptSearches result={result} />
+              </div>
               {isTracked(prompt) && (
-                <PromptActions
-                  actions={actions.filter((action) => action.promptIds.includes(prompt.id))}
-                  href={(actionId) => (actionId ? `${base}/actions?action=${encodeURIComponent(actionId)}` : `${base}/actions`)}
-                />
+                <div data-tour="todo" className="grid">
+                  <PromptActions
+                    actions={actions.filter((action) => action.promptIds.includes(prompt.id))}
+                    href={(actionId) => (actionId ? `${base}/actions?action=${encodeURIComponent(actionId)}` : `${base}/actions`)}
+                  />
+                </div>
               )}
             </div>
           </div>
 
-          <PromptAnswers
-            result={result}
-            project={project}
-            brands={brands}
-            collectedAt={report.method.collectedAt}
-            engine={report.method.engine}
-            allHref={isTracked(prompt) ? `${base}/answers` : undefined}
-          />
+          <div data-tour="answers">
+            <PromptAnswers
+              result={result}
+              project={project}
+              brands={brands}
+              collectedAt={report.method.collectedAt}
+              engine={report.method.engine}
+              allHref={isTracked(prompt) ? `${base}/answers` : undefined}
+            />
+          </div>
 
           <MethodLabel method={report.method} />
         </>

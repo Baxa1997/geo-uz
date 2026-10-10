@@ -208,7 +208,6 @@ export function ActionBoard({
   after?: React.ReactNode;
 }) {
   const t = useTranslations("Actions");
-  const common = useTranslations("Common");
   const messages = useMessages();
   const title = useActionTitle();
   const timeZone = useTimeZone() ?? TIME_ZONE;
@@ -388,9 +387,11 @@ export function ActionBoard({
     shown.find((action) => action.kind === "content" && action.brief) ??
     shown.find((action) => action.status === "new") ??
     shown[0];
+  // As Peec's: the heading with the goals, the status filter, the impact bars, then an action opened
   const tourSteps: TourStep[] = [
     { target: '[data-tour="goals"]', title: t("tour.goals.title"), text: t("tour.goals.text") },
-    { target: '[data-tour="impact"]', title: t("tour.impact.title"), text: t("tour.impact.text") },
+    { target: '[data-tour="status"]', title: t("tour.status.title"), text: t("tour.status.text") },
+    { target: '[data-tour="impact"]', title: t("tour.impact.title"), text: t("tour.impact.text"), side: "right" },
     {
       target: '[data-tour="row"]',
       title: t("tour.row.title"),
@@ -404,8 +405,10 @@ export function ActionBoard({
           { target: '[data-tour="assistant"]', title: t("tour.assistant.title"), text: t("tour.assistant.text") },
         ]
       : []),
-    { target: '[data-tour="decide"]', title: t("tour.decide.title"), text: t("tour.decide.text") },
+    { target: '[data-tour="decide"]', title: t("tour.decide.title"), text: t("tour.decide.text"), side: "top" },
   ];
+  // The steps up to the one that opens an action show the list: going back to them closes the action
+  const opensAt = tourSteps.findIndex((step) => step.action);
 
   function startTour() {
     if (!tourAction) return;
@@ -597,7 +600,7 @@ export function ActionBoard({
       <div className="flex flex-wrap items-center gap-2 border-b bg-background px-4 py-2 sm:px-6 @4xl:sticky @4xl:top-12 @4xl:z-5 @4xl:h-12.25 @4xl:flex-nowrap">
         <div className="flex min-w-0 flex-wrap items-center gap-2">
           <DropdownMenu>
-            <DropdownMenuTrigger className={cn(toolButton, statuses.length < STATUS_GROUPS.length && "border-foreground/25 font-medium")}>
+            <DropdownMenuTrigger data-tour="status" className={cn(toolButton, statuses.length < STATUS_GROUPS.length && "border-foreground/25 font-medium")}>
               <Circle aria-hidden className="size-4 shrink-0 text-muted-foreground" />
               <span className="truncate">{statusLabel}</span>
               <ChevronDown aria-hidden className="size-3.5 shrink-0 text-muted-foreground" />
@@ -721,14 +724,15 @@ export function ActionBoard({
         </div>
       </div>
 
+      {/* The heading with the goals: the first step of the tour frames them together, as Peec's */}
       {!split && (
-        <>
+        <div data-tour="goals">
           <div className="flex flex-col gap-1 px-4 pt-5 pb-4 sm:px-6">
             <h2 className="text-xl font-semibold tracking-tight text-pretty">{t("heading")}</h2>
             <p className="max-w-3xl text-sm text-pretty text-muted-foreground">{t("subtitle")}</p>
           </div>
           <GoalTiles counts={counts} value={goal} onChange={narrow(setGoal)} />
-        </>
+        </div>
       )}
 
       <div className="flex flex-1">
@@ -967,14 +971,7 @@ export function ActionBoard({
 
       <ActionToast toast={toast} onOpenGroup={openGroup} onDismiss={() => setToast(null)} />
 
-      <Tour
-        steps={tourSteps}
-        open={tourOpen}
-        onClose={() => setTourOpen(false)}
-        // Back before the action was opened: close it again, so the goals show
-        onStep={(index) => index < 3 && setSelectedId(undefined)}
-        labels={{ skip: t("tour.skip"), back: t("tour.back"), next: t("tour.next"), done: t("tour.done"), close: common("close") }}
-      />
+      <Tour steps={tourSteps} open={tourOpen} onClose={() => setTourOpen(false)} onStep={(index) => index <= opensAt && setSelectedId(undefined)} />
 
       {/* Says what changed, also when a row moves to another group */}
       <p aria-live="polite" className="sr-only">

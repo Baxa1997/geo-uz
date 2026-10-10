@@ -9,7 +9,8 @@ import { cn } from "@/shared/helpers/utils";
 /**
  * A window over the page, laid out like Peec's: rounded, centered from sm up, along the bottom of a phone.
  * Anything above the title (`top`: Peec's "Add prompt | Bulk upload" switch), the title with a line under
- * it, the content, and the buttons at the bottom right.
+ * it, the content, and the buttons at the bottom right. `closeButton` keeps the cross at the top right on
+ * every screen, not only on a phone.
  */
 export function Modal({
   open,
@@ -18,6 +19,7 @@ export function Modal({
   description,
   top,
   footer,
+  closeButton = false,
   className,
   children,
 }: {
@@ -27,6 +29,7 @@ export function Modal({
   description?: React.ReactNode;
   top?: React.ReactNode;
   footer?: React.ReactNode;
+  closeButton?: boolean;
   className?: string;
   children?: React.ReactNode;
 }) {
@@ -48,8 +51,8 @@ export function Modal({
                 <Dialog.Title className="text-lg font-semibold tracking-tight">{title}</Dialog.Title>
                 {description && <Dialog.Description className="text-sm text-pretty text-muted-foreground">{description}</Dialog.Description>}
               </div>
-              {/* Peec's window closes with Cancel; the cross is for a phone, where the window fills the bottom */}
-              <Dialog.Close render={<Button variant="ghost" size="icon-sm" className="-mt-1 -mr-1 shrink-0 sm:hidden" />}>
+              {/* Peec's window closes with Cancel; the cross is for a phone, where the window fills the bottom, unless the window keeps it everywhere */}
+              <Dialog.Close render={<Button variant="ghost" size="icon-sm" className={cn("-mt-1 -mr-1 shrink-0", !closeButton && "sm:hidden")} />}>
                 <X aria-hidden />
                 <span className="sr-only">{t("close")}</span>
               </Dialog.Close>

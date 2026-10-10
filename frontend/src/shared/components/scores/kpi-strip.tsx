@@ -30,12 +30,12 @@ const lastSpan = (count: number) => cn(SPAN_2[count % 2], SPAN_3[count % 3], SPA
  * A row of the client's numbers, each with its change since the previous run, side by side with thin
  * dividers (two per line on phones). The changes are the client's own, so they are judged: an arrow up
  * and green when the number got better, an arrow down and red when it got worse, with words for screen
- * readers.
+ * readers. A page's guided tour points at it as "kpis".
  */
 export function KpiStrip({ items, className }: { items: Kpi[]; className?: string }) {
   const t = useTranslations("Kpi");
   return (
-    <div className={cn("@container overflow-hidden rounded-xl bg-card ring-1 ring-foreground/10", className)}>
+    <div data-tour="kpis" className={cn("@container overflow-hidden rounded-xl bg-card ring-1 ring-foreground/10", className)}>
       {/* Every cell draws its left and top border; the ones on the outer edges fall outside and are clipped */}
       <dl className="-mt-px -ml-px grid grid-cols-2 @xl:grid-cols-3 @4xl:grid-cols-5">
         {items.map(({ key, label, hint, value, lead, change, note }, index) => (

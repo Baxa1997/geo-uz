@@ -71,35 +71,46 @@ export default async function OverviewPage({ params, searchParams }: Props) {
     );
   }
 
+  // The sections the page's tour points at (messages/Tours.overview) are marked `data-tour`; a card in a
+  // grid is wrapped in a grid of one, so it still fills its row
   return (
     <Page
       title={t("overview")}
       engines
+      tour="overview"
       toolbar={
         <>
-          <ReportFilterBar topics={topics} />
+          <div data-tour="filters">
+            <ReportFilterBar topics={topics} />
+          </div>
           <div className="ml-auto flex flex-wrap items-center gap-x-4 gap-y-2">
             {report.nextRunAt && <NextRun at={report.nextRunAt} />}
-            <ShareMenu
-              projectId={report.project.id}
-              history={report.history}
-              brands={brands}
-              filename={`${brand.domain}-${report.method.collectedAt.slice(0, 10)}`}
-            />
+            <div data-tour="share">
+              <ShareMenu
+                projectId={report.project.id}
+                history={report.history}
+                brands={brands}
+                filename={`${brand.domain}-${report.method.collectedAt.slice(0, 10)}`}
+              />
+            </div>
           </div>
         </>
       }
     >
       {/* The alert goes over the sentence, so the numbers and charts follow the sentence directly */}
       {report.wrongFacts.length > 0 && <WrongFactsAlert count={report.wrongFacts.length} href={to("/wrong-facts")} />}
-      <Verdict report={report} />
+      <div data-tour="verdict">
+        <Verdict report={report} />
+      </div>
 
       <HeadlineKpis report={report} />
 
       {/* Columns follow the panel's width, which shrinks when GEO AI is open */}
       <div className="@container">
         <div className="grid gap-4 sm:gap-5 @4xl:grid-cols-2">
-          <TrendPanel expandable title={tOverview("trendTitle")} hint={tOverview("trendHint")} history={report.history} brands={brands} />
+          <div data-tour="trend" className="grid">
+            <TrendPanel expandable title={tOverview("trendTitle")} hint={tOverview("trendHint")} history={report.history} brands={brands} />
+          </div>
           <BrandTable
             expandable
             history={report.history}
@@ -109,29 +120,35 @@ export default async function OverviewPage({ params, searchParams }: Props) {
             description={tTable(report.history.length > 1 ? "description" : "descriptionFirst")}
             action={<ArrowLink href={to("/competitors")}>{t("competitors")}</ArrowLink>}
           />
-          <TopDomains
-            expandable
-            sources={report.topSources}
-            totalAnswers={totalAnswers(report.prompts)}
-            youId={brand.id}
-            limit={TOP_SOURCES}
-            action={<ArrowLink href={to("/sources")}>{t("sources")}</ArrowLink>}
-            sitePattern={to(`/sources/${SITE_SLOT}`)}
-          />
+          <div data-tour="sources" className="grid">
+            <TopDomains
+              expandable
+              sources={report.topSources}
+              totalAnswers={totalAnswers(report.prompts)}
+              youId={brand.id}
+              limit={TOP_SOURCES}
+              action={<ArrowLink href={to("/sources")}>{t("sources")}</ArrowLink>}
+              sitePattern={to(`/sources/${SITE_SLOT}`)}
+            />
+          </div>
           <SourceTypesChart expandable sources={report.topSources} />
         </div>
       </div>
 
-      <BreakdownCard
-        results={report.prompts}
-        brands={brands}
-        questionsHref={(filter) => withFilters(`${base}/prompts`, { ...filters, ...filter })}
-      />
+      <div data-tour="topics">
+        <BreakdownCard
+          results={report.prompts}
+          brands={brands}
+          questionsHref={(filter) => withFilters(`${base}/prompts`, { ...filters, ...filter })}
+        />
+      </div>
 
       {/* What to do, after the numbers it follows from */}
       <div className="@container">
         <div className="grid gap-4 sm:gap-5 @4xl:grid-cols-2">
-          <ActionsCard actions={actions} href={(actionId) => to("/actions", actionId ? { action: actionId } : undefined)} />
+          <div data-tour="todo" className="grid">
+            <ActionsCard actions={actions} href={(actionId) => to("/actions", actionId ? { action: actionId } : undefined)} />
+          </div>
           <MissingCard
             report={report}
             answersHref={(promptId) => to("/answers", promptId ? { prompt: promptId } : undefined)}

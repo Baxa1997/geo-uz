@@ -25,8 +25,8 @@ export function InfoTipPopup({
   return (
     <Popover.Root open={open} onOpenChange={(next) => onOpenChange(next)}>
       <Popover.Portal>
-        {/* Neither the bubble nor its frame takes the pointer: a menu or a row under it stays clickable */}
-        <Popover.Positioner anchor={anchor} side={side} sideOffset={6} collisionPadding={12} className="pointer-events-none z-50">
+        {/* Neither the bubble nor its frame takes the pointer: a menu or a row under it stays clickable. A guided tour hides it */}
+        <Popover.Positioner anchor={anchor} side={side} sideOffset={6} collisionPadding={12} className="pointer-events-none z-50 in-data-touring:hidden">
           <Popover.Popup
             // The anchor keeps the focus: the bubble is read, not operated
             initialFocus={false}

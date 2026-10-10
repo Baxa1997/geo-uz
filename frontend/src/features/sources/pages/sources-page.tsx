@@ -64,14 +64,16 @@ export default async function SourcesPage({ params, searchParams }: Props) {
   const home = withFilters(`${base}/sources`, filters);
   const crumbs = [{ href: home, label: t("sources") }];
   const tabs = (
-    <PageTabs
-      label={tSources("views.label")}
-      current={scope}
-      tabs={[
-        { key: "sites", label: tSources("views.sites"), href: home, hint: tSources("views.hints.sites") },
-        { key: "pages", label: tSources("views.pages"), href: withFilters(`${base}/sources`, filters, { view: "pages" }), hint: tSources("views.hints.pages") },
-      ]}
-    />
+    <div data-tour="views" className="w-fit max-w-full">
+      <PageTabs
+        label={tSources("views.label")}
+        current={scope}
+        tabs={[
+          { key: "sites", label: tSources("views.sites"), href: home, hint: tSources("views.hints.sites") },
+          { key: "pages", label: tSources("views.pages"), href: withFilters(`${base}/sources`, filters, { view: "pages" }), hint: tSources("views.hints.pages") },
+        ]}
+      />
+    </div>
   );
 
   if (report.prompts.length === 0) {
@@ -91,9 +93,9 @@ export default async function SourcesPage({ params, searchParams }: Props) {
   const tableProps = { sources: report.topSources, totalAnswers: totalAnswers(report.prompts), brands: seriesBrands(report.project), filename, sitePattern };
 
   return (
-    <Page title={tSources(`views.${scope}`)} crumbs={crumbs} engines toolbar={<ReportFilterBar topics={topics} />} tabs={tabs}>
+    <Page title={tSources(`views.${scope}`)} crumbs={crumbs} engines tour="sources" toolbar={<ReportFilterBar topics={topics} />} tabs={tabs}>
       <div className="flex flex-col gap-8 sm:gap-10">
-        <PageSection title={tSources("sections.overview.title")} description={tSources(`sections.overview.${scope}`)}>
+        <PageSection tour="chart" title={tSources("sections.overview.title")} description={tSources(`sections.overview.${scope}`)}>
           <SourcesChart
             // Drawn anew for the other view
             key={scope}
@@ -105,7 +107,7 @@ export default async function SourcesPage({ params, searchParams }: Props) {
           />
         </PageSection>
 
-        <PageSection title={tSources("sections.movers.title")} description={<MoversDescription comparedWith={movers?.comparedWith ?? null} scope={scope} />}>
+        <PageSection tour="movers" title={tSources("sections.movers.title")} description={<MoversDescription comparedWith={movers?.comparedWith ?? null} scope={scope} />}>
           {/* Two cards side by side once the panel is wide enough; it narrows when GEO AI is open */}
           <div className="@container">
             <div className="grid gap-4 @3xl:grid-cols-2">

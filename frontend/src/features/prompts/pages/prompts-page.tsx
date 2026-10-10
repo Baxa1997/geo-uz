@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { getTranslations } from "next-intl/server";
 import { cache } from "react";
 import { Page } from "@/shared/components/page";
@@ -10,6 +11,7 @@ import { loadReport } from "@/shared/api/load-report";
 import { withFilters } from "@/shared/helpers/report-filters";
 import { seriesBrands } from "@/shared/helpers/scores";
 import { PromptManager, type View } from "../components/prompt-manager";
+import { TOPICS_COOKIE } from "../constants";
 
 type Props = PageProps<"/[locale]/projects/[id]/prompts">;
 
@@ -34,18 +36,19 @@ export default async function PromptsPage({ params, searchParams }: Props) {
   const { locale: segment, id } = await params;
   const locale = setPageLocale(segment);
   const query = await searchParams;
-  const [{ report, prompts, allPrompts, filters, topics }, suggestions, topicList, t] = await Promise.all([
+  const [{ report, prompts, allPrompts, filters, topics }, suggestions, topicList, t, cookieStore] = await Promise.all([
     loadReport(id, query),
     orNotFound(api.getPromptSuggestions(id)),
     orNotFound(api.getTopics(id)),
     getTranslations({ locale, namespace: "Sidebar" }),
+    cookies(),
   ]);
   const { brand, competitors, plan, limits } = report.project;
   const view = VIEWS.find((candidate) => candidate === query.view) ?? "tracked";
   const fresh = typeof query.new === "string" ? Math.max(0, Number.parseInt(query.new, 10) || 0) : 0;
 
   return (
-    <Page title={t("prompts")} engines bleed toolbar={prompts.length > 0 && <ReportFilterBar topics={topics} topicFilter={false} />}>
+    <Page title={t("prompts")} engines tour="prompts" bleed toolbar={prompts.length > 0 && <ReportFilterBar topics={topics} topicFilter={false} />}>
       <PromptManager
         projectId={report.project.id}
         plan={plan}
@@ -54,6 +57,7 @@ export default async function PromptsPage({ params, searchParams }: Props) {
         initialSuggestions={suggestions}
         initialTopics={topicList}
         initialView={view}
+        initialTopicsFolded={cookieStore.get(TOPICS_COOKIE)?.value === "folded"}
         freshCount={fresh}
         results={report.prompts}
         brands={[brand, ...competitors]}
@@ -67,6 +71,7 @@ export default async function PromptsPage({ params, searchParams }: Props) {
         wrongFacts={report.wrongFacts}
         wrongFactsHref={withFilters(`/projects/${report.project.id}/wrong-facts`, filters)}
         discoveryHref={withFilters(`/projects/${report.project.id}/prompts/discovery`, filters)}
+        city={report.project.city}
       />
     </Page>
   );

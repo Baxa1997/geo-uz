@@ -79,7 +79,7 @@ interface MockState {
 
 // Kept on globalThis so hot reloads and separate route bundles share one copy.
 // Bump the version when MockState changes: a hot reload then starts fresh instead of reading old data.
-const STATE_KEY = "__geoMockState_v15";
+const STATE_KEY = "__geoMockState_v16";
 const globalForMocks = globalThis as typeof globalThis & { [STATE_KEY]?: MockState };
 const state: MockState = (globalForMocks[STATE_KEY] ??= {
   accounts: [{ user: DEMO_USER }],
@@ -185,14 +185,21 @@ const cleanName = (name: string) => name.trim().replace(/\s+/g, " ");
 const FROM_SEARCHES = new Set(["emergency", "location", "painless"]);
 const DAY_MS = 86_400_000;
 
-const newPrompt = (body: Pick<Prompt, "text" | "language" | "topic">): Prompt => ({
+/** A new question: asked from the project's city unless it says another, its answers fact-checked, no tags. */
+const newPrompt = (body: Pick<Prompt, "text" | "language" | "topic"> & { location?: string }, city: string): Prompt => ({
   id: newId("prm"),
   text: body.text,
   language: body.language,
   topic: body.topic,
   createdAt: new Date().toISOString(),
   archivedAt: null,
+  location: body.location ?? city,
+  factCheck: true,
+  tags: [],
 });
+
+/** A tag as the client typed it, without stray spaces; the same tag twice is kept once. */
+const cleanTags = (tags: string[]) => [...new Map(tags.map((tag) => cleanName(tag)).filter(Boolean).map((tag) => [tag.toLowerCase(), tag])).values()];
 
 /** The suggestions waiting for the client, newest first; a project's first ones are the sample's (data.ts). */
 function suggestionsOf(projectId: string): SuggestedPrompt[] {
@@ -356,7 +363,7 @@ export const mockApi: ApiClient = {
     };
     state.projects.push(project);
     state.owners.set(project.id, user.id);
-    const created = prompts.map(newPrompt);
+    const created = prompts.map((prompt) => newPrompt(prompt, city));
     state.prompts.set(project.id, created);
     if (created.length === 0) return respond({ project, runId: null });
     // The first run starts right away and takes a few seconds
@@ -423,21 +430,22 @@ export const mockApi: ApiClient = {
     if (prompts.length === 0) throw new ApiError(422, "No questions");
     assertRoom(project, prompts.length);
     const seen = new Set(promptsOf(projectId).map((prompt) => sameText(prompt.text)));
-    const created = prompts.map(({ text, language, topic }) => {
+    const created = prompts.map(({ text, language, topic, location }) => {
       const clean = text.trim().replace(/\s+/g, " ");
       if (clean.length < PROMPT_TEXT_MIN_LENGTH || clean.length > PROMPT_TEXT_MAX_LENGTH) throw new ApiError(422, `Bad length: ${clean}`);
       if (!cleanName(topic)) throw new ApiError(422, "A question needs a topic");
       if (seen.has(sameText(clean))) throw new ApiError(422, `Asked already: ${clean}`);
       seen.add(sameText(clean));
-      return newPrompt({ text: clean, language, topic: cleanName(topic) });
+      return newPrompt({ text: clean, language, topic: cleanName(topic), location }, project.city);
     });
     state.prompts.set(projectId, [...promptsOf(projectId), ...created]);
     return respond(created);
   },
 
-  updatePrompt: async (projectId, promptId, { text, language, topic }) => {
+  updatePrompt: async (projectId, promptId, { text, language, topic, location }) => {
     await findOwnProject(projectId);
-    const prompt: Prompt = { ...findPrompt(projectId, promptId), text, language, topic };
+    const current = findPrompt(projectId, promptId);
+    const prompt: Prompt = { ...current, text, language, topic, location: location ?? current.location };
     replacePrompt(projectId, prompt);
     return respond(prompt);
   },
@@ -453,7 +461,7 @@ export const mockApi: ApiClient = {
     return respond(prompt);
   },
 
-  updatePrompts: async (projectId, { ids, archived, topic }) => {
+  updatePrompts: async (projectId, { ids, archived, topic, tags, factCheck }) => {
     const project = await findOwnProject(projectId);
     const chosen = [...new Set(ids)].map((promptId) => findPrompt(projectId, promptId));
     if (archived === false) assertRoom(project, chosen.filter((prompt) => !isTracked(prompt)).length);
@@ -463,6 +471,8 @@ export const mockApi: ApiClient = {
       ...prompt,
       ...(archived === undefined ? {} : { archivedAt: archived ? (prompt.archivedAt ?? now) : null }),
       ...(topic === undefined ? {} : { topic: cleanName(topic) }),
+      ...(tags === undefined ? {} : { tags: cleanTags(tags) }),
+      ...(factCheck === undefined ? {} : { factCheck }),
     }));
     for (const prompt of updated) replacePrompt(projectId, prompt);
     return respond(updated);
@@ -525,7 +535,7 @@ export const mockApi: ApiClient = {
     const project = await findOwnProject(projectId);
     const chosen = pickSuggestions(projectId, ids);
     assertRoom(project, chosen.length);
-    const created = chosen.map(newPrompt);
+    const created = chosen.map((suggestion) => newPrompt(suggestion, project.city));
     state.prompts.set(projectId, [...promptsOf(projectId), ...created]);
     dropSuggestions(projectId, ids);
     return respond(created);

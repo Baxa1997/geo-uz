@@ -2,6 +2,7 @@ import { ChevronRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Fragment } from "react";
 import { EngineSwitcher } from "@/shared/components/engine-switcher";
+import { PageTour, type TourId } from "@/shared/components/page-tour";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/shared/helpers/utils";
 
@@ -10,14 +11,15 @@ import { cn } from "@/shared/helpers/utils";
  * ("Manbalar › Saytlar › 2gis.uz", the last part being the page's title), the page's filters in a strip
  * under it, then its views as tabs in a strip of their own, then the content, as wide as the panel.
  * `crumbs` are the pages above this one, outermost first. `engines` adds the engine switcher, for pages
- * that show one engine's results. `bleed` hands the whole area to the page (two-pane screens bring their
- * own padding).
+ * that show one engine's results. `tour` puts the page's guided tour (messages/Tours) behind a button at
+ * the bar's end. `bleed` hands the whole area to the page (two-pane screens bring their own padding).
  */
 export function Page({
   title,
   crumbs = [],
   actions,
   engines = false,
+  tour,
   toolbar,
   tabs,
   bleed = false,
@@ -27,6 +29,7 @@ export function Page({
   crumbs?: { href: string; label: string }[];
   actions?: React.ReactNode;
   engines?: boolean;
+  tour?: TourId;
   /** The page's filters (and tools that act on the whole page), in a strip under the title bar. */
   toolbar?: React.ReactNode;
   /** The page's views (`PageTabs`), in a strip under the filters. */
@@ -57,6 +60,7 @@ export function Page({
         </div>
         {engines && <EngineSwitcher />}
         {actions}
+        {tour && <PageTour id={tour} />}
       </header>
       {toolbar && <div className="flex shrink-0 flex-wrap items-center gap-2 border-b px-4 py-2 sm:px-6">{toolbar}</div>}
       {tabs && <div className="shrink-0 border-b px-4 sm:px-6">{tabs}</div>}

@@ -41,10 +41,10 @@ export default async function SettingsPage({ params }: Props) {
   ]);
 
   return (
-    <Page title={t("settings")}>
+    <Page title={t("settings")} tour="settings">
       <div className="@container">
         <div className="grid gap-6 @4xl:grid-cols-[13rem_minmax(0,1fr)]">
-          <nav aria-label={tSettings("nav.label")} className="flex flex-col gap-4 @4xl:sticky @4xl:top-20 @4xl:h-fit">
+          <nav aria-label={tSettings("nav.label")} data-tour="nav" className="flex flex-col gap-4 @4xl:sticky @4xl:top-20 @4xl:h-fit">
             {SECTIONS.map(({ group, items }) => (
               <div key={group} className="flex flex-col gap-0.5">
                 <p className="px-2.5 pb-1 text-xs font-medium text-muted-foreground">{tSettings(`nav.${group}`)}</p>
@@ -64,13 +64,13 @@ export default async function SettingsPage({ params }: Props) {
             ))}
           </nav>
           <div className="flex min-w-0 flex-col gap-5">
-            <div id="profile" className="scroll-mt-20">
+            <div id="profile" data-tour="profile" className="scroll-mt-20">
               <ProfileCard project={project} />
             </div>
-            <div id="brands" className="scroll-mt-20">
+            <div id="brands" data-tour="brands" className="scroll-mt-20">
               <BrandsCard project={project} results={report.prompts} />
             </div>
-            <div id="language" className="scroll-mt-20">
+            <div id="language" data-tour="language" className="scroll-mt-20">
               <LanguageCard />
             </div>
           </div>

@@ -82,15 +82,17 @@ export function SitesTable({
       title={t("sections.sites.title")}
       description={t("sections.sites.description")}
       actions={
-        <GapSwitch
-          on={gaps}
-          onChange={(on) => {
-            setGaps(on);
-            setRival("");
-          }}
-          label={t("gaps.label")}
-          hint={t("gaps.hint.sites")}
-        />
+        <span data-tour="gaps" className="flex">
+          <GapSwitch
+            on={gaps}
+            onChange={(on) => {
+              setGaps(on);
+              setRival("");
+            }}
+            label={t("gaps.label")}
+            hint={t("gaps.hint.sites")}
+          />
+        </span>
       }
     >
       <TableCard
@@ -153,10 +155,10 @@ export function SitesTable({
             </>
           }
         >
-          {visible.map((source) => {
+          {visible.map((source, index) => {
             const href = siteHref(sitePattern, source.domain);
             return (
-              <LinkRow key={source.domain} href={href} className="transition-colors hover:bg-muted/40">
+              <LinkRow key={source.domain} href={href} tour={index === 0 ? "site" : undefined} className="transition-colors hover:bg-muted/40">
                 {/* The site's place among all cited sites, whatever the filters keep */}
                 <td className="py-3 pl-4 text-muted-foreground tabular-nums">{sources.indexOf(source) + 1}</td>
                 <th scope="row" className="px-2 py-3 text-left font-medium">

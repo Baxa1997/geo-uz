@@ -710,13 +710,13 @@
       "other": "Boshqa"
     },
     "tour": {
-      "skip": "Turni yopish",
-      "back": "Orqaga",
-      "next": "Keyingi",
-      "done": "Tushunarli",
       "goals": {
         "title": "Qayerdan boshlashni tanlang",
         "text": "Toʻrt maqsad: tuzatiladigan xato faktlar, chiqish kerak boʻlgan saytlar, yoziladigan sahifalar va saytingizdagi tuzatishlar. Bittasini bossangiz, faqat uning harakatlari qoladi; doira ular bajarilgan sari toʻladi."
+      },
+      "status": {
+        "title": "Holat boʻyicha saralang",
+        "text": "Yangi, jarayondagi, bajarilgan yoki rad etilgan harakatlarni — yoki ularning istalgan jamlanmasini koʻrsating."
       },
       "impact": {
         "title": "Eng foydalisini koʻring",
@@ -1142,7 +1142,12 @@
       "webSearch": "Veb-qidiruv",
       "wrongFacts": "Notoʻgʻri fakt",
       "added": "Qoʻshilgan",
-      "archivedOn": "Arxivlangan"
+      "archivedOn": "Arxivlangan",
+      "branded": "Brend",
+      "language": "Til",
+      "factCheck": "Fakt tekshiruvi",
+      "tags": "Teglar",
+      "location": "Joylashuv"
     },
     "queued": "Navbatda",
     "you": "Siz",
@@ -1166,7 +1171,11 @@
       "added": "Qoʻshilgan",
       "shareOfVoice": "Ovoz ulushi, %",
       "webSearch": "Veb-qidiruv ishlatilgan javoblar",
-      "wrongFacts": "Notoʻgʻri faktlar"
+      "wrongFacts": "Notoʻgʻri faktlar",
+      "branded": "Brend",
+      "factCheck": "Fakt tekshiruvi",
+      "tags": "Teglar",
+      "location": "Joylashuv"
     },
     "topics": "Mavzular",
     "allTopics": "Barcha mavzular",
@@ -1201,7 +1210,7 @@
       "topics": "Savollar mavzular boʻyicha guruhlangan; yonidagi son — mavzudagi savollar soni. Mavzuni bossangiz, roʻyxatda faqat shu mavzu qoladi.",
       "question": "ChatGPT’ga beriladigan savol. Qatorni bossangiz, shu savolning sahifasi ochiladi: javoblar, brendlar, manbalar va ChatGPT qidirgan soʻrovlar.",
       "visibility": "Oxirgi tekshiruvda shu savolga berilgan javoblarning nechtasida tilga olingansiz. Masalan, 2/3 — 3 ta javobdan 2 tasida.",
-      "tone": "Sizni tilga olgan har bir javobda ChatGPT siz haqingizda qanday ohangda gapirgan: ijobiy, neytral yoki salbiy. Har bir belgi — bitta javob.",
+      "tone": "ChatGPT sizni tilga olgan javoblarda siz haqingizda qanchalik ijobiy gapiradi: 0 — salbiy, 100 — ijobiy. Nuqta rangi: yashil — ijobiy, kulrang — neytral, qizil — salbiy.",
       "position": "Javoblarda oʻrtacha nechanchi boʻlib tilga olingansiz. 1 — birinchi; son kichikroq boʻlsa, yaxshiroq.",
       "named": "Shu savolga berilgan javoblarda tilga olingan kuzatilayotgan brendlar. Belgi ustiga kursorni olib borsangiz, brend nomi koʻrinadi.",
       "leader": "Shu savolda eng koʻp javobda tilga olingan brend. “Siz” — yetakchi sizsiz.",
@@ -1224,7 +1233,14 @@
       "webSearch": "Shu savolga javob berishda ChatGPT nechta javobda internetdan qidirgan. Qidirgan boʻlsa, javob saytlarga tayanadi — demak, oʻsha saytlarda boʻlish muhim.",
       "wrongFacts": "Shu savolga berilgan javoblarda siz haqingizda topilgan notoʻgʻri faktlar soni. Har bir savol tekshiriladi.",
       "added": "Savol qoʻshilgan sana. Natijalari shundan keyingi birinchi haftalik tekshiruvdan boshlanadi.",
-      "archivedOn": "Savol qachon arxivlangan: shu kundan beri soʻralmaydi."
+      "archivedOn": "Savol qachon arxivlangan: shu kundan beri soʻralmaydi.",
+      "branded": "Savolda brendingiz nomi bormi. Brendsiz savollar muhimroq: mijoz sizni hali bilmasdan soʻraydi va ChatGPT sizni oʻzi topishi kerak.",
+      "brandedYes": "Savolda brendingiz nomi bor: u ChatGPT sizni bilishini tekshiradi.",
+      "brandedNo": "Savolda brendingiz nomi yoʻq: ChatGPT sizni oʻzi topishi kerak.",
+      "languageColumn": "Savol qaysi tilda beriladi: UZ — oʻzbekcha, RU — ruscha.",
+      "factCheck": "Yoqilgan boʻlsa, shu savolga berilgan javoblar brendingiz haqidagi toʻgʻri maʼlumotlar bilan solishtiriladi va topilgan notoʻgʻri faktlar soni yonida koʻrinadi. Oʻchirilsa, keyingi tekshiruvdan boshlab solishtirilmaydi.",
+      "tags": "Savollarga oʻzingiz qoʻyadigan belgilar, masalan filial yoki aksiya. “Teg” filtri roʻyxatni ular boʻyicha saralaydi.",
+      "location": "Savol qaysi shahardan berilgandek soʻraladi: ChatGPT shu shahardagi odamga javob bergandek qidiradi. Savol oynasida oʻzgartiriladi."
     },
     "webSearchCell": "{total} ta javobdan {count} tasida ChatGPT internetdan qidirgan",
     "wrongFactsSome": "{count} ta notoʻgʻri fakt — koʻrish uchun bosing",
@@ -1318,17 +1334,11 @@
     "topicsColumn": {
       "label": "Mavzular",
       "title": "Mavzular",
-      "hint": "Savollar mavzularga boʻlingan: mavzuni bossangiz, roʻyxatda faqat uning savollari qoladi. ⋯ — nomini oʻzgartirish yoki oʻchirish.",
+      "hint": "Savollar mavzularga boʻlingan: mavzuni bossangiz, roʻyxatda faqat uning savollari qoladi. Sarlavha mavzular tartibini tanlaydi; qalamcha mavzuni tahrirlash oynasini ochadi.",
       "new": "Yangi mavzu",
-      "newLabel": "Yangi mavzu nomi",
       "namePlaceholder": "Mavzu nomi",
-      "keepHint": "Enter — saqlash, Esc — bekor qilish",
-      "nameRequired": "Nom yozing.",
       "failed": "Saqlab boʻlmadi.",
       "taken": "Bunday mavzu allaqachon bor.",
-      "renameLabel": "“{name}” mavzusining yangi nomi",
-      "menu": "“{name}” mavzusi bilan amallar",
-      "rename": "Nomini oʻzgartirish",
       "delete": "Oʻchirish",
       "yours": "Mavzularingiz",
       "suggested": "Tavsiya qilingan mavzular",
@@ -1338,7 +1348,49 @@
       "renamedNote": "Mavzuning yangi nomi: “{name}”.",
       "deletedNote": "“{name}” mavzusi oʻchirildi.",
       "deleteTitle": "“{name}” mavzusini oʻchirasizmi?",
-      "deleteText": "{count, plural, =0 {Bu mavzuda kuzatilayotgan savol yoʻq.} other {Undagi # ta kuzatilayotgan savol arxivga oʻtadi: ular soʻralmaydi, javoblari saqlanadi.}}"
+      "deleteText": "{count, plural, =0 {Bu mavzuda kuzatilayotgan savol yoʻq.} other {Undagi # ta kuzatilayotgan savol arxivga oʻtadi: ular soʻralmaydi, javoblari saqlanadi.}}",
+      "sort": {
+        "label": "Mavzular tartibi",
+        "added": "Qoʻshilgan tartibda",
+        "name": "Nomi boʻyicha",
+        "count": "Savollar soni boʻyicha"
+      },
+      "collapse": "Mavzular ustunini yigʻish",
+      "expand": "Mavzular ustunini ochish",
+      "dialog": {
+        "editTitle": "“{name}” mavzusini tahrirlash",
+        "editText": "Mavzu nomini oʻzgartiring. Unga brendingiz nomini yozmang: mavzu mijozlar nima haqida soʻrashini bildiradi.",
+        "newTitle": "Yangi mavzu",
+        "newText": "Mavzu savollarni guruhlaydi, masalan “Narxlar”. Unga brendingiz nomini yozmang.",
+        "name": "Mavzu nomi",
+        "questions": "Shu mavzuda kuzatilayotgan savollar",
+        "save": "Saqlash",
+        "add": "Qoʻshish",
+        "saving": "Saqlanmoqda…",
+        "cancel": "Bekor qilish",
+        "delete": "Mavzuni oʻchirish"
+      }
+    },
+    "branded": {
+      "yes": "Brendli",
+      "no": "Brendsiz"
+    },
+    "toneCell": "Ohang: {tone}, {score}/100",
+    "tags": {
+      "add": "Teg qoʻshish",
+      "edit": "“{text}” savolining teglari",
+      "placeholder": "Teg qidiring yoki yozing",
+      "create": "“{tag}” tegini qoʻshish",
+      "empty": "Hali teg yoʻq: yozing va Enter bosing."
+    },
+    "tagFilter": {
+      "label": "Teg",
+      "all": "Barcha teglar"
+    },
+    "factCheckLabel": "Fakt tekshiruvi: {text}",
+    "factCheckValues": {
+      "on": "Ha",
+      "off": "Yoʻq"
     }
   },
   "PromptForm": {
@@ -1381,7 +1433,8 @@
     "textShortLine": "Juda qisqa: “{text}”. Savol kamida 5 ta belgidan iborat boʻlsin.",
     "textLong": "Savol {max} ta belgidan oshmasin.",
     "editOne": "Tahrirlashda bitta savol yozing.",
-    "noRoom": "{count} ta savol rejaga sigʻmaydi: yana {room} ta joy bor."
+    "noRoom": "{count} ta savol rejaga sigʻmaydi: yana {room} ta joy bor.",
+    "location": "Joylashuv"
   },
   "PromptPage": {
     "label": "Savol",
@@ -2560,6 +2613,232 @@
       "languages": "Tillarni tanlang: savollar oʻzbek va rus tillarida tuziladi.",
       "after": "Yangi savollar «Tavsiyalar» boʻlimiga tushadi: qaysini kuzatishni oʻzingiz tanlaysiz, rejadagi joyni faqat ular egallaydi.",
       "existing": "Mavjud mavzular bilan davom etish"
+    }
+  },
+  "Tour": {
+    "guide": "Qanday ishlaydi",
+    "hint": "Sahifa boʻylab qisqa tur: har bir qism nimani koʻrsatadi",
+    "skip": "Turni yopish",
+    "back": "Orqaga",
+    "next": "Keyingi",
+    "done": "Tushunarli"
+  },
+  "Tours": {
+    "overview": {
+      "filters": {
+        "title": "Sahifani saralang",
+        "text": "Raqamlarni bitta tildagi yoki bitta mavzudagi savollar boʻyicha koʻring. Saralash boshqa sahifalarga oʻtganda ham saqlanadi."
+      },
+      "share": {
+        "title": "Natijalarni ulashing",
+        "text": "Hisobot havolasini nusxalang, uni chop etish yoki PDF qilib saqlash uchun oching yoki raqamlarni CSV qilib yuklab oling."
+      },
+      "verdict": {
+        "title": "Siz qayerdasiz",
+        "text": "ChatGPT bu hafta biznesingizni qanday tilga olishi haqida bitta jumla, eng kuchli raqobatchingiz bilan yonma-yon."
+      },
+      "kpis": {
+        "title": "Beshta asosiy raqam",
+        "text": "ChatGPT sizni qanchalik tez-tez tilga oladi, brendlar orasidagi ulushingiz, roʻyxatlardagi oʻrningiz, ohangi va saytingizga qanchalik tayanadi — har biri oʻtgan haftaga nisbatan oʻzgarishi bilan. ⓘ raqam nimani anglatishini aytadi."
+      },
+      "trend": {
+        "title": "Haftalar davomida",
+        "text": "Har bir brend har haftalik tekshiruvda. Grafik ustida koʻrsatkichni almashtiring; ⤢ uni kattalashtirib, qanday oʻqishni aytadi."
+      },
+      "sources": {
+        "title": "ChatGPT tayanadigan saytlar",
+        "text": "Javoblarida eng koʻp keltiriladigan saytlar. Ularda tilga olinish — javoblarga kirishning eng ishonchli yoʻli; sayt bosilsa, uning sahifasi ochiladi."
+      },
+      "topics": {
+        "title": "Mavzu va til boʻyicha",
+        "text": "ChatGPT sizni qayerda tilga oladi va qayerda yoʻq. Zaif mavzudan boshlang: bosilsa, uning savollari ochiladi."
+      },
+      "todo": {
+        "title": "Keyin nima qilish kerak",
+        "text": "Yuqoridagi javoblardan kelib chiqqan eng foydali tuzatishlar. Har biri qadamlari bilan Harakatlarda ochiladi."
+      }
+    },
+    "prompts": {
+      "topics": {
+        "title": "Mavzular boʻyicha savollar",
+        "text": "Savollarini koʻrish uchun mavzuni tanlang. “Yangi mavzu” mavzu qoʻshadi; mavzu yonidagi qalamcha uni nomini oʻzgartirish yoki oʻchirish uchun ochadi."
+      },
+      "tabs": {
+        "title": "Kuzatilayotgan, tavsiyalar, arxiv",
+        "text": "Kuzatilayotgan savollar har hafta beriladi. Tavsiyalar — qoʻshishga arziydigan savollar. Arxivdagilar endi berilmaydi, lekin javoblari saqlanadi."
+      },
+      "add": {
+        "title": "Savol qoʻshing",
+        "text": "Doira tarifingizda nechta savolga joy borligini koʻrsatadi. Oʻz savollaringizni qoʻshing yoki “Savollar yaratish” ularni xizmatlaringizdan taklif qilsin."
+      },
+      "summary": {
+        "title": "Shu savollardagi raqamlaringiz",
+        "text": "Koʻrsatilgan savollar boʻyicha koʻrinish, ohang, oʻrin va veb-qidiruv. Ular qidiruv va saralashga qarab oʻzgaradi."
+      },
+      "row": {
+        "title": "Bitta savol",
+        "text": "Bosilsa, uning sahifasi ochiladi: javoblari, grafiklari va unga taʼsir qiladigan tuzatishlar."
+      },
+      "footer": {
+        "title": "Bir nechtasini birdan",
+        "text": "Savollarni mavzuga koʻchirish, arxivlash yoki kuzatish uchun belgilang: bu panel belgilanganlar bilan ishlaydi."
+      }
+    },
+    "prompt": {
+      "header": {
+        "title": "Shu savol",
+        "text": "Uning tili, mavzusi va har hafta berilayotgani. Uni berishni toʻxtatish uchun arxivlang: javoblari saqlanadi."
+      },
+      "verdict": {
+        "title": "Javoblari nima deydi",
+        "text": "Shu savolga oxirgi javoblar haqida bitta jumla: ChatGPT kimni tilga oladi va siz ular orasida qanchalik tez-tez borsiz."
+      },
+      "trend": {
+        "title": "Shu savol haftalar davomida",
+        "text": "Umumiy koʻrinishdagi grafiklar faqat shu savol uchun: har tekshiruvdagi brendlar, reyting va keltirilgan saytlar."
+      },
+      "searches": {
+        "title": "ChatGPT nimani qidirdi",
+        "text": "Javoblari ortidagi veb-qidiruvlar: sahifalaringiz javob berishi kerak boʻlgan soʻzlar."
+      },
+      "todo": {
+        "title": "Shu savol uchun tuzatishlar",
+        "text": "Uni koʻtarishi kerak boʻlgan harakatlar, eng foydalisi birinchi. Har biri Harakatlarda ochiladi."
+      },
+      "answers": {
+        "title": "Uning javoblari",
+        "text": "Oxirgi tekshiruv javoblari soʻzma-soʻz: tilga olingan brendlar va keltirilgan saytlar bilan."
+      }
+    },
+    "discovery": {
+      "intro": {
+        "title": "Bu qanday ishlaydi",
+        "text": "Nima sotishingiz va kim sotib olishini ayting: biz shunday mijozlar ChatGPT’ga beradigan savollarni mavzulari bilan tuzamiz."
+      },
+      "form": {
+        "title": "Ikki qisqa qadam",
+        "text": "Avval xizmatlaringiz va mijozlaringiz, keyin savollar tili."
+      },
+      "buttons": {
+        "title": "Savollarni oling",
+        "text": "Ular savollar sahifasidagi “Tavsiyalar”ga tushadi: keraklilarini kuzatishga oling, qolganini rad eting."
+      }
+    },
+    "answers": {
+      "kpis": {
+        "title": "Javoblar raqamlarda",
+        "text": "ChatGPT nechta javob berdi, ulardan nechtasi sizni tilga oladi, siz haqingizda yomon gapiradi, hech bir brendni aytmaydi yoki avval internetdan qidirgan."
+      },
+      "tools": {
+        "title": "Javoblarni toping",
+        "text": "Matni boʻyicha qidiring yoki brend, holat va keltirilgan sayt boʻyicha saralang. CSV ularni toʻliq matni bilan yuklab beradi."
+      },
+      "answer": {
+        "title": "Bitta javob",
+        "text": "Har bir savol uchta javobi bilan keladi. Bosilsa, javob chat koʻrinishida, keltirilgan saytlari bilan ochiladi."
+      },
+      "analyze": {
+        "title": "GEO AI’dan soʻrang",
+        "text": "GEO AI bu javoblarni siz uchun oʻqib, nimasi koʻzga tashlanishini va nima qilish kerakligini aytadi."
+      }
+    },
+    "competitors": {
+      "kpis": {
+        "title": "Siz qayerdasiz",
+        "text": "Brendlar orasidagi oʻrningiz, yetakchidan farq, siz yetakchi boʻlgan mavzular va sizsiz qolgan savollar."
+      },
+      "ranking": {
+        "title": "Brendlar yonma-yon",
+        "text": "Har bir brend toʻrtta koʻrsatkich boʻyicha, oʻtgan haftadan beri oʻzgarishi bilan. ⤢ jadvalni kattalashtiradi."
+      },
+      "topics": {
+        "title": "Har bir mavzuda kim yetakchi",
+        "text": "Har bir mavzuda ChatGPT eng koʻp tilga oladigan brend va u yerdagi oʻrningiz. Mavzu bosilsa, uning savollari ochiladi."
+      },
+      "untracked": {
+        "title": "Hali kuzatilmayotgan brendlar",
+        "text": "ChatGPT tilga olgan, lekin roʻyxatingizda yoʻq brendlar. Birini shu yerda kuzatish uchun qoʻshing yoki yashiring."
+      },
+      "rivals": {
+        "title": "Har bir raqobatchi qayerda yutadi",
+        "text": "Raqobatchi tilga olingan, siz esa tilga olinmagan savollar. Savol bosilsa, uning sahifasi ochiladi."
+      }
+    },
+    "sources": {
+      "views": {
+        "title": "Saytlar yoki sahifalar",
+        "text": "ChatGPT keltirgan saytlarni yoki ularning sahifalarini birma-bir koʻring."
+      },
+      "chart": {
+        "title": "Eng koʻp keltirilganlar",
+        "text": "Eng koʻp keltirilgan beshta sayt, har haftalik tekshiruvda."
+      },
+      "movers": {
+        "title": "Nima oʻzgardi",
+        "text": "Birinchi marta, oldingi tekshiruvdan koʻproq yoki kamroq keltirilgan saytlar va bu havolalar siz uchun ishlayaptimi."
+      },
+      "gaps": {
+        "title": "Chiqish kerak boʻlgan joylar",
+        "text": "“Boʻshliqlar” faqat raqobatchilar tilga olingan, siz esa yoʻq saytlarni qoldiradi: birinchi navbatda chiqish kerak boʻlgan joylar."
+      },
+      "site": {
+        "title": "Bitta sayt",
+        "text": "Bosilsa, saytning sahifasi ochiladi: qanchalik koʻp keltiriladi, u yerda kim tilga olinadi va qanday chiqish mumkin."
+      }
+    },
+    "source": {
+      "header": {
+        "title": "Shu sayt",
+        "text": "Bu qanday sayt, ChatGPT uni hozir va oldingi tekshiruvda qanchalik koʻp keltirgan va u kimning sayti."
+      },
+      "verdict": {
+        "title": "Bu siz uchun nimani anglatadi",
+        "text": "Siz unda tilga olinganmisiz, qaysi raqobatchilar tilga olingan va u yerga chiqishga yordam beradigan tuzatish."
+      },
+      "chart": {
+        "title": "Tekshiruvlar davomida",
+        "text": "Sayt va uning sahifalari har haftalik tekshiruvda."
+      },
+      "movers": {
+        "title": "Bu yerda nima oʻzgardi",
+        "text": "Oldingi tekshiruvdan beri koʻproq yoki kamroq keltirilgan sahifalari va ChatGPT shu saytga tayanganda kimni tilga oladi."
+      },
+      "views": {
+        "title": "Sahifalar va javoblar",
+        "text": "Uning sahifalari birma-bir yoki unga tayangan javoblar soʻzma-soʻz."
+      }
+    },
+    "wrongFacts": {
+      "kpis": {
+        "title": "Notoʻgʻri faktlar raqamlarda",
+        "text": "ChatGPT siz haqingizda nechta notoʻgʻri gap aytadi, nechta savolda va qachondan beri."
+      },
+      "table": {
+        "title": "Har bir notoʻgʻri fakt",
+        "text": "ChatGPT nima dedi, toʻgʻrisi qanday va bu qaysi savolda chiqdi. Savol bosilsa, uning javoblari ochiladi."
+      },
+      "fix": {
+        "title": "Tuzatishni rejalang",
+        "text": "Har bir notoʻgʻri fakt uchun harakat bor: uni qayerda va qanday tuzatish kerak. Ular Harakatlarda sizni kutmoqda."
+      }
+    },
+    "settings": {
+      "nav": {
+        "title": "Boʻlimlar boʻyicha sozlamalar",
+        "text": "Avval loyiha, keyin hisob sozlamalari. “tez orada” deb belgilanganlari yaqinda qoʻshiladi."
+      },
+      "profile": {
+        "title": "Brendingiz",
+        "text": "Boshlaganingizda aytganlaringiz: nom, sayt, shahar va xizmatlar. Savollar shular asosida tuziladi."
+      },
+      "brands": {
+        "title": "Kuzatilayotgan brendlar",
+        "text": "Siz va kuzatayotgan raqobatchilaringiz, ChatGPT har birini qanchalik tez-tez tilga olishi bilan."
+      },
+      "language": {
+        "title": "Interfeys tili",
+        "text": "Siz koʻradigan ekranlar uchun oʻzbek, rus yoki ingliz tili. Savollar oʻz tilida qoladi."
+      }
     }
   }
 }

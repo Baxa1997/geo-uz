@@ -28,7 +28,17 @@ export function WrongFactsTable({
   const promptText = (id: string) => prompts.find((result) => result.prompt.id === id)?.prompt.text;
 
   return (
-    <Panel title={t("table.title")} hint={t("table.hint")} actions={facts.length > 0 && <ArrowLink href={actionsHref}>{t("fix")}</ArrowLink>}>
+    <Panel
+      title={t("table.title")}
+      hint={t("table.hint")}
+      actions={
+        facts.length > 0 && (
+          <span data-tour="fix" className="flex">
+            <ArrowLink href={actionsHref}>{t("fix")}</ArrowLink>
+          </span>
+        )
+      }
+    >
       {facts.length === 0 ? (
         <p className="p-4 text-sm text-muted-foreground">{t("empty")}</p>
       ) : (

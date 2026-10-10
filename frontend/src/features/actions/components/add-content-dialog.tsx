@@ -98,6 +98,7 @@ export function AddContentDialog({
       onOpenChange={close}
       title={t("title")}
       description={t("description")}
+      closeButton
       footer={
         <>
           <Button type="button" variant="ghost" size="lg" onClick={() => close(false)}>

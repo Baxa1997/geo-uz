@@ -50,7 +50,7 @@ export default async function WrongFactsPage({ params, searchParams }: Props) {
   const first = facts.map((fact) => fact.foundAt).sort()[0];
 
   return (
-    <Page title={t("wrongFacts")} engines toolbar={<ReportFilterBar topics={topics} />}>
+    <Page title={t("wrongFacts")} engines tour="wrongFacts" toolbar={<ReportFilterBar topics={topics} />}>
       <KpiStrip
         items={[
           { key: "count", label: tFacts("kpi.count"), hint: tFacts("kpi.countHint"), value: String(facts.length) },
@@ -68,12 +68,14 @@ export default async function WrongFactsPage({ params, searchParams }: Props) {
           },
         ]}
       />
-      <WrongFactsTable
-        facts={facts}
-        prompts={report.prompts}
-        answersHref={(promptId) => withFilters(`${base}/answers`, filters, { prompt: promptId })}
-        actionsHref={`${base}/actions`}
-      />
+      <div data-tour="table">
+        <WrongFactsTable
+          facts={facts}
+          prompts={report.prompts}
+          answersHref={(promptId) => withFilters(`${base}/answers`, filters, { prompt: promptId })}
+          actionsHref={`${base}/actions`}
+        />
+      </div>
       <MethodLabel method={report.method} />
     </Page>
   );
