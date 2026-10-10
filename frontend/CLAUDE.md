@@ -604,7 +604,11 @@ under another with a line between them, each section a tight row with its area's
 being read marked with a bar at its edge. A past report's actions show today's status. The pages keep the app's
 own density (the user, the same day: "overall reports page is too many spacing"): the gray ground is 16px wide
 around the paper, the paper's own margins are those of a document and no wider (32px), and blocks and table rows
-stand close. The list's first screen holds the latest report's whole condition and the start of the register. The dark cover of the first version is gone (the user: "not what I expected").
+stand close. The list's first screen holds the latest report's whole condition and the start of the register.
+In the workspace the contents and the paper take the panel's whole width (`ReportBody`'s `fill`; the user, with a
+screenshot of a wide screen: "make little bit fuller for the page"): no gray is left beside them or between them
+until a screen is wider than 110rem, and the summary's score bars grow with the paper. The shared report keeps
+the width of a sheet, in the middle of the screen. The dark cover of the first version is gone (the user: "not what I expected").
 
 Rules: a reader who stops after the summary has the decision, and everything after it is evidence for it. No
 number appears without what it is compared with. Nothing depends on hover: the report must read on paper, so a

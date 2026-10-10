@@ -197,7 +197,11 @@ Any other number makes a new account, which goes through onboarding and gets a p
   official paper, not app cards: a letterhead over a double rule, the title in capitals in the middle, a
   ruled table of its facts, each part on a gray band, section headings in capitals over a rule, ruled
   square tables, a sign-off (who prepared it, lines to sign that it was read) and page numbers in the PDF
-  (13 pages, the first holding the letterhead and the whole condition). New for the backend: `Report.conditionHistory` and the score's formula (see `backend/PLAN.md`,
+  (13 pages, the first holding the letterhead and the whole condition). After the merge, a fourth with a
+  screenshot of the user's wide screen ("Report detail page make little bit fuller for the page, too many
+  spacing"): the contents and the paper now take the panel's whole width (the paper had stood in the middle
+  at the width of a sheet, with gray beside it and between it and the contents); merged and pushed the
+  same day, when the user chose "commit and push". New for the backend: `Report.conditionHistory` and the score's formula (see `backend/PLAN.md`,
   "The condition score"). The rules are in `frontend/CLAUDE.md`, "The report" and "Scores".
 - **Javoblar (7 Oct), built from Peec's Chats screenshots of 4 Oct; the user has not sent corrections for
   it yet.** Added to the page that existed: CSV export of the answers with their full text, a filter by
@@ -278,7 +282,7 @@ Any other number makes a new account, which goes through onboarding and gets a p
   tags, fact-checking and location), then `hisobotlar-page` (Hisobotlar: this week's report as a cover with
   three decision cards, every week's report with a page of its own and what changed, where the report goes),
   then `hisobotlar-correction` (the report as an official status document with a condition score, Hisobotlar
-  opening on the latest condition). Each time the user chose "commit, push" when asked (for Harakatlar: "push everything"). Each page gets its
+  opening on the latest condition), then `report-detail-width` (the report fills the panel's width). Each time the user chose "commit, push" when asked (for Harakatlar: "push everything"). Each page gets its
   own branch, merged when the user says so.
 
 ## To do, in order
@@ -301,7 +305,7 @@ Any other number makes a new account, which goes through onboarding and gets a p
      the fact-check switch on Prompts came that day and is built). The Fanouts screenshots of 8 Oct need nothing: the question's page already lists the
      searches (decided 6 Oct).
    - Hisobotlar: built and merged on 10 Oct, then rebuilt the same day as a status report with a condition
-     score and an official document's look, corrected three times and merged (see "Done"); corrections may
+     score and an official document's look, corrected four times and merged (see "Done"); corrections may
      still come. Peec's Settings › Company (its email report) may still come and change the delivery part.
    - Notoʻgʻri faktlar: brand facts for the answers to be checked against (Peec's Settings › Facts).
    - Sozlamalar: editing (today it is read-only), then facts, members, billing.

@@ -52,7 +52,7 @@ export function ReportLetterhead({ report }: { report: Report }) {
   ];
 
   return (
-    <header className="flex flex-col gap-5 print:break-inside-avoid">
+    <header className="flex flex-col gap-4 print:break-inside-avoid">
       <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-2 border-b-[3px] border-double border-foreground pb-3">
         <div className="flex flex-col gap-1">
           <Logo />

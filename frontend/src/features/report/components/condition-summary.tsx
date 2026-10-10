@@ -98,7 +98,7 @@ export function ConditionSummary({
         <div className="@container flex min-w-0 flex-col">
           <div className="flex items-end justify-between gap-4 border-b pb-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
             <span>{t("condition.byArea")}</span>
-            <span className="hidden @md:grid @md:grid-cols-[7.5rem_2rem_6.5rem] @md:gap-x-4 @md:font-medium @md:tracking-normal @md:normal-case">
+            <span className="hidden @md:grid @md:grid-cols-[7.5rem_2rem_6.5rem] @3xl:grid-cols-[13rem_2rem_6.5rem] @5xl:grid-cols-[18rem_2rem_6.5rem] @md:gap-x-4 @md:font-medium @md:tracking-normal @md:normal-case">
               <span>{t("condition.score")}</span>
               <span />
               <span>{t("condition.status")}</span>
@@ -108,7 +108,7 @@ export function ConditionSummary({
             {CONDITION_AREAS.map((area) => {
               const score = condition.areas[area];
               return (
-                <li key={area} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1 py-2.5 @md:grid-cols-[minmax(0,1fr)_7.5rem_2rem_6.5rem] print:break-inside-avoid">
+                <li key={area} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1 py-2.5 @md:grid-cols-[minmax(0,1fr)_7.5rem_2rem_6.5rem] @3xl:grid-cols-[minmax(0,1fr)_13rem_2rem_6.5rem] @5xl:grid-cols-[minmax(0,1fr)_18rem_2rem_6.5rem] print:break-inside-avoid">
                   <p className="min-w-0 text-[0.9375rem] font-semibold">
                     {t(`areas.${area}`)}
                     <span className="sr-only">: {t("condition.outOf100", { score })}</span>

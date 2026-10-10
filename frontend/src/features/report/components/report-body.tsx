@@ -37,7 +37,7 @@ const SIGNED_AFTER = "decisions";
  * (method, definitions, every question); and a line on what the numbers are. The same in the shared
  * report and on its page in Hisobotlar.
  */
-export function ReportBody({ report, actions }: { report: Report; actions: Action[] }) {
+export function ReportBody({ report, actions, fill = false }: { report: Report; actions: Action[]; /** The paper takes the whole width it is given. */ fill?: boolean }) {
   const t = useTranslations("Report");
   const locale = useLocale();
   const timeZone = useTimeZone() ?? TIME_ZONE;
@@ -85,7 +85,7 @@ export function ReportBody({ report, actions }: { report: Report; actions: Actio
   };
 
   return (
-    <ReportPaper>
+    <ReportPaper fill={fill}>
       <ReportLetterhead report={report} />
       {REPORT_PARTS.map((part, index) => (
         <Fragment key={part.key}>

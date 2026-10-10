@@ -94,7 +94,8 @@ export default async function ReportDetailPage({ params }: Props) {
     >
       {/* The gray ground the report's paper lies on. The contents stand beside it once the panel is wide enough; it narrows when GEO AI is open */}
       <div className="@container flex flex-1 flex-col bg-muted/60 p-3 sm:p-4">
-        <div className="mx-auto grid w-full max-w-312 gap-4 @5xl:grid-cols-[15rem_minmax(0,1fr)]">
+        {/* The contents and the paper take the panel's whole width (the user: "make little bit fuller"); only a very wide screen leaves them in the middle */}
+        <div className="mx-auto grid w-full max-w-440 gap-4 @5xl:grid-cols-[15rem_minmax(0,1fr)]">
           <aside className="hidden @5xl:block">
             <div className="sticky top-[3.75rem]">
               <ReportContents parts={parts} score={condition?.score} />
@@ -102,7 +103,7 @@ export default async function ReportDetailPage({ params }: Props) {
           </aside>
           {/* Clear of the page's sticky title when the contents jump to a section */}
           <div className="min-w-0 [&_section]:scroll-mt-16">
-            <ReportBody report={report} actions={actions} />
+            <ReportBody report={report} actions={actions} fill />
           </div>
         </div>
       </div>

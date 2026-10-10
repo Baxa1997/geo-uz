@@ -14,11 +14,18 @@ const ROMAN = ["I", "II", "III", "IV", "V", "VI"];
 /**
  * The report's paper: one white page on the gray ground, square at its corners like a sheet, with the
  * margins of an official document, and everything in it one under another: the letterhead, the parts, the
- * sections, the sign-off. On paper the page is the paper, so it loses its edge and its margins.
+ * sections, the sign-off. By itself it is as wide as a sheet and stands in the middle; `fill` lets it take
+ * the whole width it is given (beside the contents in the workspace). On paper the page is the paper, so it
+ * loses its edge and its margins.
  */
-export function ReportPaper({ children }: { children: React.ReactNode }) {
+export function ReportPaper({ fill = false, children }: { fill?: boolean; children: React.ReactNode }) {
   return (
-    <article className="mx-auto flex w-full max-w-224 flex-col gap-7 rounded-xs bg-card px-4 py-5 shadow-sm ring-1 ring-foreground/15 sm:px-8 sm:py-7 print:max-w-none print:gap-6 print:rounded-none print:p-0 print:shadow-none print:ring-0">
+    <article
+      className={cn(
+        "flex w-full flex-col gap-6 rounded-xs bg-card px-4 py-5 shadow-sm ring-1 ring-foreground/15 sm:px-8 sm:py-7 print:max-w-none print:gap-6 print:rounded-none print:p-0 print:shadow-none print:ring-0",
+        !fill && "mx-auto max-w-224",
+      )}
+    >
       {children}
     </article>
   );
