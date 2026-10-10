@@ -2,9 +2,9 @@
 // reaches it through ./actions.ts). Changes last until the dev server restarts.
 import { randomUUID } from "node:crypto";
 import { ApiError, type ApiClient } from "@/shared/api/client";
-import { ACTION_STEP_COUNT } from "@/shared/constants";
+import { ACTION_STEP_COUNT, PROMPT_TEXT_MAX_LENGTH, PROMPT_TEXT_MIN_LENGTH } from "@/shared/constants";
 import { isValidDomain, normalizeDomain } from "@/shared/helpers/domain";
-import { isTracked } from "@/shared/helpers/prompts";
+import { isTracked, sameText } from "@/shared/helpers/prompts";
 import type {
   Brand,
   DemoRequest,
@@ -14,6 +14,7 @@ import type {
   RunStatus,
   Snapshot,
   SuggestedPrompt,
+  SuggestionSource,
   SupportMessage,
   User,
 } from "@/shared/types/api";
@@ -21,6 +22,7 @@ import { buildActions, type ActionState } from "./action-items";
 import { DEMO_USER } from "./accounts";
 import { ARCHIVED_PROMPT, BRANDS, DEFAULT_PLAN, OTHER_CLINICS, PLAN_LIMITS, PROJECT, PROMPTS, SUGGESTED_PROMPTS } from "./data";
 import * as onboarding from "./onboarding";
+import { discoveryDrafts, keywordDrafts, KNOWN_TOPICS, poolFor, type Draft } from "./suggestions";
 import { buildPromptReport, buildReport, buildSnapshot, firstRun, METHOD, NO_RUN, SEEDED_RUN, type MockRun } from "./report";
 import { clearSessionToken, readSessionToken, writeSessionToken } from "./session";
 
@@ -59,7 +61,11 @@ interface MockState {
   snapshots: Map<string, Snapshot>;
   /** Project id → action id → what the client changed on it. */
   actionStates: Map<string, Map<string, ActionState>>;
-  /** Project id → ids of the suggested questions the client rejected. */
+  /** Project id → its topics in order, once the client added, renamed or deleted one (else they come from its questions). */
+  topics: Map<string, string[]>;
+  /** Project id → the suggested questions waiting for the client, newest first. */
+  suggestions: Map<string, SuggestedPrompt[]>;
+  /** Project id → the suggestions the client rejected (as `sameText`), never suggested again. */
   rejectedSuggestions: Map<string, Set<string>>;
   /** Project id → names of the untracked brands the client hid from the suggestions. */
   dismissedBrands: Map<string, Set<string>>;
@@ -70,7 +76,7 @@ interface MockState {
 
 // Kept on globalThis so hot reloads and separate route bundles share one copy.
 // Bump the version when MockState changes: a hot reload then starts fresh instead of reading old data.
-const STATE_KEY = "__geoMockState_v13";
+const STATE_KEY = "__geoMockState_v14";
 const globalForMocks = globalThis as typeof globalThis & { [STATE_KEY]?: MockState };
 const state: MockState = (globalForMocks[STATE_KEY] ??= {
   accounts: [{ user: DEMO_USER }],
@@ -81,6 +87,8 @@ const state: MockState = (globalForMocks[STATE_KEY] ??= {
   runs: new Map([[PROJECT.id, { id: "run_seeded", projectId: PROJECT.id, run: SEEDED_RUN, startedAt: 0 }]]),
   snapshots: new Map(),
   actionStates: new Map(),
+  topics: new Map(),
+  suggestions: new Map(),
   rejectedSuggestions: new Map(),
   dismissedBrands: new Map(),
   demoRequests: [],
@@ -146,12 +154,32 @@ const promptsOf = (projectId: string) => state.prompts.get(projectId) ?? [];
 /** The questions the weekly check asks: what the report, the actions and the plan's limit count. */
 const trackedOf = (projectId: string) => promptsOf(projectId).filter(isTracked);
 
-/** One more tracked question must fit the plan. */
-function assertRoom(project: Project) {
-  if (trackedOf(project.id).length >= project.limits.prompts) {
+/** `count` more tracked questions must fit the plan. */
+function assertRoom(project: Project, count = 1) {
+  if (trackedOf(project.id).length + count > project.limits.prompts) {
     throw new ApiError(409, `The plan allows ${project.limits.prompts} tracked questions`);
   }
 }
+
+/**
+ * The project's topics in their order: the list as first read from its questions (kept, so moving a
+ * question doesn't reorder it), the client's own topics after it, then any a new question brings.
+ */
+function topicsOf(projectId: string): string[] {
+  let kept = state.topics.get(projectId);
+  if (!kept) {
+    kept = [...new Set(trackedOf(projectId).map((prompt) => prompt.topic))];
+    state.topics.set(projectId, kept);
+  }
+  return [...new Set([...kept, ...trackedOf(projectId).map((prompt) => prompt.topic)])];
+}
+
+/** A topic's name as the client typed it, without stray spaces. */
+const cleanName = (name: string) => name.trim().replace(/\s+/g, " ");
+
+/** Topics the sample's first suggestions came from ChatGPT's own web searches for. */
+const FROM_SEARCHES = new Set(["emergency", "location", "painless"]);
+const DAY_MS = 86_400_000;
 
 const newPrompt = (body: Pick<Prompt, "text" | "language" | "topic">): Prompt => ({
   id: newId("prm"),
@@ -162,13 +190,58 @@ const newPrompt = (body: Pick<Prompt, "text" | "language" | "topic">): Prompt =>
   archivedAt: null,
 });
 
-/** Suggested questions the project doesn't have (tracked or archived) and the client hasn't rejected. */
+/** The suggestions waiting for the client, newest first; a project's first ones are the sample's (data.ts). */
 function suggestionsOf(projectId: string): SuggestedPrompt[] {
-  const tracked = new Set(promptsOf(projectId).map((prompt) => prompt.text));
-  const rejected = state.rejectedSuggestions.get(projectId) ?? new Set<string>();
-  return SUGGESTED_PROMPTS.map((prompt, index) => ({ id: `sug_${String(index + 1).padStart(2, "0")}`, ...prompt })).filter(
-    (suggestion) => !tracked.has(suggestion.text) && !rejected.has(suggestion.id),
-  );
+  let list = state.suggestions.get(projectId);
+  if (!list) {
+    list = SUGGESTED_PROMPTS.map((prompt, index) => ({
+      id: newId("sug"),
+      ...prompt,
+      source: FROM_SEARCHES.has(prompt.topic) ? "searches" : "profile",
+      createdAt: new Date(Date.now() - ((index % 4) + 1) * DAY_MS).toISOString(),
+    }));
+    state.suggestions.set(projectId, list);
+  }
+  // A question the client added by hand meanwhile isn't suggested any more
+  const asked = new Set(promptsOf(projectId).map((prompt) => sameText(prompt.text)));
+  return list.filter((suggestion) => !asked.has(sameText(suggestion.text)));
+}
+
+/**
+ * Turns drafts into new suggestions, at most `max`: none the project asks or archived, none waiting
+ * already, none the client rejected. The new ones go first.
+ */
+function addSuggestions(projectId: string, drafts: Draft[], source: SuggestionSource, max: number): SuggestedPrompt[] {
+  const waiting = suggestionsOf(projectId);
+  const seen = new Set([
+    ...promptsOf(projectId).map((prompt) => sameText(prompt.text)),
+    ...waiting.map((suggestion) => sameText(suggestion.text)),
+    ...(state.rejectedSuggestions.get(projectId) ?? []),
+  ]);
+  const created: SuggestedPrompt[] = [];
+  for (const draft of drafts) {
+    const key = sameText(draft.text);
+    if (created.length >= max || seen.has(key)) continue;
+    seen.add(key);
+    created.push({ id: newId("sug"), ...draft, source, createdAt: new Date().toISOString() });
+  }
+  state.suggestions.set(projectId, [...created, ...waiting]);
+  return created;
+}
+
+/** The suggestions with these ids; 404 when one isn't waiting any more. */
+function pickSuggestions(projectId: string, ids: string[]): SuggestedPrompt[] {
+  const waiting = suggestionsOf(projectId);
+  return [...new Set(ids)].map((suggestionId) => {
+    const suggestion = waiting.find((candidate) => candidate.id === suggestionId);
+    if (!suggestion) throw new ApiError(404, `Suggestion ${suggestionId} not found`);
+    return suggestion;
+  });
+}
+
+/** Drops decided suggestions from the waiting list. */
+function dropSuggestions(projectId: string, ids: string[]) {
+  state.suggestions.set(projectId, suggestionsOf(projectId).filter((suggestion) => !ids.includes(suggestion.id)));
 }
 
 function findPrompt(projectId: string, promptId: string): Prompt {
@@ -182,12 +255,6 @@ function replacePrompt(projectId: string, prompt: Prompt) {
     projectId,
     promptsOf(projectId).map((candidate) => (candidate.id === prompt.id ? prompt : candidate)),
   );
-}
-
-function findSuggestion(projectId: string, suggestionId: string): SuggestedPrompt {
-  const suggestion = suggestionsOf(projectId).find((candidate) => candidate.id === suggestionId);
-  if (!suggestion) throw new ApiError(404, `Suggestion ${suggestionId} not found`);
-  return suggestion;
 }
 
 const runDuration = (answers: number) => RUN_QUEUED_MS + answers * RUN_MS_PER_ANSWER + RUN_ANALYZING_MS;
@@ -279,6 +346,7 @@ export const mockApi: ApiClient = {
       languages: ["uz", "ru"],
       description: description.trim(),
       services,
+      customers: [],
       plan: DEFAULT_PLAN,
       limits: PLAN_LIMITS[DEFAULT_PLAN],
     };
@@ -345,11 +413,22 @@ export const mockApi: ApiClient = {
     return respond(promptsOf(projectId));
   },
 
-  createPrompt: async (projectId, body) => {
-    assertRoom(await findOwnProject(projectId));
-    const prompt = newPrompt(body);
-    state.prompts.set(projectId, [...promptsOf(projectId), prompt]);
-    return respond(prompt);
+  // All or none: every question must be long enough, new, and fit the plan with the others
+  createPrompts: async (projectId, { prompts }) => {
+    const project = await findOwnProject(projectId);
+    if (prompts.length === 0) throw new ApiError(422, "No questions");
+    assertRoom(project, prompts.length);
+    const seen = new Set(promptsOf(projectId).map((prompt) => sameText(prompt.text)));
+    const created = prompts.map(({ text, language, topic }) => {
+      const clean = text.trim().replace(/\s+/g, " ");
+      if (clean.length < PROMPT_TEXT_MIN_LENGTH || clean.length > PROMPT_TEXT_MAX_LENGTH) throw new ApiError(422, `Bad length: ${clean}`);
+      if (!cleanName(topic)) throw new ApiError(422, "A question needs a topic");
+      if (seen.has(sameText(clean))) throw new ApiError(422, `Asked already: ${clean}`);
+      seen.add(sameText(clean));
+      return newPrompt({ text: clean, language, topic: cleanName(topic) });
+    });
+    state.prompts.set(projectId, [...promptsOf(projectId), ...created]);
+    return respond(created);
   },
 
   updatePrompt: async (projectId, promptId, { text, language, topic }) => {
@@ -370,6 +449,61 @@ export const mockApi: ApiClient = {
     return respond(prompt);
   },
 
+  updatePrompts: async (projectId, { ids, archived, topic }) => {
+    const project = await findOwnProject(projectId);
+    const chosen = [...new Set(ids)].map((promptId) => findPrompt(projectId, promptId));
+    if (archived === false) assertRoom(project, chosen.filter((prompt) => !isTracked(prompt)).length);
+    if (topic !== undefined && !cleanName(topic)) throw new ApiError(422, "A topic needs a name");
+    const now = new Date().toISOString();
+    const updated = chosen.map((prompt) => ({
+      ...prompt,
+      ...(archived === undefined ? {} : { archivedAt: archived ? (prompt.archivedAt ?? now) : null }),
+      ...(topic === undefined ? {} : { topic: cleanName(topic) }),
+    }));
+    for (const prompt of updated) replacePrompt(projectId, prompt);
+    return respond(updated);
+  },
+
+  getTopics: async (projectId) => {
+    await findOwnProject(projectId);
+    return respond(topicsOf(projectId));
+  },
+
+  createTopic: async (projectId, { name }) => {
+    await findOwnProject(projectId);
+    const topic = cleanName(name);
+    const topics = topicsOf(projectId);
+    if (!topic) throw new ApiError(422, "A topic needs a name");
+    if (topics.some((candidate) => candidate.toLowerCase() === topic.toLowerCase())) throw new ApiError(409, `${topic} exists`);
+    state.topics.set(projectId, [...topics, topic]);
+    return respond(topicsOf(projectId));
+  },
+
+  // The questions and the waiting suggestions of the topic move with it
+  renameTopic: async (projectId, topic, { name }) => {
+    await findOwnProject(projectId);
+    const next = cleanName(name);
+    const topics = topicsOf(projectId);
+    if (!topics.includes(topic)) throw new ApiError(404, `Topic ${topic} not found`);
+    if (!next) throw new ApiError(422, "A topic needs a name");
+    if (next !== topic && topics.some((candidate) => candidate.toLowerCase() === next.toLowerCase())) throw new ApiError(409, `${next} exists`);
+    state.topics.set(projectId, topics.map((candidate) => (candidate === topic ? next : candidate)));
+    state.prompts.set(projectId, promptsOf(projectId).map((prompt) => (prompt.topic === topic ? { ...prompt, topic: next } : prompt)));
+    state.suggestions.set(projectId, suggestionsOf(projectId).map((suggestion) => (suggestion.topic === topic ? { ...suggestion, topic: next } : suggestion)));
+    return respond(topicsOf(projectId));
+  },
+
+  // Its tracked questions are archived: they keep their answers and can be tracked again
+  deleteTopic: async (projectId, topic) => {
+    await findOwnProject(projectId);
+    const topics = topicsOf(projectId);
+    if (!topics.includes(topic)) throw new ApiError(404, `Topic ${topic} not found`);
+    const now = new Date().toISOString();
+    state.prompts.set(projectId, promptsOf(projectId).map((prompt) => (prompt.topic === topic && isTracked(prompt) ? { ...prompt, archivedAt: now } : prompt)));
+    state.topics.set(projectId, topics.filter((candidate) => candidate !== topic));
+    return respond(undefined);
+  },
+
   getPromptReport: async (projectId, promptId) => {
     const project = await findOwnProject(projectId);
     const prompt = findPrompt(projectId, promptId);
@@ -382,19 +516,53 @@ export const mockApi: ApiClient = {
     return respond(suggestionsOf(projectId));
   },
 
-  // Accepting adds the question; it is asked from the next weekly run
-  acceptPromptSuggestion: async (projectId, suggestionId) => {
-    assertRoom(await findOwnProject(projectId));
-    const prompt = newPrompt(findSuggestion(projectId, suggestionId));
-    state.prompts.set(projectId, [...promptsOf(projectId), prompt]);
-    return respond(prompt);
+  // Tracking adds the questions, asked from the next weekly run; all or none must fit the plan
+  acceptPromptSuggestions: async (projectId, { ids }) => {
+    const project = await findOwnProject(projectId);
+    const chosen = pickSuggestions(projectId, ids);
+    assertRoom(project, chosen.length);
+    const created = chosen.map(newPrompt);
+    state.prompts.set(projectId, [...promptsOf(projectId), ...created]);
+    dropSuggestions(projectId, ids);
+    return respond(created);
   },
 
-  rejectPromptSuggestion: async (projectId, suggestionId) => {
+  rejectPromptSuggestions: async (projectId, { ids }) => {
     await findOwnProject(projectId);
-    findSuggestion(projectId, suggestionId);
-    state.rejectedSuggestions.set(projectId, (state.rejectedSuggestions.get(projectId) ?? new Set()).add(suggestionId));
+    const chosen = pickSuggestions(projectId, ids);
+    const rejected = state.rejectedSuggestions.get(projectId) ?? new Set<string>();
+    for (const suggestion of chosen) rejected.add(sameText(suggestion.text));
+    state.rejectedSuggestions.set(projectId, rejected);
+    dropSuggestions(projectId, ids);
     return respond(undefined);
+  },
+
+  // A topic's own questions; for all, the project's topics and then new ones, taking turns
+  suggestMorePrompts: async (projectId, { topic }) => {
+    const project = await findOwnProject(projectId);
+    const topics = topic ? [topic] : [...new Set([...topicsOf(projectId), ...KNOWN_TOPICS])];
+    const pools = topics.map((candidate) => poolFor(candidate, project.languages));
+    const rounds = Math.max(0, ...pools.map((pool) => pool.length));
+    const drafts = Array.from({ length: rounds }, (_, round) => pools.flatMap((pool) => pool[round] ?? [])).flat();
+    return respond(addSuggestions(projectId, drafts, "profile", topic ? 6 : 10), 1500);
+  },
+
+  // The services and customer types are saved to the project; the extra context only steers the real model
+  discoverPrompts: async (projectId, { services, customers, languages }) => {
+    const project = await findOwnProject(projectId);
+    const clean = (list: string[]) => [...new Set(list.map(cleanName).filter(Boolean))];
+    const updated: Project = { ...project, services: clean(services), customers: clean(customers) };
+    if (updated.services.length + updated.customers.length === 0) throw new ApiError(422, "Nothing to suggest from");
+    replaceProject(updated);
+    const asked = languages.length > 0 ? languages : project.languages;
+    return respond(addSuggestions(projectId, discoveryDrafts(updated.services, updated.customers, asked), "discovery", 40), 2000);
+  },
+
+  importKeywords: async (projectId, { keywords }) => {
+    await findOwnProject(projectId);
+    const words = [...new Set(keywords.map(cleanName).filter((word) => word.length >= 2))].slice(0, 50);
+    if (words.length === 0) throw new ApiError(422, "No keywords");
+    return respond(addSuggestions(projectId, keywordDrafts(words), "keywords", 40), 1500);
   },
 
   getReport: async (projectId, period = "week", filters) => {

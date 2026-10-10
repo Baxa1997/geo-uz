@@ -6,7 +6,7 @@ import { Input } from "@/shared/components/ui/input";
 import { Textarea } from "@/shared/components/ui/textarea";
 import { INPUT_CLASS, MAX_ALIASES, MAX_DESCRIPTION_LENGTH, MAX_SERVICES } from "../constants";
 import type { OnboardingErrors, SiteDraft } from "../types";
-import { ChipInput } from "./chip-input";
+import { ChipInput } from "@/shared/components/chip-input";
 import { CodeSelect } from "./code-select";
 
 /** Onboarding step 2: the brand profile the backend read from the website, each field with what it's for. */

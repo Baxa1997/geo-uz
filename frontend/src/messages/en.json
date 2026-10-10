@@ -14,7 +14,9 @@
     "close": "Close",
     "takeaway": "Takeaway",
     "howToRead": "How to read this",
-    "breadcrumb": "Breadcrumb"
+    "breadcrumb": "Breadcrumb",
+    "addChip": "Add",
+    "removeChip": "Remove {value}"
   },
   "Filters": {
     "label": "Filters",
@@ -895,8 +897,6 @@
     }
   },
   "PromptManager": {
-    "description": "Questions your customers ask ChatGPT. Each one is measured every week.",
-    "count": "{count, plural, one {# question} other {# questions}}",
     "schedule": "Checked every week, next on {date}",
     "belowMin": "Add at least 20 questions for a reliable result.",
     "add": "Add question",
@@ -916,7 +916,8 @@
       "shareOfVoice": "Share of voice",
       "webSearch": "Web search",
       "wrongFacts": "Wrong facts",
-      "added": "Added"
+      "added": "Added",
+      "archivedOn": "Archived"
     },
     "queued": "Queued",
     "you": "You",
@@ -924,15 +925,6 @@
     "noMatch": "No questions match these filters.",
     "visibilityHint": "You’re named in {count} of {total} answers",
     "tabsLabel": "Question list",
-    "suggestedIntro": "Questions buyers ask in your field that you don’t track yet. An added question is checked from the next weekly run.",
-    "accept": "Add",
-    "reject": "Reject",
-    "acceptLabel": "Add to questions: {text}",
-    "rejectLabel": "Reject: {text}",
-    "accepted": "Added to questions: {text}",
-    "rejected": "Rejected: {text}",
-    "suggestionFailed": "Couldn’t save. Try again.",
-    "suggestedEmpty": "No new suggestions for now.",
     "csv": "Export",
     "csvHint": "Download the questions and results as a CSV file",
     "csvHeaders": {
@@ -971,18 +963,14 @@
     "restore": "Track again",
     "restoreLabel": "Track again: {text}",
     "limitReached": "Your plan’s questions are all in use. Archive another question first.",
-    "archivedOn": "Archived on {date}",
     "archiveIntro": "Archived questions are no longer asked and don’t count toward your plan’s limit. Their past results are kept. A question you track again is checked from the next weekly run.",
     "archiveEmpty": "The archive is empty. Questions you stop tracking land here: use the archive button in a question’s row.",
-    "archivedNote": "Archived: {text}",
-    "restoredNote": "Tracked again: {text}",
     "full": "All {max} questions of the {plan} plan are in use. To add a new one, archive a question or move to a higher plan.",
     "saveFailed": "Couldn’t save. Try again.",
-    "planLimit": "{plan} plan: up to {max} questions",
     "hints": {
       "tabs": {
         "tracked": "The questions we ask ChatGPT every week.",
-        "suggested": "Questions buyers ask in your field that you don’t track yet. Add or reject each one.",
+        "suggested": "Questions customers may ask that you don’t track yet. Track or reject each; “Suggest more” adds new ones.",
         "archived": "Questions you stopped tracking. They are no longer checked; their results are kept."
       },
       "topics": "Questions are grouped by topic; the number is how many questions a topic has. Click a topic to show only its questions.",
@@ -996,7 +984,8 @@
       "summary": {
         "visibility": "The share of answers to the questions in the list that name you.",
         "tone": "How positively ChatGPT speaks of you in the answers to the questions in the list: 0 is negative, 100 is positive.",
-        "position": "Where you are named, on average, in the answers to the questions in the list. 1 is first."
+        "position": "Where you are named, on average, in the answers to the questions in the list. 1 is first.",
+        "webSearch": "In what share of the answers to the questions shown ChatGPT searched the web."
       },
       "queued": "The question hasn’t been asked yet. It is asked for the first time in the next weekly check.",
       "language": {
@@ -1009,29 +998,165 @@
       "shareOfVoice": "Of all the times tracked brands are named in the answers to this question, the share that is yours.",
       "webSearch": "In how many of the answers to this question ChatGPT searched the web. When it searches, the answer leans on websites, so being on those sites matters.",
       "wrongFacts": "How many wrong facts about you were found in the answers to this question. Every question is checked.",
-      "added": "When the question was added. Its results start with the first weekly check after that."
+      "added": "When the question was added. Its results start with the first weekly check after that.",
+      "archivedOn": "When the question was archived: it hasn’t been asked since."
     },
     "webSearchCell": "ChatGPT searched the web for {count} of {total} answers",
     "wrongFactsSome": "{count, plural, one {# wrong fact} other {# wrong facts}}: click to see",
     "wrongFactsNone": "No wrong facts found",
-    "openQuestion": "Open the question’s page"
+    "openQuestion": "Open the question’s page",
+    "topic": "Topic",
+    "cancel": "Cancel",
+    "restoreHint": "Track it again: it’s asked from the next check.",
+    "savedNote": "The question is saved.",
+    "addedNote": "{count, plural, one {# question} other {# questions}} added: asked from the next check.",
+    "buttons": {
+      "keywords": "Keywords",
+      "keywordsHint": "Suggest questions from an SEO tool’s keywords.",
+      "discovery": "Find questions",
+      "discoveryHint": "Make new topics and questions from your services and customers.",
+      "addHint": "Write a question yourself, or upload a file.",
+      "more": "Suggest more",
+      "moreHint": "Suggest new questions across the topics.",
+      "moreTopicHint": "Suggest new questions on “{topic}”.",
+      "suggesting": "Suggesting…"
+    },
+    "footer": {
+      "tracked": "{count, plural, one {# question} other {# questions}}",
+      "trackedHint": "The questions in the list, after the search and filters.",
+      "suggested": "{count, plural, one {# suggestion} other {# suggestions}}",
+      "suggestedHint": "Suggestions waiting: those you track take places in the plan.",
+      "archived": "{count, plural, one {# archived question} other {# archived questions}}",
+      "archivedHint": "Archived questions aren’t asked and take no place in the plan."
+    },
+    "selection": {
+      "all": "Select all",
+      "one": "Select: {text}",
+      "count": "{count} selected",
+      "clear": "Clear",
+      "move": "Move to topic",
+      "archive": "Archive",
+      "restore": "Track again",
+      "archiveAll": "Archive all",
+      "archiveAllTitle": "Archive all {count} questions?",
+      "archiveAllText": "They stop being asked and free their places in the plan. Their answers stay; any question can be tracked again from the archive.",
+      "archivedNote": "{count, plural, one {# question} other {# questions}} archived.",
+      "restoredNote": "{count, plural, one {# question} other {# questions}} tracked again.",
+      "movedNote": "{count, plural, one {# question} other {# questions}} moved to “{topic}”."
+    },
+    "suggested": {
+      "selectAll": "Select all",
+      "select": "Select: {text}",
+      "columns": {
+        "question": "Question",
+        "source": "Why suggested",
+        "date": "Suggested",
+        "decide": "Decision"
+      },
+      "hints": {
+        "question": "A question customers may ask ChatGPT that you don’t track yet, with its language and, while every topic is shown, its topic.",
+        "source": "Where the question comes from: your services, ChatGPT’s searches, Find questions, or the keywords you imported.",
+        "date": "When the question was suggested."
+      },
+      "new": "new",
+      "sources": {
+        "profile": "From your services",
+        "searches": "From ChatGPT’s searches",
+        "discovery": "From Find questions",
+        "keywords": "From your keywords"
+      },
+      "sourceHints": {
+        "profile": "Written from your business’s services and topics.",
+        "searches": "ChatGPT searched the web for something like it while answering your tracked questions.",
+        "discovery": "Written from the services and customers given in Find questions.",
+        "keywords": "Written from the keywords you imported."
+      },
+      "reject": "Reject",
+      "rejectLabel": "Reject: {text}",
+      "track": "Track",
+      "trackLabel": "Track: {text}",
+      "noRoom": "The plan is full: archive a question first.",
+      "noRoomFor": "The plan has {room} places left: pick fewer questions.",
+      "trackHint": "Track the questions picked: they’re asked from the next check.",
+      "trackAll": "Track all",
+      "trackAllHint": "Track every suggestion in the list.",
+      "rejectAll": "Reject all",
+      "trackedNote": "{count, plural, one {# question} other {# questions}} now tracked.",
+      "rejectedNote": "{count, plural, one {# suggestion} other {# suggestions}} rejected.",
+      "moreNote": "{count, plural, one {# new suggestion} other {# new suggestions}} added.",
+      "noMore": "No new questions came up for now. Import keywords or try Find questions.",
+      "emptyTitle": "No suggestions",
+      "emptyText": "Start by having us suggest the questions customers ask ChatGPT.",
+      "emptyButton": "Suggest questions",
+      "noneInTopic": "No suggestions in this topic: click “Suggest more”."
+    },
+    "topicsColumn": {
+      "label": "Topics",
+      "title": "Topics",
+      "hint": "The questions are grouped in topics: click one to list only its questions. ⋯ renames or deletes it.",
+      "new": "New topic",
+      "newLabel": "The new topic’s name",
+      "namePlaceholder": "Topic name",
+      "keepHint": "Enter to keep, Esc to cancel",
+      "nameRequired": "Type a name.",
+      "failed": "It couldn’t be saved.",
+      "taken": "That topic exists already.",
+      "renameLabel": "A new name for “{name}”",
+      "menu": "Actions for “{name}”",
+      "rename": "Rename",
+      "delete": "Delete",
+      "yours": "Your topics",
+      "suggested": "Suggested topics",
+      "suggestedHint": "Topics you don’t have yet: track one of their questions and the topic is added.",
+      "allSuggested": "All suggestions",
+      "createdNote": "The topic “{name}” is added.",
+      "renamedNote": "The topic is now “{name}”.",
+      "deletedNote": "The topic “{name}” is deleted.",
+      "deleteTitle": "Delete the topic “{name}”?",
+      "deleteText": "{count, plural, =0 {The topic has no tracked questions.} one {Its tracked question goes to the archive: it stops being asked, its answers stay.} other {Its # tracked questions go to the archive: they stop being asked, their answers stay.}}"
+    }
   },
   "PromptForm": {
-    "addTitle": "New question",
+    "addTitle": "Add questions",
     "editTitle": "Edit question",
     "text": "Question",
-    "textPlaceholder": "Toshkentdagi eng yaxshi stomatologiya qaysi?",
+    "textPlaceholder": "Toshkentdagi eng yaxshi stomatologiya qaysi?\nToshkentda implant narxi qancha?",
     "language": "Question language",
     "topic": "Topic",
-    "topicPlaceholder": "e.g. prices",
     "save": "Save",
     "saving": "Saving…",
     "cancel": "Cancel",
-    "editHint": "The change applies from the next measurement.",
+    "editHint": "The change applies from the next check.",
     "textShort": "The question needs at least 5 characters.",
-    "textDuplicate": "This question already exists.",
+    "textDuplicate": "This question is there already: “{text}”.",
     "topicRequired": "Enter a topic.",
-    "saveFailed": "Couldn’t save. Please try again."
+    "saveFailed": "Couldn’t save. Please try again.",
+    "addHint": "Write a question a customer asks ChatGPT, without your brand’s name. Every line is a separate question.",
+    "fileTitle": "Upload a file",
+    "fileHint": "A CSV or TXT file: the questions in the first column, or one per line. A header row is skipped.",
+    "modeLabel": "How to add",
+    "modes": {
+      "write": "Write them",
+      "file": "From a file"
+    },
+    "add": "Add",
+    "addMany": "Add {count, plural, one {# question} other {# questions}}",
+    "counter": "{count, plural, one {# question} other {# questions}} · {room} left in the plan",
+    "editPlaceholder": "Toshkentdagi eng yaxshi stomatologiya qaysi?",
+    "newTopicOption": "+ New topic…",
+    "newTopic": "The new topic’s name",
+    "newTopicPlaceholder": "e.g. Prices",
+    "languageAuto": "Tell from the letters",
+    "fileFound": "{count, plural, one {# question} other {# questions}} to add",
+    "fileSkipped": "{count} skipped: too short, too long or there already",
+    "fileMore": "and {count} more",
+    "fileLanguage": "Each question’s language is told from its letters: Cyrillic is Russian (Uzbek if it has ў, қ, ғ, ҳ), Latin is Uzbek.",
+    "fileNothing": "The file has no question that can be added.",
+    "fileMissing": "Choose a file first.",
+    "textShortLine": "Too short: “{text}”. A question needs at least 5 characters.",
+    "textLong": "A question can’t be longer than {max} characters.",
+    "editOne": "Edit one question at a time.",
+    "noRoom": "{count, plural, one {# question} other {# questions}} don’t fit the plan: {room} places left."
   },
   "PromptPage": {
     "label": "Question",
@@ -1842,8 +1967,6 @@
     "services": "Services",
     "servicesHint": "What you offer. We pick the questions customers ask from these.",
     "cityHint": "Where your customers are. Questions are asked for this city.",
-    "addChip": "Add",
-    "removeChip": "Remove {value}",
     "competitorsPick": "Choose competitors",
     "topicsPick": "Choose topics",
     "topicQuestions": "{count, plural, one {# question} other {# questions}}",
@@ -2160,6 +2283,58 @@
         "title": "All answers",
         "description": "The latest check’s answers that cite this site, under their questions. Click an answer to read it in full."
       }
+    }
+  },
+  "PromptImport": {
+    "drop": "Drop your file here, or <pick>click to choose one</pick>",
+    "types": "CSV or TXT · in Excel: “Save as CSV”",
+    "another": "Choose another file",
+    "spreadsheet": "That’s an Excel file. Save it as CSV and upload the CSV.",
+    "emptyFile": "Nothing was found in the file.",
+    "unreadable": "The file couldn’t be read.",
+    "keywordsTitle": "Import keywords",
+    "keywordsHint": "An export from Google Search Console or another SEO tool, the keywords in the first column. We suggest the questions customers ask ChatGPT about them.",
+    "keywordsFound": "{count, plural, one {# keyword} other {# keywords}}",
+    "keywordsFirst": "the first {max} are used",
+    "keywordsMore": "and {count} more",
+    "suggest": "Suggest questions",
+    "suggesting": "Suggesting…",
+    "cancel": "Cancel",
+    "failed": "It couldn’t be imported. Try again."
+  },
+  "PromptDiscovery": {
+    "title": "Find questions",
+    "step": "Step {step} of {steps}",
+    "aboutTitle": "Tell us about you",
+    "aboutText": "What you sell and who buys it decide the topics and questions we suggest.",
+    "services": "Services",
+    "servicesHint": "What your business offers.",
+    "customers": "Your customers",
+    "customersHint": "Who it’s for: parents, people in pain or students, for example.",
+    "context": "Anything else",
+    "contextHint": "We keep to it when writing the questions: which services to stress, for example.",
+    "contextPlaceholder": "e.g. stress implants, leave out children’s dentistry",
+    "marketsTitle": "Languages",
+    "marketsText": "The questions are about {city}. Which languages should they be asked in?",
+    "languages": "Question languages",
+    "languageNote": {
+      "uz": "In Uzbek, in Latin letters",
+      "ru": "In Russian"
+    },
+    "next": "Next: languages",
+    "back": "Back",
+    "find": "Find questions",
+    "finding": "Finding questions…",
+    "needSomething": "Add at least one service or kind of customer.",
+    "nothingNew": "No new questions came up: try another service or kind of customer.",
+    "failed": "The questions couldn’t be found. Try again.",
+    "intro": {
+      "headline": "What do your customers ask ChatGPT?",
+      "services": "Say what you sell: your services are filled in already.",
+      "customers": "Add who buys: each kind of customer asks its own questions.",
+      "languages": "Pick the languages: the questions come in Uzbek and Russian.",
+      "after": "The new questions land in the Suggested tab: you choose which to track, and only those take places in the plan.",
+      "existing": "Go on with the existing topics"
     }
   }
 }

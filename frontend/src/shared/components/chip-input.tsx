@@ -3,11 +3,18 @@
 import { Plus, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { addChip } from "../helpers/onboarding";
+
+/** A chip's text as saved: single spaces, no repeats (case aside). */
+export function addChip(values: string[], value: string): string[] {
+  const text = value.trim().replace(/\s+/g, " ");
+  if (!text || values.some((existing) => existing.toLowerCase() === text.toLowerCase())) return values;
+  return [...values, text];
+}
 
 /**
  * A list of short values as chips: each with its own remove button, and a dashed "Add" chip that turns
- * into a field. Enter or leaving the field adds what was typed; Escape cancels.
+ * into a field. Enter or leaving the field adds what was typed; Escape cancels. The onboarding's brand
+ * profile and the questions' Discovery use it.
  */
 export function ChipInput({
   id,
@@ -24,7 +31,7 @@ export function ChipInput({
   max: number;
   onChange: (values: string[]) => void;
 }) {
-  const t = useTranslations("Onboarding");
+  const t = useTranslations("Common");
   const [adding, setAdding] = useState(false);
   const [text, setText] = useState("");
 

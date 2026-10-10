@@ -7,9 +7,11 @@ import type {
   CompetitorSuggestion,
   CreateProjectRequest,
   CreateProjectResponse,
-  CreatePromptRequest,
+  CreatePromptsRequest,
+  DiscoverPromptsRequest,
   DemoRequest,
   DismissBrandRequest,
+  ImportKeywordsRequest,
   Project,
   Prompt,
   PromptSuggestion,
@@ -24,11 +26,15 @@ import type {
   SnapshotRequest,
   SuggestCompetitorsRequest,
   SuggestedPrompt,
+  SuggestionIdsRequest,
+  SuggestMoreRequest,
   SuggestPromptsRequest,
   SupportMessage,
   TelegramAuthRequest,
+  TopicRequest,
   UpdateActionRequest,
   UpdatePromptRequest,
+  UpdatePromptsRequest,
   User,
   VerifyCodeRequest,
 } from "@/shared/types/api";
@@ -53,15 +59,33 @@ export interface ApiClient {
   /** Hides an untracked brand from the suggestions, or shows it again. */
   dismissBrand(projectId: string, body: DismissBrandRequest): Promise<void>;
   getPrompts(projectId: string): Promise<Prompt[]>;
-  createPrompt(projectId: string, body: CreatePromptRequest): Promise<Prompt>;
+  /** Adds one question or several; all or none: 409 when they don't all fit the plan, 422 for a repeat. */
+  createPrompts(projectId: string, body: CreatePromptsRequest): Promise<Prompt[]>;
   updatePrompt(projectId: string, promptId: string, body: UpdatePromptRequest): Promise<Prompt>;
   /** Archives a question or tracks it again; 409 when tracking it again would pass the plan's limit. */
   archivePrompt(projectId: string, promptId: string, body: ArchivePromptRequest): Promise<Prompt>;
+  /** Archives several questions, tracks them again (409 when they don't all fit) or moves them to a topic. */
+  updatePrompts(projectId: string, body: UpdatePromptsRequest): Promise<Prompt[]>;
+  /** The project's topics in their order, those without a question yet too. */
+  getTopics(projectId: string): Promise<string[]>;
+  /** Adds an empty topic; 409 when the project has it already. Returns the topics. */
+  createTopic(projectId: string, body: TopicRequest): Promise<string[]>;
+  /** Renames a topic in its questions and suggestions too; 409 when the new name is taken. Returns the topics. */
+  renameTopic(projectId: string, topic: string, body: TopicRequest): Promise<string[]>;
+  /** Deletes a topic; its tracked questions are archived (they keep their answers). */
+  deleteTopic(projectId: string, topic: string): Promise<void>;
   /** The report over one question, archived or not: its answers, scores, cited sites and its own history. */
   getPromptReport(projectId: string, promptId: string): Promise<Report>;
   getPromptSuggestions(projectId: string): Promise<SuggestedPrompt[]>;
-  acceptPromptSuggestion(projectId: string, suggestionId: string): Promise<Prompt>;
-  rejectPromptSuggestion(projectId: string, suggestionId: string): Promise<void>;
+  /** Tracks suggestions (asked from the next run); 409 when they don't all fit the plan. */
+  acceptPromptSuggestions(projectId: string, body: SuggestionIdsRequest): Promise<Prompt[]>;
+  rejectPromptSuggestions(projectId: string, body: SuggestionIdsRequest): Promise<void>;
+  /** "Suggest more": new suggestions for a topic or for all; empty when there is nothing new to suggest. */
+  suggestMorePrompts(projectId: string, body: SuggestMoreRequest): Promise<SuggestedPrompt[]>;
+  /** Discovery: saves the services and customer types, returns the new suggestions (with suggested topics). */
+  discoverPrompts(projectId: string, body: DiscoverPromptsRequest): Promise<SuggestedPrompt[]>;
+  /** Questions customers ask about the imported keywords, as new suggestions. */
+  importKeywords(projectId: string, body: ImportKeywordsRequest): Promise<SuggestedPrompt[]>;
   getReport(projectId: string, period?: ReportPeriod, filters?: ReportFilters): Promise<Report>;
   getActions(projectId: string): Promise<Action[]>;
   updateAction(projectId: string, actionId: string, body: UpdateActionRequest): Promise<Action>;
@@ -131,18 +155,23 @@ const httpApi: ApiClient = {
   removeCompetitor: (projectId, brandId) => send("DELETE", `/projects/${id(projectId)}/competitors/${id(brandId)}`),
   dismissBrand: (projectId, body) => send("PATCH", `/projects/${id(projectId)}/untracked-brands`, body),
   getPrompts: (projectId) => request(`/projects/${id(projectId)}/prompts`),
-  createPrompt: (projectId, body) =>
-    send("POST", `/projects/${id(projectId)}/prompts`, body),
+  createPrompts: (projectId, body) => send("POST", `/projects/${id(projectId)}/prompts`, body),
   updatePrompt: (projectId, promptId, body) =>
     send("PUT", `/projects/${id(projectId)}/prompts/${id(promptId)}`, body),
   archivePrompt: (projectId, promptId, body) =>
     send("PATCH", `/projects/${id(projectId)}/prompts/${id(promptId)}`, body),
+  updatePrompts: (projectId, body) => send("PATCH", `/projects/${id(projectId)}/prompts`, body),
+  getTopics: (projectId) => request(`/projects/${id(projectId)}/topics`),
+  createTopic: (projectId, body) => send("POST", `/projects/${id(projectId)}/topics`, body),
+  renameTopic: (projectId, topic, body) => send("PATCH", `/projects/${id(projectId)}/topics/${id(topic)}`, body),
+  deleteTopic: (projectId, topic) => send("DELETE", `/projects/${id(projectId)}/topics/${id(topic)}`),
   getPromptReport: (projectId, promptId) => request(`/projects/${id(projectId)}/prompts/${id(promptId)}/report`),
   getPromptSuggestions: (projectId) => request(`/projects/${id(projectId)}/prompt-suggestions`),
-  acceptPromptSuggestion: (projectId, suggestionId) =>
-    send("POST", `/projects/${id(projectId)}/prompt-suggestions/${id(suggestionId)}/accept`),
-  rejectPromptSuggestion: (projectId, suggestionId) =>
-    send("DELETE", `/projects/${id(projectId)}/prompt-suggestions/${id(suggestionId)}`),
+  acceptPromptSuggestions: (projectId, body) => send("POST", `/projects/${id(projectId)}/prompt-suggestions/accept`, body),
+  rejectPromptSuggestions: (projectId, body) => send("POST", `/projects/${id(projectId)}/prompt-suggestions/reject`, body),
+  suggestMorePrompts: (projectId, body) => send("POST", `/projects/${id(projectId)}/prompt-suggestions/more`, body),
+  discoverPrompts: (projectId, body) => send("POST", `/projects/${id(projectId)}/prompt-suggestions/discover`, body),
+  importKeywords: (projectId, body) => send("POST", `/projects/${id(projectId)}/prompt-suggestions/keywords`, body),
   getReport: (projectId, period = "week", filters = {}) =>
     request(`/projects/${id(projectId)}/report?${new URLSearchParams({ period, ...filters })}`),
   getActions: (projectId) => request(`/projects/${id(projectId)}/actions`),
@@ -187,19 +216,24 @@ export const api: ApiClient = USE_MOCKS
       removeCompetitor: (projectId, brandId) => mocks().then((m) => unwrap(m.removeCompetitor(projectId, brandId))),
       dismissBrand: (projectId, body) => mocks().then((m) => unwrap(m.dismissBrand(projectId, body))),
       getPrompts: (projectId) => mocks().then((m) => unwrap(m.getPrompts(projectId))),
-      createPrompt: (projectId, body) =>
-        mocks().then((m) => unwrap(m.createPrompt(projectId, body))),
+      createPrompts: (projectId, body) => mocks().then((m) => unwrap(m.createPrompts(projectId, body))),
       updatePrompt: (projectId, promptId, body) =>
         mocks().then((m) => unwrap(m.updatePrompt(projectId, promptId, body))),
       archivePrompt: (projectId, promptId, body) =>
         mocks().then((m) => unwrap(m.archivePrompt(projectId, promptId, body))),
+      updatePrompts: (projectId, body) => mocks().then((m) => unwrap(m.updatePrompts(projectId, body))),
+      getTopics: (projectId) => mocks().then((m) => unwrap(m.getTopics(projectId))),
+      createTopic: (projectId, body) => mocks().then((m) => unwrap(m.createTopic(projectId, body))),
+      renameTopic: (projectId, topic, body) => mocks().then((m) => unwrap(m.renameTopic(projectId, topic, body))),
+      deleteTopic: (projectId, topic) => mocks().then((m) => unwrap(m.deleteTopic(projectId, topic))),
       getPromptReport: (projectId, promptId) =>
         mocks().then((m) => unwrap(m.getPromptReport(projectId, promptId))),
       getPromptSuggestions: (projectId) => mocks().then((m) => unwrap(m.getPromptSuggestions(projectId))),
-      acceptPromptSuggestion: (projectId, suggestionId) =>
-        mocks().then((m) => unwrap(m.acceptPromptSuggestion(projectId, suggestionId))),
-      rejectPromptSuggestion: (projectId, suggestionId) =>
-        mocks().then((m) => unwrap(m.rejectPromptSuggestion(projectId, suggestionId))),
+      acceptPromptSuggestions: (projectId, body) => mocks().then((m) => unwrap(m.acceptPromptSuggestions(projectId, body))),
+      rejectPromptSuggestions: (projectId, body) => mocks().then((m) => unwrap(m.rejectPromptSuggestions(projectId, body))),
+      suggestMorePrompts: (projectId, body) => mocks().then((m) => unwrap(m.suggestMorePrompts(projectId, body))),
+      discoverPrompts: (projectId, body) => mocks().then((m) => unwrap(m.discoverPrompts(projectId, body))),
+      importKeywords: (projectId, body) => mocks().then((m) => unwrap(m.importKeywords(projectId, body))),
       getReport: (projectId, period, filters) =>
         mocks().then((m) => unwrap(m.getReport(projectId, period, filters))),
       getActions: (projectId) => mocks().then((m) => unwrap(m.getActions(projectId))),

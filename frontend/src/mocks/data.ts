@@ -63,6 +63,7 @@ export const PROJECT: Project = {
   description:
     "Toshkentdagi oilaviy stomatologiya klinikasi: implantlar, breketlar, bolalar stomatologiyasi va tish oqartirish. Har kuni 9:00–21:00 ishlaydi.",
   services: ["Implantlar", "Breketlar", "Bolalar stomatologiyasi", "Tish oqartirish", "Professional gigiyena"],
+  customers: [],
   plan: DEFAULT_PLAN,
   limits: PLAN_LIMITS[DEFAULT_PLAN],
 };

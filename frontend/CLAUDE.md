@@ -39,9 +39,11 @@ open questions): add to it each time a page is finished.
   their weekly change, every brand over time on four metrics by day, week or month, brands table, the sites cited and their kinds as
   bar lists, visibility by topic and by question language; then recommended actions and questions without
   the client, latest answers, a share menu with the public report's link and CSV; the cards of numbers open
-  large with ⤢: a takeaway sentence, every row, the numbers as a table and how to read them); Questions (topics column;
-  tracked, suggested and archived tabs; how many of the plan's questions are used; search, a filter and sorting,
-  with the client's numbers over the rows shown; CSV; a row opens the question's own page: its facts, a sentence on its
+  large with ⤢: a takeaway sentence, every row, the numbers as a table and how to read them); Questions (topics column
+  with new, rename and delete; tracked, suggested and archived tabs; how many of the plan's questions are used; search,
+  a filter and sorting, with the client's numbers over the rows shown; rows picked to move, archive, track or reject;
+  questions added one per line or from a file; "Suggest more", keywords from a file and Discovery for new suggestions;
+  CSV; a row opens the question's own page: its facts, a sentence on its
   latest answers, every brand over time, the brands table, the sites cited and their kinds for that question alone,
   what ChatGPT searched the web for, the fixes that list it and its answers); Answers
   (the answers in numbers, a table of every answer that opens like a chat, Previous/Next; filters by brand,
@@ -57,8 +59,8 @@ open questions): add to it each time a page is finished.
 - Next (after first paying clients): the backend (including the rules that make Harakatlar from real data and
   measure each fix's result, and reading cited pages and websites for real), Telegram reports and PDF, a full
   site audit, competitor suggestions from the answers (track / dismiss), brand facts for fact-checking, editing
-  project settings, markers on the chart when a fix starts and is done, CSV import of questions and export of
-  answers.
+  project settings, markers on the chart when a fix starts and is done. (CSV import of questions and keywords,
+  and export of answers, are built.)
   For agencies: a pitch report (the free check under the agency's name), client reports under the agency's
   name, pausing a client.
 - Later: Gemini and Yandex, a date-range filter, brand attributes and objections, personas, AI referrals and
@@ -136,6 +138,9 @@ same"), through `Page` (shared/components/page.tsx):
    that says what the cards show and how to read them, outside the cards, then the cards. A part's switch
    (Peec's gap analysis) sits on the right of its heading. A table's card has its tools on top (search on the
    left, filters and an icon-only CSV on the right), a grey heading row and its row count at the bottom.
+   A page laid out across the whole panel, like Peec's prompts page (`bleed`: Savollar, Discovery), brings its
+   own columns instead, with a footer that stays in view (`sticky bottom-0`): the panel scrolls and the page
+   grows with its content, so nothing scrolls inside it but its wide table, sideways.
 
 A strip of facts across the whole panel (a site's page) steps out of the page's padding (`-mx-4 sm:-mx-6`).
 
@@ -222,16 +227,25 @@ frontend/src/
                           #   language (BreakdownCard; these five cards open large, ⤢), then recommended actions and
                           #   questions without you, latest answers; share menu (public link, CSV), next weekly check
                           #   date. Numbers and charts come right after the sentence (the user's order, Oct 5)
-    prompts/              # Questions: topics column; tracked / suggested / archived tabs; questions used out of the
-                          #   plan's limit (Project.limits.prompts; at the limit nothing can be added, accepted or
-                          #   restored); search, a "you're named / not named" filter and sorting, with the client's
-                          #   numbers over the rows shown (helpers/stats.ts); a table that scrolls sideways under the
-                          #   pinned question, like Peec's: visibility, share of voice, tone, position, brands named,
-                          #   leader, web search (answers with a search / answers), wrong facts found (our version
-                          #   of Peec's fact-checking switch), date added; a click on a row opens the question's
-                          #   page; add/edit/archive; accept / reject suggestions; CSV; footer with the plan and the
-                          #   weekly check. Left out of Peec's columns: volume (no data), intent and branding
-                          #   (need classifying in the backend), free tags (we have topics), location (one city).
+    prompts/              # Questions, laid out like Peec's prompts page across the whole panel (Page `bleed`; the
+                          #   user's correction of Oct 8: Add as a window, "Suggest more", and the rest of Peec's
+                          #   features): the topics column (TopicsColumn: "New topic +", each topic's ⋯ renames or
+                          #   deletes it, suggested topics apart on the Suggested tab; a sheet on a phone); tracked /
+                          #   suggested / archived tabs with the plan's ring (Project.limits.prompts; at the limit
+                          #   nothing can be added, tracked or restored) and the page's buttons; a table that scrolls
+                          #   sideways under the pinned question, like Peec's: visibility, share of voice, tone,
+                          #   position, brands named, leader, web search, wrong facts found (our version of Peec's
+                          #   fact-checking switch), date added, the client's numbers over the rows shown
+                          #   (helpers/stats.ts); boxes to pick rows, and a footer that stays in view: when they are
+                          #   asked again and "Archive all", or what to do with the rows picked (move to a topic,
+                          #   archive; track or reject suggestions; track archived ones again). AddPromptDialog (one
+                          #   question per line, or a CSV/TXT file: helpers/file.ts; also edits a question);
+                          #   SuggestionsTable (why and when each was suggested, ✕ / ✓ per row), "Suggest more" for
+                          #   the topic picked or all, ImportKeywordsDialog; pages/discovery-page (/prompts/discovery,
+                          #   Peec's Discovery: services, customer types, extra context, languages → new suggestions
+                          #   with new topics). ?view=suggested|archived opens a tab, &new= marks new suggestions.
+                          #   Left out of Peec's: volume (no data), intent and branding (need classifying in the
+                          #   backend), free tags (we have topics), location (one city), the topics column's sort.
                           #   pages/prompt-page: one question (/prompts/[promptId], opened from the list, the archive
                           #   and an answer's chat): facts row, a sentence counted in answers, then the Overview's
                           #   cards fed with the report over that question, what ChatGPT searched the web for (Peec's
@@ -304,7 +318,11 @@ Auth: the backend sets an httpOnly session cookie `geo_session` on login. The br
 - `PATCH /projects/{id}/untracked-brands` → 204 (body: name, dismissed true/false: hides an untracked brand from
   the suggestions, or shows it again)
 - `GET  /projects/{id}/prompts` → Prompt[] (every question, archived ones too)
-- `POST /projects/{id}/prompts` → Prompt (409 when the plan's questions are all in use)
+- `POST /projects/{id}/prompts` → Prompt[] (body: { prompts: { text, language, topic }[] }: one question or many,
+  the lines of the Add window or a file's; all or none: 409 when they don't all fit the plan, 422 for one asked
+  already or too short or long. A new topic name makes the topic)
+- `PATCH /projects/{id}/prompts` → Prompt[] (body: ids[], archived? and/or topic?: several at once, archived,
+  tracked again (409 when they don't all fit) or moved to a topic)
 - `PUT  /projects/{id}/prompts/{promptId}` → Prompt  (body: text, language, topic)
 - `PATCH /projects/{id}/prompts/{promptId}` → Prompt (body: archived true/false. An archived question isn't asked
   any more, leaves the report and the actions at once, keeps its past answers and doesn't count toward the
@@ -313,11 +331,23 @@ Auth: the backend sets an httpOnly session cookie `geo_session` on login. The br
   of the last run that asked it, the scores and cited sites over them, its wrong facts, and `history` = one
   point per run that asked it (from the first run after it was added to the last before it was archived).
   Empty (`prompts: []`, `history: []`) until a run has asked it
+- `GET  /projects/{id}/topics` → string[] (the project's topics in their order, those without a question too)
+- `POST /projects/{id}/topics` → string[] (body: name; an empty topic; 409 when it exists)
+- `PATCH /projects/{id}/topics/{topic}` → string[] (body: name; renames it in its questions and suggestions; 409
+  when the name is taken)
+- `DELETE /projects/{id}/topics/{topic}` → 204 (its tracked questions are archived: they keep their answers)
 - `GET  /projects/{id}/prompt-suggestions` → SuggestedPrompt[] (questions buyers ask that the project doesn't
-  track yet; rejected ones aren't offered again)
-- `POST /projects/{id}/prompt-suggestions/{suggestionId}/accept` → Prompt (adds it; asked from the next run; 409
-  when the plan's questions are all in use)
-- `DELETE /projects/{id}/prompt-suggestions/{suggestionId}` → 204 (rejects it)
+  track yet, newest first; rejected ones aren't offered again)
+- `POST /projects/{id}/prompt-suggestions/accept` → Prompt[] (body: ids[]; tracks them, asked from the next run;
+  409 when they don't all fit the plan)
+- `POST /projects/{id}/prompt-suggestions/reject` → 204 (body: ids[])
+- `POST /projects/{id}/prompt-suggestions/more` → SuggestedPrompt[] (body: topic?; "Suggest more" for one topic,
+  the project's or a suggested one, or for all; only the new ones; empty when nothing new comes up)
+- `POST /projects/{id}/prompt-suggestions/discover` → SuggestedPrompt[] (body: services[], customers[], context,
+  languages[]; Discovery: saves the services and customer types to the project, returns the new suggestions,
+  whose topics may be new)
+- `POST /projects/{id}/prompt-suggestions/keywords` → SuggestedPrompt[] (body: keywords[] from a file's first
+  column, at most 50; questions customers ask about them)
 - `GET  /projects/{id}/report?period=week&language=uz&topic=implants` → Report over the tracked questions (language
   and topic are optional filters: the report then covers only those prompts, and its scores are computed over them)
 - `GET  /projects/{id}/actions` → Action[] (readable without login through the report's link, like the report
@@ -341,7 +371,8 @@ Auth: the backend sets an httpOnly session cookie `geo_session` on login. The br
 Types:
 - User { id, name | null, phone | null, telegramUsername | null }
 - Project { id, brand: Brand, competitors: Brand[], category, city, languages: ("uz"|"ru")[], description ("" if none),
-  services: string[] (as the client wrote them), plan: "start"|"business"|"agency", limits: { prompts (questions
+  services: string[] (as the client wrote them), customers: string[] (customer types, from Discovery),
+  plan: "start"|"business"|"agency", limits: { prompts (questions
   tracked at once), competitors } }. The Questions page reads `limits.prompts` and the Competitors page
   `limits.competitors`; onboarding, which runs before a project and its plan exist, still uses a fixed 5
 - Brand { id, name, aliases: string[], domain }
@@ -369,7 +400,9 @@ Types:
   includes Telegram channels; mentions = tracked brands the page names, found by reading it, null if unreadable)
 - Snapshot (shape in types/api.ts) includes siteChecks: { check: "ai_bots_blocked"|"prices_as_images"|
   "no_business_markup"|"contacts_missing", passed }[] | null (null when the website couldn't be read)
-- SuggestedPrompt { id, text, language: "uz"|"ru", topic }
+- SuggestedPrompt { id, text, language: "uz"|"ru", topic (the project's or a new one), source: "profile"|"searches"|
+  "discovery"|"keywords" (from its services and topics, from ChatGPT's web searches for the tracked questions, from
+  Discovery, from imported keywords), createdAt }
 - WrongFact { claim, correct, promptId, foundAt }
 - SiteAnalysis { domain (normalized), name, aliases: string[], category, city, description (a sentence or two from
   the website), services: string[] (most important first) }

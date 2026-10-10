@@ -60,7 +60,7 @@ Any other number makes a new account, which goes through onboarding and gets a p
    type check and the linter. Judge speed on a production build, not on `npm run dev`.
 5. **Commit only when the user asks.** Say plainly which branch the work is on.
 
-## Done (as of 8 October 2026)
+## Done (as of 10 October 2026)
 
 - **Every page exists on mock data:** landing page, free check, login (phone and code, Telegram),
   onboarding in five steps, the first check's progress screen, project list, Overview, Savollar (questions),
@@ -84,6 +84,19 @@ Any other number makes a new account, which goes through onboarding and gets a p
   scrolls sideways under the pinned question, like Peec's, and gained share of voice, web search, wrong
   facts and date added; the question's page gained "what ChatGPT searched for" (Peec's query fanouts), fed
   by the new `Answer.searches`.
+- **Savollar in Peec's layout with all of its features (8 Oct; merged on 10 Oct, when the user chose
+  "commit, push").** The user sent Peec's Prompts screenshots again ("not all
+  features are available, add prompt is a modal … suggest more and add prompt, design and logic the same")
+  and chose all four extra features when asked. The page now spans the whole panel like Peec's: the topics
+  column ("New topic +", a ⋯ on each topic to rename or delete it; deleting archives its questions), the
+  tabs with the plan's ring and the page's buttons, and a footer that stays in view. Add is a window (one
+  question per line, or a CSV/TXT file; the language guessed from the letters); boxes pick rows to move to a
+  topic, archive, track or reject, plus "Archive all", "Track all" and "Reject all"; the Suggested tab is
+  Peec's table with why and when each was suggested, ✕ / ✓ per row, "Suggest more" (for the topic picked or
+  for all), "Import keywords" and the topics only the suggestions have; "Find questions" opens Discovery
+  (`/prompts/discovery`: services, customer types, extra context, languages → new suggestions with new
+  topics). New for the backend: batches, topics, three ways to suggest, `SuggestedPrompt.source`,
+  `Project.customers` (see `backend/PLAN.md`, change log).
 - **Javoblar (7 Oct), built from Peec's Chats screenshots of 4 Oct; the user has not sent corrections for
   it yet.** Added to the page that existed: CSV export of the answers with their full text, a filter by
   cited site (`?source=` lets other pages link to "the answers citing this site"), hover explanations on the
@@ -156,8 +169,9 @@ Any other number makes a new account, which goes through onboarding and gets a p
 - **Git:** `main` is on GitHub (Baxa1997/geo-uz) and holds everything above: the Overview branch was merged
   and pushed on 6 Oct, Savollar on 7 Oct, and on 8 Oct Javoblar with the second Savollar correction, then
   Raqobatchilar, then `manbalar-page` (the review for repeats, Manbalar with a page per cited site, the
-  report), then `manbalar-correction` (Manbalar and every page's top in Peec's layout). Each time the user
-  chose "commit, push" when asked. Each page gets its own branch,
+  report), then `manbalar-correction` (Manbalar and every page's top in Peec's layout); on 10 Oct
+  `savollar-correction` (Savollar with all of Peec's Prompts features). Each time the user chose "commit,
+  push" when asked. Each page gets its own branch,
   merged when the user says so.
 
 ## To do, in order
@@ -169,21 +183,22 @@ Any other number makes a new account, which goes through onboarding and gets a p
    - Manbalar: rebuilt after Peec's Domains screenshots, laid out like Peec's on 8 Oct, confirmed by the
      user and merged (see "Done"). Peec's URLs page was not among the screenshots; our Pages tab stands in.
    - The report: rewritten and merged (see "Done"); corrections may still come.
+   - Savollar: laid out like Peec's with all of its Prompts features on 8 Oct and merged on 10 Oct (see "Done");
+     corrections may still come.
    - Next, as the user asked on 8 Oct ("we need actions, and reports, need to be corrected"): Harakatlar, then
-     Hisobotlar. Their Peec trial ends about 11 Oct, so the remaining Peec screens are captured in one go:
-     Actions (with an opened action), Impact, Settings › Company (Peec's email report) and the export
-     menus, every other Settings tab including Facts, and the fact-check switch on Prompts. The Fanouts
-     screenshots of 8 Oct need nothing: the question's page already lists the searches (decided 6 Oct).
+     Hisobotlar. Their Peec trial ends about 11 Oct, so the remaining Peec screens are captured in one go
+     (on 10 Oct the user chose to send them that day): Actions (with an opened action), Impact, Settings ›
+     Company (Peec's email report) and the export menus, every other Settings tab including Facts, and the
+     fact-check switch on Prompts. The Fanouts screenshots of 8 Oct need nothing: the question's page already
+     lists the searches (decided 6 Oct).
    - Harakatlar: marks on the chart where a fix started and was done (Peec's Impact as a block).
    - Hisobotlar: a placeholder today that links to the report. When its turn comes: the list of past
      checks' reports (needs a report per run from the backend), sending to Telegram, the agency's name on it.
    - Notoʻgʻri faktlar: brand facts for the answers to be checked against (Peec's Settings › Facts).
    - Sozlamalar: editing (today it is read-only), then facts, members, billing.
 
-   Peec pages that get no page of ours (the user agreed on 6 Oct):
-   - Discovery (a wizard that makes new topics and prompts from services, personas and markets): onboarding
-     and the Suggested tab already do this. Worth taking later, inside the Suggested tab: "suggest questions
-     for a service or a keyword", which needs the backend.
+   Peec pages that get no page of ours (the user agreed on 6 Oct; Discovery left this list on 8 Oct, when the
+   user asked for all of Peec's Prompts features: it is "Find questions" on Savollar):
    - Impact: not a page, a block on Harakatlar (the chart with marks, above).
    - Fanouts: no page of its own; since 7 Oct each question's page lists the searches behind its answers.
    - Ads: no. ChatGPT ads aren't sold here, and Peec has paused the page itself.

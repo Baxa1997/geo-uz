@@ -8,19 +8,25 @@ import type {
   AnalyzeSiteRequest,
   ArchivePromptRequest,
   CreateProjectRequest,
-  CreatePromptRequest,
+  CreatePromptsRequest,
+  DiscoverPromptsRequest,
   DemoRequest,
   DismissBrandRequest,
+  ImportKeywordsRequest,
   ReportFilters,
   ReportPeriod,
   SendCodeRequest,
   SnapshotRequest,
   SuggestCompetitorsRequest,
+  SuggestionIdsRequest,
+  SuggestMoreRequest,
   SuggestPromptsRequest,
   SupportMessage,
   TelegramAuthRequest,
+  TopicRequest,
   UpdateActionRequest,
   UpdatePromptRequest,
+  UpdatePromptsRequest,
   VerifyCodeRequest,
 } from "@/shared/types/api";
 import { mockApi } from "./api";
@@ -82,8 +88,8 @@ export async function getPrompts(projectId: string) {
   return run((m) => m.getPrompts(projectId));
 }
 
-export async function createPrompt(projectId: string, body: CreatePromptRequest) {
-  return run((m) => m.createPrompt(projectId, body));
+export async function createPrompts(projectId: string, body: CreatePromptsRequest) {
+  return run((m) => m.createPrompts(projectId, body));
 }
 
 export async function updatePrompt(projectId: string, promptId: string, body: UpdatePromptRequest) {
@@ -94,6 +100,26 @@ export async function archivePrompt(projectId: string, promptId: string, body: A
   return run((m) => m.archivePrompt(projectId, promptId, body));
 }
 
+export async function updatePrompts(projectId: string, body: UpdatePromptsRequest) {
+  return run((m) => m.updatePrompts(projectId, body));
+}
+
+export async function getTopics(projectId: string) {
+  return run((m) => m.getTopics(projectId));
+}
+
+export async function createTopic(projectId: string, body: TopicRequest) {
+  return run((m) => m.createTopic(projectId, body));
+}
+
+export async function renameTopic(projectId: string, topic: string, body: TopicRequest) {
+  return run((m) => m.renameTopic(projectId, topic, body));
+}
+
+export async function deleteTopic(projectId: string, topic: string) {
+  return run((m) => m.deleteTopic(projectId, topic));
+}
+
 export async function getPromptReport(projectId: string, promptId: string) {
   return run((m) => m.getPromptReport(projectId, promptId));
 }
@@ -102,12 +128,24 @@ export async function getPromptSuggestions(projectId: string) {
   return run((m) => m.getPromptSuggestions(projectId));
 }
 
-export async function acceptPromptSuggestion(projectId: string, suggestionId: string) {
-  return run((m) => m.acceptPromptSuggestion(projectId, suggestionId));
+export async function acceptPromptSuggestions(projectId: string, body: SuggestionIdsRequest) {
+  return run((m) => m.acceptPromptSuggestions(projectId, body));
 }
 
-export async function rejectPromptSuggestion(projectId: string, suggestionId: string) {
-  return run((m) => m.rejectPromptSuggestion(projectId, suggestionId));
+export async function rejectPromptSuggestions(projectId: string, body: SuggestionIdsRequest) {
+  return run((m) => m.rejectPromptSuggestions(projectId, body));
+}
+
+export async function suggestMorePrompts(projectId: string, body: SuggestMoreRequest) {
+  return run((m) => m.suggestMorePrompts(projectId, body));
+}
+
+export async function discoverPrompts(projectId: string, body: DiscoverPromptsRequest) {
+  return run((m) => m.discoverPrompts(projectId, body));
+}
+
+export async function importKeywords(projectId: string, body: ImportKeywordsRequest) {
+  return run((m) => m.importKeywords(projectId, body));
 }
 
 export async function getReport(projectId: string, period?: ReportPeriod, filters?: ReportFilters) {

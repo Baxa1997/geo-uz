@@ -40,6 +40,8 @@ export interface Project {
   description: string;
   /** What the business offers, as the client wrote it ("Implantlar", "Breketlar"); steers suggested questions. */
   services: string[];
+  /** Who buys it, as the client wrote it in Discovery ("Ota-onalar", "Tishi ogʻriyotganlar"); steers suggested questions too. */
+  customers: string[];
   plan: Plan;
   limits: ProjectLimits;
 }
@@ -309,6 +311,11 @@ export interface DismissBrandRequest {
 
 export type CreatePromptRequest = Pick<Prompt, "text" | "language" | "topic">;
 
+/** Several questions at once: the lines of the Add window, or a file's first column. All are added, or none. */
+export interface CreatePromptsRequest {
+  prompts: CreatePromptRequest[];
+}
+
 export type UpdatePromptRequest = CreatePromptRequest;
 
 /** Archive a question (stop asking it) or track it again. */
@@ -316,12 +323,61 @@ export interface ArchivePromptRequest {
   archived: boolean;
 }
 
-/** A question the project doesn't track yet, offered on the Questions page to accept or reject. */
+/** Several questions at once: archive them, track them again, or move them to a topic. */
+export interface UpdatePromptsRequest {
+  ids: string[];
+  archived?: boolean;
+  topic?: string;
+}
+
+/** A topic's name: a new topic, or a new name for one. */
+export interface TopicRequest {
+  name: string;
+}
+
+/**
+ * Why a question is suggested: from the business's services and topics ("profile"), from the web searches
+ * ChatGPT ran for the tracked questions ("searches"), from Discovery ("discovery"), or from keywords the
+ * client imported ("keywords").
+ */
+export type SuggestionSource = "profile" | "searches" | "discovery" | "keywords";
+
+/** A question the project doesn't track yet, offered on the Questions page to track or reject. */
 export interface SuggestedPrompt {
   id: string;
   text: string;
   language: PromptLanguage;
+  /** One of the project's topics, or a topic it doesn't have yet (a suggested topic). */
   topic: string;
+  source: SuggestionSource;
+  /** ISO 8601: when it was suggested. */
+  createdAt: string;
+}
+
+/** Suggestions to track or to reject, several at once. */
+export interface SuggestionIdsRequest {
+  ids: string[];
+}
+
+/** "Suggest more": questions for one topic (one of the project's or a suggested one), or for all of them. */
+export interface SuggestMoreRequest {
+  topic?: string;
+}
+
+/**
+ * Discovery, after Peec's: what the business sells, who buys it, anything else to follow, and in which
+ * languages to ask. The services and customer types are saved to the project.
+ */
+export interface DiscoverPromptsRequest {
+  services: string[];
+  customers: string[];
+  context: string;
+  languages: PromptLanguage[];
+}
+
+/** Keywords from a file (an SEO tool's export, first column): the backend makes questions customers ask about them. */
+export interface ImportKeywordsRequest {
+  keywords: string[];
 }
 
 /** Either field or both; what's left out stays as it was. */

@@ -14,7 +14,9 @@
     "close": "Yopish",
     "takeaway": "Xulosa",
     "howToRead": "Qanday oʻqiladi",
-    "breadcrumb": "Navigatsiya zanjiri"
+    "breadcrumb": "Navigatsiya zanjiri",
+    "addChip": "Qoʻshish",
+    "removeChip": "Olib tashlash: {value}"
   },
   "Filters": {
     "label": "Filtrlar",
@@ -895,8 +897,6 @@
     }
   },
   "PromptManager": {
-    "description": "Mijozlaringiz ChatGPT’ga beradigan savollar. Har bir savol har hafta oʻlchanadi.",
-    "count": "{count} ta savol",
     "schedule": "Har hafta tekshiriladi, keyingisi: {date}",
     "belowMin": "Ishonchli natija uchun kamida 20 ta savol qoʻshing.",
     "add": "Savol qoʻshish",
@@ -916,7 +916,8 @@
       "shareOfVoice": "Ovoz ulushi",
       "webSearch": "Veb-qidiruv",
       "wrongFacts": "Notoʻgʻri fakt",
-      "added": "Qoʻshilgan"
+      "added": "Qoʻshilgan",
+      "archivedOn": "Arxivlangan"
     },
     "queued": "Navbatda",
     "you": "Siz",
@@ -924,15 +925,6 @@
     "noMatch": "Bu filtrlarga mos savol yoʻq.",
     "visibilityHint": "{total} ta javobdan {count} tasida tilga olingansiz",
     "tabsLabel": "Savollar roʻyxati",
-    "suggestedIntro": "Mijozlar sohangizda soʻraydigan, lekin siz hali kuzatmayotgan savollar. Qoʻshilgan savol keyingi haftalik tekshiruvdan boshlab oʻlchanadi.",
-    "accept": "Qoʻshish",
-    "reject": "Rad etish",
-    "acceptLabel": "Savollarga qoʻshish: {text}",
-    "rejectLabel": "Rad etish: {text}",
-    "accepted": "Savollarga qoʻshildi: {text}",
-    "rejected": "Rad etildi: {text}",
-    "suggestionFailed": "Saqlab boʻlmadi. Qayta urinib koʻring.",
-    "suggestedEmpty": "Hozircha yangi tavsiya yoʻq.",
     "csv": "Eksport",
     "csvHint": "Savollar va natijalarini CSV faylda yuklab olish",
     "csvHeaders": {
@@ -971,18 +963,14 @@
     "restore": "Kuzatuvga qaytarish",
     "restoreLabel": "Kuzatuvga qaytarish: {text}",
     "limitReached": "Tarif chegarasi toʻlgan. Avval boshqa savolni arxivlang.",
-    "archivedOn": "Arxivlangan: {date}",
     "archiveIntro": "Arxivdagi savollar endi ChatGPT’ga berilmaydi va tarif chegarasiga kirmaydi. Oldingi natijalari saqlanadi. Qaytarilgan savol keyingi haftalik tekshiruvdan boshlab yana oʻlchanadi.",
     "archiveEmpty": "Arxiv boʻsh. Kerak boʻlmay qolgan savolni roʻyxatdagi arxiv tugmasi bilan shu yerga oʻtkazasiz.",
-    "archivedNote": "Arxivga oʻtkazildi: {text}",
-    "restoredNote": "Kuzatuvga qaytarildi: {text}",
     "full": "{plan} tarifidagi {max} ta savolning hammasi band. Yangi savol qoʻshish uchun birini arxivlang yoki tarifni oshiring.",
     "saveFailed": "Saqlab boʻlmadi. Qayta urinib koʻring.",
-    "planLimit": "{plan} tarifi: {max} tagacha savol",
     "hints": {
       "tabs": {
         "tracked": "Har hafta ChatGPT’ga beriladigan savollar.",
-        "suggested": "Mijozlar sohangizda soʻraydigan, siz hali kuzatmayotgan savollar. Har birini qoʻshish yoki rad etish mumkin.",
+        "suggested": "Mijozlar soʻrashi mumkin boʻlgan, siz hali kuzatmayotgan savollar. Har birini kuzatish yoki rad etish mumkin; «Yana tavsiya qilish» yangilarini qoʻshadi.",
         "archived": "Kuzatish toʻxtatilgan savollar. Ular endi tekshirilmaydi, natijalari saqlanadi."
       },
       "topics": "Savollar mavzular boʻyicha guruhlangan; yonidagi son — mavzudagi savollar soni. Mavzuni bossangiz, roʻyxatda faqat shu mavzu qoladi.",
@@ -996,7 +984,8 @@
       "summary": {
         "visibility": "Roʻyxatdagi savollarga berilgan javoblarning necha foizida tilga olingansiz.",
         "tone": "Roʻyxatdagi savollar boʻyicha ChatGPT siz haqingizda qanchalik ijobiy gapiradi: 0 — salbiy, 100 — ijobiy.",
-        "position": "Roʻyxatdagi savollar boʻyicha javoblarda oʻrtacha nechanchi boʻlib tilga olinasiz. 1 — birinchi."
+        "position": "Roʻyxatdagi savollar boʻyicha javoblarda oʻrtacha nechanchi boʻlib tilga olinasiz. 1 — birinchi.",
+        "webSearch": "Koʻrsatilgan savollarga berilgan javoblarning qanchasida ChatGPT internetdan qidirgan."
       },
       "queued": "Savol hali ChatGPT’ga berilmagan. Navbatdagi haftalik tekshiruvda birinchi marta beriladi.",
       "language": {
@@ -1009,29 +998,165 @@
       "shareOfVoice": "Shu savolga berilgan javoblarda kuzatilayotgan brendlar necha marta tilga olingan boʻlsa, shundan necha foizi sizniki.",
       "webSearch": "Shu savolga javob berishda ChatGPT nechta javobda internetdan qidirgan. Qidirgan boʻlsa, javob saytlarga tayanadi — demak, oʻsha saytlarda boʻlish muhim.",
       "wrongFacts": "Shu savolga berilgan javoblarda siz haqingizda topilgan notoʻgʻri faktlar soni. Har bir savol tekshiriladi.",
-      "added": "Savol qoʻshilgan sana. Natijalari shundan keyingi birinchi haftalik tekshiruvdan boshlanadi."
+      "added": "Savol qoʻshilgan sana. Natijalari shundan keyingi birinchi haftalik tekshiruvdan boshlanadi.",
+      "archivedOn": "Savol qachon arxivlangan: shu kundan beri soʻralmaydi."
     },
     "webSearchCell": "{total} ta javobdan {count} tasida ChatGPT internetdan qidirgan",
     "wrongFactsSome": "{count} ta notoʻgʻri fakt — koʻrish uchun bosing",
     "wrongFactsNone": "Notoʻgʻri fakt topilmadi",
-    "openQuestion": "Savol sahifasini ochish"
+    "openQuestion": "Savol sahifasini ochish",
+    "topic": "Mavzu",
+    "cancel": "Bekor qilish",
+    "restoreHint": "Savolni yana kuzatish: u keyingi tekshiruvdan boshlab soʻraladi.",
+    "savedNote": "Savol saqlandi.",
+    "addedNote": "{count} ta savol qoʻshildi: keyingi tekshiruvdan boshlab soʻraladi.",
+    "buttons": {
+      "keywords": "Kalit soʻzlar",
+      "keywordsHint": "SEO vositasidagi kalit soʻzlardan savollar tavsiya qilish.",
+      "discovery": "Savollar yaratish",
+      "discoveryHint": "Xizmatlaringiz va mijozlaringizdan yangi mavzular va savollar tuzish.",
+      "addHint": "Savolni oʻzingiz yozing yoki fayldan yuklang.",
+      "more": "Yana tavsiya",
+      "moreHint": "Barcha mavzular boʻyicha yangi savollar tavsiya qilish.",
+      "moreTopicHint": "“{topic}” mavzusi boʻyicha yangi savollar tavsiya qilish.",
+      "suggesting": "Tavsiya qilinmoqda…"
+    },
+    "footer": {
+      "tracked": "{count} ta savol",
+      "trackedHint": "Roʻyxatdagi savollar: qidiruv va filtrlarga moslari.",
+      "suggested": "{count} ta tavsiya",
+      "suggestedHint": "Kutib turgan tavsiyalar: kuzatilganlari rejadagi joyni egallaydi.",
+      "archived": "{count} ta arxivlangan savol",
+      "archivedHint": "Arxivdagi savollar soʻralmaydi va rejadagi joyni egallamaydi."
+    },
+    "selection": {
+      "all": "Hammasini tanlash",
+      "one": "Tanlash: {text}",
+      "count": "{count} ta tanlandi",
+      "clear": "Bekor qilish",
+      "move": "Mavzuga oʻtkazish",
+      "archive": "Arxivlash",
+      "restore": "Kuzatuvga qaytarish",
+      "archiveAll": "Hammasini arxivlash",
+      "archiveAllTitle": "Barcha {count} ta savolni arxivlaysizmi?",
+      "archiveAllText": "Ular endi soʻralmaydi va rejadagi joy boʻshaydi. Javoblari saqlanadi; istalgan savolni «Arxiv»dan kuzatuvga qaytarish mumkin.",
+      "archivedNote": "{count} ta savol arxivlandi.",
+      "restoredNote": "{count} ta savol kuzatuvga qaytdi.",
+      "movedNote": "{count} ta savol “{topic}” mavzusiga oʻtkazildi."
+    },
+    "suggested": {
+      "selectAll": "Hammasini tanlash",
+      "select": "Tanlash: {text}",
+      "columns": {
+        "question": "Savol",
+        "source": "Nega tavsiya qilindi",
+        "date": "Tavsiya qilingan",
+        "decide": "Qaror"
+      },
+      "hints": {
+        "question": "Mijozlar ChatGPT’dan soʻrashi mumkin boʻlgan, siz hali kuzatmayotgan savol: tili va (barcha mavzular koʻrinsa) mavzusi bilan.",
+        "source": "Savol nimadan kelib chiqqan: xizmatlaringizdan, ChatGPT qidiruvlaridan, «Savollar yaratish»dan yoki yuklangan kalit soʻzlardan.",
+        "date": "Savol qachon tavsiya qilingan."
+      },
+      "new": "yangi",
+      "sources": {
+        "profile": "Xizmatlaringizdan",
+        "searches": "ChatGPT qidiruvlaridan",
+        "discovery": "Savollar yaratishdan",
+        "keywords": "Kalit soʻzlardan"
+      },
+      "sourceHints": {
+        "profile": "Biznesingiz xizmatlari va mavzulari asosida tuzilgan.",
+        "searches": "ChatGPT siz kuzatayotgan savollarga javob berayotib internetda shunga oʻxshash narsani qidirgan.",
+        "discovery": "«Savollar yaratish»da kiritilgan xizmatlar va mijozlar asosida tuzilgan.",
+        "keywords": "Siz yuklagan kalit soʻzlar asosida tuzilgan."
+      },
+      "reject": "Rad etish",
+      "rejectLabel": "Rad etish: {text}",
+      "track": "Kuzatish",
+      "trackLabel": "Kuzatish: {text}",
+      "noRoom": "Rejada joy qolmagan: avval biror savolni arxivlang.",
+      "noRoomFor": "Rejada yana {room} ta joy bor: kamroq savol tanlang.",
+      "trackHint": "Tanlangan savollarni kuzatish: ular keyingi tekshiruvdan boshlab soʻraladi.",
+      "trackAll": "Hammasini kuzatish",
+      "trackAllHint": "Roʻyxatdagi hamma tavsiyalarni kuzatish.",
+      "rejectAll": "Hammasini rad etish",
+      "trackedNote": "{count} ta savol kuzatuvga olindi.",
+      "rejectedNote": "{count} ta tavsiya rad etildi.",
+      "moreNote": "{count} ta yangi tavsiya qoʻshildi.",
+      "noMore": "Hozircha yangi savol topilmadi. Kalit soʻzlarni yuklang yoki «Savollar yaratish»ni sinab koʻring.",
+      "emptyTitle": "Tavsiyalar yoʻq",
+      "emptyText": "Mijozlar ChatGPT’ga beradigan savollarni tavsiya qilishimizdan boshlang.",
+      "emptyButton": "Savollar tavsiya qilish",
+      "noneInTopic": "Bu mavzuda tavsiya yoʻq: «Yana tavsiya qilish»ni bosing."
+    },
+    "topicsColumn": {
+      "label": "Mavzular",
+      "title": "Mavzular",
+      "hint": "Savollar mavzularga boʻlingan: mavzuni bossangiz, roʻyxatda faqat uning savollari qoladi. ⋯ — nomini oʻzgartirish yoki oʻchirish.",
+      "new": "Yangi mavzu",
+      "newLabel": "Yangi mavzu nomi",
+      "namePlaceholder": "Mavzu nomi",
+      "keepHint": "Enter — saqlash, Esc — bekor qilish",
+      "nameRequired": "Nom yozing.",
+      "failed": "Saqlab boʻlmadi.",
+      "taken": "Bunday mavzu allaqachon bor.",
+      "renameLabel": "“{name}” mavzusining yangi nomi",
+      "menu": "“{name}” mavzusi bilan amallar",
+      "rename": "Nomini oʻzgartirish",
+      "delete": "Oʻchirish",
+      "yours": "Mavzularingiz",
+      "suggested": "Tavsiya qilingan mavzular",
+      "suggestedHint": "Sizda hali yoʻq mavzular: ulardagi savolni kuzatsangiz, mavzu ham qoʻshiladi.",
+      "allSuggested": "Barcha tavsiyalar",
+      "createdNote": "“{name}” mavzusi qoʻshildi.",
+      "renamedNote": "Mavzuning yangi nomi: “{name}”.",
+      "deletedNote": "“{name}” mavzusi oʻchirildi.",
+      "deleteTitle": "“{name}” mavzusini oʻchirasizmi?",
+      "deleteText": "{count, plural, =0 {Bu mavzuda kuzatilayotgan savol yoʻq.} other {Undagi # ta kuzatilayotgan savol arxivga oʻtadi: ular soʻralmaydi, javoblari saqlanadi.}}"
+    }
   },
   "PromptForm": {
-    "addTitle": "Yangi savol",
+    "addTitle": "Savol qoʻshish",
     "editTitle": "Savolni tahrirlash",
     "text": "Savol",
-    "textPlaceholder": "Toshkentdagi eng yaxshi stomatologiya qaysi?",
+    "textPlaceholder": "Toshkentdagi eng yaxshi stomatologiya qaysi?\nToshkentda implant narxi qancha?",
     "language": "Savol tili",
     "topic": "Mavzu",
-    "topicPlaceholder": "masalan, narxlar",
     "save": "Saqlash",
     "saving": "Saqlanmoqda…",
     "cancel": "Bekor qilish",
-    "editHint": "Oʻzgarish keyingi oʻlchovdan boshlab hisobga olinadi.",
+    "editHint": "Oʻzgarish keyingi tekshiruvdan boshlab hisobga olinadi.",
     "textShort": "Savol kamida 5 ta belgidan iborat boʻlsin.",
-    "textDuplicate": "Bunday savol allaqachon bor.",
+    "textDuplicate": "Bu savol allaqachon bor: “{text}”.",
     "topicRequired": "Mavzuni kiriting.",
-    "saveFailed": "Saqlab boʻlmadi. Qayta urinib koʻring."
+    "saveFailed": "Saqlab boʻlmadi. Qayta urinib koʻring.",
+    "addHint": "Mijoz ChatGPT’dan soʻraydigan savolni yozing, brendingiz nomisiz. Har bir qator — alohida savol.",
+    "fileTitle": "Fayldan yuklash",
+    "fileHint": "CSV yoki TXT fayl: savollar birinchi ustunda yoki har biri alohida qatorda. Sarlavha qatori oʻtkazib yuboriladi.",
+    "modeLabel": "Qanday qoʻshiladi",
+    "modes": {
+      "write": "Yozib qoʻshish",
+      "file": "Fayldan yuklash"
+    },
+    "add": "Qoʻshish",
+    "addMany": "{count} ta savolni qoʻshish",
+    "counter": "{count} ta savol · rejada {room} ta joy",
+    "editPlaceholder": "Toshkentdagi eng yaxshi stomatologiya qaysi?",
+    "newTopicOption": "+ Yangi mavzu…",
+    "newTopic": "Yangi mavzu nomi",
+    "newTopicPlaceholder": "masalan, Narxlar",
+    "languageAuto": "Yozuviga qarab aniqlash",
+    "fileFound": "{count} ta savol qoʻshiladi",
+    "fileSkipped": "{count} tasi oʻtkazib yuboriladi: juda qisqa, juda uzun yoki allaqachon bor",
+    "fileMore": "va yana {count} ta",
+    "fileLanguage": "Har bir savolning tili yozuviga qarab aniqlanadi: kirill yozuvi — ruscha (ў, қ, ғ, ҳ boʻlsa — oʻzbekcha), lotin yozuvi — oʻzbekcha.",
+    "fileNothing": "Faylda qoʻshsa boʻladigan savol yoʻq.",
+    "fileMissing": "Avval fayl tanlang.",
+    "textShortLine": "Juda qisqa: “{text}”. Savol kamida 5 ta belgidan iborat boʻlsin.",
+    "textLong": "Savol {max} ta belgidan oshmasin.",
+    "editOne": "Tahrirlashda bitta savol yozing.",
+    "noRoom": "{count} ta savol rejaga sigʻmaydi: yana {room} ta joy bor."
   },
   "PromptPage": {
     "label": "Savol",
@@ -1842,8 +1967,6 @@
     "services": "Xizmatlar",
     "servicesHint": "Nimalarni taklif qilasiz. Mijozlar beradigan savollarni shularga qarab tanlaymiz.",
     "cityHint": "Mijozlaringiz qaysi shaharda. Savollar shu shahar uchun beriladi.",
-    "addChip": "Qoʻshish",
-    "removeChip": "Olib tashlash: {value}",
     "competitorsPick": "Raqobatchilarni tanlang",
     "topicsPick": "Mavzularni tanlang",
     "topicQuestions": "{count} ta savol",
@@ -2160,6 +2283,58 @@
         "title": "Barcha javoblar",
         "description": "Oxirgi tekshiruvda shu saytga havola bergan javoblar, savollari ostida. Toʻliq oʻqish uchun javobni bosing."
       }
+    }
+  },
+  "PromptImport": {
+    "drop": "Faylni shu yerga tashlang yoki <pick>tanlash uchun bosing</pick>",
+    "types": "CSV yoki TXT · Excel’da “CSV sifatida saqlash”",
+    "another": "Boshqa fayl tanlash",
+    "spreadsheet": "Bu Excel fayli. Uni “CSV sifatida saqlang” va CSV faylni yuklang.",
+    "emptyFile": "Faylda hech narsa topilmadi.",
+    "unreadable": "Faylni oʻqib boʻlmadi.",
+    "keywordsTitle": "Kalit soʻzlarni yuklash",
+    "keywordsHint": "Google Search Console yoki boshqa SEO vositasidan eksport, kalit soʻzlar birinchi ustunda. Ulardan mijozlar ChatGPT’ga beradigan savollarni tavsiya qilamiz.",
+    "keywordsFound": "{count} ta kalit soʻz",
+    "keywordsFirst": "birinchi {max} tasi olinadi",
+    "keywordsMore": "va yana {count} ta",
+    "suggest": "Savollar tavsiya qilish",
+    "suggesting": "Tavsiya qilinmoqda…",
+    "cancel": "Bekor qilish",
+    "failed": "Yuklab boʻlmadi. Qayta urinib koʻring."
+  },
+  "PromptDiscovery": {
+    "title": "Savollar yaratish",
+    "step": "{step}-qadam, jami {steps}",
+    "aboutTitle": "Biz haqingizda",
+    "aboutText": "Nima sotishingiz va kim sotib olishi qanday mavzu va savollar tavsiya qilinishini belgilaydi.",
+    "services": "Xizmatlar",
+    "servicesHint": "Biznesingiz nima taklif qiladi.",
+    "customers": "Mijozlaringiz",
+    "customersHint": "Kimlar uchun: masalan, ota-onalar, tishi ogʻriyotganlar, talabalar.",
+    "context": "Qoʻshimcha maʼlumot",
+    "contextHint": "Savollar shunga qarab tuziladi: masalan, qaysi xizmatga koʻproq eʼtibor berish kerak.",
+    "contextPlaceholder": "masalan, implantlarga eʼtibor bering, bolalar stomatologiyasi kerak emas",
+    "marketsTitle": "Tillar",
+    "marketsText": "Savollar {city} uchun tuziladi. Qaysi tillarda soʻralsin?",
+    "languages": "Savol tillari",
+    "languageNote": {
+      "uz": "Oʻzbek tilida, lotin yozuvida",
+      "ru": "Rus tilida"
+    },
+    "next": "Keyingi: tillar",
+    "back": "Orqaga",
+    "find": "Savollarni yaratish",
+    "finding": "Savollar tuzilmoqda…",
+    "needSomething": "Kamida bitta xizmat yoki mijoz turini qoʻshing.",
+    "nothingNew": "Yangi savol topilmadi: boshqa xizmat yoki mijoz turini qoʻshib koʻring.",
+    "failed": "Savollarni yaratib boʻlmadi. Qayta urinib koʻring.",
+    "intro": {
+      "headline": "Mijozlaringiz ChatGPT’dan nima soʻraydi?",
+      "services": "Nima sotishingizni yozing: xizmatlaringiz allaqachon kiritilgan.",
+      "customers": "Kimlar sotib olishini qoʻshing: har bir mijoz turi oʻz savollarini beradi.",
+      "languages": "Tillarni tanlang: savollar oʻzbek va rus tillarida tuziladi.",
+      "after": "Yangi savollar «Tavsiyalar» boʻlimiga tushadi: qaysini kuzatishni oʻzingiz tanlaysiz, rejadagi joyni faqat ular egallaydi.",
+      "existing": "Mavjud mavzular bilan davom etish"
     }
   }
 }

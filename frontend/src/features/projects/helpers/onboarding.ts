@@ -50,13 +50,6 @@ export function questionsInTopics(questions: QuestionDraft[], topics: TopicDraft
 export const chosenCount = ({ selected, manual }: CompetitorChoice) =>
   selected.filter(Boolean).length + (manual && isFilled(manual) ? 1 : 0);
 
-/** A chip's text as saved: single spaces, no repeats (case aside). */
-export function addChip(values: string[], value: string): string[] {
-  const text = value.trim().replace(/\s+/g, " ");
-  if (!text || values.some((existing) => existing.toLowerCase() === text.toLowerCase())) return values;
-  return [...values, text];
-}
-
 export function validateWebsite(website: string): OnboardingErrors {
   const domain = normalizeDomain(website);
   if (!domain) return { website: "websiteRequired" };

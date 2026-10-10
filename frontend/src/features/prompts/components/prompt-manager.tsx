@@ -1,17 +1,35 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Archive, ChevronDown, ChevronsUpDown, ChevronUp, CircleAlert, CircleSlash, Pencil, Plus, Search, Tag } from "lucide-react";
+import {
+  Archive,
+  ChevronDown,
+  ChevronsUpDown,
+  ChevronUp,
+  CircleAlert,
+  CircleSlash,
+  FolderInput,
+  ListTree,
+  Pencil,
+  Plus,
+  Search,
+  Sparkles,
+  UploadCloud,
+  X,
+} from "lucide-react";
 import { useLocale, useMessages, useTimeZone, useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
 import { CsvButton } from "@/shared/components/csv-button";
 import { FilterMenu } from "@/shared/components/filter-menu";
 import { Hint } from "@/shared/components/hint";
+import { MethodLabel } from "@/shared/components/scores/method-label";
 import { ToneIcon } from "@/shared/components/scores/tone-icon";
-import { Button } from "@/shared/components/ui/button";
+import { Button, buttonVariants } from "@/shared/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/components/ui/dropdown-menu";
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/shared/components/ui/sheet";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
-import { api } from "@/shared/api/client";
+import { api, ApiError } from "@/shared/api/client";
 import { queryKeys } from "@/shared/api/query-keys";
 import { MIN_PROMPTS, TIME_ZONE } from "@/shared/constants";
 import { formatIsoDay, formatShortDate, formatWeekdayDate } from "@/shared/helpers/dates";
@@ -21,16 +39,20 @@ import { isTracked } from "@/shared/helpers/prompts";
 import { FILTER_PARAMS, withFilters } from "@/shared/helpers/report-filters";
 import { toneOf } from "@/shared/helpers/scores";
 import { cn } from "@/shared/helpers/utils";
-import type { Brand, Plan, Prompt, PromptResult, ReportFilters, SuggestedPrompt, WrongFact } from "@/shared/types/api";
+import type { Brand, Plan, Prompt, PromptResult, ReportFilters, ReportMethod, SuggestedPrompt, WrongFact } from "@/shared/types/api";
 import type { SeriesBrand } from "@/shared/types/scores";
 import { matchesFilter, PROMPTS_FILTERS, promptsSummary, promptStats, type PromptsFilter } from "../helpers/stats";
-import { PromptArchive } from "./prompt-archive";
-import { PromptForm } from "./prompt-form";
-import { PromptSuggestions } from "./prompt-suggestions";
+import { AddPromptDialog } from "./add-prompt-dialog";
+import { ArchiveTable } from "./archive-table";
+import { ImportKeywordsDialog } from "./import-keywords-dialog";
+import { ConfirmModal } from "./modal";
+import { SelectBox } from "./select-box";
+import { SuggestionsTable } from "./suggestions-table";
+import { TopicsColumn, type TopicItem } from "./topics-column";
 
 const dash = <span className="text-muted-foreground">—</span>;
 
-type View = "tracked" | "suggested" | "archived";
+export type View = "tracked" | "suggested" | "archived";
 const VIEWS: View[] = ["tracked", "suggested", "archived"];
 
 /** The columns the table sorts by; without a sort the questions keep the order they were added in. */
@@ -41,14 +63,28 @@ const SORT_WIDTHS: Record<SortKey, string> = { visibility: "w-28", shareOfVoice:
 /** The question stays in view while the other columns scroll sideways under it. */
 const PINNED = "sticky left-0 z-[1] bg-card shadow-[inset_-1px_0_0_var(--border)]";
 
+/** A window open over the page. */
+type Dialog =
+  | { kind: "add" }
+  | { kind: "edit"; prompt: Prompt }
+  | { kind: "keywords" }
+  | { kind: "archiveAll" }
+  | { kind: "deleteTopic"; topic: string };
+
 /**
- * The project's questions, laid out like Peec's prompts page: topics on the left (each with its count,
- * picking one narrows the list), on the right the tracked, suggested and archived questions with how many
- * of the plan's questions are used. The tracked ones are a table that scrolls sideways under the question:
- * visibility, share of voice, tone, position, the brands named, who leads, how often ChatGPT searched the
- * web, the wrong facts found and the date added, under a search, a filter and the client's numbers over
- * the rows shown. A click on a row opens the question's own page; a question is added and edited in
- * place, and archived when the client stops tracking it. CSV export; the footer says when the questions are asked again. Every heading,
+ * The project's questions, laid out like Peec's prompts page across the whole panel: the topics column on
+ * the left ("New topic +", each topic with its count and a ⋯ to rename or delete it); on the right the
+ * tracked, suggested and archived questions as tabs, with how many of the plan's questions are used and
+ * the page's buttons; a toolbar; the list; and a footer that says when the questions are asked again, or,
+ * once rows are picked with their boxes, what can be done with them.
+ *
+ * Tracked: a table that scrolls sideways under the question (visibility, share of voice, tone, position,
+ * the brands named, who leads, how often ChatGPT searched the web, the wrong facts found, the date added)
+ * under a search, a filter and the client's numbers over the rows shown; a click on a row opens the
+ * question's page; picked rows move to a topic or to the archive ("Archive all" with none picked).
+ * Suggested: Peec's table with ✕ / ✓ on each row, "Suggest more" for the topic picked or for all, keywords
+ * from a file, and Discovery; picked rows are tracked or rejected together. Archived: picked rows are
+ * tracked again. Questions are added (one per line, or from a file) and edited in a window. Every heading,
  * figure and mark explains itself on hover (Hint), as on Peec.
  */
 export function PromptManager({
@@ -56,17 +92,22 @@ export function PromptManager({
   plan,
   limit,
   initialPrompts,
+  initialSuggestions,
+  initialTopics,
+  initialView,
+  freshCount,
   results,
   brands,
   series,
   youId,
   collectedAt,
+  method,
   filters,
-  initialSuggestions,
   filename,
   nextRunAt,
   wrongFacts,
   wrongFactsHref,
+  discoveryHref,
 }: {
   projectId: string;
   plan: Plan;
@@ -75,8 +116,12 @@ export function PromptManager({
   /** Every question of the project, archived ones too. */
   initialPrompts: Prompt[];
   initialSuggestions: SuggestedPrompt[];
-  /** For the CSV download, without the extension. */
-  filename: string;
+  /** The project's topics in their order, those without a question yet too. */
+  initialTopics: string[];
+  /** The tab to open (`?view=`). */
+  initialView: View;
+  /** How many of the newest suggestions Discovery just made, to mark as new. */
+  freshCount: number;
   /** The latest run's results; a question without one hasn't been asked yet. */
   results: PromptResult[];
   brands: Brand[];
@@ -84,13 +129,19 @@ export function PromptManager({
   series: SeriesBrand[];
   youId: string;
   collectedAt: string;
+  /** How the answers were collected; null before the first check. */
+  method: ReportMethod | null;
   filters: ReportFilters;
+  /** For the CSV download, without the extension. */
+  filename: string;
   /** When the questions are asked again; a question added now is asked from then. */
   nextRunAt: string | null;
   /** What ChatGPT gets wrong about the client, each with the question it came up in. */
   wrongFacts: WrongFact[];
   /** The page that lists them. */
   wrongFactsHref: string;
+  /** Peec's Discovery: services, customers and languages make new suggestions. */
+  discoveryHref: string;
 }) {
   const t = useTranslations("PromptManager");
   const tones = useTranslations("Tone");
@@ -103,49 +154,150 @@ export function PromptManager({
   const params = useSearchParams();
   const queryClient = useQueryClient();
   const [pending, startTransition] = useTransition();
-  const { data: prompts } = useQuery({
-    queryKey: queryKeys.prompts(projectId),
-    queryFn: () => api.getPrompts(projectId),
-    initialData: initialPrompts,
-  });
+  const { data: prompts } = useQuery({ queryKey: queryKeys.prompts(projectId), queryFn: () => api.getPrompts(projectId), initialData: initialPrompts });
   const { data: suggestions } = useQuery({
     queryKey: queryKeys.promptSuggestions(projectId),
     queryFn: () => api.getPromptSuggestions(projectId),
     initialData: initialSuggestions,
   });
-  const [view, setView] = useState<View>("tracked");
-  // "new" = the add form is open; a prompt id = that prompt is being edited
-  const [editing, setEditing] = useState<string | null>(null);
+  const { data: topicList } = useQuery({ queryKey: queryKeys.topics(projectId), queryFn: () => api.getTopics(projectId), initialData: initialTopics });
+  const [view, setView] = useState<View>(initialView);
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<PromptsFilter>("all");
   const [sort, setSort] = useState<{ key: SortKey; reversed: boolean } | null>(null);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  // The suggestions' topic is picked here: a suggested topic isn't one the report can be filtered by
+  const [suggestedTopic, setSuggestedTopic] = useState("");
+  const [dialog, setDialog] = useState<Dialog | null>(null);
+  // A window opened again starts afresh
+  const [session, setSession] = useState(0);
+  const [fresh, setFresh] = useState<Set<string>>(() => new Set(initialSuggestions.slice(0, freshCount).map((suggestion) => suggestion.id)));
+  const [notice, setNotice] = useState("");
   const [announcement, setAnnouncement] = useState("");
-  const close = () => setEditing(null);
+  const [topicsOpen, setTopicsOpen] = useState(false);
 
-  const archive = useMutation({
-    mutationFn: ({ prompt, archived }: { prompt: Prompt; archived: boolean }) => api.archivePrompt(projectId, prompt.id, { archived }),
-    onSuccess: (saved, { archived }) => {
-      queryClient.setQueryData<Prompt[]>(queryKeys.prompts(projectId), (list = []) => list.map((prompt) => (prompt.id === saved.id ? saved : prompt)));
-      setAnnouncement(t(archived ? "archivedNote" : "restoredNote", { text: saved.text }));
-      // The report covers the tracked questions only: its results follow
-      router.refresh();
-    },
-  });
-  const busyId = archive.isPending ? archive.variables.prompt.id : null;
+  const topicLabel = (topic: string) => labelFor(messages.Topics, topic);
+  const pageOf = (prompt: Prompt) => withFilters(`/projects/${projectId}/prompts/${prompt.id}`, filters);
+  const openDialog = (next: Dialog) => {
+    setSession((current) => current + 1);
+    setDialog(next);
+  };
+  const closeDialog = () => setDialog(null);
+  const done = (message: string) => {
+    setAnnouncement(message);
+    setSelected(new Set());
+  };
 
   const tracked = prompts.filter(isTracked);
   const archived = prompts.filter((prompt) => !isTracked(prompt));
-  const full = tracked.length >= limit;
+  const room = Math.max(0, limit - tracked.length);
+  const full = room === 0;
   const counts: Record<View, number> = { tracked: tracked.length, suggested: suggestions.length, archived: archived.length };
-  const pageOf = (prompt: Prompt) => withFilters(`/projects/${projectId}/prompts/${prompt.id}`, filters);
+  const topics = [...new Set([...topicList, ...tracked.map((prompt) => prompt.topic)])];
+  const search = query.trim().toLowerCase();
 
-  // Topics with their counts, over the tracked questions in the chosen language
+  // A change of the questions changes the report: the page's numbers follow
+  const refresh = () => startTransition(() => router.refresh());
+
+  const update = useMutation({
+    mutationFn: (body: { ids: string[]; archived?: boolean; topic?: string }) => api.updatePrompts(projectId, body),
+    onSuccess: (saved, body) => {
+      queryClient.setQueryData<Prompt[]>(queryKeys.prompts(projectId), (list = []) => list.map((prompt) => saved.find((item) => item.id === prompt.id) ?? prompt));
+      void queryClient.invalidateQueries({ queryKey: queryKeys.topics(projectId) });
+      done(
+        body.topic !== undefined
+          ? t("selection.movedNote", { count: saved.length, topic: topicLabel(body.topic) })
+          : t(body.archived ? "selection.archivedNote" : "selection.restoredNote", { count: saved.length }),
+      );
+      closeDialog();
+      refresh();
+    },
+  });
+  const decide = useMutation({
+    mutationFn: async ({ ids, track }: { ids: string[]; track: boolean }) =>
+      track ? api.acceptPromptSuggestions(projectId, { ids }) : api.rejectPromptSuggestions(projectId, { ids }).then(() => [] as Prompt[]),
+    onSuccess: (created, { ids, track }) => {
+      queryClient.setQueryData<SuggestedPrompt[]>(queryKeys.promptSuggestions(projectId), (list = []) => list.filter((item) => !ids.includes(item.id)));
+      if (created.length > 0) {
+        queryClient.setQueryData<Prompt[]>(queryKeys.prompts(projectId), (list = []) => [...list, ...created]);
+        void queryClient.invalidateQueries({ queryKey: queryKeys.topics(projectId) });
+      }
+      done(t(track ? "suggested.trackedNote" : "suggested.rejectedNote", { count: ids.length }));
+    },
+  });
+  const more = useMutation({
+    mutationFn: () => api.suggestMorePrompts(projectId, { topic: suggestedTopic || undefined }),
+    onSuccess: (created) => {
+      queryClient.setQueryData<SuggestedPrompt[]>(queryKeys.promptSuggestions(projectId), (list = []) => [...created, ...list]);
+      setFresh(new Set(created.map((suggestion) => suggestion.id)));
+      const message = created.length > 0 ? t("suggested.moreNote", { count: created.length }) : t("suggested.noMore");
+      setNotice(created.length > 0 ? "" : message);
+      done(message);
+    },
+  });
+  const removeTopic = useMutation({
+    mutationFn: (topic: string) => api.deleteTopic(projectId, topic),
+    onSuccess: (_, topic) => {
+      queryClient.setQueryData<string[]>(queryKeys.topics(projectId), (list = []) => list.filter((item) => item !== topic));
+      void queryClient.invalidateQueries({ queryKey: queryKeys.prompts(projectId) });
+      if (filters.topic === topic) pickTopic("");
+      done(t("topicsColumn.deletedNote", { name: topicLabel(topic) }));
+      closeDialog();
+      refresh();
+    },
+  });
+  const failed = update.isError || decide.isError || more.isError || removeTopic.isError;
+
+  /** Keeps a name, or rejects with what to tell the client. */
+  async function saveTopic(topic: string | null, name: string) {
+    try {
+      const next = topic === null ? await api.createTopic(projectId, { name }) : await api.renameTopic(projectId, topic, { name });
+      queryClient.setQueryData<string[]>(queryKeys.topics(projectId), next);
+      if (topic !== null) {
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: queryKeys.prompts(projectId) }),
+          queryClient.invalidateQueries({ queryKey: queryKeys.promptSuggestions(projectId) }),
+        ]);
+        if (filters.topic === topic) pickTopic(name.trim());
+        refresh();
+      }
+      setAnnouncement(t(topic === null ? "topicsColumn.createdNote" : "topicsColumn.renamedNote", { name: name.trim() }));
+    } catch (error) {
+      throw new Error(error instanceof ApiError && error.status === 409 ? t("topicsColumn.taken") : t("topicsColumn.failed"));
+    }
+  }
+
+  function pickTopic(topic: string) {
+    setSelected(new Set());
+    setTopicsOpen(false);
+    if (view === "suggested") {
+      setSuggestedTopic(topic);
+      return;
+    }
+    const next: Record<string, string> = Object.fromEntries(params);
+    if (topic) next[FILTER_PARAMS.topic] = topic;
+    else delete next[FILTER_PARAMS.topic];
+    startTransition(() => router.replace({ pathname, query: next }, { scroll: false }));
+  }
+
+  function openView(next: View) {
+    setView(next);
+    setSelected(new Set());
+    setNotice("");
+  }
+
+  const toggle = (id: string) =>
+    setSelected((current) => {
+      const next = new Set(current);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  const toggleAll = (ids: string[]) =>
+    setSelected((current) => (ids.length > 0 && ids.every((id) => current.has(id)) ? new Set() : new Set(ids)));
+
+  // Tracked: topics with their counts over the questions in the chosen language
   const inLanguage = tracked.filter((prompt) => !filters.language || prompt.language === filters.language);
-  const topics = [...new Set(inLanguage.map((prompt) => prompt.topic))].map((topic) => ({
-    topic,
-    label: labelFor(messages.Topics, topic),
-    count: inLanguage.filter((prompt) => prompt.topic === topic).length,
-  }));
   const lastRun = formatShortDate(collectedAt, locale, timeZone);
   const byId = new Map(series.map((brand) => [brand.id, brand]));
   const inTopic = inLanguage
@@ -166,7 +318,6 @@ export function PromptManager({
     position: ({ stats }) => stats?.position ?? null,
     added: ({ prompt }) => Date.parse(prompt.createdAt),
   };
-  const search = query.trim().toLowerCase();
   const matching = inTopic.filter((row) => !search || row.prompt.text.toLowerCase().includes(search));
   const rows = matching.filter((row) => matchesFilter(row.stats, status));
   if (sort) {
@@ -180,14 +331,60 @@ export function PromptManager({
     });
   }
   const summary = promptsSummary(rows.flatMap((row) => row.result ?? []), youId);
-  const editingPrompt = tracked.find((prompt) => prompt.id === editing);
+  const searchedShare = (() => {
+    const answers = rows.flatMap((row) => row.result?.answers ?? []);
+    return answers.length ? answers.filter((answer) => answer.searches.length > 0).length / answers.length : null;
+  })();
 
-  function pickTopic(topic: string) {
-    const next: Record<string, string> = Object.fromEntries(params);
-    if (topic) next[FILTER_PARAMS.topic] = topic;
-    else delete next[FILTER_PARAMS.topic];
-    startTransition(() => router.replace({ pathname, query: next }, { scroll: false }));
-  }
+  // Suggested and archived, under the topic picked and the search
+  const suggestedRows = suggestions.filter(
+    (suggestion) => (!suggestedTopic || suggestion.topic === suggestedTopic) && (!search || suggestion.text.toLowerCase().includes(search)),
+  );
+  const archivedRows = [...archived]
+    .sort((a, b) => (b.archivedAt ?? "").localeCompare(a.archivedAt ?? ""))
+    .filter((prompt) => (!filters.topic || prompt.topic === filters.topic) && (!search || prompt.text.toLowerCase().includes(search)));
+
+  // The rows of the open tab, and those of them picked
+  const visibleIds = view === "tracked" ? rows.map((row) => row.prompt.id) : view === "suggested" ? suggestedRows.map((row) => row.id) : archivedRows.map((row) => row.id);
+  const picked = visibleIds.filter((id) => selected.has(id));
+  const pickedSet = new Set(picked);
+  const busyIds = new Set<string>([
+    ...(update.isPending ? update.variables.ids : []),
+    ...(decide.isPending ? decide.variables.ids : []),
+  ]);
+
+  // The topics column: the project's topics with the open tab's counts
+  const countIn = (list: { topic: string }[], topic: string) => list.filter((item) => item.topic === topic).length;
+  const columnItems: TopicItem[] = topics.map((topic) => ({
+    value: topic,
+    label: topicLabel(topic),
+    count: countIn(view === "tracked" ? inLanguage : view === "suggested" ? suggestions : archived, topic),
+  }));
+  const suggestedTopics: TopicItem[] = [...new Set(suggestions.map((suggestion) => suggestion.topic))]
+    .filter((topic) => !topics.includes(topic))
+    .map((topic) => ({ value: topic, label: topicLabel(topic), count: countIn(suggestions, topic) }));
+  // Archived questions may have a topic deleted since: it shows among the topics while they do
+  const archivedOnly: TopicItem[] =
+    view === "archived"
+      ? [...new Set(archived.map((prompt) => prompt.topic))]
+          .filter((topic) => !topics.includes(topic))
+          .map((topic) => ({ value: topic, label: topicLabel(topic), count: countIn(archived, topic) }))
+      : [];
+  const currentTopic = view === "suggested" ? suggestedTopic : (filters.topic ?? "");
+  const topicsColumn = (className?: string) => (
+    <TopicsColumn
+      className={className}
+      items={[...columnItems, ...archivedOnly]}
+      suggested={view === "suggested" ? suggestedTopics : undefined}
+      allLabel={t(view === "suggested" ? "topicsColumn.allSuggested" : "allTopics")}
+      allCount={view === "tracked" ? inLanguage.length : view === "suggested" ? suggestions.length : archived.length}
+      current={currentTopic}
+      onPick={pickTopic}
+      onCreate={(name) => saveTopic(null, name)}
+      onRename={(topic, name) => saveTopic(topic, name)}
+      onDelete={(topic) => openDialog({ kind: "deleteTopic", topic })}
+    />
+  );
 
   /** A column heading that explains its column on hover and sorts: best first, then the other way round, then back to the order added. */
   function sortHeading(key: SortKey) {
@@ -215,21 +412,12 @@ export function PromptManager({
     );
   }
 
-  /** A click anywhere on a question opens its page; the links, buttons (and, on a phone, hints) in it keep their own click. */
-  function openQuestion(event: React.MouseEvent, prompt: Prompt, own = "a, button") {
+  /** A click anywhere on a question opens its page; the links, buttons and boxes (and, on a phone, hints) in it keep their own click. */
+  function openQuestion(event: React.MouseEvent, prompt: Prompt, own = "a, button, input") {
     if (event.target instanceof Element && event.target.closest(own)) return;
     router.push(pageOf(prompt));
   }
 
-  const form = (prompt?: Prompt) => (
-    <PromptForm
-      projectId={projectId}
-      prompt={prompt}
-      defaultLanguage={prompt?.language ?? filters.language ?? "uz"}
-      existing={prompts}
-      onDone={close}
-    />
-  );
   const question = ({ prompt }: Row) => (
     <>
       <Hint text={t(`hints.language.${prompt.language}`)} focusable={false} described={false} className="mr-1.5 text-[0.65rem] font-semibold text-muted-foreground uppercase">
@@ -240,6 +428,7 @@ export function PromptManager({
       </Link>
     </>
   );
+  const box = ({ prompt }: Row) => <SelectBox checked={pickedSet.has(prompt.id)} label={t("selection.one", { text: prompt.text })} onChange={() => toggle(prompt.id)} />;
   const run = ({ stats }: Row) =>
     stats ? (
       <span className="whitespace-nowrap text-muted-foreground">{lastRun}</span>
@@ -333,10 +522,7 @@ export function PromptManager({
               text={brand.isYou ? `${brand.name} (${t("you")})` : brand.name}
               focusable={false}
               described={false}
-              className={cn(
-                "h-6 items-center gap-1 rounded-md px-1.5 text-[0.7rem] font-semibold",
-                brand.isYou ? "bg-you-soft/60 ring-1 ring-you/30" : "bg-muted",
-              )}
+              className={cn("h-6 items-center gap-1 rounded-md px-1.5 text-[0.7rem] font-semibold", brand.isYou ? "bg-you-soft/60 ring-1 ring-you/30" : "bg-muted")}
             >
               <span aria-hidden className="size-2 rounded-full" style={{ background: brand.color }} />
               <span aria-hidden>{brand.name.charAt(0).toUpperCase()}</span>
@@ -363,7 +549,7 @@ export function PromptManager({
     <span className="flex justify-end gap-0.5">
       <Hint text={t("hints.edit")} described={false}>
         {() => (
-          <Button variant="ghost" size="icon-sm" aria-label={`${t("edit")}: ${prompt.text}`} onClick={() => setEditing(prompt.id)}>
+          <Button variant="ghost" size="icon-sm" aria-label={`${t("edit")}: ${prompt.text}`} onClick={() => openDialog({ kind: "edit", prompt })}>
             <Pencil aria-hidden />
           </Button>
         )}
@@ -374,8 +560,8 @@ export function PromptManager({
             variant="ghost"
             size="icon-sm"
             aria-label={`${t("archive")}: ${prompt.text}`}
-            disabled={busyId === prompt.id}
-            onClick={() => archive.mutate({ prompt, archived: true })}
+            disabled={busyIds.has(prompt.id)}
+            onClick={() => update.mutate({ ids: [prompt.id], archived: true })}
           >
             <Archive aria-hidden />
           </Button>
@@ -403,7 +589,7 @@ export function PromptManager({
     ...rows.map(({ prompt, stats }) => [
       prompt.text,
       prompt.language.toUpperCase(),
-      labelFor(messages.Topics, prompt.topic),
+      topicLabel(prompt.topic),
       stats && stats.total ? Math.round((stats.named / stats.total) * 100) : null,
       stats?.named ?? null,
       stats?.total ?? null,
@@ -419,218 +605,269 @@ export function PromptManager({
   ];
   const used = Math.min(1, tracked.length / limit);
   const usedHint = t("usedHint", { plan: plans(plan), max: limit });
+  const allPicked = visibleIds.length > 0 && visibleIds.every((id) => pickedSet.has(id));
+
+  const searchBox = (
+    <div className="relative w-full min-w-40 @md:w-64">
+      <Search aria-hidden className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
+      <label htmlFor="prompts-search" className="sr-only">
+        {t("search")}
+      </label>
+      <input
+        id="prompts-search"
+        type="search"
+        value={query}
+        onChange={(event) => setQuery(event.target.value)}
+        placeholder={t("search")}
+        className="h-9 w-full rounded-lg border bg-background pr-2 pl-8 text-sm shadow-xs outline-none placeholder:text-muted-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
+      />
+    </div>
+  );
+  // On a narrow panel the topics column is a sheet, opened from the toolbar
+  const topicsSheet = (
+    <Sheet open={topicsOpen} onOpenChange={setTopicsOpen}>
+      <SheetTrigger render={<Button variant="outline" className="h-9 max-w-56 @3xl:hidden" />}>
+        <ListTree aria-hidden data-icon="inline-start" />
+        <span className="truncate">{currentTopic ? topicLabel(currentTopic) : t("topics")}</span>
+      </SheetTrigger>
+      <SheetContent side="left" className="w-80 gap-0 overflow-y-auto p-0">
+        <SheetTitle className="sr-only">{t("topics")}</SheetTitle>
+        {topicsColumn()}
+      </SheetContent>
+    </Sheet>
+  );
 
   return (
-    <div
-      aria-busy={pending}
-      className={cn(
-        "@container overflow-hidden rounded-xl bg-card ring-1 ring-foreground/10 transition-opacity",
-        pending && "opacity-70",
-      )}
-    >
-      <div className="grid @3xl:grid-cols-[15rem_minmax(0,1fr)]">
-        {/* Topics: a column on wide panels, a filter on narrow ones */}
-        <nav aria-label={t("topics")} className="hidden flex-col border-r @3xl:flex">
-          <p className="flex h-14 items-center border-b px-4 text-sm font-medium">
-            <Hint text={t("hints.topics")}>{t("topics")}</Hint>
-          </p>
-          <ul className="flex flex-col gap-0.5 p-2">
-            {[{ topic: "", label: t("allTopics"), count: inLanguage.length }, ...topics].map((item) => {
-              const current = (filters.topic ?? "") === item.topic;
-              return (
-                <li key={item.topic || "all"}>
+    <div aria-busy={pending} className={cn("@container flex flex-1 transition-opacity", pending && "opacity-70")}>
+      {/* The topics: a column across the page's height on a wide panel */}
+      <aside className="hidden w-56 shrink-0 border-r @3xl:block">
+        <div className="sticky top-12">{topicsColumn()}</div>
+      </aside>
+
+      <div className="flex min-w-0 flex-1 flex-col">
+        {/* The tabs with the plan's room and the page's buttons, as on Peec */}
+        <div className="flex min-h-14 flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b px-4 py-2">
+          <div role="group" aria-label={t("tabsLabel")} className="flex items-center gap-1 self-stretch">
+            {VIEWS.map((option) => (
+              <Hint key={option} text={t(`hints.tabs.${option}`)} side="bottom" className="-mb-2 self-end">
+                {(describedBy) => (
                   <button
                     type="button"
-                    aria-current={current ? "true" : undefined}
-                    onClick={() => pickTopic(item.topic)}
-                    className={cn(
-                      "flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-2 text-left text-sm transition-colors",
-                      current ? "bg-muted font-medium" : "text-foreground/80 hover:bg-muted/50",
-                    )}
+                    aria-pressed={view === option}
+                    aria-describedby={describedBy}
+                    onClick={() => openView(option)}
+                    className="group relative flex h-12 items-center rounded-lg text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
                   >
-                    <span className="truncate">{item.label}</span>
-                    <span className="shrink-0 text-xs text-muted-foreground tabular-nums">{item.count}</span>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
-
-        <div className="flex min-w-0 flex-col">
-          <div className="flex min-h-14 flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b px-4 py-2">
-            <div role="group" aria-label={t("tabsLabel")} className="flex items-center gap-4 self-stretch">
-              {VIEWS.map((option) => (
-                <Hint key={option} text={t(`hints.tabs.${option}`)} className="-mb-2 self-end">
-                  {(describedBy) => (
-                    <button
-                      type="button"
-                      aria-pressed={view === option}
-                      aria-describedby={describedBy}
-                      onClick={() => setView(option)}
+                    <span
                       className={cn(
-                        "flex items-center gap-1.5 border-b-2 pb-2 text-sm transition-colors",
-                        view === option ? "border-foreground font-medium text-foreground" : "border-transparent text-muted-foreground hover:text-foreground",
+                        "flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 transition-colors",
+                        view === option ? "bg-muted font-medium text-foreground" : "text-muted-foreground group-hover:text-foreground",
                       )}
                     >
                       {t(`tabs.${option}`)}
-                      <span className="text-xs tabular-nums opacity-70">{counts[option]}</span>
-                    </button>
-                  )}
-                </Hint>
-              ))}
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <Hint text={usedHint} described={false} className="items-center gap-1.5 text-sm text-muted-foreground tabular-nums">
-                <svg viewBox="0 0 20 20" aria-hidden className="size-5 -rotate-90">
-                  <circle cx="10" cy="10" r="8" fill="none" className="stroke-muted" strokeWidth="3" />
-                  <circle
-                    cx="10"
-                    cy="10"
-                    r="8"
-                    fill="none"
-                    className="stroke-positive"
-                    strokeWidth="3"
-                    strokeLinecap="round"
-                    strokeDasharray={2 * Math.PI * 8}
-                    strokeDashoffset={2 * Math.PI * 8 * (1 - used)}
-                  />
-                </svg>
-                <span>
-                  <span className="font-medium text-foreground">{tracked.length}</span>/{limit}
-                </span>
-                <span className="sr-only">{usedHint}</span>
+                      <span className="text-xs tabular-nums opacity-60">{counts[option]}</span>
+                    </span>
+                    {view === option && <span aria-hidden className="absolute inset-x-0 bottom-0 h-0.5 rounded-full bg-foreground" />}
+                  </button>
+                )}
               </Hint>
-              <Button
-                className="h-8"
-                onClick={() => {
-                  setView("tracked");
-                  setEditing("new");
-                }}
-                disabled={full || (view === "tracked" && editing === "new")}
-              >
-                <Plus aria-hidden data-icon="inline-start" />
-                {t("add")}
-              </Button>
-            </div>
+            ))}
           </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Hint text={usedHint} described={false} className="items-center gap-1.5 text-sm text-muted-foreground tabular-nums">
+              <svg viewBox="0 0 20 20" aria-hidden className="size-5 -rotate-90">
+                <circle cx="10" cy="10" r="8" fill="none" className="stroke-muted" strokeWidth="3" />
+                <circle
+                  cx="10"
+                  cy="10"
+                  r="8"
+                  fill="none"
+                  className="stroke-positive"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeDasharray={2 * Math.PI * 8}
+                  strokeDashoffset={2 * Math.PI * 8 * (1 - used)}
+                />
+              </svg>
+              <span>
+                <span className="font-medium text-foreground">{tracked.length}</span>/{limit}
+              </span>
+              <span className="sr-only">{usedHint}</span>
+            </Hint>
+            {view === "suggested" && (
+              <Hint text={t("buttons.keywordsHint")} described={false}>
+                {() => (
+                  <Button variant="outline" className="h-9" onClick={() => openDialog({ kind: "keywords" })}>
+                    <UploadCloud aria-hidden data-icon="inline-start" />
+                    {t("buttons.keywords")}
+                  </Button>
+                )}
+              </Hint>
+            )}
+            <Hint text={t("buttons.discoveryHint")} described={false}>
+              {() => (
+                <Link href={discoveryHref} className={cn(buttonVariants({ variant: "outline" }), "h-9")}>
+                  <Sparkles aria-hidden data-icon="inline-start" />
+                  {t("buttons.discovery")}
+                </Link>
+              )}
+            </Hint>
+            <Hint text={full ? t("full", { plan: plans(plan), max: limit }) : t("buttons.addHint")} described={false}>
+              {() => (
+                <Button variant={view === "suggested" ? "outline" : "default"} className="h-9" disabled={full} onClick={() => openDialog({ kind: "add" })}>
+                  <Plus aria-hidden data-icon="inline-start" />
+                  {t("add")}
+                </Button>
+              )}
+            </Hint>
+            {view === "suggested" && (
+              <Hint text={suggestedTopic ? t("buttons.moreTopicHint", { topic: topicLabel(suggestedTopic) }) : t("buttons.moreHint")} described={false}>
+                {() => (
+                  <Button className="h-9" disabled={more.isPending} onClick={() => more.mutate()}>
+                    <Sparkles aria-hidden data-icon="inline-start" className={cn(more.isPending && "animate-pulse")} />
+                    {more.isPending ? t("buttons.suggesting") : t("buttons.more")}
+                  </Button>
+                )}
+              </Hint>
+            )}
+          </div>
+        </div>
 
-          {/* Why nothing can be added: said once, above whichever list is open */}
-          {full && <p className="mx-4 mt-3 rounded-lg bg-muted px-3 py-2 text-sm text-pretty">{t("full", { plan: plans(plan), max: limit })}</p>}
-          {archive.isError && (
+        {/* The tab's tools: search, filters, and on the tracked questions the client's numbers over the rows shown */}
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b px-4 py-2.5">
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
+            {searchBox}
+            {topicsSheet}
+            {view === "tracked" && (
+              <FilterMenu
+                icon={CircleSlash}
+                label={t("filter.label")}
+                value={status}
+                options={PROMPTS_FILTERS.map((option) => ({
+                  value: option,
+                  label: t(`filter.${option}`),
+                  count: matching.filter((row) => matchesFilter(row.stats, option)).length,
+                }))}
+                onChange={setStatus}
+              />
+            )}
+          </div>
+          {view === "tracked" && (
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
+              <dl className="flex flex-wrap items-center gap-x-4 gap-y-1 text-muted-foreground">
+                <div className="flex items-center gap-1.5">
+                  <dt>
+                    <Hint text={t("hints.summary.visibility")}>{t("columns.visibility")}</Hint>
+                  </dt>
+                  <dd className="font-semibold text-foreground tabular-nums">{summary.visibility !== null ? `${summary.visibility}%` : "—"}</dd>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <dt>
+                    <Hint text={t("hints.summary.tone")}>{t("columns.tone")}</Hint>
+                  </dt>
+                  <dd className="flex items-center gap-1 font-semibold text-foreground tabular-nums">
+                    {summary.sentiment !== null && <ToneIcon tone={toneOf(summary.sentiment)} />}
+                    {summary.sentiment ?? "—"}
+                  </dd>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <dt>
+                    <Hint text={t("hints.summary.position")}>{t("columns.position")}</Hint>
+                  </dt>
+                  <dd className="font-semibold text-foreground tabular-nums">{summary.position !== null ? `#${formatDecimal(summary.position, locale)}` : "—"}</dd>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <dt>
+                    <Hint text={t("hints.summary.webSearch")}>{t("columns.webSearch")}</Hint>
+                  </dt>
+                  <dd className="font-semibold text-foreground tabular-nums">{searchedShare !== null ? formatPercent(searchedShare, locale) : "—"}</dd>
+                </div>
+              </dl>
+              {rows.length > 0 && <CsvButton iconOnly filename={filename} label={t("csv")} hint={t("csvHint")} rows={csvRows} className="h-9 w-9" />}
+            </div>
+          )}
+        </div>
+
+        <div className="flex min-w-0 flex-1 flex-col">
+          {/* Why nothing can be added or tracked: said once, above whichever list is open */}
+          {full && view !== "archived" && <p className="mx-4 mt-3 rounded-lg bg-muted px-3 py-2 text-sm text-pretty">{t("full", { plan: plans(plan), max: limit })}</p>}
+          {failed && (
             <p role="alert" className="mx-4 mt-3 text-sm text-destructive">
               {t("saveFailed")}
             </p>
           )}
+          {notice && <p className="mx-4 mt-3 rounded-lg bg-muted px-3 py-2 text-sm text-pretty">{notice}</p>}
 
           {view === "suggested" ? (
-            <div className="p-4">
-              <PromptSuggestions projectId={projectId} suggestions={suggestions} full={full} />
-            </div>
-          ) : view === "archived" ? (
-            <div className="p-4">
-              <PromptArchive
-                prompts={archived}
-                full={full}
-                busyId={busyId}
-                href={pageOf}
-                onRestore={(prompt) => archive.mutate({ prompt, archived: false })}
+            suggestions.length === 0 ? (
+              <div className="flex flex-1 flex-col items-center justify-center gap-2 px-4 py-16 text-center">
+                <span aria-hidden className="mb-2 flex size-12 items-center justify-center rounded-xl border bg-muted/50">
+                  <Sparkles className="size-5 text-muted-foreground" />
+                </span>
+                <p className="font-medium">{t("suggested.emptyTitle")}</p>
+                <p className="max-w-sm text-sm text-pretty text-muted-foreground">{t("suggested.emptyText")}</p>
+                <Button className="mt-3" disabled={more.isPending} onClick={() => more.mutate()}>
+                  <Sparkles aria-hidden data-icon="inline-start" />
+                  {more.isPending ? t("buttons.suggesting") : t("suggested.emptyButton")}
+                </Button>
+              </div>
+            ) : suggestedRows.length === 0 ? (
+              <p className="m-4 rounded-lg bg-muted px-3 py-2 text-sm text-muted-foreground">{t(suggestedTopic && !search ? "suggested.noneInTopic" : "noMatch")}</p>
+            ) : (
+              <SuggestionsTable
+                rows={suggestedRows}
+                selected={pickedSet}
+                fresh={fresh}
+                busy={busyIds}
+                canTrack={!full}
+                showTopic={!suggestedTopic}
+                topicLabel={topicLabel}
+                onToggle={toggle}
+                onToggleAll={() => toggleAll(suggestedRows.map((row) => row.id))}
+                onDecide={(ids, track) => decide.mutate({ ids, track })}
               />
-            </div>
+            )
+          ) : view === "archived" ? (
+            archivedRows.length === 0 ? (
+              <p className="m-4 rounded-lg border border-dashed px-4 py-6 text-center text-sm text-muted-foreground">{t(archived.length === 0 ? "archiveEmpty" : "noMatch")}</p>
+            ) : (
+              <>
+                <p className="border-b px-4 py-2.5 text-sm text-pretty text-muted-foreground">{t("archiveIntro")}</p>
+                <ArchiveTable
+                  prompts={archivedRows}
+                  selected={pickedSet}
+                  busy={busyIds}
+                  full={full}
+                  href={pageOf}
+                  topicLabel={topicLabel}
+                  onToggle={toggle}
+                  onToggleAll={() => toggleAll(archivedRows.map((row) => row.id))}
+                  onRestore={(ids) => update.mutate({ ids, archived: false })}
+                />
+              </>
+            )
           ) : (
             <>
-              <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b px-4 py-2.5">
-                <div className="flex min-w-0 flex-wrap items-center gap-2">
-                  <div className="relative w-full min-w-40 @md:w-56">
-                    <Search aria-hidden className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
-                    <label htmlFor="prompts-search" className="sr-only">
-                      {t("search")}
-                    </label>
-                    <input
-                      id="prompts-search"
-                      type="search"
-                      value={query}
-                      onChange={(event) => setQuery(event.target.value)}
-                      placeholder={t("search")}
-                      className="h-8 w-full rounded-lg border bg-background pr-2 pl-8 text-sm shadow-xs outline-none placeholder:text-muted-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
-                    />
-                  </div>
-                  <FilterMenu
-                    icon={CircleSlash}
-                    label={t("filter.label")}
-                    value={status}
-                    options={PROMPTS_FILTERS.map((option) => ({
-                      value: option,
-                      label: t(`filter.${option}`),
-                      count: matching.filter((row) => matchesFilter(row.stats, option)).length,
-                    }))}
-                    onChange={setStatus}
-                  />
-                  <span className="@3xl:hidden">
-                    <FilterMenu
-                      icon={Tag}
-                      label={t("topics")}
-                      value={filters.topic ?? ""}
-                      options={[{ value: "", label: t("allTopics"), count: inLanguage.length }, ...topics.map(({ topic, label, count }) => ({ value: topic, label, count }))]}
-                      onChange={pickTopic}
-                    />
-                  </span>
-                </div>
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
-                  <dl className="flex flex-wrap items-center gap-x-4 gap-y-1 text-muted-foreground">
-                    <div className="flex items-center gap-1.5">
-                      <dt>
-                        <Hint text={t("hints.summary.visibility")}>{t("columns.visibility")}</Hint>
-                      </dt>
-                      <dd className="font-semibold text-foreground tabular-nums">{summary.visibility !== null ? `${summary.visibility}%` : "—"}</dd>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <dt>
-                        <Hint text={t("hints.summary.tone")}>{t("columns.tone")}</Hint>
-                      </dt>
-                      <dd className="flex items-center gap-1 font-semibold text-foreground tabular-nums">
-                        {summary.sentiment !== null && <ToneIcon tone={toneOf(summary.sentiment)} />}
-                        {summary.sentiment ?? "—"}
-                      </dd>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <dt>
-                        <Hint text={t("hints.summary.position")}>{t("columns.position")}</Hint>
-                      </dt>
-                      <dd className="font-semibold text-foreground tabular-nums">
-                        {summary.position !== null ? `#${formatDecimal(summary.position, locale)}` : "—"}
-                      </dd>
-                    </div>
-                  </dl>
-                  {rows.length > 0 && <CsvButton filename={filename} label={t("csv")} hint={t("csvHint")} rows={csvRows} />}
-                </div>
-              </div>
-
-              {tracked.length > 0 && tracked.length < Math.min(MIN_PROMPTS, limit) && (
-                <p className="mx-4 mt-3 rounded-lg bg-muted px-3 py-2 text-sm">{t("belowMin")}</p>
-              )}
-              {editing === "new" && <div className="border-b p-4">{form()}</div>}
-              {/* A row's edit form opens above the table: inside it, the form would be as wide as all its columns */}
-              {editingPrompt && <div className="hidden border-b p-4 @4xl:block">{form(editingPrompt)}</div>}
-
+              {tracked.length > 0 && tracked.length < Math.min(MIN_PROMPTS, limit) && <p className="mx-4 mt-3 rounded-lg bg-muted px-3 py-2 text-sm">{t("belowMin")}</p>}
               {tracked.length === 0 ? (
-                editing !== "new" && (
-                  <div className="m-4 flex flex-col gap-1 rounded-lg border border-dashed p-4 text-center">
-                    <p className="font-medium">{t("empty")}</p>
-                    <p className="text-sm text-muted-foreground">{t("emptyHint")}</p>
-                  </div>
-                )
+                <div className="m-4 flex flex-col items-center gap-1 rounded-lg border border-dashed p-6 text-center">
+                  <p className="font-medium">{t("empty")}</p>
+                  <p className="text-sm text-muted-foreground">{t("emptyHint")}</p>
+                </div>
               ) : rows.length === 0 ? (
                 <p className="m-4 rounded-lg bg-muted px-3 py-2 text-sm text-muted-foreground">{t("noMatch")}</p>
               ) : (
                 <>
                   {/* Wide panel: a table that scrolls sideways under the question, as on Peec. relative + min-w-0: it scrolls here, not the page */}
                   <div className="relative hidden min-w-0 overflow-x-auto @4xl:block">
-                    <table className="w-full min-w-[86rem] table-fixed text-sm">
+                    <table className="w-full min-w-352 table-fixed text-sm">
                       <thead>
-                        <tr className="border-b text-left text-xs text-muted-foreground [&>th]:px-2 [&>th]:py-2.5 [&>th]:font-medium [&>th:first-child]:pl-4 [&>th:last-child]:pr-4">
-                          <th scope="col" className={PINNED}>
-                            <Hint text={t("hints.question")}>{t("columns.question")}</Hint>
+                        <tr className="border-b bg-muted/50 text-left text-xs text-muted-foreground [&>th]:px-2 [&>th]:py-2.5 [&>th]:font-medium [&>th:first-child]:pl-4 [&>th:last-child]:pr-4">
+                          <th scope="col" className={cn(PINNED, "bg-[color-mix(in_oklab,var(--muted)_50%,var(--card))]")}>
+                            <span className="flex items-center gap-3">
+                              <SelectBox checked={allPicked} mixed={picked.length > 0 && !allPicked} label={t("selection.all")} onChange={() => toggleAll(visibleIds)} />
+                              <Hint text={t("hints.question")}>{t("columns.question")}</Hint>
+                            </span>
                           </th>
                           {sortHeading("visibility")}
                           {sortHeading("shareOfVoice")}
@@ -657,117 +894,280 @@ export function PromptManager({
                         </tr>
                       </thead>
                       <tbody className="divide-y">
-                        {rows.map((row) => (
-                          <tr
-                            key={row.prompt.id}
-                            onClick={(event) => openQuestion(event, row.prompt)}
-                            className={cn(
-                              "group cursor-pointer transition-colors hover:bg-muted/30 [&>td]:px-2 [&>td]:py-2.5 [&>td:first-child]:pl-4 [&>td:last-child]:pr-2",
-                              editing === row.prompt.id && "bg-muted/40",
-                            )}
-                          >
-                            {/* Opaque on hover too: the other columns pass under it */}
-                            <td className={cn(PINNED, "transition-colors group-hover:bg-[color-mix(in_oklab,var(--muted)_30%,var(--card))]")}>
-                              {question(row)}
-                              {!filters.topic && (
-                                <span className="ml-2 inline-flex rounded-md bg-muted px-1.5 py-0.5 text-xs whitespace-nowrap text-muted-foreground">
-                                  {labelFor(messages.Topics, row.prompt.topic)}
-                                </span>
+                        {rows.map((row) => {
+                          const on = pickedSet.has(row.prompt.id);
+                          return (
+                            <tr
+                              key={row.prompt.id}
+                              onClick={(event) => openQuestion(event, row.prompt)}
+                              className={cn(
+                                "group cursor-pointer transition-colors [&>td]:px-2 [&>td]:py-3 [&>td:first-child]:pl-4 [&>td:last-child]:pr-2",
+                                on ? "bg-you-soft/40" : "hover:bg-muted/30",
+                                busyIds.has(row.prompt.id) && "opacity-50",
                               )}
-                            </td>
-                            <td>{visibility(row)}</td>
-                            <td>{voice(row)}</td>
-                            <td>{toneIcons(row)}</td>
-                            <td>{position(row)}</td>
-                            <td>{namedChips(row)}</td>
-                            <td>{leader(row)}</td>
-                            <td>{webSearch(row)}</td>
-                            <td>{facts(row)}</td>
-                            <td>{added(row)}</td>
-                            <td>{actions(row)}</td>
-                          </tr>
-                        ))}
+                            >
+                              {/* Opaque on hover too: the other columns pass under it */}
+                              <td
+                                className={cn(
+                                  PINNED,
+                                  "transition-colors",
+                                  on ? "bg-[color-mix(in_oklab,var(--you-soft)_40%,var(--card))]" : "group-hover:bg-[color-mix(in_oklab,var(--muted)_30%,var(--card))]",
+                                )}
+                              >
+                                <span className="flex items-start gap-3">
+                                  <span className="flex h-5 items-center">{box(row)}</span>
+                                  <span className="min-w-0">
+                                    {question(row)}
+                                    {!filters.topic && (
+                                      <span className="ml-2 inline-flex rounded-md bg-muted px-1.5 py-0.5 text-xs whitespace-nowrap text-muted-foreground">
+                                        {topicLabel(row.prompt.topic)}
+                                      </span>
+                                    )}
+                                  </span>
+                                </span>
+                              </td>
+                              <td>{visibility(row)}</td>
+                              <td>{voice(row)}</td>
+                              <td>{toneIcons(row)}</td>
+                              <td>{position(row)}</td>
+                              <td>{namedChips(row)}</td>
+                              <td>{leader(row)}</td>
+                              <td>{webSearch(row)}</td>
+                              <td>{facts(row)}</td>
+                              <td>{added(row)}</td>
+                              <td>{actions(row)}</td>
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>
 
                   {/* Narrow panel: the same rows as cards */}
                   <ul className="divide-y @4xl:hidden">
-                    {rows.map((row) =>
-                      editing === row.prompt.id ? (
-                        <li key={row.prompt.id} className="px-4 py-3">
-                          {form(row.prompt)}
-                        </li>
-                      ) : (
-                        <li
-                          key={row.prompt.id}
-                          onClick={(event) => openQuestion(event, row.prompt, "a, button, [data-hint]")}
-                          className="flex cursor-pointer items-start gap-2 py-3 pr-2 pl-4 transition-colors hover:bg-muted/30"
-                        >
-                          <div className="flex min-w-0 flex-1 flex-col gap-2">
-                            <p className="text-sm text-pretty">{question(row)}</p>
-                            <dl className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs">
-                              <div>
-                                <span className="inline-flex rounded-md bg-muted px-1.5 py-0.5 whitespace-nowrap">
-                                  {labelFor(messages.Topics, row.prompt.topic)}
-                                </span>
-                              </div>
-                              {row.stats ? (
-                                <>
-                                  <Stat label={t("columns.visibility")} hint={t("hints.visibility")}>
-                                    {visibility(row)}
+                    {rows.map((row) => (
+                      <li
+                        key={row.prompt.id}
+                        onClick={(event) => openQuestion(event, row.prompt, "a, button, input, [data-hint]")}
+                        className={cn("flex cursor-pointer items-start gap-3 py-3 pr-2 pl-4 transition-colors", pickedSet.has(row.prompt.id) ? "bg-you-soft/40" : "hover:bg-muted/30")}
+                      >
+                        <span className="flex h-5 items-center">{box(row)}</span>
+                        <div className="flex min-w-0 flex-1 flex-col gap-2">
+                          <p className="text-sm text-pretty">{question(row)}</p>
+                          <dl className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs">
+                            <div>
+                              <span className="inline-flex rounded-md bg-muted px-1.5 py-0.5 whitespace-nowrap">{topicLabel(row.prompt.topic)}</span>
+                            </div>
+                            {row.stats ? (
+                              <>
+                                <Stat label={t("columns.visibility")} hint={t("hints.visibility")}>
+                                  {visibility(row)}
+                                </Stat>
+                                <Stat label={t("columns.shareOfVoice")} hint={t("hints.shareOfVoice")}>
+                                  {voice(row)}
+                                </Stat>
+                                <Stat label={t("columns.position")} hint={t("hints.position")}>
+                                  {position(row)}
+                                </Stat>
+                                <Stat label={t("columns.tone")} hint={t("hints.tone")}>
+                                  {toneIcons(row)}
+                                </Stat>
+                                <Stat label={t("columns.leader")} hint={t("hints.leader")}>
+                                  {leader(row)}
+                                </Stat>
+                                {factsOf(row.prompt) > 0 && (
+                                  <Stat label={t("columns.wrongFacts")} hint={t("hints.wrongFacts")}>
+                                    {facts(row)}
                                   </Stat>
-                                  <Stat label={t("columns.shareOfVoice")} hint={t("hints.shareOfVoice")}>
-                                    {voice(row)}
-                                  </Stat>
-                                  <Stat label={t("columns.position")} hint={t("hints.position")}>
-                                    {position(row)}
-                                  </Stat>
-                                  <Stat label={t("columns.tone")} hint={t("hints.tone")}>
-                                    {toneIcons(row)}
-                                  </Stat>
-                                  <Stat label={t("columns.leader")} hint={t("hints.leader")}>
-                                    {leader(row)}
-                                  </Stat>
-                                  {factsOf(row.prompt) > 0 && (
-                                    <Stat label={t("columns.wrongFacts")} hint={t("hints.wrongFacts")}>
-                                      {facts(row)}
-                                    </Stat>
-                                  )}
-                                </>
-                              ) : (
-                                <div>{run(row)}</div>
-                              )}
-                            </dl>
-                          </div>
-                          {actions(row)}
-                        </li>
-                      ),
-                    )}
+                                )}
+                              </>
+                            ) : (
+                              <div>{run(row)}</div>
+                            )}
+                          </dl>
+                        </div>
+                        {actions(row)}
+                      </li>
+                    ))}
                   </ul>
                 </>
               )}
+              {method && results.length > 0 && (
+                <div className="px-4 py-3">
+                  <MethodLabel method={method} />
+                </div>
+              )}
+            </>
+          )}
+        </div>
 
-              <p className="flex flex-wrap items-center gap-x-2 border-t px-4 py-3 text-sm text-muted-foreground">
-                <Hint text={t("hints.count")} className="font-medium text-foreground">
-                  {t("count", { count: tracked.length })}
+        {/* The footer, as Peec's: how many and when they are asked again; with rows picked, what to do with them */}
+        <div className="sticky bottom-0 z-2 flex min-h-14 flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t bg-background px-4 py-2.5 text-sm">
+          {picked.length > 0 ? (
+            <>
+              <p className="flex items-center gap-2">
+                <span className="font-medium">{t("selection.count", { count: picked.length })}</span>
+                <Button variant="ghost" size="sm" onClick={() => setSelected(new Set())}>
+                  <X aria-hidden data-icon="inline-start" />
+                  {t("selection.clear")}
+                </Button>
+              </p>
+              <div className="flex flex-wrap items-center gap-2">
+                {view === "tracked" && (
+                  <>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger render={<Button variant="outline" disabled={update.isPending} />}>
+                        <FolderInput aria-hidden data-icon="inline-start" />
+                        {t("selection.move")}
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" side="top" className="w-56">
+                        {topics.map((topic) => (
+                          <DropdownMenuItem key={topic} onClick={() => update.mutate({ ids: picked, topic })}>
+                            {topicLabel(topic)}
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                    <Button variant="outline" disabled={update.isPending} onClick={() => update.mutate({ ids: picked, archived: true })}>
+                      <Archive aria-hidden data-icon="inline-start" />
+                      {t("selection.archive")}
+                    </Button>
+                  </>
+                )}
+                {view === "suggested" && (
+                  <>
+                    <Button variant="outline" disabled={decide.isPending} onClick={() => decide.mutate({ ids: picked, track: false })}>
+                      <X aria-hidden data-icon="inline-start" />
+                      {t("suggested.reject")}
+                    </Button>
+                    <Hint text={picked.length > room ? t("suggested.noRoomFor", { room }) : t("suggested.trackHint")} described={false}>
+                      {() => (
+                        <Button disabled={decide.isPending || picked.length > room} onClick={() => decide.mutate({ ids: picked, track: true })}>
+                          <Plus aria-hidden data-icon="inline-start" />
+                          {t("suggested.track")}
+                        </Button>
+                      )}
+                    </Hint>
+                  </>
+                )}
+                {view === "archived" && (
+                  <Hint text={picked.length > room ? t("suggested.noRoomFor", { room }) : t("restoreHint")} described={false}>
+                    {() => (
+                      <Button disabled={update.isPending || picked.length > room} onClick={() => update.mutate({ ids: picked, archived: false })}>
+                        {t("selection.restore")}
+                      </Button>
+                    )}
+                  </Hint>
+                )}
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-muted-foreground">
+                <Hint text={t(`footer.${view}Hint`)} className="font-medium text-foreground">
+                  {t(`footer.${view}`, { count: visibleIds.length })}
                 </Hint>
-                <span aria-hidden>·</span>
-                <Hint text={usedHint}>{t("planLimit", { plan: plans(plan), max: limit })}</Hint>
-                {nextRunAt && (
+                {nextRunAt && view === "tracked" && (
                   <>
                     <span aria-hidden>·</span>
                     <Hint text={t("hints.schedule")}>{t("schedule", { date: formatWeekdayDate(nextRunAt, locale, timeZone) })}</Hint>
                   </>
                 )}
               </p>
+              <div className="flex flex-wrap items-center gap-2">
+                {view === "tracked" && tracked.length > 0 && (
+                  <Button variant="outline" onClick={() => openDialog({ kind: "archiveAll" })}>
+                    <Archive aria-hidden data-icon="inline-start" />
+                    {t("selection.archiveAll")}
+                  </Button>
+                )}
+                {view === "suggested" && suggestedRows.length > 0 && (
+                  <>
+                    <Button variant="outline" disabled={decide.isPending} onClick={() => decide.mutate({ ids: suggestedRows.map((row) => row.id), track: false })}>
+                      <X aria-hidden data-icon="inline-start" />
+                      {t("suggested.rejectAll")}
+                    </Button>
+                    <Hint text={suggestedRows.length > room ? t("suggested.noRoomFor", { room }) : t("suggested.trackAllHint")} described={false}>
+                      {() => (
+                        <Button
+                          variant="outline"
+                          disabled={decide.isPending || suggestedRows.length > room}
+                          onClick={() => decide.mutate({ ids: suggestedRows.map((row) => row.id), track: true })}
+                        >
+                          <Plus aria-hidden data-icon="inline-start" />
+                          {t("suggested.trackAll")}
+                        </Button>
+                      )}
+                    </Hint>
+                  </>
+                )}
+              </div>
             </>
           )}
-          <p aria-live="polite" className="sr-only">
-            {announcement}
-          </p>
         </div>
+        <p aria-live="polite" className="sr-only">
+          {announcement}
+        </p>
       </div>
+
+      {(dialog?.kind === "add" || dialog?.kind === "edit") && (
+        <AddPromptDialog
+          key={session}
+          projectId={projectId}
+          open
+          onOpenChange={(open) => !open && closeDialog()}
+          prompt={dialog.kind === "edit" ? dialog.prompt : undefined}
+          topics={topics.map((topic) => ({ value: topic, label: topicLabel(topic) }))}
+          defaultTopic={(view === "suggested" ? suggestedTopic : filters.topic) ?? ""}
+          existing={prompts}
+          room={room}
+          onSaved={(saved) => {
+            setAnnouncement(t(dialog.kind === "edit" ? "savedNote" : "addedNote", { count: saved.length }));
+            closeDialog();
+            if (dialog.kind === "add") openView("tracked");
+            refresh();
+          }}
+        />
+      )}
+      {dialog?.kind === "keywords" && (
+        <ImportKeywordsDialog
+          key={session}
+          projectId={projectId}
+          open
+          onOpenChange={(open) => !open && closeDialog()}
+          onImported={(created) => {
+            setFresh(new Set(created.map((suggestion) => suggestion.id)));
+            setSuggestedTopic("");
+            setNotice(created.length > 0 ? "" : t("suggested.noMore"));
+            done(created.length > 0 ? t("suggested.moreNote", { count: created.length }) : t("suggested.noMore"));
+            closeDialog();
+          }}
+        />
+      )}
+      <ConfirmModal
+        open={dialog?.kind === "archiveAll"}
+        onOpenChange={(open) => !open && closeDialog()}
+        title={t("selection.archiveAllTitle", { count: tracked.length })}
+        description={t("selection.archiveAllText")}
+        confirm={t("selection.archiveAll")}
+        cancel={t("cancel")}
+        danger
+        pending={update.isPending}
+        onConfirm={() => update.mutate({ ids: tracked.map((prompt) => prompt.id), archived: true })}
+      />
+      <ConfirmModal
+        open={dialog?.kind === "deleteTopic"}
+        onOpenChange={(open) => !open && closeDialog()}
+        title={dialog?.kind === "deleteTopic" ? t("topicsColumn.deleteTitle", { name: topicLabel(dialog.topic) }) : ""}
+        description={
+          dialog?.kind === "deleteTopic" ? t("topicsColumn.deleteText", { count: tracked.filter((prompt) => prompt.topic === dialog.topic).length }) : ""
+        }
+        confirm={t("topicsColumn.delete")}
+        cancel={t("cancel")}
+        danger
+        pending={removeTopic.isPending}
+        onConfirm={() => dialog?.kind === "deleteTopic" && removeTopic.mutate(dialog.topic)}
+      />
     </div>
   );
 }
