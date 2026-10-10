@@ -11,6 +11,7 @@ import type {
   DemoRequest,
   Project,
   Prompt,
+  ReportSettings,
   RunProgress,
   RunStatus,
   Snapshot,
@@ -24,7 +25,7 @@ import { DEMO_USER } from "./accounts";
 import { ARCHIVED_PROMPT, BRANDS, DEFAULT_PLAN, OTHER_CLINICS, PLAN_LIMITS, PROJECT, PROMPTS, SUGGESTED_PROMPTS } from "./data";
 import * as onboarding from "./onboarding";
 import { discoveryDrafts, keywordDrafts, KNOWN_TOPICS, poolFor, type Draft } from "./suggestions";
-import { buildPromptReport, buildReport, buildSnapshot, firstRun, METHOD, NO_RUN, SEEDED_RUN, type MockRun } from "./report";
+import { buildPromptReport, buildReport, buildSnapshot, firstRun, METHOD, NO_RUN, pastReport, SEEDED_RUN, type MockRun } from "./report";
 import { clearSessionToken, readSessionToken, writeSessionToken } from "./session";
 
 const LATENCY_MS = 300;
@@ -72,6 +73,8 @@ interface MockState {
   rejectedSuggestions: Map<string, Set<string>>;
   /** Project id → names of the untracked brands the client hid from the suggestions. */
   dismissedBrands: Map<string, Set<string>>;
+  /** Project id → where its weekly report goes, once the client changed it. */
+  reportSettings: Map<string, ReportSettings>;
   demoRequests: DemoRequest[];
   supportMessages: (SupportMessage & { userId: string })[];
   nextId: number;
@@ -79,7 +82,7 @@ interface MockState {
 
 // Kept on globalThis so hot reloads and separate route bundles share one copy.
 // Bump the version when MockState changes: a hot reload then starts fresh instead of reading old data.
-const STATE_KEY = "__geoMockState_v16";
+const STATE_KEY = "__geoMockState_v17";
 const globalForMocks = globalThis as typeof globalThis & { [STATE_KEY]?: MockState };
 const state: MockState = (globalForMocks[STATE_KEY] ??= {
   accounts: [{ user: DEMO_USER }],
@@ -95,6 +98,7 @@ const state: MockState = (globalForMocks[STATE_KEY] ??= {
   suggestions: new Map(),
   rejectedSuggestions: new Map(),
   dismissedBrands: new Map(),
+  reportSettings: new Map(),
   demoRequests: [],
   supportMessages: [],
   nextId: 1,
@@ -589,6 +593,37 @@ export const mockApi: ApiClient = {
       untrackedBrands: report.untrackedBrands.map((brand) => ({ ...brand, dismissed: hidden?.has(brand.name) ?? false })),
       nextRunAt: prompts.length > 0 ? nextWeeklyRun(Date.now()) : null,
     });
+  },
+
+  getRunReport: async (projectId, runId) => {
+    const project = findProject(projectId);
+    const prompts = trackedOf(projectId);
+    const latest = buildReport(project, prompts, "week", finishedRun(projectId));
+    const report = pastReport({ ...latest, nextRunAt: prompts.length > 0 ? nextWeeklyRun(Date.now()) : null }, runId);
+    if (!report) throw new ApiError(404, `Run ${runId} not found`);
+    return respond(report);
+  },
+
+  getReportSettings: async (projectId) => {
+    await findOwnProject(projectId);
+    return respond(state.reportSettings.get(projectId) ?? { telegramChat: null, email: "", language: "uz", agencyName: "" });
+  },
+
+  // The bot's handshake is the backend's: the mock ties a chat at once
+  updateReportSettings: async (projectId, { telegram, email, language, agencyName }) => {
+    const project = await findOwnProject(projectId);
+    const current = state.reportSettings.get(projectId) ?? { telegramChat: null, email: "", language: "uz", agencyName: "" };
+    const address = email?.trim();
+    if (address && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(address)) throw new ApiError(422, "Bad email");
+    if (agencyName !== undefined && agencyName.trim() && project.plan !== "agency") throw new ApiError(403, "The agency plan names the report");
+    const next: ReportSettings = {
+      telegramChat: telegram === "connect" ? `${project.brand.name} · Telegram` : telegram === "disconnect" ? null : current.telegramChat,
+      email: address ?? current.email,
+      language: language ?? current.language,
+      agencyName: agencyName?.trim() ?? current.agencyName,
+    };
+    state.reportSettings.set(projectId, next);
+    return respond(next);
   },
 
   // Read without login, like the report: the public report lists its recommendations

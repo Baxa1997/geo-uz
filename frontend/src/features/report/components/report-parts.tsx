@@ -24,7 +24,7 @@ export function ReportSection({
   children: React.ReactNode;
 }) {
   return (
-    <section id={id} aria-labelledby={`${id}-title`} className={cn("flex scroll-mt-4 flex-col gap-3", !splits && "print:break-inside-avoid")}>
+    <section id={id} aria-labelledby={`${id}-title`} data-tour={id} className={cn("flex scroll-mt-4 flex-col gap-3", !splits && "print:break-inside-avoid")}>
       <header className="flex flex-col gap-1 print:break-after-avoid">
         <h2 id={`${id}-title`} className="flex items-baseline gap-2 text-xl font-semibold tracking-tight">
           <span className="text-muted-foreground tabular-nums">{number}.</span>

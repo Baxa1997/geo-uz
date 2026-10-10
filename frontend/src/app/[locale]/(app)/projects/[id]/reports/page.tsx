@@ -1,6 +1,1 @@
-import { placeholderPage } from "@/features/workspace/pages/placeholder-page";
-
-const { PlaceholderPage, generateMetadata } = placeholderPage("reports");
-
-export { generateMetadata };
-export default PlaceholderPage;
+export { default, generateMetadata } from "@/features/report/pages/reports-page";

@@ -284,7 +284,9 @@ frontend/src/
                           #   cards fed with the report over that question, what ChatGPT searched the web for (Peec's
                           #   "query fanouts": each search with the answers that ran it) beside the fixes that list
                           #   the question, then its answers
-    report/               # the client's report (public, no login, no sidebar; prints as A4): see "The report"
+    report/               # the client's report (public, no login, no sidebar; prints as A4; `?run=` a past week's,
+                          #   `?print=1` opens the print window) and Hisobotlar (the reports in the workspace, a page
+                          #   per report with its contents): see "The report"
   shared/                 # used by 2+ features
     api/                  # client.ts (switches mocks/backend), session.ts (requireUser), query-keys.ts, errors.ts,
                           #   load-report.ts (the report under the URL's filters, for every data page)
@@ -381,6 +383,10 @@ Auth: the backend sets an httpOnly session cookie `geo_session` on login. The br
   whose topics may be new)
 - `POST /projects/{id}/prompt-suggestions/keywords` → SuggestedPrompt[] (body: keywords[] from a file's first
   column, at most 50; questions customers ask about them)
+- `GET  /projects/{id}/reports/{runId}` → Report as it stood after that run (Hisobotlar; the runs are `Report.history`,
+  each with its `runId`); readable without login, like the report.
+- `GET  /projects/{id}/report-settings` → ReportSettings; `PATCH` with `email`, `language`, `agencyName` (the Agency plan
+  only, else 403) or `telegram: "connect" | "disconnect"` → ReportSettings.
 - `GET  /projects/{id}/report?period=week&language=uz&topic=implants` → Report over the tracked questions (language
   and topic are optional filters: the report then covers only those prompts, and its scores are computed over them)
 - `GET  /projects/{id}/actions` → Action[] (readable without login through the report's link, like the report
@@ -529,9 +535,10 @@ follows the order of a standard business report (the user's request, Oct 8: "a s
 accepted format, very clear, that helps a business decide"), every section numbered:
 
 1. **Title block**: what it is, about whom, the period, the date, the scope (questions × answers), the assistant.
-2. **Executive summary**: the answer first. Where the client stands in a sentence, the trend and the place
-   among the brands; four findings, each a sentence with its number, marked good news or a problem (place,
-   questions and topic lost, sites missing, wrong facts); the three things to do first.
+2. **Executive summary**: the answer first. Where the client stands in a sentence, then three cards side by
+   side (since Oct 10): what went well, what needs attention (each finding a sentence with its number: the
+   change of visibility and share of voice, the questions it is named in, tone, place, questions and topic
+   lost, sites missing, wrong facts, actions done that week), and the three things to do first.
 3. **Key figures**: the five numbers, each with what it measures, this check, the previous check, the change
    and the strongest competitor.
 4. **The evidence**: position among the brands (table and visibility over the checks), topics and question
@@ -540,6 +547,25 @@ accepted format, very clear, that helps a business decide"), every section numbe
 5. **Recommendations**: what to do, the most effective first, each with why, the expected effect and its
    status; then what is done and what it changed.
 6. **Method and scope**, with the limits of the numbers; **definitions**; **appendix**: every question.
+
+Since Oct 10 a second section follows the summary: **what changed since the report before**, the events behind
+the numbers (the client's place and who passed whom, a competitor that moved a lot, the sites cited for the first
+time, more or less, the wrong facts found that week, the actions done that week). The sections are one list
+(`REPORT_SECTIONS`) drawn by one component (`ReportBody`), so the shared report and Hisobotlar's report page
+never differ.
+
+**Hisobotlar** (`/projects/[id]/reports`, the user's request of Oct 10: "professional, sections separated
+accurately, advanced, with the detail inside, easy to decide on", then "make it first look impressive") opens
+with this week's report as a dark cover (`ReportCover`: the week, the brand, the week's message as a headline,
+the sentence, the client's visibility large with its change and its line over the checks, "Open the full
+report", and its link, Telegram and PDF), then the summary's three cards. Then the report history: one row a
+week with the client's visibility (a bar and its change), share of voice, place and tone, and what happened
+that week in a sentence or two (`weekEvents`: its place, who passed whom, new wrong facts, actions done, large
+moves, a new site); a row opens its report; CSV. Last, one line on where the report goes, with Telegram in one
+click and the rest (email, language, the agency's name on the Agency plan) in a window. The five numbers are
+not repeated here: they are the Overview's and the report's. A report's page (`/projects/[id]/reports/[runId]`)
+opens with the same cover (how much was asked in place of the sentence), then the numbered contents beside the
+sections, marking the one being read. A past report's recommendations show today's status.
 
 Rules: a reader who stops after the summary has the decision, and everything after it is evidence for it. No
 number appears without what it is compared with. Nothing depends on hover: the report must read on paper, so a

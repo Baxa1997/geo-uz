@@ -9,7 +9,7 @@ import { SourceTypeDot } from "@/shared/components/scores/source-type-dot";
 import { pathOf, shortUrl, siteHref } from "@/shared/helpers/domain";
 import { formatPercent } from "@/shared/helpers/numbers";
 import { cn } from "@/shared/helpers/utils";
-import type { Movers } from "../helpers/history";
+import type { Movers } from "@/shared/helpers/source-movers";
 import { ChangeMark } from "./change-mark";
 import { Initial } from "./parts";
 

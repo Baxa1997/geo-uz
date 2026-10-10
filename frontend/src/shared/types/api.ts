@@ -173,6 +173,8 @@ export interface SourceHistoryPoint {
 
 /** One finished run: every tracked brand's scores at that time. */
 export interface HistoryPoint {
+  /** The run's id: its own report is `GET /projects/{id}/reports/{runId}` (Hisobotlar). */
+  runId: string;
   /** ISO 8601 timestamp. */
   collectedAt: string;
   scores: Omit<BrandScore, "trend">[];
@@ -299,6 +301,25 @@ export interface Report {
   /** ISO 8601: when the project's questions are asked again (runs are weekly); null when nothing is scheduled. */
   nextRunAt: string | null;
 }
+
+/**
+ * Where the weekly report goes after each run (Hisobotlar): a Telegram chat tied to the project through our
+ * bot, an email address, in which language, and on the agency plan under the agency's name.
+ */
+export interface ReportSettings {
+  /** The chat the bot sends to, once someone started the bot from the project's link; null until then. */
+  telegramChat: string | null;
+  /** Where the report is emailed; "" for nowhere. */
+  email: string;
+  language: "uz" | "ru" | "en";
+  /** The agency plan's own name on the report, in place of ours; "" for ours. */
+  agencyName: string;
+}
+
+/** Only what changed; `telegram` ties a chat through the bot or lets it go. */
+export type UpdateReportSettingsRequest = Partial<Pick<ReportSettings, "email" | "language" | "agencyName">> & {
+  telegram?: "connect" | "disconnect";
+};
 
 /** Narrows a report to some of the project's prompts; scores are computed over those only. */
 export interface ReportFilters {

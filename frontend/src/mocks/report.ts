@@ -320,6 +320,9 @@ const HISTORY_WEEKS = 8;
 
 const weeksBefore = (iso: string, weeks: number) => new Date(Date.parse(iso) - weeks * WEEK_MS).toISOString();
 
+/** A run's id in the mock: its date, so a link to a past report survives a reload of the mock. */
+export const runIdOf = (collectedAt: string) => `run_${collectedAt.slice(0, 10)}`;
+
 /**
  * The weekly runs leading to this one. The week before follows from each brand's trend;
  * earlier weeks drift the same way with a small wobble. Position and sentiment wobble
@@ -340,8 +343,10 @@ function history(scores: BrandScore[], run: MockRun): HistoryPoint[] {
       visibility > 0 ? (shareOfVoice * (visibilities[brand] ?? 0)) / visibility : 0,
     );
     const total = weights.reduce((sum, weight) => sum + weight, 0);
+    const collectedAt = weeksBefore(run.collectedAt, back);
     return {
-      collectedAt: weeksBefore(run.collectedAt, back),
+      runId: runIdOf(collectedAt),
+      collectedAt,
       scores: scores.map(({ brandId, avgPosition, sentiment }, brand) => {
         const named = (visibilities[brand] ?? 0) > 0;
         // A brand that gains visibility was named later in the lists, and less warmly, before
@@ -420,7 +425,7 @@ function promptHistory(scores: BrandScore[], prompt: Prompt, asked: string[], an
   const seed = [...prompt.id].reduce((sum, char) => sum + char.charCodeAt(0), 0);
   return asked.map((collectedAt, index) => {
     const back = asked.length - 1 - index;
-    if (back === 0) return { collectedAt, scores: scores.map(({ brandId, visibility, shareOfVoice, avgPosition, sentiment }) => ({ brandId, visibility, shareOfVoice, avgPosition, sentiment })) };
+    if (back === 0) return { runId: runIdOf(collectedAt), collectedAt, scores: scores.map(({ brandId, visibility, shareOfVoice, avgPosition, sentiment }) => ({ brandId, visibility, shareOfVoice, avgPosition, sentiment })) };
     const named = scores.map(({ visibility }, brand) => {
       const wave = Math.sin((seed + brand * 7) * 1.3 + back * 1.1);
       const step = wave > 0.8 ? 1 : wave < -0.8 ? -1 : 0;
@@ -429,6 +434,7 @@ function promptHistory(scores: BrandScore[], prompt: Prompt, asked: string[], an
     });
     const total = named.reduce((sum, count) => sum + count, 0);
     return {
+      runId: runIdOf(collectedAt),
       collectedAt,
       scores: scores.map(({ brandId, avgPosition, sentiment }, brand) => {
         const count = named[brand] ?? 0;
@@ -515,6 +521,43 @@ export function buildReport(
     untrackedBrands: untrackedBrands(prompts, run, cast),
     // Depends on the clock: the mock backend fills it in
     nextRunAt: null,
+  };
+}
+
+/**
+ * The report of a past run, as it stood then: its scores and their change from the run before, the runs up
+ * to it, the sites as cited then and the wrong facts found by then. The mock keeps one run of answers, so a
+ * past report's questions show the latest answers; the backend has each run's own.
+ */
+export function pastReport(latest: Report, runId: string): Report | null {
+  const index = latest.history.findIndex((point) => point.runId === runId);
+  const point = latest.history[index];
+  if (!point) return null;
+  if (index === latest.history.length - 1) return latest;
+  const before = latest.history[index - 1];
+  const cited = latest.sourceHistory[index];
+  const when = Date.parse(point.collectedAt);
+  return {
+    ...latest,
+    method: { ...latest.method, collectedAt: point.collectedAt },
+    history: latest.history.slice(0, index + 1),
+    sourceHistory: latest.sourceHistory.slice(0, index + 1),
+    scores: point.scores.map((score) => {
+      const earlier = before?.scores.find((past) => past.brandId === score.brandId)?.visibility ?? score.visibility;
+      return { ...score, trend: round(score.visibility - earlier) };
+    }),
+    topSources: latest.topSources
+      .flatMap((source) => {
+        const then = cited?.sources.find((candidate) => candidate.domain === source.domain);
+        if (!then) return [];
+        const pages = source.pages
+          .map((page) => ({ ...page, count: then.pages.find((candidate) => candidate.url === page.url)?.count ?? 0 }))
+          .filter((page) => page.count > 0);
+        return [{ ...source, count: then.count, pages }];
+      })
+      .sort((a, b) => b.count - a.count),
+    wrongFacts: latest.wrongFacts.filter((fact) => Date.parse(fact.foundAt) <= when),
+    nextRunAt: latest.history[index + 1]?.collectedAt ?? null,
   };
 }
 

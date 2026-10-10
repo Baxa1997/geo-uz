@@ -19,6 +19,7 @@ import type {
   Report,
   ReportFilters,
   ReportPeriod,
+  ReportSettings,
   RunProgress,
   SendCodeRequest,
   SendCodeResponse,
@@ -35,6 +36,7 @@ import type {
   TopicRequest,
   UpdateActionRequest,
   UpdateActionsRequest,
+  UpdateReportSettingsRequest,
   UpdatePromptRequest,
   UpdatePromptsRequest,
   User,
@@ -89,6 +91,10 @@ export interface ApiClient {
   /** Questions customers ask about the imported keywords, as new suggestions. */
   importKeywords(projectId: string, body: ImportKeywordsRequest): Promise<SuggestedPrompt[]>;
   getReport(projectId: string, period?: ReportPeriod, filters?: ReportFilters): Promise<Report>;
+  /** The report of one past run, as it stood then (Hisobotlar); the runs are `Report.history`. Readable without login, like the report. */
+  getRunReport(projectId: string, runId: string): Promise<Report>;
+  getReportSettings(projectId: string): Promise<ReportSettings>;
+  updateReportSettings(projectId: string, body: UpdateReportSettingsRequest): Promise<ReportSettings>;
   getActions(projectId: string): Promise<Action[]>;
   updateAction(projectId: string, actionId: string, body: UpdateActionRequest): Promise<Action>;
   /** One status for several actions: accept all, decline all, the rows picked. */
@@ -180,6 +186,9 @@ const httpApi: ApiClient = {
   importKeywords: (projectId, body) => send("POST", `/projects/${id(projectId)}/prompt-suggestions/keywords`, body),
   getReport: (projectId, period = "week", filters = {}) =>
     request(`/projects/${id(projectId)}/report?${new URLSearchParams({ period, ...filters })}`),
+  getRunReport: (projectId, runId) => request(`/projects/${id(projectId)}/reports/${id(runId)}`),
+  getReportSettings: (projectId) => request(`/projects/${id(projectId)}/report-settings`),
+  updateReportSettings: (projectId, body) => send("PATCH", `/projects/${id(projectId)}/report-settings`, body),
   getActions: (projectId) => request(`/projects/${id(projectId)}/actions`),
   updateAction: (projectId, actionId, body) =>
     send("PATCH", `/projects/${id(projectId)}/actions/${id(actionId)}`, body),
@@ -244,6 +253,9 @@ export const api: ApiClient = USE_MOCKS
       importKeywords: (projectId, body) => mocks().then((m) => unwrap(m.importKeywords(projectId, body))),
       getReport: (projectId, period, filters) =>
         mocks().then((m) => unwrap(m.getReport(projectId, period, filters))),
+      getRunReport: (projectId, runId) => mocks().then((m) => unwrap(m.getRunReport(projectId, runId))),
+      getReportSettings: (projectId) => mocks().then((m) => unwrap(m.getReportSettings(projectId))),
+      updateReportSettings: (projectId, body) => mocks().then((m) => unwrap(m.updateReportSettings(projectId, body))),
       getActions: (projectId) => mocks().then((m) => unwrap(m.getActions(projectId))),
       updateAction: (projectId, actionId, body) =>
         mocks().then((m) => unwrap(m.updateAction(projectId, actionId, body))),

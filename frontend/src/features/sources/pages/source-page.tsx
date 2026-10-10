@@ -26,7 +26,7 @@ import { SourceBrands } from "../components/source-brands";
 import { SourceHeader } from "../components/source-header";
 import { SourceVerdict } from "../components/source-verdict";
 import { SourcesChart } from "../components/sources-chart";
-import { pageMovers } from "../helpers/history";
+import { pageMovers } from "@/shared/helpers/source-movers";
 import { pageLines } from "../helpers/lines";
 
 type Props = PageProps<"/[locale]/projects/[id]/sources/[domain]">;

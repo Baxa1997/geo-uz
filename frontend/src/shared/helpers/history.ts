@@ -42,6 +42,7 @@ export function groupHistory(history: HistoryPoint[], grain: Grain, timeZone: st
     const brandIds = [...new Set(checks.flatMap((check) => check.scores.map((score) => score.brandId)))];
     return [
       {
+        runId: latest.runId,
         collectedAt: latest.collectedAt,
         scores: brandIds.map((brandId): Scored => {
           const scores = checks.flatMap((check) => check.scores.filter((score) => score.brandId === brandId));

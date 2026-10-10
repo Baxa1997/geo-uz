@@ -16,6 +16,7 @@ import type {
   ImportKeywordsRequest,
   ReportFilters,
   ReportPeriod,
+  UpdateReportSettingsRequest,
   SendCodeRequest,
   SnapshotRequest,
   SuggestCompetitorsRequest,
@@ -152,6 +153,18 @@ export async function importKeywords(projectId: string, body: ImportKeywordsRequ
 
 export async function getReport(projectId: string, period?: ReportPeriod, filters?: ReportFilters) {
   return run((m) => m.getReport(projectId, period, filters));
+}
+
+export async function getRunReport(projectId: string, runId: string) {
+  return run((m) => m.getRunReport(projectId, runId));
+}
+
+export async function getReportSettings(projectId: string) {
+  return run((m) => m.getReportSettings(projectId));
+}
+
+export async function updateReportSettings(projectId: string, body: UpdateReportSettingsRequest) {
+  return run((m) => m.updateReportSettings(projectId, body));
 }
 
 export async function getActions(projectId: string) {

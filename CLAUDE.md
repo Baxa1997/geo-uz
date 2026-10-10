@@ -152,6 +152,26 @@ Any other number makes a new account, which goes through onboarding and gets a p
   default; the wrong facts found show beside it) and a location, the city it is asked from (a round flag
   and the city; picked in the question's window, the project's city by default). Volume and intent stay
   out of the table: the user chose that when asked.
+- **Hisobotlar built (10 Oct) and reworked the same day for the first look; merged and pushed that day,
+  when the user chose "commit, push".** The user asked for a "professional, sections separated accurately,
+  and advanced reports page, and inside detail, that must be easy for project to make a decisions" (no Peec
+  screens: Peec has no such page). The page has three parts: this week's report (the five numbers with their
+  change, where the client stands, the findings and the three things to do first, then its page, its
+  link, Telegram and PDF), every weekly report as a table of how the numbers moved (each row opens that
+  week's report; CSV), and where the report goes (Telegram through our bot, email, the report's language,
+  the agency's name on the Agency plan). A report's own page has numbered contents beside it that mark
+  the section being read, and the report's sections, the same as the shared report's. Both gained "what
+  changed since the report before": the client's place and who passed whom, competitors that moved a lot,
+  sites cited for the first time, more or less, new wrong facts, actions done that week. The shared report
+  opens a past week (`?run=`) and goes straight to the print window for the PDF (`?print=1`). Also fixed
+  for every page: a new page opens at its top (the panel kept the last page's scroll). New for the backend:
+  a report per run, the report settings, the Telegram bot (see `backend/PLAN.md`, change log). Then the
+  user asked to review it for the first look ("make it first look impressive ... data structure
+  attractive"): it now opens with a dark cover (the week's message as a headline, visibility large with its
+  change and an eight-week line, "Open the full report", link, Telegram, PDF); the summary became three
+  cards (what went well, what needs attention, what to do first) in every report; the history's rows say
+  what happened that week; the delivery settings moved into a window behind one line; the five numbers
+  that repeated the Overview are gone from the page. The report's own page opens with the same cover.
 - **Javoblar (7 Oct), built from Peec's Chats screenshots of 4 Oct; the user has not sent corrections for
   it yet.** Added to the page that existed: CSV export of the answers with their full text, a filter by
   cited site (`?source=` lets other pages link to "the answers citing this site"), hover explanations on the
@@ -189,8 +209,8 @@ Any other number makes a new account, which goes through onboarding and gets a p
   the strongest competitor, position among the brands, topics won and lost, sources, wrong facts,
   recommendations in order of effect with what is done, method with its limits, definitions, and every
   question as an appendix. It is laid out for A4: "Print or save as PDF" is the browser's print dialog. The
-  format's rules are in `frontend/CLAUDE.md`, "The report". The Hisobotlar menu item is still a placeholder
-  that links to it.
+  format's rules are in `frontend/CLAUDE.md`, "The report". Since 10 Oct Hisobotlar lists every week's
+  report (see the Hisobotlar entry above).
 - **Manbalar laid out like Peec's, with the breadcrumb on every page (8 Oct); the user confirmed it
   ("manbalar is correct").** The user sent Peec's Sources › Domains and a domain's page again:
   "it does not look like ours … page top breadcrumb must also be the same". Every workspace page's top is now
@@ -228,8 +248,10 @@ Any other number makes a new account, which goes through onboarding and gets a p
   `savollar-correction` (Savollar with all of Peec's Prompts features), then `harakatlar-page` (Harakatlar
   in Peec's Actions layout with its first correction), then `guided-tours` (a tour on every page,
   Harakatlar's second correction, and Savollar's topics column, folded rail and table in Peec's design with
-  tags, fact-checking and location). Each time the user chose "commit, push" when asked (for Harakatlar:
-  "push everything"). Each page gets its own branch, merged when the user says so.
+  tags, fact-checking and location), then `hisobotlar-page` (Hisobotlar: this week's report as a cover with
+  three decision cards, every week's report with a page of its own and what changed, where the report goes).
+  Each time the user chose "commit, push" when asked (for Harakatlar: "push everything"). Each page gets its
+  own branch, merged when the user says so.
 
 ## To do, in order
 
@@ -246,13 +268,13 @@ Any other number makes a new account, which goes through onboarding and gets a p
    - Harakatlar: laid out like Peec's Actions on 10 Oct, corrected twice and merged the same day (see "Done");
      more corrections may still come. Still to come on it: marks on the chart where a fix started and was done (Peec's Impact as a block), once Impact's
      screenshots arrive.
-   - Next, as the user asked on 8 Oct ("we need actions, and reports, need to be corrected"): Hisobotlar.
-     Their Peec trial ends about 11 Oct, so the remaining Peec screens are captured in one go: Impact,
+   - Asked for on 10 Oct, before the Peec trial ends about 11 Oct, in one go: Impact,
      Settings › Company (Peec's email report), every other Settings tab including Facts (asked for on 10 Oct;
      the fact-check switch on Prompts came that day and is built). The Fanouts screenshots of 8 Oct need nothing: the question's page already lists the
      searches (decided 6 Oct).
-   - Hisobotlar: a placeholder today that links to the report. When its turn comes: the list of past
-     checks' reports (needs a report per run from the backend), sending to Telegram, the agency's name on it.
+   - Hisobotlar: built on 10 Oct, reworked for the first look and merged the same day (see "Done");
+     corrections may still come. Peec's Settings › Company (its email report) may still come and change
+     the delivery part.
    - Notoʻgʻri faktlar: brand facts for the answers to be checked against (Peec's Settings › Facts).
    - Sozlamalar: editing (today it is read-only), then facts, members, billing.
 
@@ -262,7 +284,8 @@ Any other number makes a new account, which goes through onboarding and gets a p
    - Fanouts: no page of its own; since 7 Oct each question's page lists the searches behind its answers.
    - Ads: no. ChatGPT ads aren't sold here, and Peec has paused the page itself.
 2. **Parts that are design only:** the GEO AI side panel answers every question with a demo reply; Gemini
-   and Yandex are marked "tez orada" in the engine switcher. Plans: a project now carries its plan and
+   and Yandex are marked "tez orada" in the engine switcher. Hisobotlar's delivery: "Connect Telegram" ties a
+   chat at once in the mocks (the bot doesn't exist yet), and no email is sent. Plans: a project now carries its plan and
    limits, and the question and competitor limits are used, but nothing sets a plan (every mock project is
    on Biznes) and onboarding still allows a fixed 5 competitors.
 3. **Backend.** Begin with step 0 of `backend/PLAN.md`: a small script that measures what one answer costs

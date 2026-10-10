@@ -22,7 +22,7 @@ import { PresenceCard } from "../components/presence-card";
 import { SitesTable } from "../components/sites-table";
 import { SourcesChart } from "../components/sources-chart";
 import { SOURCE_TYPES } from "../constants";
-import { pageMovers, siteMovers } from "../helpers/history";
+import { pageMovers, siteMovers } from "@/shared/helpers/source-movers";
 import { siteLines, topPageLines } from "../helpers/lines";
 import { pagePresence, sitePresence } from "../helpers/presence";
 

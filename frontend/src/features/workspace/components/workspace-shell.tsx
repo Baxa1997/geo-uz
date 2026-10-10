@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AssistantProvider } from "@/shared/hooks/use-assistant";
 import type { Project, User } from "@/shared/types/api";
 import { SIDEBAR_COOKIE } from "../constants";
@@ -25,6 +26,13 @@ export function WorkspaceShell({
   children: React.ReactNode;
 }) {
   const [collapsed, setCollapsed] = useState(initialCollapsed);
+  const main = useRef<HTMLElement>(null);
+  const pathname = usePathname();
+  // A new page opens at its top: the panel scrolls, not the window, so the router's own scroll misses it.
+  // A change of the query alone (a filter, a tab, an opened action) keeps the place
+  useEffect(() => {
+    if (!window.location.hash) main.current?.scrollTo({ top: 0 });
+  }, [pathname]);
   const { current } = useProjects(projects);
   useRecordStartVisits(current?.id);
   const [supportOpen, setSupportOpen] = useState(false);
@@ -56,7 +64,7 @@ export function WorkspaceShell({
         <DesktopSidebar {...sidebarProps} collapsed={collapsed} onToggle={toggleSidebar} />
         <div className="flex min-w-0 flex-1 flex-col lg:py-2 lg:pr-2">
           <MobileTopBar {...sidebarProps} />
-          <main className="relative flex min-h-0 flex-1 flex-col overflow-y-auto bg-background lg:rounded-xl lg:border lg:shadow-xs">
+          <main ref={main} className="relative flex min-h-0 flex-1 flex-col overflow-y-auto bg-background lg:rounded-xl lg:border lg:shadow-xs">
             {children}
           </main>
         </div>

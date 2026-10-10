@@ -86,6 +86,7 @@
     },
     "sections": {
       "summary": "Executive summary",
+      "changes": "What changed since the last report",
       "scorecard": "Key figures",
       "competitors": "Competitive position",
       "topics": "Where you win and where you lose",
@@ -97,16 +98,6 @@
       "appendix": "Appendix. Every question"
     },
     "summary": {
-      "trend": "Trend",
-      "status": {
-        "up": "Improving",
-        "down": "Declining",
-        "steady": "Steady",
-        "first": "First check"
-      },
-      "place": "Place among brands",
-      "placeValue": "{rank} of {of}",
-      "findings": "Key findings",
       "first": "What to do first",
       "more": "All recommendations are in section {section}.",
       "noActions": "Nothing is waiting to be done: every recommendation so far is done or declined.",
@@ -119,7 +110,19 @@
       "sources": "{count, plural, one {# site ChatGPT relies on doesn’t} other {# sites ChatGPT relies on don’t}} list you. The most used: {sites}.",
       "sourcesNone": "You are on every site ChatGPT relies on.",
       "facts": "ChatGPT states {count, plural, one {# wrong fact} other {# wrong facts}} about you.",
-      "factsNone": "No wrong facts about you were found in the answers."
+      "factsNone": "No wrong facts about you were found in the answers.",
+      "good": "What went well",
+      "attention": "Needs attention",
+      "goodNone": "No particular good news this week.",
+      "attentionNone": "No serious problems found.",
+      "trendUp": "Visibility is up {points} points since the previous check.",
+      "trendDown": "Visibility is down {points} points since the previous check.",
+      "tonePositive": "ChatGPT speaks well of you: tone {score}/100.",
+      "toneNegative": "ChatGPT speaks badly of you: tone {score}/100.",
+      "doneWeek": "{count, plural, one {# action was} other {# actions were}} done this week; the effect shows in the checks after.",
+      "namedIn": "ChatGPT names you in {count} of {total} questions.",
+      "voiceUp": "Your share of voice is up {points} points.",
+      "voiceDown": "Your share of voice is down {points} points."
     },
     "scorecard": {
       "lead": "The five numbers this report follows: now, in the previous check, and against the strongest competitor.",
@@ -226,6 +229,31 @@
     },
     "appendix": {
       "lead": "Every question of this check with the brands its answers name. Open a question to read the answers."
+    },
+    "changes": {
+      "lead": "The events behind the numbers: your place among the brands, the sites ChatGPT relies on, new wrong facts and the work done this week. The numbers themselves are in the next section.",
+      "first": "This is the first report: there is no earlier check to compare with. From the next report on, what changed shows here.",
+      "groups": {
+        "brands": "Among the brands",
+        "sources": "Sites ChatGPT relies on",
+        "facts": "Wrong facts",
+        "done": "Done this week"
+      },
+      "placeUp": "You moved up from {before, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} to {now, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} place.",
+      "placeDown": "You moved down from {before, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} to {now, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} place.",
+      "placeSame": "Your place held: {now, selectordinal, one {#st} two {#nd} few {#rd} other {#th}}.",
+      "passedYou": "{name} moved ahead of you.",
+      "youPassed": "You moved ahead of {name}.",
+      "competitorUp": "{name}: visibility up {points} points.",
+      "competitorDown": "{name}: visibility down {points} points.",
+      "siteNew": "{site} is new: cited in {now}% of answers.",
+      "siteUp": "{site} is cited more: {before}% → {now}%.",
+      "siteDown": "{site} is cited less: {before}% → {now}%.",
+      "sitesNone": "No notable change in the sites.",
+      "factNew": "New: “{claim}”",
+      "factsNone": "No new wrong facts this week.",
+      "doneNone": "No action was marked done this week.",
+      "doneNote": "Their effect shows in the checks after."
     }
   },
   "Headline": {
@@ -2028,11 +2056,6 @@
       "left": "Steps left"
     }
   },
-  "Placeholder": {
-    "comingSoon": "Coming soon",
-    "reports": "Weekly report history, PDF export and Telegram delivery.",
-    "openReport": "Open the current report"
-  },
   "Settings": {
     "languageTitle": "Interface language",
     "languageDescription": "Menus and pages are shown in this language.",
@@ -2839,6 +2862,180 @@
         "title": "Interface language",
         "text": "Uzbek, Russian or English, for the screens you see. The questions keep their own languages."
       }
+    },
+    "reports": {
+      "cover": {
+        "title": "The week's report",
+        "text": "The week's message, your visibility and its line over the weeks. “Open the full report” shows every section; the link, Telegram and PDF are at the top."
+      },
+      "decide": {
+        "title": "For the decision",
+        "text": "What went well, what needs attention and what to do first, at a glance."
+      },
+      "archive": {
+        "title": "Report history",
+        "text": "One report a week, and what happened that week. A row opens that week's report."
+      },
+      "delivery": {
+        "title": "Where the report goes",
+        "text": "Connect Telegram and the report arrives by itself every Monday. Email, language and the agency's name are in “Settings”."
+      }
+    },
+    "reportDetail": {
+      "cover": {
+        "title": "The report's cover",
+        "text": "The week, its message and your visibility's line; the link, Telegram and PDF at the top."
+      },
+      "contents": {
+        "title": "Contents",
+        "text": "The report's sections: a click goes to one; the one you're reading is marked."
+      },
+      "summary": {
+        "title": "The summary",
+        "text": "What matters for the decision: what went well, what needs attention and the three things to do first."
+      },
+      "changes": {
+        "title": "What changed",
+        "text": "The events behind the numbers: your place, the sites, new wrong facts and the work done."
+      }
+    }
+  },
+  "Reports": {
+    "latest": {
+      "title": "This week's report",
+      "description": "The check of {date}, compared with {previous}.",
+      "descriptionFirst": "The check of {date}: the first report.",
+      "open": "Open the report",
+      "shareText": "Share the report with your team: anyone with the link can read it."
+    },
+    "archive": {
+      "title": "Report history",
+      "description": "One report a week, and what happened that week. A row opens its report.",
+      "count": "{count, plural, one {# weekly report} other {# weekly reports}}",
+      "latest": "Latest report",
+      "open": "Open",
+      "placeValue": "{place} of {of}",
+      "change": "{points} points since the report before",
+      "columns": {
+        "report": "Report",
+        "visibility": "Visibility",
+        "shareOfVoice": "Share of voice",
+        "place": "Place",
+        "tone": "Tone",
+        "events": "The week's events"
+      },
+      "hints": {
+        "report": "The date of the weekly check. A row opens that week's full report.",
+        "visibility": "The share of answers that name you; beside it, the change since the report before, in points.",
+        "shareOfVoice": "Your share of the tracked brands' mentions; beside it, the change.",
+        "place": "Your place among the brands by visibility: 1 is named most.",
+        "tone": "How positively ChatGPT spoke of you: 0 negative, 100 positive.",
+        "events": "What happened that week: your place, who passed whom, new wrong facts, work done, large moves."
+      },
+      "csvLabel": "Export",
+      "csvHint": "Download the table as CSV",
+      "csv": {
+        "date": "Date",
+        "visibility": "Visibility, %",
+        "shareOfVoice": "Share of voice, %",
+        "place": "Place",
+        "tone": "Tone",
+        "leader": "Leader",
+        "facts": "Wrong facts",
+        "done": "Actions done"
+      },
+      "firstReport": "First report",
+      "weekly": "Weekly report",
+      "events": {
+        "placeUp": "You rose to {now, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} place",
+        "placeDown": "You fell to {now, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} place",
+        "passedYou": "{name} moved ahead of you",
+        "youPassed": "You moved ahead of {name}",
+        "factsNew": "{count, plural, one {# new wrong fact} other {# new wrong facts}}",
+        "done": "{count, plural, one {# action done} other {# actions done}}",
+        "visibilityUp": "Visibility up {points} points",
+        "visibilityDown": "Visibility down {points} points",
+        "competitorUp": "{name} up {points} points",
+        "siteNew": "{site} cited for the first time",
+        "quiet": "No notable change",
+        "first": "The first check"
+      }
+    },
+    "delivery": {
+      "title": "Where the report goes",
+      "description": "After each Monday check the report is sent here. Each row saves on its own.",
+      "saved": "Saved",
+      "save": "Save",
+      "failed": "Couldn't save. Try again.",
+      "telegram": {
+        "title": "Telegram",
+        "text": "Our bot sends the report to your chat every Monday.",
+        "connected": "The report goes to this chat: {chat}.",
+        "connect": "Connect Telegram",
+        "disconnect": "Disconnect"
+      },
+      "email": {
+        "title": "Email",
+        "text": "The report's link goes to your inbox too.",
+        "to": "The report goes to {email}.",
+        "placeholder": "name@company.uz",
+        "invalid": "That email address isn't valid."
+      },
+      "language": {
+        "title": "Report language",
+        "text": "The report sent to Telegram and email is in this language."
+      },
+      "agency": {
+        "title": "Agency name",
+        "text": "Your agency's name stands on the report in place of ours.",
+        "locked": "On the Agency plan the report can carry your agency's name.",
+        "placeholder": "Agency name"
+      },
+      "banner": {
+        "on": "The report arrives by itself every Monday",
+        "off": "Get the report in Telegram every Monday",
+        "telegramTo": "Telegram: {chat}",
+        "telegramNone": "Telegram not connected",
+        "emailTo": "Email: {email}",
+        "emailNone": "No email",
+        "language": "Language: {language}",
+        "settings": "Settings"
+      }
+    },
+    "share": {
+      "copy": "Copy the link",
+      "copied": "Copied",
+      "copyHint": "Anyone with the link can read the report without logging in.",
+      "telegram": "Share in Telegram",
+      "telegramHint": "Send the report's link to a Telegram chat.",
+      "pdf": "PDF",
+      "pdfHint": "The report opens as A4 with the print window: choose “Save as PDF”.",
+      "text": "{brand}: visibility report in ChatGPT, {date}"
+    },
+    "detail": {
+      "title": "Report of {date}",
+      "contents": "Contents"
+    },
+    "cover": {
+      "kicker": "Weekly report",
+      "period": "{from} – {to}",
+      "headline": {
+        "up": "ChatGPT names you more often",
+        "down": "ChatGPT names you less often",
+        "steady": "ChatGPT names you as often as before",
+        "first": "How ChatGPT talks about you"
+      },
+      "visibility": "Visibility",
+      "change": {
+        "up": "{points} points more than the last report",
+        "down": "{points} points less than the last report",
+        "steady": "the same as the last report"
+      },
+      "chart": "Visibility over {weeks} checks: from {from} to {to}",
+      "weeks": "{count, plural, one {# week} other {# weeks}}",
+      "open": "Open the full report",
+      "openNote": "{sections} sections: summary, changes, numbers, competitors, sources and recommendations",
+      "scope": "{prompts} questions · {answers} answers · {engine}"
     }
   }
 }
