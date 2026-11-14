@@ -62,7 +62,8 @@ Any other number makes a new account, which goes through onboarding and gets a p
 
 ## Done (as of 14 November 2026)
 
-- **The pilot report as a product, and its generator (14 Nov), on the branch `pilot-report`; not merged.** The
+- **The pilot report as a product, and its generator (14 Nov), on the branch `pilot-report`; merged and pushed the same day, when
+  the user said "commit, push" and then "merge".** The
   user sent a report made by hand for a first client (a private school: five questions, ten pages) and asked
   for honest feedback and the next move. The feedback, which the user accepted ("yes"): the hand-made report
   is a better product than the Peec-style app, so the next move is to make that report repeatable before any
