@@ -3523,5 +3523,215 @@
       "title": "Report of {date}",
       "contents": "Contents"
     }
+  },
+  "Pilot": {
+    "metaTitle": "{brand}: how AI sees the brand",
+    "kicker": "AI visibility report",
+    "pilot": "Pilot measurement · {month}",
+    "coverTitle": "How AI sees {brand}",
+    "countOf": "{n} of {of}",
+    "coverNumber": "<b>{n}</b> of {of}",
+    "coverCount": "{engine} answers name the {acc}",
+    "preparedBy": "Prepared by",
+    "preparedFor": "For",
+    "measuredOn": "Measured on",
+    "scope": "Scope",
+    "scopeValue": "{questions, plural, one {# question} other {# questions}}, {answers, plural, one {# answer} other {# answers}}, {engine}, {languages}",
+    "languages": {
+      "ru": "Russian",
+      "uz": "Uzbek"
+    },
+    "footer": "Pilot measurement · data as of {date}",
+    "print": "Print or save as PDF",
+    "fig": "Fig. {n}",
+    "table": "Table {n}",
+    "you": "you",
+    "yes": "yes",
+    "no": "no",
+    "silent": "AI says nothing",
+    "takeaway": "Conclusion",
+    "answersOf": "{n} of {of, plural, one {# answer} other {# answers}}",
+    "summary": {
+      "eyebrow": "Summary",
+      "youCard": "How AI sees you",
+      "leaderCard": "How AI sees the leader",
+      "recommended": "Recommended",
+      "named": "Named",
+      "kpiNamed": "answers name the {acc}",
+      "kpiRecommended": "answers recommend the {acc}",
+      "kpiLeader": "leader: {n} of {of}",
+      "kpiOthers": "other {genPlural} named in the answers",
+      "kpiOthersSub": "{n} of them recommended",
+      "kpiSources": "sources AI reads include the {acc}",
+      "of": "of {of}",
+      "flags": "Red flags",
+      "strengths": "What works for you",
+      "firstSteps": "First steps"
+    },
+    "questions": {
+      "eyebrow": "What we checked",
+      "method": "Method",
+      "methodText": "{questions, plural, one {# question} other {# questions}} customers ask when they choose. {samples, plural, one {Each was asked} other {Each was asked # times,}} in a new chat and without the company's name, to see whom AI names by itself.",
+      "counting": "How we counted",
+      "countingText": "<b>Named:</b> the name is anywhere in the answer. <b>Recommended:</b> AI names it in its closing advice.",
+      "figure": "What {engine} answered to each question: how many {genPlural} it named and whether {brand} was among them",
+      "colQuestion": "Customer's question",
+      "colBrands": "In the answer",
+      "total": "{n} in all",
+      "aiRecommends": "AI recommends:",
+      "sum": "Total over {answers, plural, one {# answer} other {# answers}}",
+      "sumText": "Other {genPlural} named: {named}, of them recommended: {recommended}",
+      "legendRecommended": "recommended in AI's closing advice",
+      "legendNamed": "only named"
+    },
+    "leaders": {
+      "eyebrow": "Whom AI recommends",
+      "figure": "How often AI recommends and names each, out of {answers, plural, one {# answer} other {# answers}}",
+      "rec": "rec.",
+      "named": "named",
+      "legendRecommended": "recommended in the closing advice",
+      "legendNamed": "named in the answer",
+      "table": "What AI says about those it recommends",
+      "colName": "Name"
+    },
+    "peers": {
+      "eyebrow": "Closest competitors",
+      "profile": "Your profile",
+      "table": "Those like you in AI's answers",
+      "colPlace": "Where",
+      "colDescription": "How AI describes it",
+      "colNamed": "Named",
+      "colRecommended": "Recomm.",
+      "noDescription": "AI doesn't describe it"
+    },
+    "reasons": {
+      "eyebrow": "Reasons",
+      "table": "Likely reasons",
+      "colReason": "Reason",
+      "colConfidence": "Confidence",
+      "colEvidence": "What we found",
+      "confidence": {
+        "high": "high",
+        "medium": "medium",
+        "low": "assumption"
+      },
+      "sourcesTable": "Where AI reads and where {brand} is",
+      "colSource": "Source",
+      "colKind": "Kind",
+      "colCited": "In AI's answers",
+      "colListed": "{brand} there",
+      "listed": {
+        "yes": "yes",
+        "no": "no",
+        "unknown": "not checked"
+      },
+      "kind": {
+        "media": "media",
+        "catalog": "catalog",
+        "own": "own site",
+        "social": "social",
+        "other": "other"
+      }
+    },
+    "facts": {
+      "eyebrow": "Reasons, continued",
+      "count": "{count, plural, one {# fact} other {# facts}}",
+      "outOf": "of {count}",
+      "status": {
+        "found": "found",
+        "partial": "partly",
+        "missing": "not found"
+      },
+      "table": "The facts AI describes others with, and what is known about {brand}",
+      "colFact": "Fact",
+      "colExample": "Example from AI's answers",
+      "colFound": "What was found about {brand}",
+      "colStatus": "Status"
+    },
+    "decisions": {
+      "eyebrow": "Decisions for management",
+      "when": "When",
+      "effect": "Effect",
+      "cost": "Cost",
+      "effectLevel": {
+        "high": "high",
+        "medium": "medium",
+        "low": "low"
+      },
+      "costLevel": {
+        "high": "high",
+        "medium": "medium",
+        "low": "low"
+      },
+      "recommendation": "Recommendation",
+      "why": "Why",
+      "options": "Options",
+      "risk": "Risk"
+    },
+    "plan": {
+      "eyebrow": "Plan",
+      "figure": "The plan for {weeks, plural, one {# week} other {# weeks}}: who does it and when it is done",
+      "done": "done: {done}",
+      "site": "own site",
+      "external": "outside sources",
+      "measure": "measurement",
+      "scale": "scale: weeks"
+    },
+    "targets": {
+      "eyebrow": "Result",
+      "table": "Figures for the next measurement",
+      "colMetric": "Figure",
+      "colNow": "Now",
+      "colGoal": "Goal"
+    },
+    "changes": {
+      "eyebrow": "What changed",
+      "coverWas": "was {n} of {of}, {date}",
+      "figures": "Key figures: before and now",
+      "colFigure": "Figure",
+      "colBefore": "Before · {date}",
+      "colAfter": "Now · {date}",
+      "named": "AI's answers name the {acc}",
+      "recommended": "AI's answers recommend the {acc}",
+      "listed": "AI's sources include the {acc}",
+      "facts": "Facts found in full",
+      "better": "better",
+      "worse": "worse",
+      "up": "up",
+      "down": "down",
+      "same": "no change",
+      "sample": "The measurement before had {before, plural, one {# answer} other {# answers}}, this one has {after}. Compare shares, not numbers: “1 of 5” and “3 of 15” mean the same.",
+      "targets": "The goals of the report before",
+      "colGoal": "Goal",
+      "colWas": "Before",
+      "colNow": "Now",
+      "colMet": "Result",
+      "met": {
+        "yes": "met",
+        "no": "not met",
+        "unknown": "not measured"
+      },
+      "brands": "Who gained and who lost in AI's answers",
+      "colBrand": "Name",
+      "colRecommended": "Recommended",
+      "colNamed": "Named",
+      "isNew": "absent",
+      "isGone": "not in the answers",
+      "factChanges": "Facts whose status changed",
+      "sourceChanges": "Sources where your presence changed",
+      "nothing": "No change since the measurement before."
+    },
+    "limits": {
+      "eyebrow": "Limits",
+      "table": "The pilot's limits and what to do about them",
+      "colLimit": "Limit",
+      "colAction": "What to do about it",
+      "checks": "Check before deciding",
+      "sources": "Sources",
+      "raw": "Raw data: {answers, plural, one {# answer} other {# answers}} from {engine}. The full texts are kept and available on request.",
+      "method": "Method: {engine} through the API with web search, model {model}, {date}.",
+      "methodManual": "Method: {engine} with web search, {date}.",
+      "cta": "We can carry out this plan and measure again."
+    }
   }
 }

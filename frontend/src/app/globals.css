@@ -296,10 +296,73 @@
   }
 }
 
+/* The pilot report (`.pilot`, /pilots/<slug>) has pages of its own: the report's name at each page's head,
+   the measurement and the page's number at its foot. The head's and the foot's texts are set by the page
+   itself, in the report's language. Its cover fills the first page to the edges and carries none of them.
+   Every page is as wide as the paper (a browser lays the whole document out at one width, the first
+   page's), so the sheets and the lines at the head and foot keep the side margin themselves. */
+.pilot {
+  page: pilot;
+}
+
+@page pilot {
+  size: A4;
+  margin: 19mm 0 18mm;
+
+  @top-left {
+    padding-left: 17mm;
+    font: 500 6.5pt system-ui, sans-serif;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #737a88;
+  }
+  @top-right {
+    padding-right: 17mm;
+    font: 500 6.5pt system-ui, sans-serif;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #737a88;
+  }
+  @bottom-left {
+    padding-left: 17mm;
+    font: 7.5pt system-ui, sans-serif;
+    color: #737a88;
+  }
+  @bottom-right {
+    content: counter(page, decimal-leading-zero);
+    padding-right: 17mm;
+    font: 600 7.5pt system-ui, sans-serif;
+    color: #14171f;
+  }
+}
+
+@page pilot:first {
+  margin: 0;
+
+  @top-left {
+    content: none;
+  }
+  @top-right {
+    content: none;
+  }
+  @bottom-left {
+    content: none;
+  }
+  @bottom-right {
+    content: none;
+  }
+}
+
 @media print {
   html,
   body {
     background: #fff;
+  }
+
+  /* The pilot report is set in a document's small type on paper: its sizes and the widths its layout
+     turns at are in rem, so all of it follows */
+  html:has(.pilot) {
+    font-size: 12.5px;
   }
 
   /* Bars, dots and colored marks are backgrounds: without this a browser leaves them off the paper */

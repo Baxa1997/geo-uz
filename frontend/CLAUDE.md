@@ -319,6 +319,7 @@ frontend/src/
     report/               # the client's status report (public, no login, no sidebar; prints as A4; `?run=` a past
                           #   week's, `?print=1` opens the print window) and Hisobotlar (the latest report's condition,
                           #   the register of reports, a page per report with its contents): see "The report"
+    pilot/                # the pilot report (/pilots/[slug], public): see "The pilot report"
   shared/                 # used by 2+ features
     api/                  # client.ts (switches mocks/backend), session.ts (requireUser), query-keys.ts, errors.ts,
                           #   load-report.ts (the report under the URL's filters, for every data page)
@@ -680,6 +681,38 @@ the whole condition: the summary's area rows keep their bar beside the name from
 dialog; a sent PDF (Telegram) will be this same page printed by the backend. Its texts are the `Report`
 namespace; the findings are computed in `features/report/helpers` and the shared score helpers. Check a change to
 it as a PDF too (Chrome's `Page.printToPDF` from the test browser), not only on screen.
+
+## The pilot report
+`/pilots/[slug]` is a one-off measurement written up for one business, the document sold before the weekly
+product (the user's hand-made report for a first client, Nov 2026, is its model and, kept on this computer only,
+its sample). It is read from `frontend/pilots/<slug>.json` (`helpers/load-pilot.ts`; the shape is
+`features/pilot/types`), which `backend/pilot` writes and a person edits. Not from the API: it has no project.
+
+- **Language.** The report speaks its file's language (`pilot.language`), whatever the address's locale; its
+  fixed words are the `Pilot` namespace, in the three languages. Every sentence of findings is in the file.
+  The category's noun comes from the file too (`terms`: "школа", "школу", "школ"), so the messages stay
+  free of gender: "Упоминания", not "Названа".
+- **Order.** Cover with the one number (answers naming the client); the summary a reader may stop at (the
+  finding as a headline, the client beside the leader as ChatGPT sees them, four numbers, flags, strengths,
+  first steps); then numbered sections: what was asked, whom ChatGPT recommends, the closest competitors, the
+  reasons (with the sources and the facts check), the decisions, the plan with the figures for the next
+  measurement, the limits. Each section's title is its finding, not a label. Figures and tables are numbered
+  in the order printed; a section without data is left out and the numbers close up.
+- **A second report** (`pilot.previous`, set when the brief names the report before) opens, after the summary,
+  with "what changed" (`PilotChanges`): the key figures before and now, the earlier report's goals against
+  where they stand, who gained and lost, the facts and sources whose state changed; the cover says what the
+  number was. The two measurements may differ in size, so a change's direction is judged on the share, and
+  the page says so. The client's figures read "better / worse"; another business's read "up / down" in gray.
+- **Counts, not percentages**: "0 из 5". A pilot has few answers. "Recommended" (in ChatGPT's closing advice)
+  is counted apart from "named".
+- **Look.** Its own palette (navy, ink, a red, a green, an amber: `PALETTE` in the page) and a serif for
+  headings (`fonts.ts`, loaded by this page only). A paper: the same in the light and the dark theme.
+- **Paper.** `@page pilot` in globals.css. Every page's margin box is as wide as the paper and the sheets keep
+  the side margin themselves, because Chrome lays the whole document out at the first page's width and the
+  cover must reach the edges. On paper the root font is 12.5px (`html:has(.pilot)`), so the rem sizes and the
+  container widths the layout turns at follow: the first client's report is ten pages. Each numbered section starts
+  a page (`Sheet`; `flow` lets one follow the other). The head's and foot's lines are written by the page into
+  a `<style>`. Check a change as a PDF: `Chrome --headless --print-to-pdf` against the dev server.
 
 ## One place for each number
 A number or a block appears once in the app, plus the Overview, which is the summary of the other pages (the

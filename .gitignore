@@ -8,3 +8,6 @@ node_modules/
 
 # Reference screenshots: kept on this computer only, not part of the project
 /Снимок экрана*.png
+
+# Clients' pilot reports: real businesses' findings, kept on this computer only (the repository is public)
+/frontend/pilots/*.json

@@ -223,6 +223,16 @@ That is roughly one to two US cents per answer, and it has to cover the answer w
 
 ## Change log
 
+- **14 Nov 2026. The pilot generator, `backend/pilot/` (see its README).** A script, no database: a brief →
+  ChatGPT's answers with web search → who is named and recommended → cited pages and the client's site → a
+  drafted analysis → `frontend/pilots/<slug>.json`. It is step 0: it prints tokens, searches and dollars per
+  call. Not yet run against OpenAI. What it adds to the model above, to carry into the weekly run once pilots
+  confirm it: `mentions.recommended` (named in the assistant's closing advice), what the answer states about
+  each business (attributes per category), the pages consulted beside the pages cited (open question 17), and
+  one direct question about the client per run, kept out of the scores. Pricing checked the same day: web
+  search is $10 per 1,000 calls plus the pages read as input tokens, so an answer is likely to cost more than
+  the 1–2 cents budgeted under "Cost per plan"; the first real run decides.
+
 - **5 Oct 2026, first version.** From the pages built so far: login, onboarding, Overview, Questions, Answers, Competitors, Sources, Wrong facts, Actions, Settings (read-only), public report, free check.
 - **6 Oct 2026, chart.** The chart card follows Peec's layout and has a day / week / month switch, grouped in the frontend (see "How each number is calculated"). Question 14 on daily checks: not offered for now. Visibility is shown in percent everywhere; the API still sends it as 0–1.
 - **5 Oct 2026, Overview finished.** Added a sentence above the numbers, visibility by topic and by question language, and large views of the cards. All of it is calculated in the frontend from the report. New for the backend: nothing, but the by-topic and by-language block needs every answer's mentions in the report (it already has them) and makes open question 11 matter sooner.

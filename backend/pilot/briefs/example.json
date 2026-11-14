@@ -1,0 +1,32 @@
+{
+  "slug": "example-school",
+  "language": "ru",
+  "brand": {
+    "name": "Example School",
+    "aliases": ["Example International School", "Экзампл"],
+    "domain": "example.uz"
+  },
+  "category": "частная школа",
+  "city": "Ташкент",
+  "city_en": "Tashkent",
+  "country": "UZ",
+  "timezone": "Asia/Tashkent",
+  "preparedFor": "руководства и маркетинга школы",
+  "samples": 3,
+  "questions": [
+    { "text": "Лучшие частные школы Ташкента", "language": "ru" },
+    { "text": "В какую частную школу отдать ребёнка в Ташкенте?", "language": "ru" },
+    { "text": "Частные школы Ташкента, стоимость обучения", "language": "ru" },
+    { "text": "Частная школа в Ташкенте с углублённым английским", "language": "ru" },
+    { "text": "Toshkentdagi eng yaxshi xususiy maktablar qaysilar?", "language": "uz" },
+    { "text": "Toshkentda xususiy maktab narxlari qancha?", "language": "uz" }
+  ],
+  "attributes": [
+    { "key": "program", "label": "Программа" },
+    { "key": "price", "label": "Цена" },
+    { "key": "district", "label": "Район" }
+  ],
+  "extraSources": [],
+  "previous": null,
+  "contact": { "phone": null, "telegram": null, "email": null }
+}
