@@ -1,2 +1,6 @@
 out/
 __pycache__/
+.env
+# Real clients' briefs stay on this computer (the repository is public)
+briefs/*
+!briefs/example.json

@@ -3573,7 +3573,7 @@
       "method": "Method",
       "methodText": "{questions, plural, one {# question} other {# questions}} customers ask when they choose. {samples, plural, one {Each was asked} other {Each was asked # times,}} in a new chat and without the company's name, to see whom AI names by itself.",
       "counting": "How we counted",
-      "countingText": "<b>Named:</b> the name is anywhere in the answer. <b>Recommended:</b> AI names it in its closing advice.",
+      "countingText": "<b>Recommended:</b> AI itself suggests considering the business and says whom it suits. <b>Named:</b> the name is in the answer, for example in a price table or a list of addresses.",
       "figure": "What {engine} answered to each question: how many {genPlural} it named and whether {brand} was among them",
       "colQuestion": "Customer's question",
       "colBrands": "In the answer",
@@ -3581,7 +3581,7 @@
       "aiRecommends": "AI recommends:",
       "sum": "Total over {answers, plural, one {# answer} other {# answers}}",
       "sumText": "Other {genPlural} named: {named}, of them recommended: {recommended}",
-      "legendRecommended": "recommended in AI's closing advice",
+      "legendRecommended": "recommended by AI",
       "legendNamed": "only named"
     },
     "leaders": {
@@ -3589,7 +3589,7 @@
       "figure": "How often AI recommends and names each, out of {answers, plural, one {# answer} other {# answers}}",
       "rec": "rec.",
       "named": "named",
-      "legendRecommended": "recommended in the closing advice",
+      "legendRecommended": "recommended",
       "legendNamed": "named in the answer",
       "table": "What AI says about those it recommends",
       "colName": "Name"
@@ -3628,6 +3628,7 @@
       "kind": {
         "media": "media",
         "catalog": "catalog",
+        "competitor": "competitor's site",
         "own": "own site",
         "social": "social",
         "other": "other"

@@ -123,10 +123,10 @@ EXTRACT_RULES = """You read one answer an AI assistant gave to a customer's ques
 
 For every business (company, school, clinic, shop: a named organization a customer could choose) the answer names:
 - name: as written in the answer.
-- recommended: true only when the assistant itself points the customer to it: in its closing advice, a "top picks", "I would consider first", "best for ..." verdict, or a ranked list of the best it presents as its own choice. A business that only appears in a table, a price list or a long list of options is named, not recommended. When the whole answer is a list with no verdict, the businesses it describes at length as good choices are recommended; those in a bare list are not.
-- attributes: for each key given, the value the answer states for this business, copied briefly in the answer's language, or null when it states none.
-- description: how the answer describes this business, in one short line in the answer's language, or null.
-- place: the district or address the answer gives, or null.
+- recommended: true when the assistant itself suggests the customer consider this business and gives a reason to choose it: its closing advice, "I would start with", "top picks", "if you want X, look at Y", or a shortlist it built where each entry says whom it suits or why it is good. Hedging ("not a final recommendation", "visit before deciding") does not undo this: a shortlist with reasons is a recommendation. False when the business only appears as a row of facts with no reason to choose it: a price table, a list of addresses, a catalog-style listing, or a mention in passing. Judge each business by how the answer presents that one; one answer may hold both kinds.
+- attributes: for each key given, the value the answer states for this business, as a phrase of at most eight words written in {language} (translate it if the answer is in another language, currency words too; keep names and numbers as given; for a price give the main range and its period only, without fees and extras), or null when it states none.
+- description: what the answer says this business is good for or how it differs, in at most twelve words in {language}, or null when it gives only facts.
+- place: the district or address the answer gives, in {language}, or null.
 
 advice: the assistant's own closing recommendation, copied word for word (one or two sentences), or null when there is none."""
 
@@ -149,7 +149,7 @@ def extract(brief: Dict[str, Any], out: Path, model: str, costs: Costs, force: b
             print(f"  reading q{q + 1}_s{s + 1}")
             read, response = llm.structured(
                 model,
-                f"{EXTRACT_RULES}\n\nAttribute keys:\n{legend}",
+                f"{EXTRACT_RULES.replace('{language}', LANGUAGES.get(brief['language'], 'Russian'))}\n\nAttribute keys:\n{legend}",
                 f"Question: {question['text']}\n\nAnswer:\n{text}",
                 "answer_reading",
                 schema,
@@ -183,7 +183,7 @@ def names(brief: Dict[str, Any], out: Path, answers: List[Dict[str, Any]], model
         model,
         "These names of businesses come from several answers about one category in one city. Group the spellings that mean the same "
         "business (abbreviations, Latin and Cyrillic, with or without words like School or Clinic). Never merge two different businesses: "
-        "when unsure, keep them apart. Give each group the fullest common name as `name` and list every given spelling exactly once.",
+        "when unsure, keep them apart. Give each group as `name` the short name people use for it (\"Westminster\", \"The British School\", \"Tashkent International School\"): no city, no \"in Tashkent\", no slogan or legal form, in Latin letters when the business writes itself so. List every given spelling exactly once.",
         json.dumps({"category": brief["category"], "city": brief["city"], "names": seen}, ensure_ascii=False),
         "name_groups",
         obj(groups=arr(obj(name=STR, spellings=arr(STR)))),
@@ -355,7 +355,22 @@ def kind_of(domain: str, brief: Dict[str, Any]) -> str:
     return next((kind for kind, domains in SITE_KINDS.items() if any(domain == known or domain.endswith(f".{known}") for known in domains)), "other")
 
 
-def sources(brief: Dict[str, Any], out: Path, answers: List[Dict[str, Any]], force: bool = False, limit: int = 8) -> List[Dict[str, Any]]:
+def site_kinds(brief: Dict[str, Any], sites: Dict[str, Optional[str]], businesses: List[str], model: str, costs: Costs) -> Dict[str, str]:
+    """What each cited site is, judged from its address and a page's title: the short list above can't know every site."""
+    kinds, response = llm.structured(
+        model,
+        "For each website, say what it is. media: a news site, magazine or blog that publishes reviews and articles. catalog: a directory, map, "
+        "listing or review site where a business can have a card. competitor: the own website of one of the businesses listed, or of the group that "
+        "owns it. social: a social network or messenger channel. other: anything else, including official registers and accrediting bodies.",
+        json.dumps({"businesses": businesses, "websites": [{"domain": domain, "title": title} for domain, title in sites.items()]}, ensure_ascii=False),
+        "site_kinds",
+        obj(sites=arr(obj(domain=STR, kind={"type": "string", "enum": ["media", "catalog", "competitor", "social", "other"]}))),
+    )
+    costs.add("sources", response)
+    return {row["domain"]: row["kind"] for row in kinds["sites"]}
+
+
+def sources(brief: Dict[str, Any], out: Path, answers: List[Dict[str, Any]], force: bool = False, limit: int = 8, model: Optional[str] = None, costs: Optional[Costs] = None) -> List[Dict[str, Any]]:
     """The sites the answers cite, the most cited first, each read to see whether it names the client."""
     path = out / "sources.json"
     if path.exists() and not force:
@@ -393,6 +408,15 @@ def sources(brief: Dict[str, Any], out: Path, answers: List[Dict[str, Any]], for
                 "brandListed": listed,
             }
         )
+    if model and costs:
+        businesses = sorted({business["name"] for answer in answers for business in answer["businesses"]})
+        judged = site_kinds(brief, {row["name"]: row["title"] for row in rows if row["kind"] == "other"}, businesses, model, costs)
+        for row in rows:
+            row["kind"] = judged.get(row["name"], row["kind"]) if row["kind"] == "other" else row["kind"]
+    for row in rows:
+        # A competitor's own site will never list the client: "not there" would read as a gap to close
+        if row["kind"] in ("competitor", "own"):
+            row["brandListed"] = None
     save(path, rows)
     return rows
 
@@ -415,6 +439,11 @@ ANALYZE_RULES = """You are an analyst writing a pilot report for the management 
 
 Write everything in {language}. The reader is a business owner, not a marketer: plain words, short sentences, no jargon (no "GEO", "LLM", "share of voice", "entity"). Say "ИИ"/"SI"/"AI" for the assistant in running text.
 
+Form:
+- Plain text only: no markdown, no asterisks, no quotation marks around a whole value. A point's `lead` is two to four words ending with a full stop; its `text` is one sentence of at most 20 words.
+- Write as the people who did the measurement: "we found", "the answers show". Never mention the input, "the data given", field names or words like true/false/null.
+- Keep it short, the report is laid out on fixed pages: a section title at most 12 words; a note at most 30 words; a reason's evidence at most 35 words; a fact's `found` at most 20 words and its `example` only the assistant's few words about another business, without that business's name; a decision's `when` at most three words, its `why` and `risk` at most 25 words each, each option at most six words; a task at most six words, its `done` at most eight, its `owner` at most three; a target's `now` at most five words and its `goal` at most eight; a limit's `limit` two to four words ending with a full stop, its `text` and `action` at most 15 words each; a footnote at most 25 words.
+
 Honesty rules, which matter more than a good story:
 - Use only the facts in the input. Never invent a number, a price, a source or a quote. Counts are written as "N из M" / "M tadan N ta" / "N of M", never as percentages: the sample is small.
 - Separate what was found from what is assumed. A reason's confidence is "high" only when the input shows it directly, "medium" when it fits the evidence but was not checked, "low" for an assumption.
@@ -423,14 +452,14 @@ Honesty rules, which matter more than a good story:
 - When the client is named and recommended often, say so plainly: the report is not obliged to find a crisis.
 
 What to write:
-- terms: the category's noun in {language}: nominative singular, accusative singular, genitive plural (for Uzbek and English: the plain noun, the plain noun, the plural).
+- terms: the category's noun in {language}, one word where one word is enough ("школа", not "частная школа"): nominative singular, accusative singular, genitive plural (for Uzbek and English: the plain noun, the plain noun, the plural).
 - coverLead: one sentence on what the report answers. headline: the main finding in two short sentences, naming the client and the leader.
 - brandLead and brandNote: what the assistant says about the client, in a few words and then one sentence. leaderQuote: how the assistant describes the leader, its own words from the input, or null. profilesNote: one line on where the two profiles come from.
 - flags (2-3), strengths (2-3), firstSteps (3-5): each with a short bold lead and one sentence.
 - sections: for each, `title` is that section's finding as a sentence (not a label) and `note` its conclusion in one or two sentences, or null. Keys: questions, leaders, peers, reasons, facts, decisions, plan, targets, limits.
-- quote: one telling sentence from an answer's `advice`, word for word, with its source ("ChatGPT, question 4"), or null.
-- leadersNote: a point about the businesses named but not recommended, or null.
-- peers: `names` = 3-5 businesses from the counts whose profile, place or price is closest to the client's (exact names from the counts); `profile` = one sentence on the client's own profile and where that is known from; `unit` and `ranges` = when the assistant states comparable prices for the peers, the unit as a caption and each peer's range as numbers in that unit with a short label, plus the client's row (low and high null when no price is known, with a label saying so); otherwise unit null and ranges empty.
+- quote: one sentence from an answer's `advice`, word for word, in which the assistant names the businesses it suggests, with its source ("ChatGPT, вопрос 4" in the report's language), or null when no advice names a business.
+- leadersNote: one plain point about the businesses that are named but never recommended (how many, and in what kind of answer they appear), or null when there is nothing clear to say.
+- peers: `names` = 3-5 businesses from the counts whose profile, place or price is closest to the client's (exact names from the counts); `profile` = one sentence on the client's own profile and where that is known from; `unit` and `ranges` = when the assistant states comparable prices for the peers, the unit as a caption and each peer's range as numbers in that unit (high null for "from ..."; low and high equal for one price) with a label of a few characters that is only the number as a reader would write it ("6,6–8,7", "от 6", "4,8"), plus the client's row (low and high null when no price is known, its label two or three words saying so). Leave out a peer with no price. Otherwise unit null and ranges empty.
 - reasons (2-4), most certain first. sourcesNote: the one thing the sources table shows. sourcesFootnote: what was and wasn't checked.
 - facts (6-8): the facts the assistant states about businesses of this category (price, programme, location and so on); for each, an example of the assistant's wording about another business, what is found about the client (from its site, the direct answer and the sources) and a status: found, partial or missing. factsNote, factsFootnote.
 - decisions (3-4): each a question the management must decide, our recommendation, why (from the evidence), 2-3 options, the risk, when (in words), effect and cost as high, medium or low.
@@ -520,8 +549,30 @@ def analyze(brief: Dict[str, Any], out: Path, counts: Dict[str, Any], answers: L
 # --- build --------------------------------------------------------------------------------------------
 
 
+def tidy(value: Any) -> Any:
+    """Takes a model's formatting out of its sentences: bold marks, stray spaces."""
+    if isinstance(value, str):
+        return " ".join(value.replace("**", "").replace("__", "").split())
+    if isinstance(value, list):
+        return [tidy(item) for item in value]
+    if isinstance(value, dict):
+        return {key: tidy(item) for key, item in value.items()}
+    return value
+
+
+def closed(lead: str) -> str:
+    """A bold lead reads into its sentence: it ends with a stop of its own."""
+    return lead if not lead or lead[-1] in ".!?:»\"" else f"{lead}."
+
+
 def build(brief: Dict[str, Any], counts: Dict[str, Any], cited: List[Dict[str, Any]], written: Dict[str, Any], collected_at: str, model: str, before: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """The report's file, in the shape of `frontend/src/features/pilot/types`."""
+    written = tidy(written)
+    for points in (written["flags"], written["strengths"], written["checks"]):
+        for point in points:
+            point["lead"] = closed(point["lead"])
+    for limit in written["limits"]:
+        limit["limit"] = closed(limit["limit"])
     peers = {name.casefold() for name in written["peers"]["names"]}
     brands = [{**brand, "peer": brand["isClient"] or brand["name"].casefold() in peers} for brand in counts["brands"]]
     known = {brand["name"].casefold() for brand in brands}
