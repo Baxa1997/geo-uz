@@ -1,6 +1,6 @@
 import { formatPhone } from "@/shared/helpers/phone";
 import type { User } from "@/shared/types/api";
 
-/** Name from Telegram, else the phone number, else the Telegram username. */
+/** The name, else the email the account logs in with (an older account: its phone or Telegram name). */
 export const displayName = (user: User) =>
-  user.name ?? (user.phone ? formatPhone(user.phone) : `@${user.telegramUsername ?? ""}`);
+  user.name ?? user.email ?? (user.phone ? formatPhone(user.phone) : `@${user.telegramUsername ?? ""}`);

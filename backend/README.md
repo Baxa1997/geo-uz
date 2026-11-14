@@ -43,7 +43,7 @@ SECURE_COOKIES=true
 | --- | --- |
 | `POST /auth/code` `{email}` | Sends a six-digit code (Supabase's email; in development the server's log) |
 | `POST /auth/code/verify` `{email, code}` | Logs in, makes the account on the first login, sets the cookie |
-| `GET /auth/me`, `POST /auth/logout` | The account; logging out |
+| `GET /auth/me`, `PATCH /auth/me` `{name}`, `POST /auth/logout` | The account; its name; logging out |
 | `POST /first-runs` `{domain, category?, city?}` | Starts a new account's first run and returns at once (202) |
 | `GET /first-runs/{id}` | Its progress: `status`, `answered`, `total` |
 | `GET /first-runs/{id}/result` | The first statistics, in the frontend's `Snapshot` shape and a little more |
@@ -62,7 +62,8 @@ Beside the `Snapshot` of the contract the result carries `engines` (the scores p
 
 ## Not built yet
 
-- The frontend still runs on mocks: the login page asks for a phone, and nothing calls `/first-runs`.
+- The frontend's login calls this service (since 14 Nov, with `NEXT_PUBLIC_LIVE=auth` in `frontend/.env.local`);
+  every other page still runs on mocks, and nothing calls `/first-runs`.
 - Gemini is written from Google's documentation and has never been run: no key yet.
 - Supabase's login is written and has never been run: no project yet. Google login is not written.
 - Projects, questions, weekly runs and everything else in `PLAN.md`.

@@ -54,7 +54,15 @@ import type {
 
 export const USE_MOCKS = process.env.NEXT_PUBLIC_USE_MOCKS === "true";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+
+/**
+ * The parts of the API the backend already serves while the rest are still mocks, as a list in
+ * NEXT_PUBLIC_LIVE ("auth"). The backend is built a slice at a time, and a page is wired when its slice
+ * exists. With "auth" live, login and the session are the backend's, and the mocks ask it who the visitor is.
+ */
+const LIVE = new Set((process.env.NEXT_PUBLIC_LIVE ?? "").split(",").map((part) => part.trim()).filter(Boolean));
+export const AUTH_LIVE = !USE_MOCKS || LIVE.has("auth");
 
 export interface ApiClient {
   sendCode(body: SendCodeRequest): Promise<SendCodeResponse>;
@@ -269,8 +277,7 @@ async function unwrap<T>(result: Promise<MockResult<T>>): Promise<T> {
 // forms share one copy of the mock data. Loaded lazily: never bundled when mocks are off.
 const mocks = () => import("@/mocks/actions");
 
-export const api: ApiClient = USE_MOCKS
-  ? {
+const mockBridge = (): ApiClient => ({
       sendCode: (body) => mocks().then((m) => unwrap(m.sendCode(body))),
       verifyCode: (body) => mocks().then((m) => unwrap(m.verifyCode(body))),
       loginWithTelegram: (body) => mocks().then((m) => unwrap(m.loginWithTelegram(body))),
@@ -333,5 +340,15 @@ export const api: ApiClient = USE_MOCKS
       inviteMember: (body) => mocks().then((m) => unwrap(m.inviteMember(body))),
       removeMember: (memberId) => mocks().then((m) => unwrap(m.removeMember(memberId))),
       requestPlan: (projectId, body) => mocks().then((m) => unwrap(m.requestPlan(projectId, body))),
-    }
-  : httpApi;
+});
+
+/** The calls of the login slice: who the visitor is. */
+const liveAuth: Partial<ApiClient> = {
+  sendCode: httpApi.sendCode,
+  verifyCode: httpApi.verifyCode,
+  getMe: httpApi.getMe,
+  logout: httpApi.logout,
+  updateMe: httpApi.updateMe,
+};
+
+export const api: ApiClient = USE_MOCKS ? { ...mockBridge(), ...(AUTH_LIVE ? liveAuth : {}) } : httpApi;

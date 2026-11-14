@@ -7,23 +7,22 @@ import { Button } from "@/shared/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";
 import { api, ApiError } from "@/shared/api/client";
-import { formatPhone } from "@/shared/helpers/phone";
 import { AUTH_INPUT, CODE_LENGTH } from "../constants";
 import { formatCountdown } from "../helpers/countdown";
 import { useFinishLogin } from "../hooks/use-finish-login";
 import type { LoginTarget } from "../types";
 
-/** Step 2 of phone login: the SMS code, sent as soon as all 6 digits are in. */
+/** Step 2 of login: the code from the email, sent as soon as all 6 digits are in. */
 export function CodeForm({
-  phone,
+  email,
   resendIn,
   target,
-  onChangeNumber,
+  onChangeEmail,
 }: {
-  phone: string;
+  email: string;
   resendIn: number;
   target: LoginTarget;
-  onChangeNumber: () => void;
+  onChangeEmail: () => void;
 }) {
   const t = useTranslations("Login");
   const id = useId();
@@ -34,12 +33,12 @@ export function CodeForm({
 
   const verify = useMutation({
     mutationFn: async (value: string) => {
-      await api.verifyCode({ phone, code: value });
+      await api.verifyCode({ email, code: value });
       await finish();
     },
   });
   const resend = useMutation({
-    mutationFn: () => api.sendCode({ phone }),
+    mutationFn: () => api.sendCode({ email }),
     onSuccess: ({ resendIn: seconds }) => {
       setWait(seconds);
       setCode("");
@@ -60,7 +59,7 @@ export function CodeForm({
     setCode(digits);
     setTooShort(false);
     if (verify.isError) verify.reset();
-    // SMS autofill and paste bring the whole code at once: no extra tap needed
+    // A paste brings the whole code at once: no extra tap needed
     if (digits.length === CODE_LENGTH && !busy) verify.mutate(digits);
   }
 
@@ -85,15 +84,15 @@ export function CodeForm({
     <form onSubmit={submit} noValidate className="flex flex-col gap-5">
       <p className="text-sm text-pretty">
         {t.rich("codeSent", {
-          phone: formatPhone(phone),
-          b: (chunks) => <span className="font-medium whitespace-nowrap">{chunks}</span>,
+          email,
+          b: (chunks) => <span className="font-medium break-all">{chunks}</span>,
         })}
       </p>
       <Field data-invalid={Boolean(error)}>
         <div className="flex items-center justify-between gap-3">
           <FieldLabel htmlFor={`${id}-code`}>{t("code")}</FieldLabel>
-          <Button type="button" variant="link" className="h-auto p-0 text-sm" onClick={onChangeNumber} disabled={busy}>
-            {t("changeNumber")}
+          <Button type="button" variant="link" className="h-auto p-0 text-sm" onClick={onChangeEmail} disabled={busy}>
+            {t("changeEmail")}
           </Button>
         </div>
         <Input

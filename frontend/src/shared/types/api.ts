@@ -381,7 +381,9 @@ export interface User {
   id: string;
   /** From Telegram; null for accounts made with a phone number. */
   name: string | null;
-  /** E.164, e.g. "+998901234567"; null for Telegram-only accounts. */
+  /** What the account logs in with: a code is sent to it. Null only for an account from before email login. */
+  email: string | null;
+  /** E.164, e.g. "+998901234567". Login is by email now, so the backend sends null. */
   phone: string | null;
   telegramUsername: string | null;
 }
@@ -573,8 +575,7 @@ export interface UpdateActionRequest {
 }
 
 export interface SendCodeRequest {
-  /** E.164, e.g. "+998901234567". */
-  phone: string;
+  email: string;
 }
 
 export interface SendCodeResponse {
@@ -583,7 +584,7 @@ export interface SendCodeResponse {
 }
 
 export interface VerifyCodeRequest {
-  phone: string;
+  email: string;
   code: string;
 }
 
