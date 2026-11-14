@@ -1,0 +1,69 @@
+# Backend
+
+Two things live here:
+
+- `pilot/`: the script that makes a pilot report's file from a brief (its own README).
+- `app/`: the API the frontend calls, built a slice at a time. `PLAN.md` is the plan for all of it.
+
+## The stack (decided 14 Nov 2026)
+
+- **Supabase** for the database (Postgres) and the login (email code; Google next).
+- **A server at Contabo** runs this Python service: the API and the runs that ask the assistants.
+- The frontend talks only to this service, which sets the `geo_session` cookie the pages already expect.
+- **Assistants:** ChatGPT and Gemini. Each is asked only when its key is set.
+
+## Run it on this computer
+
+Nothing needs an account: the database is the file `local.db`, and a login code is printed to the server's log
+instead of being emailed.
+
+```
+cd backend
+python3 -m venv .venv && . .venv/bin/activate
+pip install fastapi uvicorn "sqlalchemy>=2" "psycopg[binary]"
+uvicorn app.main:app --reload --port 8000
+```
+
+Keys go into `backend/.env` (never committed; `pilot/.env` is read too):
+
+```
+OPENAI_API_KEY=...
+GEMINI_API_KEY=...              # optional: without it only ChatGPT is asked
+# On the server:
+DATABASE_URL=postgresql+psycopg://...   # Supabase's connection string
+SUPABASE_URL=https://<project>.supabase.co
+SUPABASE_ANON_KEY=...
+FRONTEND_ORIGIN=https://<the site>
+SECURE_COOKIES=true
+```
+
+## What is built
+
+| Endpoint | What it does |
+| --- | --- |
+| `POST /auth/code` `{email}` | Sends a six-digit code (Supabase's email; in development the server's log) |
+| `POST /auth/code/verify` `{email, code}` | Logs in, makes the account on the first login, sets the cookie |
+| `GET /auth/me`, `POST /auth/logout` | The account; logging out |
+| `POST /first-runs` `{domain, category?, city?}` | Starts a new account's first run and returns at once (202) |
+| `GET /first-runs/{id}` | Its progress: `status`, `answered`, `total` |
+| `GET /first-runs/{id}/result` | The first statistics, in the frontend's `Snapshot` shape and a little more |
+| `GET /health` | Which assistants have a key, and which login is on |
+
+**The first run** (`app/firstrun.py`): reads the website and makes the four site checks; a model works out who
+the business is and writes ten questions its customers ask (half Russian, half Uzbek, none naming a business);
+each is asked once to every assistant, five at a time; a model reads who each answer names, in order, in what
+tone, and whom it recommends; plain code counts the scores. About a minute and a half and about $0.47 on
+ChatGPT alone (`gpt-6.1-terra`, measured 14 Nov 2026). One account may start three a day; the same website
+again within a day returns the run it already has.
+
+Beside the `Snapshot` of the contract the result carries `engines` (the scores per assistant), `recommended`
+(how often each business is recommended), `answers`, `description` and `services`; each answer says which
+`engine` gave it and each mention whether it is `recommended`.
+
+## Not built yet
+
+- The frontend still runs on mocks: the login page asks for a phone, and nothing calls `/first-runs`.
+- Gemini is written from Google's documentation and has never been run: no key yet.
+- Supabase's login is written and has never been run: no project yet. Google login is not written.
+- Projects, questions, weekly runs and everything else in `PLAN.md`.
+- A first run is done in a thread of the web process: fine for a start, a queue when there is traffic.

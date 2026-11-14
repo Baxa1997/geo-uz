@@ -223,6 +223,19 @@ That is roughly one to two US cents per answer, and it has to cover the answer w
 
 ## Change log
 
+- **14 Nov 2026. The backend begins: `backend/app/`, its first slice** (see `backend/README.md`). The user's
+  decisions the same day, which replace what this plan said before: **Supabase** for the database and the
+  login, **a server at Contabo** for this service, **login by email code and Google** (not phone and SMS, not
+  Telegram, for now), **ChatGPT and Gemini** from the start, and the order **login → website → the first run on
+  both assistants → first statistics → the dashboard's setup → settings** (the free check moves behind the
+  login). Built and run on this computer: the email login and `POST /first-runs` with its progress and result.
+  A first run took 83 seconds and cost $0.47 on ChatGPT alone. Not yet run: Gemini, Supabase's login.
+  New in the contract: `/first-runs` beside `/snapshot` (a run is started and polled, not waited for), an
+  answer's `engine`, a mention's `recommended`, scores per assistant. The frontend is not wired to any of it.
+  Found on the way: a brand's short alias ("TIS") matched another business and the insides of words, which
+  tripled the client's visibility; names are now matched as whole words and spellings of three letters or
+  fewer are not looked for.
+
 - **14 Nov 2026. Step 0 is done: the first real run of `backend/pilot`** (one client, 9 questions in Russian
   and Uzbek × 3 samples + 1 direct question, model `gpt-6.1-sol`, web search located in Tashkent).
   - **Cost of one answer: $0.077 on average** ($0.04–$0.17): about 24,600 input tokens (the pages the search

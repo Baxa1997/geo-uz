@@ -369,6 +369,14 @@ Any other number makes a new account, which goes through onboarding and gets a p
 
 ## To do, in order
 
+00. **The platform's first flow (the user's decision, 14 Nov; before the pilots' list below).** Login → the
+   user's website → the first run on ChatGPT and Gemini → first statistics → the dashboard's setup → settings,
+   on Supabase (database, login by email code and Google) with the backend on a server at Contabo. The backend's
+   first slice is built in `backend/app/` and not committed (see `backend/README.md`): email login and the first
+   run, tried on this computer. Next: the frontend's login page by email, a page that starts the first run and
+   shows its progress and first statistics, then saving the result as a project. Waiting on the user: a Gemini
+   key, a Supabase project, the Contabo server.
+
 0. **Pilots first (the user's decision, 14 Nov).** The first real run is done. Next: decide what the cost of
    an answer ($0.077) does to the prices (try a cheaper model; fewer samples or runs; higher prices); read
    and correct the first client's draft and fill the contacts before it is sent. Still unmeasured: the ChatGPT
