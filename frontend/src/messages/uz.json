@@ -3582,7 +3582,12 @@
       "sum": "{answers} ta javob boʻyicha jami",
       "sumText": "Boshqa {genPlural} tilga olingan: {named}, ulardan tavsiya qilingan: {recommended}",
       "legendRecommended": "SI tavsiya qilgan",
-      "legendNamed": "faqat tilga olingan"
+      "legendNamed": "faqat tilga olingan",
+      "modelsTable": "Xuddi shu savollar {engine}ning turli modellarida",
+      "colModel": "Model",
+      "colLeader": "Model eng koʻp kimni tavsiya qiladi",
+      "thisReport": "shu hisobot",
+      "modelsNote": "Bir javob ikkinchisidan, bir model boshqasidan farq qiladi: bitta savolning ikki javobida kompaniyalarning taxminan yarmi bir xil. Koʻp javoblar boʻyicha ulush barqaror, shuning uchun hisobot alohida javobni emas, shuni sanaydi."
     },
     "leaders": {
       "eyebrow": "SI kimni tavsiya qiladi",

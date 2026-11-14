@@ -100,19 +100,20 @@ class Costs:
 # --- ask ----------------------------------------------------------------------------------------------
 
 
-def ask(brief: Dict[str, Any], out: Path, model: str, costs: Costs, force: bool = False) -> None:
+def ask(brief: Dict[str, Any], out: Path, model: str, costs: Costs, force: bool = False, context: Optional[str] = None, direct: bool = True) -> None:
     """Asks every question `samples` times, each in a conversation of its own, and keeps the raw responses."""
     place = (brief.get("country", "UZ"), brief["city_en"] if brief.get("city_en") else brief["city"], brief.get("timezone", "Asia/Tashkent"))
     jobs = [(f"q{q + 1}_s{s + 1}", question["text"]) for q, question in enumerate(brief["questions"]) for s in range(brief.get("samples", 3))]
     # The one question that names the client: kept apart, never counted, read for wrong facts and mixed-up names
     template = BRAND_QUESTION.get(brief["language"], BRAND_QUESTION["ru"])
-    jobs.append(("brand", template.format(name=brief["brand"]["name"], category=brief["category"], city=brief["city"])))
+    if direct:
+        jobs.append(("brand", template.format(name=brief["brand"]["name"], category=brief["category"], city=brief["city"])))
     for name, question in jobs:
         path = out / "raw" / f"{name}.json"
         if path.exists() and not force:
             continue
         print(f"  asking {name}: {question}")
-        response = llm.ask(model, question, *place)
+        response = llm.ask(model, question, *place, context) if context else llm.ask(model, question, *place)
         save(path, {"question": question, "response": response})
         costs.add("ask", response)
 
@@ -346,11 +347,26 @@ def compare(before: Dict[str, Any], counts: Dict[str, Any], cited: List[Dict[str
     }
 
 
+def model_row(model: str, counts: Dict[str, Any]) -> Dict[str, Any]:
+    """One model's answers to the same questions in a line: the client beside whoever that model recommends most."""
+    leader = next((brand for brand in counts["brands"] if not brand["isClient"]), None)
+    return {
+        "model": model,
+        "answers": counts["answers"],
+        "named": counts["totals"]["named"],
+        "recommended": counts["totals"]["recommended"],
+        "leader": leader["name"] if leader else None,
+        "leaderNamed": leader["named"] if leader else 0,
+        "leaderRecommended": leader["recommended"] if leader else 0,
+    }
+
+
 # --- sources ------------------------------------------------------------------------------------------
 
 
 def kind_of(domain: str, brief: Dict[str, Any]) -> str:
-    if brief["brand"].get("domain") and web.domain_of(brief["brand"]["domain"]) == domain:
+    own = [brief["brand"].get("domain")] + list(brief["brand"].get("sites") or [])
+    if any(web.domain_of(site) == domain for site in own if site):
         return "own"
     return next((kind for kind, domains in SITE_KINDS.items() if any(domain == known or domain.endswith(f".{known}") for known in domains)), "other")
 
@@ -426,9 +442,15 @@ def site(brief: Dict[str, Any], out: Path, force: bool = False) -> List[Dict[str
     path = out / "site.json"
     if path.exists() and not force:
         return load(path)
-    domain = brief["brand"].get("domain")
-    pages = web.read_site(domain) if domain else []
-    print(f"  the client's site: {len(pages)} pages read" if domain else "  no website in the brief")
+    # The address in the brief, and any other site of the client's (`brand.sites`: a school's own site beside its group's)
+    domains = [domain for domain in [brief["brand"].get("domain")] + list(brief["brand"].get("sites") or []) if domain]
+    pages = []
+    for domain in domains:
+        found = web.read_site(domain, brief["language"])
+        print(f"  {domain}: {len(found)} pages read")
+        pages += found
+    if not domains:
+        print("  no website in the brief")
     save(path, pages)
     return pages
 
@@ -449,6 +471,7 @@ Honesty rules, which matter more than a good story:
 - Separate what was found from what is assumed. A reason's confidence is "high" only when the input shows it directly, "medium" when it fits the evidence but was not checked, "low" for an assumption.
 - If the client's website text is empty, say the site was not read and do not claim what it lacks. If it was read, the facts check must use it.
 - If the direct answer about the client contains something that contradicts the client's website, name it as a wrong fact in the flags.
+- If the client's own site uses a name or an abbreviation that the answers use for another business (two schools both called by the same three letters), say so in the flags and the reasons: an assistant may take one for the other.
 - When the client is named and recommended often, say so plainly: the report is not obliged to find a crisis.
 
 What to write:
@@ -466,6 +489,7 @@ What to write:
 - plan: 4-6 tasks over 12 weeks: own website first, outside sources next, a repeat measurement last (kind: site, external, measure); `done` says how one sees the task is finished; `owner` is a role, not a name.
 - targets (3-4): a figure, its value now, its tone (bad, warn, ok) and a modest goal for the repeat measurement. Do not promise results.
 - changes: null unless the input has `previousReport`. When it has: `title` = what changed since that report, as a finding in one sentence (say plainly when nothing changed or it got worse); `note` = what that means, one or two sentences, or null; `callout` = the one change that matters most, or null; `targets` = one entry for every target of the previous report, in the same order and with its `metric` copied exactly: `now` = its value in this measurement in the same wording as its old value, `met` = true or false against its goal, or null when this measurement cannot tell. Also, when `previousReport` is given, name each fact in `facts` exactly as the previous report named it wherever it is the same fact, so the two can be compared. A change between two small samples may be chance: never call it a result of the work unless the evidence shows the link (the client now appears on a source it was missing from, a fact it published is now quoted).
+- When the same questions were also asked to other models, say in the questions section's note, in one clause, whether the client's place holds across them ("on every model: 1 or 2 of 27"), and never present one model's count as what every user sees.
 - limits (4-5): each limit of this pilot with what to do about it; always the sample size, that answers change between runs, and what was not checked. checks (3-5): what the management should verify before deciding."""
 
 
@@ -506,7 +530,7 @@ def analysis_schema() -> Dict[str, Any]:
     )
 
 
-def analyze(brief: Dict[str, Any], out: Path, counts: Dict[str, Any], answers: List[Dict[str, Any]], cited: List[Dict[str, Any]], pages: List[Dict[str, Any]], model: str, costs: Costs, force: bool = False, before: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+def analyze(brief: Dict[str, Any], out: Path, counts: Dict[str, Any], answers: List[Dict[str, Any]], cited: List[Dict[str, Any]], pages: List[Dict[str, Any]], model: str, costs: Costs, force: bool = False, before: Optional[Dict[str, Any]] = None, models: Optional[List[Dict[str, Any]]] = None) -> Dict[str, Any]:
     path = out / "analysis.json"
     if path.exists() and not force:
         return load(path)
@@ -520,6 +544,9 @@ def analyze(brief: Dict[str, Any], out: Path, counts: Dict[str, Any], answers: L
         "directAnswerAboutClient": llm.text_of(load(direct)["response"]) if direct.exists() else None,
         "clientWebsite": pages,
     }
+    if models and len(models) > 1:
+        # The same questions asked to other models: the first row is the model the report is counted on
+        material["sameQuestionsOnOtherModels"] = models
     if before:
         # What the earlier report found and promised, so this one can say what changed and whether its goals were met
         material["previousReport"] = {
@@ -565,7 +592,7 @@ def closed(lead: str) -> str:
     return lead if not lead or lead[-1] in ".!?:»\"" else f"{lead}."
 
 
-def build(brief: Dict[str, Any], counts: Dict[str, Any], cited: List[Dict[str, Any]], written: Dict[str, Any], collected_at: str, model: str, before: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+def build(brief: Dict[str, Any], counts: Dict[str, Any], cited: List[Dict[str, Any]], written: Dict[str, Any], collected_at: str, model: str, before: Optional[Dict[str, Any]] = None, models: Optional[List[Dict[str, Any]]] = None) -> Dict[str, Any]:
     """The report's file, in the shape of `frontend/src/features/pilot/types`."""
     written = tidy(written)
     for points in (written["flags"], written["strengths"], written["checks"]):
@@ -642,4 +669,5 @@ def build(brief: Dict[str, Any], counts: Dict[str, Any], cited: List[Dict[str, A
         "checks": written["checks"],
         "contact": {key: (brief.get("contact") or {}).get(key) for key in ("phone", "telegram", "email")},
         "previous": previous,
+        "models": models if models and len(models) > 1 else None,
     }

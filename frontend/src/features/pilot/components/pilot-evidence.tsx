@@ -14,7 +14,7 @@ const percent = (part: number, whole: number) => `${whole > 0 ? (part / whole) *
  * What was asked and what came back: for each question, how many businesses ChatGPT named, how many of
  * them it recommended and whom, and whether the client was among them.
  */
-export function PilotQuestions({ pilot, t, number, figure }: Props & { figure: number }) {
+export function PilotQuestions({ pilot, t, number, figure, table }: Props & { figure: number; table: number | null }) {
   const { questions, method, totals, terms } = pilot;
   const section = pilot.sections.questions;
   const widest = Math.max(1, ...questions.map((question) => question.brandsNamed));
@@ -99,6 +99,39 @@ export function PilotQuestions({ pilot, t, number, figure }: Props & { figure: n
           <Swatch className="bg-(--p-bar-soft)">{t("questions.legendNamed")}</Swatch>
         </p>
       </div>
+
+      {table !== null && pilot.models && (
+        <div className="mt-8 break-inside-avoid">
+          <Caption label={t("table", { n: table })}>{t("questions.modelsTable", { engine: method.engine })}</Caption>
+          <Table
+            className="mt-1"
+            head={
+              <>
+                <th scope="col">{t("questions.colModel")}</th>
+                <th scope="col">{t("summary.named")}</th>
+                <th scope="col">{t("summary.recommended")}</th>
+                <th scope="col">{t("questions.colLeader")}</th>
+              </>
+            }
+          >
+            {pilot.models.map((row, index) => (
+              <tr key={row.model}>
+                <th scope="row" className="font-semibold text-(--p-ink)">
+                  {row.model}
+                  {index === 0 && <span className="ml-2 font-normal text-(--p-mute)">{t("questions.thisReport")}</span>}
+                </th>
+                {[row.named, row.recommended].map((n, column) => (
+                  <td key={column} className="whitespace-nowrap">
+                    <Mark tone={n === 0 ? "bad" : "good"}>{t("countOf", { n, of: row.answers })}</Mark>
+                  </td>
+                ))}
+                <td className="text-(--p-body)">{row.leader ? `${row.leader}: ${t("countOf", { n: row.leaderRecommended, of: row.answers })}` : "—"}</td>
+              </tr>
+            ))}
+          </Table>
+          <p className="mt-2.5 text-xs text-(--p-mute)">{t("questions.modelsNote")}</p>
+        </div>
+      )}
 
       {(section.note || pilot.quote) && (
         <WithAside aside={section.note && <Note label={t("takeaway")}>{section.note}</Note>}>

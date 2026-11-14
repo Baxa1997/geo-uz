@@ -164,6 +164,17 @@ export interface PilotComparison {
   sourceChanges: { name: string; before: boolean | null; after: boolean | null }[];
 }
 
+/** The same questions asked to one model: the client's counts beside that model's most recommended business. */
+export interface PilotModelRow {
+  model: string;
+  answers: number;
+  named: number;
+  recommended: number;
+  leader: string | null;
+  leaderNamed: number;
+  leaderRecommended: number;
+}
+
 export interface Pilot {
   slug: string;
   language: PilotLanguage;
@@ -227,4 +238,6 @@ export interface Pilot {
   contact: { phone: string | null; telegram: string | null; email: string | null };
   /** Set from a client's second report on: what changed since the one before. */
   previous?: PilotComparison | null;
+  /** When the questions were asked to several models: the report's own model first. */
+  models?: PilotModelRow[] | null;
 }

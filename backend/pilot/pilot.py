@@ -58,7 +58,9 @@ def main() -> None:
     parser.add_argument("brief", type=Path)
     parser.add_argument("--to", choices=ORDER, default="build", help="stop after this step")
     parser.add_argument("--redo", choices=ORDER, action="append", default=[], help="run this step again even if its result is saved (may be repeated)")
-    parser.add_argument("--ask-model", default="gpt-6.1-sol", help="the model that answers the questions, with web search")
+    parser.add_argument("--ask-model", default="gpt-6.1-terra", help="the model that answers the questions, with web search (the report is counted on it)")
+    parser.add_argument("--also-model", action="append", default=[], help="ask the same questions to another model too, to show whether the picture holds across models (may be repeated)")
+    parser.add_argument("--search-context", choices=["low", "medium", "high"], help="how much of the pages the search reads: most of an answer's cost (default: the tool's own, medium)")
     parser.add_argument("--read-model", default="gpt-6.1-terra", help="the model that reads the answers")
     parser.add_argument("--write-model", default="gpt-6.1-sol", help="the model that drafts the analysis")
     parser.add_argument("--out", type=Path, default=HERE.parent.parent / "frontend" / "pilots", help="where the report's file goes")
@@ -87,7 +89,7 @@ def main() -> None:
 
     try:
         if due("ask"):
-            steps.ask(brief, work, args.ask_model, costs, "ask" in redo)
+            steps.ask(brief, work, args.ask_model, costs, "ask" in redo, args.search_context)
         if due("extract"):
             answers = steps.extract(brief, work, args.read_model, costs, "extract" in redo)
         if due("names"):
@@ -98,7 +100,15 @@ def main() -> None:
             pages = steps.site(brief, work, "site" in redo)
         if due("analyze"):
             counts = steps.aggregate(brief, answers, mapping)
-            written = steps.analyze(brief, work, counts, answers, cited, pages, args.write_model, costs, "analyze" in redo, before)
+            # The same questions on other models, each in a folder of its own: asked, read and counted the same way
+            models = [steps.model_row(args.ask_model, counts)]
+            for other in args.also_model:
+                print(f"  the same questions on {other}")
+                side = work / "models" / other
+                steps.ask(brief, side, other, costs, context=args.search_context, direct=False)
+                theirs = steps.extract(brief, side, args.read_model, costs)
+                models.append(steps.model_row(other, steps.aggregate(brief, theirs, steps.names(brief, side, theirs, args.read_model, costs))))
+            written = steps.analyze(brief, work, counts, answers, cited, pages, args.write_model, costs, "analyze" in redo, before, models)
         if due("build"):
             target = args.out / f"{brief['slug']}.json"
             if target.exists() and not args.overwrite:
@@ -106,7 +116,7 @@ def main() -> None:
             else:
                 first = work / "raw" / "q1_s1.json"
                 day = datetime.date.fromtimestamp(first.stat().st_mtime).isoformat()
-                steps.save(target, steps.build(brief, counts, cited, written, day, args.ask_model, before))
+                steps.save(target, steps.build(brief, counts, cited, written, day, args.ask_model, before, models))
                 print(f"  written: {target}\n  open http://localhost:3000/{brief['language']}/pilots/{brief['slug']} and read every sentence before sending it")
     except llm.LlmError as error:
         print(f"\nStopped: {error}\nWhat was collected is kept in {work}; run the same command to go on.")

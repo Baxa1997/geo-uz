@@ -19,6 +19,11 @@ python3 pilot.py briefs/example.json              # the rest
 Then, with the frontend running (`npm run dev` in `frontend/`), open `http://localhost:3000/ru/pilots/<slug>`.
 "Print or save as PDF" gives the PDF (Chrome; A4).
 
+`--ask-model` picks the model the report is counted on (default `gpt-6.1-terra`: about $0.044 an answer in Nov 2026;
+`gpt-6.1-sol` $0.077, `gpt-6-luna` $0.024). `--also-model <name>` asks the same questions to another model too, and the
+report then shows the client's place on each: one answer differs from the next and one model from another, the
+pattern over many answers is what holds.
+
 A step whose result is saved is not run or paid for again. `--redo <step>` runs one again; `--overwrite` lets
 `build` replace a report's file that exists (it may hold hand edits).
 
@@ -28,7 +33,7 @@ A step whose result is saved is not run or paid for again. `--redo <step>` runs 
 
 - `slug`: the report's address. `language`: the report's language (`ru`, `uz`, `en`).
 - `brand`: the client's name, its other spellings (Latin, Cyrillic, short forms: a mention is found by them) and
-  website.
+  website (`domain`), plus `sites` for any other site of its own, such as a school's site beside its group's.
 - `category`, `city` (in the report's language), `city_en` (for the search tool's location), `country`, `timezone`.
 - `questions`: what customers ask, each `ru` or `uz`. **Never name the client in a question**: the point is whom
   ChatGPT names by itself. The script refuses a brief that does. It adds one direct question about the client by

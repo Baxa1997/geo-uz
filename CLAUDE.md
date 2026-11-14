@@ -87,6 +87,16 @@ Any other number makes a new account, which goes through onboarding and gets a p
   app's: both are in `backend/PLAN.md`, change log. The prompts were corrected twice from what the run showed
   (what counts as a recommendation, values in the report's language, short names, competitors' own sites,
   short sentences). The draft still needs a person's read before it is sent.
+- **Cheaper models, the client's real site, and the same questions on several models (14 Nov), on the branch
+  `models-and-site`; merged and pushed the same day, when the user said "commit, push".** The same nine
+  questions on two cheaper models: about $0.044 and $0.024 an answer against $0.077, with the same leaders
+  and the client as absent, so the default asking model is now `gpt-6.1-terra`. The user asked whether
+  answers differ between models: they do, and between two runs of one model too (about half the businesses
+  in common), while the pattern over many answers holds. So a report may ask the same questions to other
+  models (`--also-model`) and shows the client's place on each in a table under the questions. The site
+  reader follows redirects and reads the inner pages; the first client's school turned out to live on another
+  domain than the one given, and to share its abbreviation with a leading competitor. Details in
+  `backend/PLAN.md`, change log.
 
 - **Every page exists on mock data:** landing page, free check, login (phone and code, Telegram),
   onboarding in five steps, the first check's progress screen, project list, Overview, Savollar (questions),
@@ -361,8 +371,8 @@ Any other number makes a new account, which goes through onboarding and gets a p
 
 0. **Pilots first (the user's decision, 14 Nov).** The first real run is done. Next: decide what the cost of
    an answer ($0.077) does to the prices (try a cheaper model; fewer samples or runs; higher prices); read
-   and correct the first client's draft and fill the contacts before it is sent; make the script read more
-   than one page of a client's site. Then sell 5–10
+   and correct the first client's draft and fill the contacts before it is sent. Still unmeasured: the ChatGPT
+   app against the API on the same day (the user pastes three answers from the app). Then sell 5–10
    pilots by hand. Only after that the backend, and then for the report and four pages (Overview, Savollar,
    Javoblar, Harakatlar). Ideas agreed as direction, not built: the app opening on "how AI sees you" beside
    the leader, counts instead of percentages while samples are small, the report's look in the app, a

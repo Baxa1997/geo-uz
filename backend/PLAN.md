@@ -239,6 +239,15 @@ That is roughly one to two US cents per answer, and it has to cover the answer w
     when hedged; a row of a price table or an address list does not. The first, narrow rule (closing advice
     only) judged whole answers as recommending nobody.
   - **Retrieved against cited (open question 17): very different.** 16–66 pages consulted an answer, 3–7 cited.
+  - **Cheaper models, the same nine questions the same evening:** `gpt-6.1-terra` $0.044 an answer,
+    `gpt-6-luna` $0.024 (against `gpt-6.1-sol` $0.077). On luna almost all of it is the search fee (about two
+    searches at $0.01), so that is the floor with web search on. The picture holds: the same four or five
+    international schools lead on all three (6 of the top 8 shared with sol), and the client is in 1, 2 and 2
+    of 27 answers. The cheaper models name more different schools (40 against 32). One run each: not enough
+    to say which is closer to the ChatGPT app. `--search-context low` exists and is untried.
+  - **Reading a client's site:** the address in the brief was the group's hub; the school's own site is another
+    domain behind a redirect. The reader now follows redirects, opens the report's language and reads the
+    pages on prices, programme, branches and admission; a brief may list several sites (`brand.sites`).
   - Among the most cited sites are competitors' own websites; the report marks them and doesn't count them as
     places to get listed. Only one page of the client's site was read (its inner links were not followed).
 

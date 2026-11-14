@@ -66,18 +66,20 @@ def respond(body: Dict[str, Any], attempts: int = 4) -> Dict[str, Any]:
     raise LlmError("No response")
 
 
-def ask(model: str, question: str, country: str, city: str, timezone: str) -> Dict[str, Any]:
-    """One customer's question in a new conversation, web search on, asked as from the customer's city."""
+def ask(model: str, question: str, country: str, city: str, timezone: str, context: Optional[str] = None) -> Dict[str, Any]:
+    """One customer's question in a new conversation, web search on, asked as from the customer's city.
+
+    `context` is the search tool's `search_context_size` (low, medium, high): how much of the pages it reads,
+    which is most of an answer's cost. None leaves the tool's default (medium).
+    """
+    tool: Dict[str, Any] = {"type": "web_search", "user_location": {"type": "approximate", "country": country, "city": city, "timezone": timezone}}
+    if context:
+        tool["search_context_size"] = context
     return respond(
         {
             "model": model,
             "input": question,
-            "tools": [
-                {
-                    "type": "web_search",
-                    "user_location": {"type": "approximate", "country": country, "city": city, "timezone": timezone},
-                }
-            ],
+            "tools": [tool],
             # Every page the search consulted, not only the ones the answer shows as its sources
             "include": ["web_search_call.action.sources"],
         }
