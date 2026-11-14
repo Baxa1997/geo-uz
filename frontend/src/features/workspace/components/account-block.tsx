@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut } from "lucide-react";
+import { SignOutIcon as LogOut } from "@phosphor-icons/react/dist/ssr/SignOut";
 import { useTranslations } from "next-intl";
 import { useLogout } from "@/shared/hooks/use-logout";
 import { cn } from "@/shared/helpers/utils";

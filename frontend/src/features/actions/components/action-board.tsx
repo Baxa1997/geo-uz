@@ -1,27 +1,24 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import {
-  BookOpen,
-  Check,
-  ChevronDown,
-  Circle,
-  FileText,
-  Folder,
-  Globe,
-  Layers,
-  ListFilter,
-  ListTree,
-  Plus,
-  RotateCcw,
-  SignalHigh,
-  SignalLow,
-  SignalMedium,
-  Undo2,
-  Upload,
-  X,
-  type LucideIcon,
-} from "lucide-react";
+import { BookOpenIcon as BookOpen } from "@phosphor-icons/react/dist/ssr/BookOpen";
+import { CheckIcon as Check } from "@phosphor-icons/react/dist/ssr/Check";
+import { CaretDownIcon as ChevronDown } from "@phosphor-icons/react/dist/ssr/CaretDown";
+import { CircleIcon as Circle } from "@phosphor-icons/react/dist/ssr/Circle";
+import { FileTextIcon as FileText } from "@phosphor-icons/react/dist/ssr/FileText";
+import { FolderIcon as Folder } from "@phosphor-icons/react/dist/ssr/Folder";
+import { GlobeIcon as Globe } from "@phosphor-icons/react/dist/ssr/Globe";
+import { StackIcon as Layers } from "@phosphor-icons/react/dist/ssr/Stack";
+import { FunnelSimpleIcon as ListFilter } from "@phosphor-icons/react/dist/ssr/FunnelSimple";
+import { TreeViewIcon as ListTree } from "@phosphor-icons/react/dist/ssr/TreeView";
+import { PlusIcon as Plus } from "@phosphor-icons/react/dist/ssr/Plus";
+import { ArrowCounterClockwiseIcon as RotateCcw } from "@phosphor-icons/react/dist/ssr/ArrowCounterClockwise";
+import { CellSignalHighIcon as SignalHigh } from "@phosphor-icons/react/dist/ssr/CellSignalHigh";
+import { CellSignalLowIcon as SignalLow } from "@phosphor-icons/react/dist/ssr/CellSignalLow";
+import { CellSignalMediumIcon as SignalMedium } from "@phosphor-icons/react/dist/ssr/CellSignalMedium";
+import { ArrowUUpLeftIcon as Undo2 } from "@phosphor-icons/react/dist/ssr/ArrowUUpLeft";
+import { UploadSimpleIcon as Upload } from "@phosphor-icons/react/dist/ssr/UploadSimple";
+import { XIcon as X } from "@phosphor-icons/react/dist/ssr/X";
 import { useMessages, useTimeZone, useTranslations } from "next-intl";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -76,6 +73,7 @@ import { ActionToast, type ToastState } from "./action-toast";
 import { AddContentDialog } from "./add-content-dialog";
 import { GoalTiles, type GoalCount } from "./goal-tiles";
 import { StatusIcon } from "./status-icon";
+import type { AppIcon } from "@/shared/types/icon";
 
 /** From this width of the page (Tailwind's @4xl) an opened action sits beside the list, as on Peec; below it, it covers the screen. */
 const SPLIT_WIDTH = 896;
@@ -97,8 +95,8 @@ const CATEGORY_KINDS: Record<Category, ActionKind> = {
   access: "technical",
   markup: "technical",
 };
-const IMPACT_ICONS: Record<ActionImpact, LucideIcon> = { high: SignalHigh, medium: SignalMedium, low: SignalLow };
-const OWNER_ICONS: Record<Owner, LucideIcon> = { own: FileText, earned: Globe, everywhere: Layers };
+const IMPACT_ICONS: Record<ActionImpact, AppIcon> = { high: SignalHigh, medium: SignalMedium, low: SignalLow };
+const OWNER_ICONS: Record<Owner, AppIcon> = { own: FileText, earned: Globe, everywhere: Layers };
 
 /** A group of actions under a status, and its sub-groups by what to do when there are two or more. */
 interface Branch {
@@ -528,7 +526,7 @@ export function ActionBoard({
         return key === NO_TOPIC ? t("noTopic") : labelFor(messages.Topics, key);
     }
   };
-  const groupIcon = (key: string): LucideIcon => {
+  const groupIcon = (key: string): AppIcon => {
     switch (groupBy) {
       case "goal":
         return ACTION_KIND_ICONS[key as ActionKind];

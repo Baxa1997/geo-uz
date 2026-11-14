@@ -1,6 +1,11 @@
 "use client";
 
-import { CircleSlash, Globe, Search, SearchX, Sparkles, Users } from "lucide-react";
+import { ProhibitIcon as CircleSlash } from "@phosphor-icons/react/dist/ssr/Prohibit";
+import { GlobeIcon as Globe } from "@phosphor-icons/react/dist/ssr/Globe";
+import { MagnifyingGlassIcon as Search } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass";
+import { MagnifyingGlassMinusIcon as SearchX } from "@phosphor-icons/react/dist/ssr/MagnifyingGlassMinus";
+import { SparkleIcon as Sparkles } from "@phosphor-icons/react/dist/ssr/Sparkle";
+import { UsersIcon as Users } from "@phosphor-icons/react/dist/ssr/Users";
 import { useMessages, useTimeZone, useTranslations } from "next-intl";
 import { useState } from "react";
 import { AnswersList } from "@/shared/components/answers/answers-list";

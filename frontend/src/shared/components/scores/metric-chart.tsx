@@ -1,6 +1,7 @@
 "use client";
 
-import { ChartColumn, ChartLine } from "lucide-react";
+import { ChartBarIcon as ChartColumn } from "@phosphor-icons/react/dist/ssr/ChartBar";
+import { ChartLineIcon as ChartLine } from "@phosphor-icons/react/dist/ssr/ChartLine";
 import { useLocale, useTimeZone, useTranslations } from "next-intl";
 import { useState, type KeyboardEvent, type PointerEvent } from "react";
 import { Segmented, SegmentedButton } from "@/shared/components/segmented";

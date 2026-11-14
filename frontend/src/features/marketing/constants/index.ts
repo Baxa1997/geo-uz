@@ -1,23 +1,19 @@
-import {
-  CircleAlert,
-  CircleQuestionMark,
-  Eye,
-  FileText,
-  HandCoins,
-  Languages,
-  Link2,
-  ListChecks,
-  MapPinned,
-  PhoneCall,
-  ScanSearch,
-  Send,
-  Smile,
-  Sparkles,
-  Wrench,
-  type LucideIcon,
-} from "lucide-react";
+import { WarningCircleIcon as CircleAlert } from "@phosphor-icons/react/dist/ssr/WarningCircle";
+import { QuestionIcon as CircleQuestionMark } from "@phosphor-icons/react/dist/ssr/Question";
+import { FileTextIcon as FileText } from "@phosphor-icons/react/dist/ssr/FileText";
+import { HandCoinsIcon as HandCoins } from "@phosphor-icons/react/dist/ssr/HandCoins";
+import { TranslateIcon as Languages } from "@phosphor-icons/react/dist/ssr/Translate";
+import { LinkIcon as Link2 } from "@phosphor-icons/react/dist/ssr/Link";
+import { MapPinAreaIcon as MapPinned } from "@phosphor-icons/react/dist/ssr/MapPinArea";
+import { PhoneCallIcon as PhoneCall } from "@phosphor-icons/react/dist/ssr/PhoneCall";
+import { ScanIcon as ScanSearch } from "@phosphor-icons/react/dist/ssr/Scan";
+import { PaperPlaneTiltIcon as Send } from "@phosphor-icons/react/dist/ssr/PaperPlaneTilt";
+import { SparkleIcon as Sparkles } from "@phosphor-icons/react/dist/ssr/Sparkle";
+import { WrenchIcon as Wrench } from "@phosphor-icons/react/dist/ssr/Wrench";
 import { MANAGED_PRICE_FROM, PLAN_PRICES } from "@/shared/constants";
 import type { DemoSector } from "@/shared/types/api";
+import { IconActions, IconMentions, IconPlace, IconRating, IconReports } from "@/shared/components/own-icons";
+import type { AppIcon } from "@/shared/types/icon";
 
 /** Steps of the progress screen on /check; keys in messages/Check. */
 export const CHECK_STEPS = ["stepSite", "stepQuestions", "stepAnswers", "stepResult"] as const;
@@ -50,8 +46,14 @@ type SectionId = (typeof SECTION)[keyof typeof SECTION];
 export interface NavItem {
   key: "visibility" | "features" | "reports" | "telegram" | "check" | "method" | "faq" | "demo";
   hash: SectionId;
-  icon: LucideIcon;
+  icon: AppIcon;
 }
+
+/**
+ * An icon on the public pages sits in a filled, rounded square, white on a color of its own (the navbar's
+ * menus, the "why us" cards). The colors are taken in this order.
+ */
+export const TILE_COLORS = ["#3b7ddd", "#4a8263", "#cf7a2c", "#8763b4", "#b24f80", "#14182b"] as const;
 
 /** The navbar: a menu of section links, or a plain link. Labels in messages/Landing.nav. */
 export const NAV: ({ key: "product" | "resources"; items: NavItem[] } | { key: "pricing" | "agencies"; hash: SectionId })[] =
@@ -59,9 +61,9 @@ export const NAV: ({ key: "product" | "resources"; items: NavItem[] } | { key: "
     {
       key: "product",
       items: [
-        { key: "visibility", hash: SECTION.metrics, icon: Eye },
-        { key: "features", hash: SECTION.features, icon: ListChecks },
-        { key: "reports", hash: SECTION.reports, icon: FileText },
+        { key: "visibility", hash: SECTION.metrics, icon: IconMentions },
+        { key: "features", hash: SECTION.features, icon: IconActions },
+        { key: "reports", hash: SECTION.reports, icon: IconReports },
         { key: "telegram", hash: SECTION.telegram, icon: Send },
       ],
     },
@@ -79,10 +81,10 @@ export const NAV: ({ key: "product" | "resources"; items: NavItem[] } | { key: "
   ];
 
 /** The three numbers we report per brand; texts in messages/Landing.metrics.tabs. */
-export const METRICS: { key: "visibility" | "position" | "tone"; icon: LucideIcon }[] = [
-  { key: "visibility", icon: Eye },
-  { key: "position", icon: ListChecks },
-  { key: "tone", icon: Smile },
+export const METRICS: { key: "visibility" | "position" | "tone"; icon: AppIcon }[] = [
+  { key: "visibility", icon: IconMentions },
+  { key: "position", icon: IconPlace },
+  { key: "tone", icon: IconRating },
 ];
 
 /** How many questions and sources the feature cards show. */
@@ -92,14 +94,14 @@ export const FEATURE_SOURCES = 4;
 /** Key features, in the order of the bento grid (wide, narrow / narrow, wide / wide, narrow). */
 export const KEY_FEATURES = ["prompts", "suggested", "brands", "engines", "sources", "facts"] as const;
 
-export const REPORT_CHANNELS: { key: "pdf" | "telegram" | "link"; icon: LucideIcon }[] = [
+export const REPORT_CHANNELS: { key: "pdf" | "telegram" | "link"; icon: AppIcon }[] = [
   { key: "pdf", icon: FileText },
   { key: "telegram", icon: Send },
   { key: "link", icon: Link2 },
 ];
 
 /** What only we do: the cards in place of customer quotes, which we don't have yet. */
-export const LOCAL: { key: "languages" | "sources" | "facts" | "telegram" | "price" | "managed"; icon: LucideIcon }[] = [
+export const LOCAL: { key: "languages" | "sources" | "facts" | "telegram" | "price" | "managed"; icon: AppIcon }[] = [
   { key: "languages", icon: Languages },
   { key: "sources", icon: MapPinned },
   { key: "facts", icon: CircleAlert },

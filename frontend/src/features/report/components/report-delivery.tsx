@@ -1,7 +1,10 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import { Building2, Languages, Mail, Send } from "lucide-react";
+import { BuildingsIcon as Building2 } from "@phosphor-icons/react/dist/ssr/Buildings";
+import { TranslateIcon as Languages } from "@phosphor-icons/react/dist/ssr/Translate";
+import { EnvelopeIcon as Mail } from "@phosphor-icons/react/dist/ssr/Envelope";
+import { PaperPlaneTiltIcon as Send } from "@phosphor-icons/react/dist/ssr/PaperPlaneTilt";
 import { useTranslations } from "next-intl";
 import { useId, useState } from "react";
 import { FormSelect } from "@/shared/components/form-select";

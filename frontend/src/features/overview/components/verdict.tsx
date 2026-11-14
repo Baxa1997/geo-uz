@@ -1,4 +1,4 @@
-import { Lightbulb } from "lucide-react";
+import { LightbulbIcon as Lightbulb } from "@phosphor-icons/react/dist/ssr/Lightbulb";
 import { useLocale, useTranslations } from "next-intl";
 import { formatDecimal, formatPercent } from "@/shared/helpers/numbers";
 import { headlineMetrics, outOfTen, scoreOf, topCompetitor } from "@/shared/helpers/scores";

@@ -1,7 +1,7 @@
 "use client";
 
 import { Dialog } from "@base-ui/react/dialog";
-import { X } from "lucide-react";
+import { XIcon as X } from "@phosphor-icons/react/dist/ssr/X";
 import { useTranslations } from "next-intl";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/helpers/utils";

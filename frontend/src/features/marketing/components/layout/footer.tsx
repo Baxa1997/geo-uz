@@ -60,7 +60,7 @@ export function Footer() {
       <div className="mx-auto grid max-w-7xl gap-12 px-4 py-16 sm:px-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,2.2fr)]">
         <div className="flex flex-col items-start gap-5">
           <Logo className="self-start" />
-          <p className="text-xl/snug font-medium text-balance">
+          <p className="text-xl/snug font-semibold tracking-tight text-balance">
             {t("tagline")} <span className="block text-background/60">{t("taglineMuted")}</span>
           </p>
         </div>

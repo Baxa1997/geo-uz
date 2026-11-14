@@ -1,6 +1,9 @@
 "use client";
 
-import { Check, ChevronsUpDown, LayoutGrid, Plus } from "lucide-react";
+import { CheckIcon as Check } from "@phosphor-icons/react/dist/ssr/Check";
+import { CaretUpDownIcon as ChevronsUpDown } from "@phosphor-icons/react/dist/ssr/CaretUpDown";
+import { SquaresFourIcon as LayoutGrid } from "@phosphor-icons/react/dist/ssr/SquaresFour";
+import { PlusIcon as Plus } from "@phosphor-icons/react/dist/ssr/Plus";
 import { useMessages, useTranslations } from "next-intl";
 import {
   DropdownMenu,

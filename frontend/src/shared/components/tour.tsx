@@ -1,6 +1,7 @@
 "use client";
 
-import { ChevronLeft, X } from "lucide-react";
+import { CaretLeftIcon as ChevronLeft } from "@phosphor-icons/react/dist/ssr/CaretLeft";
+import { XIcon as X } from "@phosphor-icons/react/dist/ssr/X";
 import { useTranslations } from "next-intl";
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";

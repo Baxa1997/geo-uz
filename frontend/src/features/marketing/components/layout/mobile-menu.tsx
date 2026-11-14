@@ -1,6 +1,7 @@
 "use client";
 
-import { Menu, X } from "lucide-react";
+import { ListIcon as Menu } from "@phosphor-icons/react/dist/ssr/List";
+import { XIcon as X } from "@phosphor-icons/react/dist/ssr/X";
 import { useTranslations } from "next-intl";
 import { useRef } from "react";
 import { LocaleSwitcher } from "@/shared/components/locale-switcher";

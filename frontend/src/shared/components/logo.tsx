@@ -2,21 +2,32 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/shared/helpers/utils";
 
-/** Placeholder brand: a lens with a dot ("are you seen?") and the working name. Links home. */
-export function Logo({ compact = false, className }: { compact?: boolean; className?: string }) {
+/**
+ * Our mark: an assistant's answer as three lines of text, one of them bright among the faint ones, the line
+ * that names you. Beside it the working name. Links home.
+ */
+export function Logo({ compact = false, size = "md", className }: { compact?: boolean; size?: "md" | "lg"; className?: string }) {
   const t = useTranslations("Common");
 
   return (
     // No prefetch: on the landing page it would download the page itself, and in the app nobody is about to leave
-    <Link href="/" prefetch={false} aria-label={t("home")} className={cn("flex shrink-0 items-center gap-2", className)}>
-      <span aria-hidden className="flex size-7 items-center justify-center rounded-lg bg-brand text-brand-foreground">
-        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" className="size-4">
-          <circle cx="8.5" cy="8.5" r="5.5" />
-          <path d="m12.5 12.5 4 4" strokeLinecap="round" />
-          <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" stroke="none" />
-        </svg>
-      </span>
-      {!compact && <span className="text-lg font-semibold tracking-tight">GEO</span>}
+    <Link href="/" prefetch={false} aria-label={t("home")} className={cn("flex shrink-0 items-center", size === "lg" ? "gap-2.5" : "gap-2", className)}>
+      <LogoMark className={size === "lg" ? "size-9" : "size-7"} />
+      {!compact && <span className={cn("font-bold tracking-tight", size === "lg" ? "text-2xl" : "text-lg")}>GEO</span>}
     </Link>
+  );
+}
+
+/** The mark alone, in its own colors on any ground. */
+export function LogoMark({ className }: { className?: string }) {
+  return (
+    <svg aria-hidden viewBox="0 0 28 28" className={cn("shrink-0", className)}>
+      <rect width="28" height="28" rx="7" fill="#1c2e6e" />
+      <g strokeWidth="3" strokeLinecap="round">
+        <path d="M7.5 8.5h13" stroke="#fff" strokeOpacity="0.45" />
+        <path d="M7.5 14h9" stroke="#fff" />
+        <path d="M7.5 19.5h11" stroke="#fff" strokeOpacity="0.45" />
+      </g>
+    </svg>
   );
 }

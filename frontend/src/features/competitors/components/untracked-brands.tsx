@@ -1,7 +1,9 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Check, Undo2, X } from "lucide-react";
+import { CheckIcon as Check } from "@phosphor-icons/react/dist/ssr/Check";
+import { ArrowUUpLeftIcon as Undo2 } from "@phosphor-icons/react/dist/ssr/ArrowUUpLeft";
+import { XIcon as X } from "@phosphor-icons/react/dist/ssr/X";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { Hint } from "@/shared/components/hint";

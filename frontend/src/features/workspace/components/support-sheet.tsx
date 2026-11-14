@@ -1,7 +1,8 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import { ArrowUp, CircleCheck } from "lucide-react";
+import { ArrowUpIcon as ArrowUp } from "@phosphor-icons/react/dist/ssr/ArrowUp";
+import { CheckCircleIcon as CircleCheck } from "@phosphor-icons/react/dist/ssr/CheckCircle";
 import { useTranslations } from "next-intl";
 import { useId, useState, type FormEvent } from "react";
 import { Button } from "@/shared/components/ui/button";

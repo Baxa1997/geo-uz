@@ -1,29 +1,27 @@
-import {
-  ChevronsUpDown,
-  CircleAlert,
-  FileText,
-  Globe,
-  LayoutDashboard,
-  ListChecks,
-  MessageCircleQuestion,
-  MessagesSquare,
-  Plus,
-  Search,
-  Settings,
-  Users,
-  type LucideIcon,
-} from "lucide-react";
+import { CaretUpDownIcon as ChevronsUpDown } from "@phosphor-icons/react/dist/ssr/CaretUpDown";
+import { WarningCircleIcon as CircleAlert } from "@phosphor-icons/react/dist/ssr/WarningCircle";
+import { FileTextIcon as FileText } from "@phosphor-icons/react/dist/ssr/FileText";
+import { GlobeIcon as Globe } from "@phosphor-icons/react/dist/ssr/Globe";
+import { SquaresFourIcon as LayoutDashboard } from "@phosphor-icons/react/dist/ssr/SquaresFour";
+import { ListChecksIcon as ListChecks } from "@phosphor-icons/react/dist/ssr/ListChecks";
+import { ChatCircleDotsIcon as MessageCircleQuestion } from "@phosphor-icons/react/dist/ssr/ChatCircleDots";
+import { ChatsIcon as MessagesSquare } from "@phosphor-icons/react/dist/ssr/Chats";
+import { PlusIcon as Plus } from "@phosphor-icons/react/dist/ssr/Plus";
+import { MagnifyingGlassIcon as Search } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass";
+import { GearSixIcon as Settings } from "@phosphor-icons/react/dist/ssr/GearSix";
+import { UsersIcon as Users } from "@phosphor-icons/react/dist/ssr/Users";
 import { useMessages, useTranslations } from "next-intl";
 import { labelFor } from "@/shared/helpers/labels";
 import { cn } from "@/shared/helpers/utils";
 import { ALL_TOPICS, type OnboardingStep } from "../constants";
 import { questionsInTopics } from "../helpers/onboarding";
 import type { QuestionDraft, SiteDraft, TopicDraft } from "../types";
+import type { AppIcon } from "@/shared/types/icon";
 
 type NavKey = "overview" | "prompts" | "answers" | "competitors" | "sources" | "wrongFacts" | "actions" | "reports";
 
 /** The app's sidebar as the preview draws it (features/workspace keeps the real one). */
-const NAV: { key: NavKey; icon: LucideIcon; heading?: boolean }[] = [
+const NAV: { key: NavKey; icon: AppIcon; heading?: boolean }[] = [
   { key: "overview", icon: LayoutDashboard },
   { key: "prompts", icon: MessageCircleQuestion, heading: true },
   { key: "answers", icon: MessagesSquare },

@@ -1,6 +1,9 @@
 "use client";
 
-import { CalendarDays, ChevronDown, CreditCard, Plus } from "lucide-react";
+import { CalendarDotsIcon as CalendarDays } from "@phosphor-icons/react/dist/ssr/CalendarDots";
+import { CaretDownIcon as ChevronDown } from "@phosphor-icons/react/dist/ssr/CaretDown";
+import { CreditCardIcon as CreditCard } from "@phosphor-icons/react/dist/ssr/CreditCard";
+import { PlusIcon as Plus } from "@phosphor-icons/react/dist/ssr/Plus";
 import { useLocale, useTimeZone, useTranslations } from "next-intl";
 import { EngineIcon } from "@/shared/components/engine-icon";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/components/ui/dropdown-menu";

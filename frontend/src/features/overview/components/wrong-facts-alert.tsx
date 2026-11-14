@@ -1,4 +1,4 @@
-import { CircleAlert } from "lucide-react";
+import { WarningCircleIcon as CircleAlert } from "@phosphor-icons/react/dist/ssr/WarningCircle";
 import { useTranslations } from "next-intl";
 import { ArrowLink } from "@/shared/components/arrow-link";
 

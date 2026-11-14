@@ -1,6 +1,10 @@
 "use client";
 
-import { ChevronDown, Download, ExternalLink, Link2, Share } from "lucide-react";
+import { CaretDownIcon as ChevronDown } from "@phosphor-icons/react/dist/ssr/CaretDown";
+import { DownloadSimpleIcon as Download } from "@phosphor-icons/react/dist/ssr/DownloadSimple";
+import { ArrowSquareOutIcon as ExternalLink } from "@phosphor-icons/react/dist/ssr/ArrowSquareOut";
+import { LinkIcon as Link2 } from "@phosphor-icons/react/dist/ssr/Link";
+import { ExportIcon as Share } from "@phosphor-icons/react/dist/ssr/Export";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import {

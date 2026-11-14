@@ -94,7 +94,7 @@
       "competitors": "Raqobatdagi oʻrin",
       "topics": "Mavzular va savollar",
       "sources": "ChatGPT tayanadigan manbalar",
-      "accuracy": "Aniqlik va ohang",
+      "accuracy": "Aniqlik va baho",
       "risks": "Xavflar va imkoniyatlar",
       "actions": "Harakatlar rejasi",
       "method": "Usul va qamrov",
@@ -138,12 +138,12 @@
       "lead": "Oxirgi tekshiruvdagi barcha kuzatilayotgan brendlar, eng koʻp koʻringanidan boshlab.",
       "brand": "Brend",
       "change": "Oʻzgarish",
-      "chart": "Tekshiruvlar davomidagi koʻrinish",
-      "chartLabel": "Chiziqli grafik: {count} ta tekshiruvda {brands} ta brendning koʻrinishi",
+      "chart": "Tekshiruvlar davomidagi tilga olinish",
+      "chartLabel": "Chiziqli grafik: {count} ta tekshiruvda {brands} ta brendning tilga olinishi",
       "you": "siz"
     },
     "topics": {
-      "lead": "Har bir mavzudagi koʻrinishingiz shu mavzudagi eng kuchli raqobatchiniki bilan yonma-yon, ikki chiziq bilan. Eng koʻp ortda qolgan mavzular birinchi.",
+      "lead": "Har bir mavzudagi tilga olinishingiz shu mavzudagi eng kuchli raqobatchiniki bilan yonma-yon, ikki chiziq bilan. Eng koʻp ortda qolgan mavzular birinchi.",
       "topic": "Mavzu",
       "questions": "Savollar",
       "you": "Siz",
@@ -182,14 +182,14 @@
       "top": "Eng koʻp keltirilgan saytlar"
     },
     "accuracy": {
-      "lead": "ChatGPT siz haqingizda qanday ohangda gapiradi va aytgani toʻgʻrimi. Notoʻgʻri narx yoki manzil mijoz yoʻqotishga olib keladi.",
+      "lead": "ChatGPT siz haqingizda qanday baho bilan gapiradi va aytgani toʻgʻrimi. Notoʻgʻri narx yoki manzil mijoz yoʻqotishga olib keladi.",
       "none": "Bu tekshiruvda notoʻgʻri fakt topilmadi.",
       "says": "ChatGPT aytadi",
       "correct": "Toʻgʻrisi",
       "question": "Savol",
       "since": "Birinchi marta",
-      "toneTitle": "Ohang",
-      "toneNone": "Bu tekshiruvda ChatGPT sizni tilga olmadi, shuning uchun ohangni oʻlchab boʻlmaydi.",
+      "toneTitle": "Baho",
+      "toneNone": "Bu tekshiruvda ChatGPT sizni tilga olmadi, shuning uchun bahoni oʻlchab boʻlmaydi.",
       "toneOf": "100 dan. Shu tekshiruv javoblarida siz {count} marta tilga olingansiz:",
       "factsTitle": "Notoʻgʻri faktlar"
     },
@@ -201,7 +201,7 @@
       "none": "Ochiq tavsiyalar yoʻq.",
       "more": "Yana {count} tasi — Harakatlar sahifasida.",
       "doneTitle": "Bajarilganlar",
-      "doneProof": "Shu savollardagi koʻrinish: {before} → {after}",
+      "doneProof": "Shu savollardagi tilga olinish: {before} → {after}",
       "donePending": "Natija keyingi tekshiruvdan keyin koʻrinadi",
       "progress": "{total} ta harakatdan {done} tasi bajarildi",
       "parts": {
@@ -244,11 +244,11 @@
       "conditionTerm": "Holat bahosi",
       "condition": "ChatGPT’dagi holatingizni koʻrsatadigan 0 dan 100 gacha bitta son: quyidagi {areas} ta yoʻnalish bahosining oʻrtachasi.",
       "areas": {
-        "visibility": "Koʻrinishingiz son sifatida: javoblarning 42%ida tilga olinsangiz — 42.",
-        "competition": "Koʻrinishingiz eng koʻp koʻringan kuzatilayotgan brendnikiga nisbatan, foizda. Yetakchi boʻlsangiz — 100.",
+        "visibility": "Tilga olinishingiz son sifatida: javoblarning 42%ida tilga olinsangiz — 42.",
+        "competition": "Tilga olinishingiz eng koʻp tilga olingan kuzatilayotgan brendnikiga nisbatan, foizda. Yetakchi boʻlsangiz — 100.",
         "coverage": "Kuzatilayotgan savollarning necha foizida kamida bitta javob sizni tilga olgani.",
         "sources": "ChatGPT biznes joylashishi mumkin boʻlgan saytlarga (kataloglar, xaritalar, yangiliklar, ijtimoiy tarmoqlar) bergan havolalarning necha foizi siz bor saytlarga toʻgʻri kelgani.",
-        "accuracy": "Ohangingiz (100 dan); ChatGPT siz haqingizda aytgan har bir notoʻgʻri fakt uchun {penalty} ball ayiriladi."
+        "accuracy": "Sizga berilgan baho (100 dan); ChatGPT siz haqingizda aytgan har bir notoʻgʻri fakt uchun {penalty} ball ayiriladi."
       },
       "statusTerm": "Holat",
       "status": "Baho qanday oʻqiladi: {good} dan — yaxshi, {fair} dan — oʻrtacha, {fair} dan past — zaif."
@@ -270,8 +270,8 @@
       "placeSame": "Oʻrningiz oʻzgarmadi: {now}-oʻrin.",
       "passedYou": "{name} sizdan oʻtib ketdi.",
       "youPassed": "{name} endi sizdan keyin.",
-      "competitorUp": "{name}: koʻrinish {points} punkt oshdi.",
-      "competitorDown": "{name}: koʻrinish {points} punkt tushdi.",
+      "competitorUp": "{name}: tilga olinish {points} punkt oshdi.",
+      "competitorDown": "{name}: tilga olinish {points} punkt tushdi.",
       "siteNew": "{site} — yangi: javoblarning {now}%ida keltirildi.",
       "siteUp": "{site} koʻproq keltirildi: {before}% → {now}%.",
       "siteDown": "{site} kamroq keltirildi: {before}% → {now}%.",
@@ -294,11 +294,11 @@
       "weak": "Zaif"
     },
     "areas": {
-      "visibility": "Koʻrinish",
+      "visibility": "Tilga olinish",
       "competition": "Raqobatdagi oʻrin",
       "coverage": "Savollar qamrovi",
       "sources": "Manbalarda borligi",
-      "accuracy": "Aniqlik va ohang"
+      "accuracy": "Aniqlik va baho"
     },
     "condition": {
       "overall": "Umumiy holat",
@@ -340,10 +340,10 @@
       "sourcesAll": "Ularning barchasida borsiz.",
       "sourcesNoneCited": "ChatGPT biznes joylashishi mumkin boʻlgan birorta saytga havola bermadi.",
       "ownSite": "Oʻz saytingizga esa u javoblarning {own} qismida havola beradi.",
-      "accuracy": "ChatGPT siz haqingizda gapirgandagi ohang — 100 dan {score} ({tone}).",
+      "accuracy": "ChatGPT siz haqingizda gapirgandagi baho — 100 dan {score} ({tone}).",
       "accuracyFacts": "U siz haqingizda {count} ta notoʻgʻri fakt aytmoqda; har biri bu bahodan {penalty} ball ayiradi.",
       "accuracyClean": "Siz haqingizda notoʻgʻri fakt topilmadi.",
-      "accuracyNotNamed": "ChatGPT sizni tilga olmayapti, shuning uchun ohangni hozircha oʻlchab boʻlmaydi."
+      "accuracyNotNamed": "ChatGPT sizni tilga olmayapti, shuning uchun bahoni hozircha oʻlchab boʻlmaydi."
     },
     "events": {
       "placeUp": "{now}-oʻringa koʻtarildingiz",
@@ -352,8 +352,8 @@
       "youPassed": "{name} endi sizdan keyin",
       "factsNew": "{count} ta yangi notoʻgʻri fakt",
       "done": "{count} ta harakat bajarildi",
-      "visibilityUp": "Koʻrinish {points} punkt oshdi",
-      "visibilityDown": "Koʻrinish {points} punkt kamaydi",
+      "visibilityUp": "Tilga olinish {points} punkt oshdi",
+      "visibilityDown": "Tilga olinish {points} punkt kamaydi",
       "competitorUp": "{name} {points} punkt oʻsdi",
       "siteNew": "{site} birinchi marta keltirildi"
     },
@@ -399,12 +399,12 @@
           "detail": "Shu surʼatda davom etsa, bugun sizni tilga olayotgan javoblarni egallaydi."
         },
         "falling": {
-          "title": "Koʻrinishingiz bir haftada {points} punkt tushdi: hozir {value}.",
+          "title": "Tilga olinishingiz bir haftada {points} punkt tushdi: hozir {value}.",
           "detail": "Bir hafta tasodif boʻlishi mumkin; ikkinchi hafta ham tushsa, bu yoʻnalish — chora koʻrish kerak."
         },
         "tone": {
-          "title": "ChatGPT siz haqingizda gapirgandagi ohang — 100 dan {score}.",
-          "detail": "U sharhlarda oʻqiganini takrorlaydi. Sharhlarga javob bering va sababini bartaraf eting — ohang oʻzgaradi."
+          "title": "ChatGPT siz haqingizda gapirgandagi baho — 100 dan {score}.",
+          "detail": "U sharhlarda oʻqiganini takrorlaydi. Sharhlarga javob bering va sababini bartaraf eting — baho oʻzgaradi."
         },
         "listings": {
           "title": "ChatGPT tayanadigan {count} ta saytda siz yoʻqsiz: {sites}.",
@@ -423,7 +423,7 @@
           "detail": "Umumiy mavzularingizda undan oʻtib ketish uchun qulay payt."
         },
         "language": {
-          "title": "Koʻrinishingiz {weak} savollarda {weakValue}, {strong} savollarda esa {strongValue}.",
+          "title": "Tilga olinishingiz {weak} savollarda {weakValue}, {strong} savollarda esa {strongValue}.",
           "detail": "Bu farqni {weak} sahifalar va kataloglardagi yozuvlar yopadi."
         }
       }
@@ -458,9 +458,9 @@
     "line": "Chiziqli grafik",
     "bar": "Ustunli grafik",
     "metrics": {
-      "visibility": "Koʻrinish",
-      "sentiment": "Ohang",
-      "position": "Oʻrin",
+      "visibility": "Tilga olinish",
+      "sentiment": "Baho",
+      "position": "Oʻrni",
       "shareOfVoice": "Ovoz ulushi"
     },
     "hints": {
@@ -505,9 +505,9 @@
     "descriptionFirst": "Toʻrt koʻrsatkich boʻyicha taqqoslash.",
     "rank": "Reyting",
     "brand": "Brend",
-    "visibility": "Koʻrinish",
-    "sentiment": "Ohang",
-    "position": "Oʻrin",
+    "visibility": "Tilga olinish",
+    "sentiment": "Baho",
+    "position": "Oʻrni",
     "you": "(siz)",
     "notNamed": "Tilga olinmagan",
     "better": "oʻtgan haftadan {amount} ga yaxshiroq",
@@ -680,7 +680,7 @@
     "reopen": "Qayta ochish",
     "restore": "Qaytarish",
     "doneOn": "{date} kuni bajarildi",
-    "proof": "Shu savollarda koʻrinishingiz: {before} → {after}",
+    "proof": "Shu savollarda tilga olinishingiz: {before} → {after}",
     "proofRuns": "{runs} ta tekshiruvdan keyin",
     "proofPending": "Natija keyingi tekshiruvdan keyin koʻrinadi.",
     "proofPendingDate": "Natija keyingi tekshiruvdan keyin koʻrinadi: {date}.",
@@ -951,7 +951,7 @@
       },
       "decide": {
         "title": "Qabul qiling, keyin bajaring",
-        "text": "Ishga olganingizda harakatni qabul qiling, qadamlarini belgilab boring va bajarildi deb belgilang. Koʻrinishingizga taʼsiri keyingi haftalik tekshiruvdan keyin koʻrinadi."
+        "text": "Ishga olganingizda harakatni qabul qiling, qadamlarini belgilab boring va bajarildi deb belgilang. Tilga olinishingizga taʼsiri keyingi haftalik tekshiruvdan keyin koʻrinadi."
       }
     },
     "impactHint": "{impact}: boshqa harakatlaringizga nisbatan kutilayotgan taʼsir. Ustuncha qancha koʻp boʻlsa, foydasi shuncha katta.",
@@ -1167,7 +1167,7 @@
     "missing": "Siz yoʻq",
     "youNamed": "{total} ta javobdan {count} tasida siz tilga olingansiz",
     "nobody": "Kuzatilayotgan klinikalar tilga olinmagan",
-    "toneLegend": "Ohang"
+    "toneLegend": "Baho"
   },
   "Answer": {
     "sample": "{n}-javob",
@@ -1202,7 +1202,7 @@
     "noData": "Hali oʻlchov yoʻq",
     "promptCount": "{count} ta savol",
     "rival": "{name}: {score}",
-    "visibility": "ChatGPT’dagi koʻrinish",
+    "visibility": "ChatGPT’da tilga olinish",
     "openReport": "Hisobot"
   },
   "Overview": {
@@ -1210,7 +1210,7 @@
     "noDataDescription": "Savollarni qoʻshing — ChatGPT’ga navbatdagi soʻrovdan keyin natijalar shu yerda paydo boʻladi.",
     "noDataAction": "Savollarga oʻtish",
     "you": "(siz)",
-    "heroLabel": "ChatGPT’dagi koʻrinishingiz",
+    "heroLabel": "ChatGPT’da tilga olinishingiz",
     "queuedTitle": "Birinchi oʻlchov navbatda",
     "queuedDescription": "{count} ta savolni ChatGPT’ga beramiz. Natijalar tayyor boʻlishi bilan shu yerda chiqadi.",
     "queuedAction": "Savollarni koʻrish",
@@ -1226,9 +1226,9 @@
     "csv": {
       "date": "Sana",
       "brand": "Brend",
-      "visibility": "Koʻrinish, %",
+      "visibility": "Tilga olinish, %",
       "shareOfVoice": "Ovoz ulushi, %",
-      "sentiment": "Ohang (100 dan)",
+      "sentiment": "Baho (100 dan)",
       "position": "Oʻrtacha oʻrin"
     },
     "trendTitle": "Dinamika",
@@ -1249,7 +1249,7 @@
       "notNamed": "Tilga olinmagan"
     },
     "breakdown": {
-      "title": "Mavzu va til boʻyicha koʻrinish",
+      "title": "Mavzu va til boʻyicha tilga olinish",
       "hint": "Har bir mavzu va har bir til savollarida ChatGPT javoblarining necha foizida tilga olinganingiz. Yonida shu savollarda eng koʻp tilga olingan brend turadi.",
       "topics": "Mavzular",
       "languages": "Savol tili",
@@ -1261,7 +1261,7 @@
         "ru": "Ruscha savollar"
       },
       "takeawayTopics": "Eng kuchli mavzuingiz — {best}: {bestValue}. Eng zaifi — {worst}: {worstValue}.",
-      "takeawayLanguages": "Oʻzbekcha savollarda koʻrinishingiz — {uz}, ruscha savollarda — {ru}.",
+      "takeawayLanguages": "Oʻzbekcha savollarda tilga olinishingiz — {uz}, ruscha savollarda — {ru}.",
       "detail": "{prompts} ta savol, {answers} ta javob: {named} tasida tilga olingansiz.",
       "guide": "Foiz — shu savollarga berilgan javoblarning qancha qismida tilga olinganingiz. Ustun qancha uzun boʻlsa, shu mavzuda yoki tilda shuncha koʻp koʻrinasiz. «Yetakchi» — shu savollarda eng koʻp tilga olingan brend va uning foizi. Mavzu yoki til nomini bossangiz, uning savollari ochiladi.",
       "detailLeader": "Yetakchi — {leader}: {value}.",
@@ -1292,7 +1292,7 @@
     "kpi": {
       "place": "Oʻrningiz",
       "placeOf": "{of} ta brend ichida",
-      "placeHint": "Koʻrinish boʻyicha kuzatilayotgan brendlar orasidagi oʻrningiz. Koʻrinish — ChatGPT javoblarining necha foizida tilga olinganingiz.",
+      "placeHint": "Tilga olinish boʻyicha kuzatilayotgan brendlar orasidagi oʻrningiz. Tilga olinish — ChatGPT javoblarining necha foizida tilga olinganingiz.",
       "topics": "Siz yetakchi",
       "topicsHint": "Nechta mavzuda ChatGPT sizni boshqa brendlardan koʻproq tilga oladi.",
       "without": "Siz yoʻq savollar",
@@ -1302,8 +1302,8 @@
       "gap": "Yetakchidan orqada",
       "lead": "Ikkinchidan oldinda",
       "points": "punkt · {name}",
-      "gapHint": "Yetakchining koʻrinishi siznikidan necha punkt yuqori. Punkt — foizlar ayirmasi: 72% va 42% orasida 30 punkt.",
-      "leadHint": "Koʻrinishingiz ikkinchi oʻrindagi brendnikidan necha punkt yuqori. Punkt — foizlar ayirmasi."
+      "gapHint": "Yetakchining tilga olinishi siznikidan necha punkt yuqori. Punkt — foizlar ayirmasi: 72% va 42% orasida 30 punkt.",
+      "leadHint": "Tilga olinishingiz ikkinchi oʻrindagi brendnikidan necha punkt yuqori. Punkt — foizlar ayirmasi."
     },
     "untracked": {
       "tracked": "Raqobatchilar:",
@@ -1341,9 +1341,9 @@
     "columns": {
       "question": "Savol",
       "topic": "Mavzu",
-      "visibility": "Koʻrinish",
-      "position": "Oʻrin",
-      "tone": "Ohang",
+      "visibility": "Tilga olinish",
+      "position": "Oʻrni",
+      "tone": "Baho",
       "leader": "Yetakchi",
       "lastRun": "Tekshirilgan",
       "actions": "Amallar",
@@ -1371,11 +1371,11 @@
       "question": "Savol",
       "language": "Til",
       "topic": "Mavzu",
-      "visibility": "Koʻrinish, %",
+      "visibility": "Tilga olinish, %",
       "named": "Tilga olingan javoblar",
       "total": "Jami javoblar",
       "position": "Oʻrtacha oʻrin",
-      "tones": "Ohang",
+      "tones": "Baho",
       "leader": "Yetakchi",
       "lastRun": "Tekshirilgan",
       "added": "Qoʻshilgan",
@@ -1585,7 +1585,7 @@
       "yes": "Brendli",
       "no": "Brendsiz"
     },
-    "toneCell": "Ohang: {tone}, {score}/100",
+    "toneCell": "Baho: {tone}, {score}/100",
     "tags": {
       "add": "Teg qoʻshish",
       "edit": "“{text}” savolining teglari",
@@ -1711,7 +1711,7 @@
       },
       "place": "Shu javobda nechanchi boʻlib tilga olingansiz.",
       "notNamed": "Bu javobda tilga olinmagansiz.",
-      "impact": "Kutilayotgan taʼsir: bu ish bajarilsa, koʻrinishingiz boshqa tavsiyalarga nisbatan qanchalik oshishi mumkin.",
+      "impact": "Kutilayotgan taʼsir: bu ish bajarilsa, tilga olinishingiz boshqa tavsiyalarga nisbatan qanchalik oshishi mumkin.",
       "actionStatus": "Tavsiyaning holati. Harakatlar sahifasida qadamlarni belgilaganingizda oʻzgaradi."
     },
     "searches": {
@@ -1835,7 +1835,7 @@
       "pill": "Oʻzbek va rus tillarida ishlaydi",
       "title": "Brendingiz AI javoblarida",
       "titleMuted": "qanday koʻrinadi?",
-      "subtitle": "ChatGPT mijozlaringizga kimni tavsiya qilishini kuzating va oʻrningizni yaxshilang. Asosiy koʻrsatkichlar: <visibility>Koʻrinish</visibility>, <position>Oʻrin</position> va <tone>Ohang</tone>.",
+      "subtitle": "Mijozlar AI’dan maslahat soʻraganda, u kimni tavsiya qiladi? Sizni qanchalik tez-tez, nechanchi boʻlib va qanday baho bilan tilga olishini koʻrsatamiz hamda natijani yaxshilashga yordam beramiz.",
       "demo": "Demo soʻrash",
       "start": "Bepul tekshirish",
       "checkTitle": "Saytingizni bepul tekshiring",
@@ -1854,15 +1854,15 @@
       "tabsLabel": "Koʻrsatkichlar",
       "tabs": {
         "visibility": {
-          "title": "Koʻrinish",
+          "title": "Tilga olinish",
           "text": "ChatGPT javoblarining necha foizida tilga olinasiz. Bu asosiy koʻrsatkichingiz."
         },
         "position": {
-          "title": "Oʻrin",
+          "title": "Oʻrni",
           "text": "Javobda nechanchi boʻlib tilga olinasiz. Birinchi aytilgan brendni koʻproq tanlashadi."
         },
         "tone": {
-          "title": "Ohang",
+          "title": "Baho",
           "text": "ChatGPT siz haqingizda qanday gapiradi: ijobiy, neytral yoki salbiy."
         }
       },
@@ -1882,9 +1882,9 @@
           "text": "Implantatsiyaga ixtisoslashgan, narxlari hamyonbop."
         }
       },
-      "yourScore": "Koʻrinish: {score}%",
+      "yourScore": "Tilga olinish: {score}%",
       "yourPosition": "Oʻrtacha oʻrin: {position}",
-      "yourTone": "Ohang: ijobiy"
+      "yourTone": "Baho: ijobiy"
     },
     "features": {
       "pill": "Asosiy imkoniyatlar",
@@ -1945,7 +1945,7 @@
       "cta": "Demo soʻrash",
       "bot": "GEO hisobot",
       "heading": "{brand} · haftalik hisobot",
-      "score": "Koʻrinishingiz",
+      "score": "Tilga olinishingiz",
       "change": "(+{points})",
       "facts": "Notoʻgʻri faktlar",
       "open": "Hisobotni ochish",
@@ -1955,9 +1955,9 @@
       "pill": "Hisobotlar",
       "title": "Bir qarashda tushunarli hisobotlar",
       "sub": "Raqamlarni rahbar ham, mijoz ham darhol tushunadigan qilib beramiz.",
-      "chartLabel": "Brendlar: ball va ijobiy ohang ulushi boʻyicha joylashuvi",
-      "xAxis": "Koʻrinish, %",
-      "yAxis": "Ijobiy ohang ulushi",
+      "chartLabel": "Brendlar: ball va ijobiy baho ulushi boʻyicha joylashuvi",
+      "xAxis": "Tilga olinish, %",
+      "yAxis": "Ijobiy baho ulushi",
       "sample": "Namuna: Toshkentdagi stomatologiya klinikalari",
       "quadrants": {
         "leaders": "Yetakchilar",
@@ -2795,7 +2795,7 @@
     "send": "Yuborish",
     "demoReply": "Bu hozircha dizayn namunasi: GEO AI hali ulanmagan. Tez orada hisobotingiz maʼlumotlari asosida javob beradi.",
     "suggestions": {
-      "s1": "Bu hafta koʻrinishim qanday oʻzgardi?",
+      "s1": "Bu hafta tilga olinishim qanday oʻzgardi?",
       "s2": "Qaysi savollarda raqobatchilar oldinda?",
       "s3": "ChatGPT qaysi saytlarga tayanadi?",
       "s4": "Notoʻgʻri faktlarni qanday tuzataman?",
@@ -2833,7 +2833,7 @@
       "named": "Sizni tilga olgan",
       "namedHint": "Siz tilga olingan javoblar soni va ulushi.",
       "negative": "Siz haqingizda salbiy",
-      "negativeHint": "ChatGPT sizni salbiy ohangda tilga olgan javoblar. Jadvaldagi “Holat” filtri ularni koʻrsatadi.",
+      "negativeHint": "ChatGPT sizni salbiy baho bilan tilga olgan javoblar. Jadvaldagi “Holat” filtri ularni koʻrsatadi.",
       "nobody": "Hech kim tilga olinmagan",
       "nobodyHint": "Kuzatilayotgan brendlardan hech biri tilga olinmagan javoblar: bu yerda oʻrin hali boʻsh.",
       "searched": "Veb-qidiruv bilan",
@@ -2858,7 +2858,7 @@
         "brands": "Tilga olinganlar",
         "sources": "Manbalar",
         "position": "Oʻrningiz",
-        "tone": "Ohang"
+        "tone": "Baho"
       },
       "sample": "{n}-javob",
       "notNamed": "Tilga olinmagan",
@@ -2875,7 +2875,7 @@
         "date": "Sana",
         "brands": "Tilga olinganlar (tartib boʻyicha)",
         "position": "Oʻrningiz",
-        "tone": "Ohang",
+        "tone": "Baho",
         "sites": "Havola berilgan saytlar",
         "pages": "Havola berilgan sahifalar",
         "text": "Javob matni",
@@ -2887,7 +2887,7 @@
         "brands": "Shu javobda tilga olingan kuzatilayotgan brendlar, javobdagi tartibda. Belgi ustiga kursorni olib borsangiz, brend nomi koʻrinadi.",
         "sources": "ChatGPT shu javobda havola bergan saytlar. Belgi ustiga kursorni olib borsangiz, sayt nomi koʻrinadi.",
         "position": "Shu javobda nechanchi boʻlib tilga olingansiz. 1 — birinchi. Chiziqcha — tilga olinmagansiz.",
-        "tone": "Shu javobda ChatGPT siz haqingizda qanday ohangda gapirgan: ijobiy, neytral yoki salbiy.",
+        "tone": "Shu javobda ChatGPT siz haqingizda qanday baho bilan gapirgan: ijobiy, neytral yoki salbiy.",
         "count": "Qidiruv va filtrlarga mos javoblar soni."
       }
     },
@@ -2910,7 +2910,7 @@
         "engine": "Javob shu AI yordamchidan, veb-qidiruv yoqilgan holda olingan.",
         "city": "Savol shu shahardagi mijoz nomidan berilgan.",
         "language": "Savol shu tilda berilgan.",
-        "named": "Shu javobda tilga olingan kuzatilayotgan brendlar: nechanchi boʻlib va qanday ohangda.",
+        "named": "Shu javobda tilga olingan kuzatilayotgan brendlar: nechanchi boʻlib va qanday baho bilan.",
         "sources": "ChatGPT shu javobda havola bergan sahifalar: sarlavhasi va ostida manzili. Bossangiz, sahifa yangi oynada ochiladi.",
         "sample": "Shu savolga olingan javoblardan nechanchisi. Har tekshiruvda savol bir necha marta beriladi.",
         "searches": "Shu javobni yozishdan oldin ChatGPT internetda qidirgan soʻrovlar."
@@ -2926,10 +2926,10 @@
     "better": "oʻtgan haftadan {amount} ga yaxshiroq",
     "worse": "oʻtgan haftadan {amount} ga yomonroq",
     "labels": {
-      "visibility": "Koʻrinish",
+      "visibility": "Tilga olinish",
       "shareOfVoice": "Ovoz ulushi",
-      "sentiment": "Ohang",
-      "position": "Oʻrin",
+      "sentiment": "Baho",
+      "position": "Oʻrni",
       "usedAsSource": "Manba sifatida"
     },
     "hints": {
@@ -3118,7 +3118,7 @@
       },
       "kpis": {
         "title": "Beshta asosiy raqam",
-        "text": "ChatGPT sizni qanchalik tez-tez tilga oladi, brendlar orasidagi ulushingiz, roʻyxatlardagi oʻrningiz, ohangi va saytingizga qanchalik tayanadi — har biri oʻtgan haftaga nisbatan oʻzgarishi bilan. ⓘ raqam nimani anglatishini aytadi."
+        "text": "ChatGPT sizni qanchalik tez-tez tilga oladi, brendlar orasidagi ulushingiz, roʻyxatlardagi oʻrningiz, bahosi va saytingizga qanchalik tayanadi — har biri oʻtgan haftaga nisbatan oʻzgarishi bilan. ⓘ raqam nimani anglatishini aytadi."
       },
       "trend": {
         "title": "Haftalar davomida",
@@ -3152,7 +3152,7 @@
       },
       "summary": {
         "title": "Shu savollardagi raqamlaringiz",
-        "text": "Koʻrsatilgan savollar boʻyicha koʻrinish, ohang, oʻrin va veb-qidiruv. Ular qidiruv va saralashga qarab oʻzgaradi."
+        "text": "Koʻrsatilgan savollar boʻyicha tilga olinish, baho, oʻrni va veb-qidiruv. Ular qidiruv va saralashga qarab oʻzgaradi."
       },
       "row": {
         "title": "Bitta savol",
@@ -3441,17 +3441,17 @@
         "number": "Hisobotning haftalik hisobotlar qatoridagi raqami.",
         "period": "Hisobot qamragan hafta: oldingi tekshiruvdan shu tekshiruvgacha. Qatorni bossangiz, toʻliq hisobot ochiladi.",
         "condition": "Umumiy holat bahosi (100 dan), uning holati va oldingi hisobotdan beri oʻzgarishi, ballda.",
-        "areas": "Holatning besh yoʻnalishi hisobotdagi tartibda: koʻrinish, raqobatdagi oʻrin, savollar qamrovi, manbalarda borligi, aniqlik va ohang. Yashil — yaxshi, sariq — oʻrtacha, qizil — zaif; bahosini koʻrish uchun belgi ustiga keling.",
+        "areas": "Holatning besh yoʻnalishi hisobotdagi tartibda: tilga olinish, raqobatdagi oʻrin, savollar qamrovi, manbalarda borligi, aniqlik va baho. Yashil — yaxshi, sariq — oʻrtacha, qizil — zaif; bahosini koʻrish uchun belgi ustiga keling.",
         "events": "Oʻsha hafta nima boʻldi: oʻrningiz, kim kimdan oʻtdi, yangi notoʻgʻri faktlar, bajarilgan ishlar, katta oʻzgarishlar."
       },
       "csvLabel": "Eksport",
       "csvHint": "Jadvalni CSV faylda yuklab olish",
       "csv": {
         "date": "Sana",
-        "visibility": "Koʻrinish, %",
+        "visibility": "Tilga olinish, %",
         "shareOfVoice": "Ovoz ulushi, %",
-        "place": "Oʻrin",
-        "tone": "Ohang",
+        "place": "Oʻrni",
+        "tone": "Baho",
         "leader": "Yetakchi",
         "facts": "Notoʻgʻri faktlar",
         "done": "Bajarilgan harakatlar",

@@ -1,4 +1,6 @@
-import { CircleCheck, CircleX, Minus } from "lucide-react";
+import { CheckCircleIcon as CircleCheck } from "@phosphor-icons/react/dist/ssr/CheckCircle";
+import { XCircleIcon as CircleX } from "@phosphor-icons/react/dist/ssr/XCircle";
+import { MinusIcon as Minus } from "@phosphor-icons/react/dist/ssr/Minus";
 import { useLocale, useMessages, useTranslations } from "next-intl";
 import { labelFor } from "@/shared/helpers/labels";
 import { formatPercent } from "@/shared/helpers/numbers";

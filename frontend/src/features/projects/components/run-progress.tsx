@@ -1,7 +1,10 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, Check, Circle, LoaderCircle } from "lucide-react";
+import { ArrowRightIcon as ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight";
+import { CheckIcon as Check } from "@phosphor-icons/react/dist/ssr/Check";
+import { CircleIcon as Circle } from "@phosphor-icons/react/dist/ssr/Circle";
+import { CircleNotchIcon as LoaderCircle } from "@phosphor-icons/react/dist/ssr/CircleNotch";
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 import { EngineIcon } from "@/shared/components/engine-icon";

@@ -1,4 +1,5 @@
-import { CircleCheck, CircleX } from "lucide-react";
+import { CheckCircleIcon as CircleCheck } from "@phosphor-icons/react/dist/ssr/CheckCircle";
+import { XCircleIcon as CircleX } from "@phosphor-icons/react/dist/ssr/XCircle";
 import { useTranslations } from "next-intl";
 import { cn } from "@/shared/helpers/utils";
 import type { Action } from "@/shared/types/api";

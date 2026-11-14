@@ -1,4 +1,5 @@
-import { CircleCheck, CircleX } from "lucide-react";
+import { CheckCircleIcon as CircleCheck } from "@phosphor-icons/react/dist/ssr/CheckCircle";
+import { XCircleIcon as CircleX } from "@phosphor-icons/react/dist/ssr/XCircle";
 import { useLocale, useTimeZone, useTranslations } from "next-intl";
 import { TIME_ZONE } from "@/shared/constants";
 import { formatLongDate } from "@/shared/helpers/dates";

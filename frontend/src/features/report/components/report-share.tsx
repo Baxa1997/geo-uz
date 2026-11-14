@@ -1,6 +1,9 @@
 "use client";
 
-import { Check, Link2, Printer, Send } from "lucide-react";
+import { CheckIcon as Check } from "@phosphor-icons/react/dist/ssr/Check";
+import { LinkIcon as Link2 } from "@phosphor-icons/react/dist/ssr/Link";
+import { PrinterIcon as Printer } from "@phosphor-icons/react/dist/ssr/Printer";
+import { PaperPlaneTiltIcon as Send } from "@phosphor-icons/react/dist/ssr/PaperPlaneTilt";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Hint } from "@/shared/components/hint";

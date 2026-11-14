@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
+import { CaretDownIcon as ChevronDown } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import { useId, useRef, useState } from "react";
 import { cn } from "@/shared/helpers/utils";
 
@@ -31,14 +31,14 @@ export function NavMenu({ label, children }: { label: string; children: React.Re
         aria-expanded={open}
         aria-controls={id}
         onClick={() => setOpen((current) => !current)}
-        className="flex h-9 items-center gap-1 rounded-lg px-3 text-muted-foreground transition-colors hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground"
+        className="flex h-11 items-center gap-1.5 rounded-xl px-4 text-foreground/75 transition-colors hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground"
       >
         {label}
-        <ChevronDown aria-hidden className={cn("size-3.5 transition-transform", open && "rotate-180")} />
+        <ChevronDown aria-hidden className={cn("size-4 transition-transform", open && "rotate-180")} />
       </button>
       {/* The padding bridges the gap to the button, so the pointer can travel to the panel */}
-      <div id={id} hidden={!open} className="absolute top-full left-1/2 z-50 -translate-x-1/2 pt-2">
-        <div onClick={() => setOpen(false)} className="w-[22rem] rounded-2xl border bg-background p-2 shadow-xl shadow-black/10">
+      <div id={id} hidden={!open} className="absolute top-full left-0 z-50 pt-2">
+        <div onClick={() => setOpen(false)} className="w-[26rem] rounded-2xl border bg-background p-2.5 shadow-xl shadow-brand/10">
           {children}
         </div>
       </div>

@@ -1,11 +1,13 @@
 # GEO platform for Uzbekistan (working name; repository `geo-uz`)
 
 Start here in a new session: this file says what the project is, how the work is organized, what is done and
-what comes next. The details live in three other places, and each should be read before the work it covers:
+what comes next. "Where the project stands" below is the place to pick the work up from. The details live in three other places, and each should be read before the work it covers:
 
 - `frontend/CLAUDE.md`: folder structure, the API contract, how the scores and charts work, and the rules
   that keep the landing page fast. Read it before changing frontend code.
-- `backend/PLAN.md`: what the backend has to do, written from the frontend pages. Nothing in it is built.
+- `backend/PLAN.md`: what the backend has to do, written from the frontend pages, with a change log of what
+  was measured and decided. `backend/README.md`: what of it is built (`backend/app/`) and how to run it.
+  `backend/pilot/README.md`: the pilot report's script.
 - The two teardown documents in this folder ("Peec AI Teardown & Our Plan for Central Asia.md" and "GEO
   Competitor Teardown & Our Feature List.md"): every Peec feature with our version of it, the other
   competitors, and prices. Read them before adding a feature or making a pricing claim.
@@ -35,15 +37,73 @@ something on the website.
 - **Plans (soʻm a month):** free check 0 · Start 199,000 · Biznes 490,000 · Agentlik 1,490,000 · Managed GEO
   from 3,000,000. Weekly checks. Details in `frontend/CLAUDE.md`.
 
-## Where the project stands
+## Where the project stands (14 November 2026)
 
-Frontend first. `frontend/` is a Next.js 16 app that runs entirely on mock data (Tashkent dental clinics)
-behind the same API contract the backend will implement, so the mocks can be switched off later with one
-setting. There is no backend code yet, only its plan.
+Read this section first in a new session: it says what exists, how to run it, and exactly where to go on.
 
-To see it: `cd frontend`, `npm run dev`, open http://localhost:3000. In the mocks, the phone number
-+998 90 123 45 67 with any six-digit code logs into the sample project "Oq Tabassum" (eight weeks of data).
-Any other number makes a new account, which goes through onboarding and gets a project with one check.
+**Three parts exist, all on `main` (GitHub: Baxa1997/geo-uz, a public repository):**
+
+1. **`frontend/`: a Next.js 16 app with every page built on mock data** (Tashkent dental clinics), behind the API
+   contract in `frontend/CLAUDE.md`. Nothing in it calls the backend yet. Its login page still asks for a phone.
+2. **The pilot report**: `/pilots/<slug>` in the frontend draws a one-off report from `frontend/pilots/<slug>.json`,
+   and `backend/pilot/` is the script that makes that file from a brief (`backend/pilot/README.md`). It has run
+   for real for the first client.
+3. **`backend/app/`: the backend's first slice** (`backend/README.md`): login by a code sent to an email, and a new
+   account's first run (`POST /first-runs`: website in, assistants asked, first statistics out). Tried on this
+   computer with curl; not wired to the frontend, not deployed.
+
+**The user's decisions that hold now (14 Nov):**
+
+- The first flow is: login → the user's website → the first run on ChatGPT and Gemini → first statistics → the
+  dashboard's setup (brand, competitors, questions) → settings.
+- Supabase holds the database and the login (email code and Google). A server at Contabo runs the Python backend.
+  The frontend talks only to the backend.
+- The pilot report "is good for now"; its polishing and sending come after the platform's flow is set up.
+
+**Go on from here, in this order:**
+
+1. Frontend login by email: `features/auth` asks for an email and a code against `POST /auth/code` and
+   `/auth/code/verify` (the `User` type gains `email`; the phone forms go). Google later.
+2. A page after login that takes a website, starts `POST /first-runs`, shows its progress (`GET /first-runs/{id}`:
+   `status`, `answered`, `total`) and then the first statistics (`GET /first-runs/{id}/result`, the `Snapshot`
+   shape plus `engines`, `recommended`). The free check's parts (`features/marketing`: CheckRunner,
+   SnapshotPreview, SiteAudit) are the closest thing built.
+3. Saving a first run as a project, then the setup steps (the onboarding wizard exists on mocks), then the
+   backend behind the other pages in the build order of `backend/PLAN.md`.
+4. The mocks are switched off with one setting for the whole app (`NEXT_PUBLIC_USE_MOCKS`), so wiring a page
+   at a time needs either a switch per endpoint in `shared/api/client.ts` or the backend to cover a page's calls.
+
+**Waiting on the user (ask once, don't block on it):**
+
+- A Gemini API key: the Gemini client (`backend/app/engines.py`) is written from Google's documentation and has
+  never run, so its cost and answers are unmeasured.
+- A Supabase project (URL, anon key, database connection string): Supabase's login is written and has never run.
+- The Contabo server's address and access, when it is time to deploy.
+- Three answers pasted from the ChatGPT app, to compare the app with the API.
+- Contacts for the pilot report's last page.
+
+**What is measured (details in `backend/PLAN.md`, change log):** one answer with web search costs about $0.077
+on `gpt-6.1-sol`, $0.044 on `gpt-6.1-terra` (the default now) and $0.024 on `gpt-6-luna`, four times and more
+the 1–2 cents the plans' prices assume. A first run of ten questions on ChatGPT alone took 83 seconds and cost
+$0.47. Answers differ between runs and between models (about half the businesses in common); the pattern over
+many answers holds. The prices in "What the project is" have not been revised.
+
+**On this computer only, never in git** (the repository is public): the OpenAI key (`backend/pilot/.env`, read
+by `backend/app` too), clients' briefs (`backend/pilot/briefs/*` except the example), clients' report files
+(`frontend/pilots/*.json`), the answers collected (`backend/pilot/out/`), the local database
+(`backend/local.db`) and the Python environment (`backend/.venv`). Never write a client's name into a file
+that is committed.
+
+**To run it:**
+
+- Frontend: `cd frontend`, `npm run dev`, http://localhost:3000. On this computer `node` is not on the shell's
+  path: `export PATH="$HOME/.nvm/versions/node/v22.23.1/bin:$PATH"` first. In the mocks, the phone number
+  +998 90 123 45 67 with any six-digit code logs into the sample project "Oq Tabassum".
+- A pilot report: http://localhost:3000/ru/pilots/<slug> (the first client's two files are in `frontend/pilots/`).
+  To make one: `cd backend/pilot`, `set -a; . ./.env; set +a`, `python3 pilot.py briefs/<brief>.json`.
+- Backend: `cd backend`, `. .venv/bin/activate`, `uvicorn app.main:app --reload --port 8000`; `GET /health` says
+  which assistants have a key. A login code is printed to the server's log.
+- To check a pilot report as a PDF: Chrome headless, `--print-to-pdf` against the dev server.
 
 ## How we work
 
@@ -58,9 +118,30 @@ Any other number makes a new account, which goes through onboarding and gets a p
 3. **Three languages, always.** Every piece of interface text goes into `uz.json`, `ru.json` and `en.json`.
 4. **Check before saying done.** Open the change in a real browser, on desktop and phone width, and run the
    type check and the linter. Judge speed on a production build, not on `npm run dev`.
-5. **Commit only when the user asks.** Say plainly which branch the work is on.
+5. **Commit only when the user asks.** Say plainly which branch the work is on. "commit, push" has meant each
+   time: a branch for the work, a commit, a merge into `main`, and a push of both. Before any commit, check
+   that no key and no client's name is in it.
 
 ## Done (as of 14 November 2026)
+
+- **A look of our own, step 1: colors, typeface and the landing page (14 Nov), on the branch `restyle`; merged and
+  pushed the same day, when the user said "everything is good, commit and push".** The user: "refactoring of UI, landing page, dashboard styles,
+  icons make as ours, do not make huge changes, just styling … so it does not look like 100% as Peec AI". Asked
+  with three choices, they chose: **navy and paper** (the pilot report's look), **our own key icons plus another
+  ready-made set** for the rest (Phosphor, in the place of Lucide), and **the landing page first**. Done so far:
+  the app's colors (navy ink and navy buttons, warm grays, white cards; the charts' colors untouched), the
+  typeface (Onest, JetBrains Mono for small labels), a smaller corner radius, a new logo mark, and the landing
+  page's own signatures (numbered section labels in the place of pills, no dotted texture, glows or side
+  hairlines, flat cards, a navy closing band). The user's first correction the same day, with another product's
+  page as the picture: the headline as a heavy sans line with its last words in a serif italic; the sentence
+  under it rewritten for AI in general and without "Koʻrinish, Oʻrin, Ohang", which the user finds hard to
+  understand even in Uzbek (the terms are still used across the app: to decide); a taller header; the languages
+  as a dropdown with their full names; icons in filled colored tiles. The structure is unchanged. Then, the same day ("any recommendation? what is
+  next"): the Uzbek metric names became **Tilga olinish, Oʻrni, Baho** (the user's choice of three), and the
+  icons were replaced everywhere: our own for the sidebar's pages, the metrics and the action goals, Phosphor for
+  the rest; `lucide-react` is removed. The user looked and confirmed it. Still to do: the
+  landing's claims that run ahead of the product (the Telegram report, "no sign-up needed").
+   The rules are in `frontend/CLAUDE.md`, "Our look".
 
 - **The pilot report as a product, and its generator (14 Nov), on the branch `pilot-report`; merged and pushed the same day, when
   the user said "commit, push" and then "merge".** The
@@ -372,7 +453,8 @@ Any other number makes a new account, which goes through onboarding and gets a p
 00. **The platform's first flow (the user's decision, 14 Nov; before the pilots' list below).** Login → the
    user's website → the first run on ChatGPT and Gemini → first statistics → the dashboard's setup → settings,
    on Supabase (database, login by email code and Google) with the backend on a server at Contabo. The backend's
-   first slice is built in `backend/app/` and not committed (see `backend/README.md`): email login and the first
+   first slice is built in `backend/app/`, merged and pushed on 14 Nov when the user said "commit, push" (see
+   `backend/README.md`): email login and the first
    run, tried on this computer. Next: the frontend's login page by email, a page that starts the first run and
    shows its progress and first statistics, then saving the result as a project. Waiting on the user: a Gemini
    key, a Supabase project, the Contabo server.

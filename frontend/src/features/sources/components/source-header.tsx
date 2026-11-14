@@ -1,4 +1,4 @@
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRightIcon as ArrowUpRight } from "@phosphor-icons/react/dist/ssr/ArrowUpRight";
 import { useLocale, useTimeZone, useTranslations } from "next-intl";
 import { Hint } from "@/shared/components/hint";
 import { InfoTip } from "@/shared/components/info-tip";

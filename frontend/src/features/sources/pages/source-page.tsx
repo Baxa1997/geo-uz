@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { FilterX } from "lucide-react";
+import { FunnelXIcon as FilterX } from "@phosphor-icons/react/dist/ssr/FunnelX";
 import { EmptyState } from "@/shared/components/empty-state";
 import { Page } from "@/shared/components/page";
 import { PageSection } from "@/shared/components/page-section";

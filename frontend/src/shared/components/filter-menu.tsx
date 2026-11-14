@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, type LucideIcon } from "lucide-react";
+import { CaretDownIcon as ChevronDown } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
 import { cn } from "@/shared/helpers/utils";
+import type { AppIcon } from "@/shared/types/icon";
 
 /**
  * One filter as an outlined button that shows its current choice, with the choices (and how many each
@@ -22,7 +23,7 @@ export function FilterMenu<T extends string>({
   onChange,
   className,
 }: {
-  icon: LucideIcon;
+  icon: AppIcon;
   /** What the filter is about, for screen readers ("Topic: Implants"). */
   label: string;
   value: T;

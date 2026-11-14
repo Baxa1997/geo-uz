@@ -1,6 +1,7 @@
 "use client";
 
-import { LoaderCircle, Send } from "lucide-react";
+import { CircleNotchIcon as LoaderCircle } from "@phosphor-icons/react/dist/ssr/CircleNotch";
+import { PaperPlaneTiltIcon as Send } from "@phosphor-icons/react/dist/ssr/PaperPlaneTilt";
 import { useTranslations } from "next-intl";
 import { Button } from "@/shared/components/ui/button";
 import { useTelegramLogin } from "../hooks/use-telegram-login";

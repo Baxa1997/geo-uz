@@ -1,4 +1,4 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRightIcon as ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight";
 import { Link } from "@/i18n/navigation";
 
 /** "Answers →": leads to the page with the full picture, e.g. from a card's header. */

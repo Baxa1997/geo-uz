@@ -1,4 +1,7 @@
-import { Check, CircleCheck, CircleX, KeyRound, Plus } from "lucide-react";
+import { CheckIcon as Check } from "@phosphor-icons/react/dist/ssr/Check";
+import { CheckCircleIcon as CircleCheck } from "@phosphor-icons/react/dist/ssr/CheckCircle";
+import { XCircleIcon as CircleX } from "@phosphor-icons/react/dist/ssr/XCircle";
+import { PlusIcon as Plus } from "@phosphor-icons/react/dist/ssr/Plus";
 import { useFormatter, useMessages, useTranslations } from "next-intl";
 import { DEMO_REPORT } from "@/mocks/demo";
 import { EngineIcon } from "@/shared/components/engine-icon";
@@ -35,7 +38,7 @@ export function KeyFeatures() {
 
   return (
     <Section id={SECTION.features} labelledBy="features-title">
-      <SectionIntro id="features-title" icon={KeyRound} pill={t("pill")} title={t("title")} sub={t("sub")} />
+      <SectionIntro id="features-title" pill={t("pill")} title={t("title")} sub={t("sub")} />
       {/* Wide and narrow cards alternate: 3 + 2, 2 + 3, 3 + 2 */}
       <ul className="grid gap-3 lg:grid-cols-5">
         {KEY_FEATURES.map((key, index) => (

@@ -1,4 +1,6 @@
-import { ArrowDown, ArrowRight, ArrowUp } from "lucide-react";
+import { ArrowDownIcon as ArrowDown } from "@phosphor-icons/react/dist/ssr/ArrowDown";
+import { ArrowRightIcon as ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight";
+import { ArrowUpIcon as ArrowUp } from "@phosphor-icons/react/dist/ssr/ArrowUp";
 import { useLocale, useTranslations } from "next-intl";
 import { conditionStatus, type ConditionStatus } from "@/shared/helpers/condition";
 import { formatDecimal } from "@/shared/helpers/numbers";

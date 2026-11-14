@@ -1,6 +1,6 @@
 "use client";
 
-import { BookOpen } from "lucide-react";
+import { BookOpenIcon as BookOpen } from "@phosphor-icons/react/dist/ssr/BookOpen";
 import { useMessages, useTranslations, type Messages } from "next-intl";
 import { useEffect, useState } from "react";
 import { Hint } from "@/shared/components/hint";

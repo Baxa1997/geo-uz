@@ -1,6 +1,8 @@
 "use client";
 
-import { ChevronsUpDown, Pencil, Plus } from "lucide-react";
+import { CaretUpDownIcon as ChevronsUpDown } from "@phosphor-icons/react/dist/ssr/CaretUpDown";
+import { PencilSimpleIcon as Pencil } from "@phosphor-icons/react/dist/ssr/PencilSimple";
+import { PlusIcon as Plus } from "@phosphor-icons/react/dist/ssr/Plus";
 import { useLocale, useTranslations } from "next-intl";
 import { Hint } from "@/shared/components/hint";
 import {

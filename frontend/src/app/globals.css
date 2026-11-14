@@ -33,9 +33,11 @@
   --color-telegram-hover: var(--telegram-hover);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-geist-sans);
+  --font-sans: var(--font-sans-face);
+  --font-mono: var(--font-mono-face);
+  --font-heading: var(--font-sans-face);
+  /* The accent words of the public pages' headline: a serif italic where the marketing layout loads one */
+  --font-display: var(--font-display-face, var(--font-sans-face));
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -75,30 +77,33 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  /* Navy ink on warm paper, the pilot report's look: no pure gray anywhere. Cards stay white, the grounds
+     under them (muted, sidebar, the landing's page) are warm, text and the main buttons are navy. */
+  --background: #ffffff;
+  --foreground: #14182b;
+  --card: #ffffff;
+  --card-foreground: #14182b;
+  --popover: #ffffff;
+  --popover-foreground: #14182b;
+  --primary: #1c2e6e;
+  --primary-foreground: #ffffff;
+  --secondary: #f4f2ed;
+  --secondary-foreground: #14182b;
+  --muted: #f4f2ed;
+  /* 5.3:1 on white, 4.7:1 on --muted */
+  --muted-foreground: #666b7a;
+  --accent: #f4f2ed;
+  --accent-foreground: #14182b;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --border: #e4e1da;
+  --input: #e4e1da;
+  --ring: #8f9ac4;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
+  --radius: 0.5rem;
   /* Report: the client's brand is the accent, competitors are gray (emphasis form) */
   --you: #2a78d6;
   --you-soft: #cde2fb;
@@ -128,22 +133,22 @@
      worse. Darker than the two above, so the small number passes 4.5:1 on white (5.3:1 both) */
   --better: #0a7d0a;
   --worse: #c93030;
-  /* Marketing accent; white text on it passes 4.5:1 (6.7:1) */
-  --brand: #1d4ed8;
-  --brand-hover: #1e40af;
-  --brand-soft: #e6ecfc;
+  /* The brand's navy (the pilot report's); white text on it passes 4.5:1 (12:1) */
+  --brand: #1c2e6e;
+  --brand-hover: #152457;
+  --brand-soft: #e8ecf7;
   --brand-foreground: #ffffff;
   /* Telegram blue, darkened so white text passes 4.5:1 */
   --telegram: #1979bc;
   --telegram-hover: #1873b3;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: #faf9f6;
+  --sidebar-foreground: #14182b;
+  --sidebar-primary: #1c2e6e;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f0eee8;
+  --sidebar-accent-foreground: #14182b;
+  --sidebar-border: #e4e1da;
+  --sidebar-ring: #8f9ac4;
 }
 
 .dark {
@@ -234,6 +239,13 @@
   [role="menuitemcheckbox"],
   [role="option"] {
     cursor: pointer;
+  }
+  /* An icon without a size class is 24px, whichever set it comes from (Phosphor draws on a 256 grid and
+     would otherwise follow the text's size; ours are marked). A size class, or a button's own rule, wins. */
+  svg[viewBox="0 0 256 256"],
+  svg[data-own-icon] {
+    width: 1.5rem;
+    height: 1.5rem;
   }
   body {
     @apply bg-background text-foreground;

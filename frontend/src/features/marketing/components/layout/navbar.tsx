@@ -4,7 +4,7 @@ import { Logo } from "@/shared/components/logo";
 import { buttonVariants } from "@/shared/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/shared/helpers/utils";
-import { NAV, SECTION } from "../../constants";
+import { NAV, SECTION, TILE_COLORS } from "../../constants";
 import { MobileMenu } from "./mobile-menu";
 import { NavMenu } from "./nav-menu";
 import { NavbarShell } from "./navbar-shell";
@@ -16,24 +16,30 @@ export function Navbar() {
 
   return (
     <NavbarShell>
-      <Logo />
+      <Logo size="lg" />
       <nav aria-label={t("label")} className="hidden lg:block">
-        <ul className="flex items-center gap-1 text-sm">
+        <ul className="flex items-center gap-1 text-base">
           {NAV.map((entry) => (
             <li key={entry.key}>
               {"items" in entry ? (
                 <NavMenu label={t(entry.key)}>
                   <ul className="flex flex-col">
-                    {entry.items.map(({ key, hash, icon: Icon }) => (
+                    {entry.items.map(({ key, hash, icon: Icon }, index) => (
                       <li key={key}>
                         <SectionLink
                           hash={hash}
-                          className="flex items-start gap-3 rounded-xl p-3 transition-colors hover:bg-muted"
+                          className="flex items-center gap-4 rounded-xl p-3 transition-colors hover:bg-muted"
                         >
-                          <Icon aria-hidden className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+                          <span
+                            aria-hidden
+                            className="flex size-11 shrink-0 items-center justify-center rounded-xl text-white"
+                            style={{ background: TILE_COLORS[index % TILE_COLORS.length] }}
+                          >
+                            <Icon className="size-5.5" />
+                          </span>
                           <span className="flex flex-col gap-0.5">
-                            <span className="font-medium">{t(`items.${key}.title`)}</span>
-                            <span className="text-muted-foreground">{t(`items.${key}.text`)}</span>
+                            <span className="font-semibold">{t(`items.${key}.title`)}</span>
+                            <span className="text-sm text-muted-foreground">{t(`items.${key}.text`)}</span>
                           </span>
                         </SectionLink>
                       </li>
@@ -43,7 +49,7 @@ export function Navbar() {
               ) : (
                 <SectionLink
                   hash={entry.hash}
-                  className="flex h-9 items-center rounded-lg px-3 text-muted-foreground transition-colors hover:text-foreground"
+                  className="flex h-11 items-center rounded-xl px-4 text-foreground/75 transition-colors hover:text-foreground"
                 >
                   {t(entry.key)}
                 </SectionLink>
@@ -54,15 +60,15 @@ export function Navbar() {
       </nav>
       <div className="ml-auto flex items-center gap-2">
         <div className="hidden sm:block">
-          <LocaleSwitcher />
+          <LocaleSwitcher menu />
         </div>
-        <Link href="/login" className={cn(buttonVariants({ variant: "outline" }), "hidden h-9 px-3 lg:inline-flex")}>
+        <Link href="/login" className="hidden h-11 items-center rounded-xl px-4 text-base font-semibold transition-colors hover:bg-muted lg:inline-flex">
           {t("login")}
         </Link>
         {/* On the narrowest phones the button doesn't fit beside the logo; the menu has it too */}
         <SectionLink
           hash={SECTION.check}
-          className={cn(buttonVariants({ variant: "brand" }), "h-9 px-3 max-[359px]:hidden")}
+          className={cn(buttonVariants({ variant: "brand" }), "h-11 rounded-xl px-4 text-base font-semibold max-[359px]:hidden")}
         >
           {t("cta")}
         </SectionLink>

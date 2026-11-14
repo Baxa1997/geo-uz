@@ -1,6 +1,8 @@
 "use client";
 
-import { CircleCheck, CircleHelp, CircleX } from "lucide-react";
+import { CheckCircleIcon as CircleCheck } from "@phosphor-icons/react/dist/ssr/CheckCircle";
+import { QuestionIcon as CircleHelp } from "@phosphor-icons/react/dist/ssr/Question";
+import { XCircleIcon as CircleX } from "@phosphor-icons/react/dist/ssr/XCircle";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { Hint } from "@/shared/components/hint";

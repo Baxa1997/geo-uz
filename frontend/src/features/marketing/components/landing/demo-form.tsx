@@ -1,6 +1,6 @@
 "use client";
 
-import { CircleCheck } from "lucide-react";
+import { CheckCircleIcon as CircleCheck } from "@phosphor-icons/react/dist/ssr/CheckCircle";
 import { useTranslations } from "next-intl";
 import { useId, useRef, useState, type FormEvent } from "react";
 import { PhoneInput } from "@/shared/components/phone-input";
@@ -59,7 +59,7 @@ export function DemoForm() {
 
   if (request === "sent") {
     return (
-      <div role="status" className="flex flex-col items-center gap-3 rounded-2xl border bg-background p-8 text-center shadow-sm">
+      <div role="status" className="flex flex-col items-center gap-3 rounded-xl border bg-background p-8 text-center">
         <CircleCheck aria-hidden className="size-10 text-positive" />
         <p className="text-lg font-semibold">{t("successTitle", { name: name.trim() })}</p>
         <p className="max-w-xs text-sm text-muted-foreground">{t("successText")}</p>
@@ -72,7 +72,7 @@ export function DemoForm() {
       ref={formRef}
       onSubmit={submit}
       noValidate
-      className="flex flex-col gap-5 rounded-2xl border bg-background p-5 shadow-sm sm:p-6"
+      className="flex flex-col gap-5 rounded-xl border bg-background p-5 sm:p-6"
     >
       <Field data-invalid={Boolean(errors.name)}>
         <FieldLabel htmlFor={`${id}-name`}>{t("name")}</FieldLabel>

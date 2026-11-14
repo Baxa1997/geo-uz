@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Plus } from "lucide-react";
+import { PlusIcon as Plus } from "@phosphor-icons/react/dist/ssr/Plus";
 import { getTranslations } from "next-intl/server";
 import { ProjectCard } from "../components/project-card";
 import { Page } from "@/shared/components/page";

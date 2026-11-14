@@ -1,6 +1,7 @@
 "use client";
 
-import { CalendarDays, ListFilter } from "lucide-react";
+import { CalendarDotsIcon as CalendarDays } from "@phosphor-icons/react/dist/ssr/CalendarDots";
+import { FunnelSimpleIcon as ListFilter } from "@phosphor-icons/react/dist/ssr/FunnelSimple";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { FilterMenu } from "@/shared/components/filter-menu";

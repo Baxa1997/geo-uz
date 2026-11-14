@@ -1,4 +1,5 @@
-import { ArrowRight, Send } from "lucide-react";
+import { ArrowRightIcon as ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight";
+import { PaperPlaneTiltIcon as Send } from "@phosphor-icons/react/dist/ssr/PaperPlaneTilt";
 import { useTranslations } from "next-intl";
 import { DEMO_REPORT } from "@/mocks/demo";
 import { outOf100, scoreOf, topCompetitor } from "@/shared/helpers/scores";
@@ -16,13 +17,13 @@ export function TelegramReports() {
   return (
     <Section id={SECTION.telegram} labelledBy="telegram-title" className="items-center lg:grid lg:grid-cols-2 lg:gap-16">
       <div data-reveal className="flex flex-col items-start gap-4">
-        <h2 id="telegram-title" className="text-3xl font-semibold tracking-tight text-balance sm:text-5xl/[1.1]">
+        <h2 id="telegram-title" className="text-3xl font-bold tracking-[-0.03em] text-balance sm:text-5xl/[1.1]">
           {t("title")}
         </h2>
         <p className="max-w-md text-lg text-pretty text-muted-foreground">{t("text")}</p>
         <SectionLink
           hash={SECTION.demo}
-          className="mt-2 inline-flex items-center gap-2 rounded-lg border bg-background px-3 py-2 text-sm font-medium shadow-xs transition-colors hover:bg-muted/50"
+          className="mt-2 inline-flex items-center gap-2 rounded-lg border bg-background px-3 py-2 text-sm font-medium transition-colors hover:bg-muted/50"
         >
           <span aria-hidden className="size-2 rounded-full bg-brand" />
           {t("cta")}
@@ -30,7 +31,7 @@ export function TelegramReports() {
         </SectionLink>
       </div>
 
-      <div data-reveal aria-hidden className="rounded-2xl border bg-muted/40 p-4 select-none sm:p-10">
+      <div data-reveal aria-hidden className="rounded-xl border bg-muted/60 p-4 select-none sm:p-10">
         <div className="mx-auto flex max-w-sm flex-col gap-3">
           <p className="flex items-center gap-2 text-sm font-medium">
             <span className="flex size-8 items-center justify-center rounded-full bg-telegram text-white">

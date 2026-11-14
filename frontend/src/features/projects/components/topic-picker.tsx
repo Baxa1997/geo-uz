@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus } from "lucide-react";
+import { PlusIcon as Plus } from "@phosphor-icons/react/dist/ssr/Plus";
 import { useMessages, useTranslations } from "next-intl";
 import { useState } from "react";
 import { labelFor } from "@/shared/helpers/labels";

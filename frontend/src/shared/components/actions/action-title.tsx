@@ -1,13 +1,14 @@
-import { CircleAlert, Globe, PenLine, Wrench, type LucideIcon } from "lucide-react";
 import { useMessages, useTranslations } from "next-intl";
 import { labelFor } from "@/shared/helpers/labels";
 import type { Action, ActionKind, SourceType } from "@/shared/types/api";
+import { IconPage, IconSiteFix, IconSources, IconWrongFacts } from "@/shared/components/own-icons";
+import type { AppIcon } from "@/shared/types/icon";
 
-export const ACTION_KIND_ICONS: Record<ActionKind, LucideIcon> = {
-  listing: Globe,
-  fact: CircleAlert,
-  content: PenLine,
-  technical: Wrench,
+export const ACTION_KIND_ICONS: Record<ActionKind, AppIcon> = {
+  listing: IconSources,
+  fact: IconWrongFacts,
+  content: IconPage,
+  technical: IconSiteFix,
 };
 
 /** A business can't "get listed" on its own or a competitor's site; those read as any other site. */

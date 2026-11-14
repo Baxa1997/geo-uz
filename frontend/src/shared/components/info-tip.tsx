@@ -1,6 +1,6 @@
 "use client";
 
-import { Info } from "lucide-react";
+import { InfoIcon as Info } from "@phosphor-icons/react/dist/ssr/Info";
 import dynamic from "next/dynamic";
 import { useId, useRef, useState } from "react";
 import { flushSync } from "react-dom";

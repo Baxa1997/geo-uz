@@ -1,7 +1,8 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Archive, ArchiveRestore } from "lucide-react";
+import { ArchiveIcon as Archive } from "@phosphor-icons/react/dist/ssr/Archive";
+import { ArrowCounterClockwiseIcon as ArchiveRestore } from "@phosphor-icons/react/dist/ssr/ArrowCounterClockwise";
 import { useTranslations } from "next-intl";
 import { Button } from "@/shared/components/ui/button";
 import { useRouter } from "@/i18n/navigation";

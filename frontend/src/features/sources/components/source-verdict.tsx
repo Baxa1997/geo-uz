@@ -1,4 +1,5 @@
-import { ArrowRight, Lightbulb } from "lucide-react";
+import { ArrowRightIcon as ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight";
+import { LightbulbIcon as Lightbulb } from "@phosphor-icons/react/dist/ssr/Lightbulb";
 import { useLocale, useTimeZone, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { TIME_ZONE } from "@/shared/constants";

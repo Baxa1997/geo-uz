@@ -1,4 +1,4 @@
-import { CircleCheck } from "lucide-react";
+import { CheckCircleIcon as CircleCheck } from "@phosphor-icons/react/dist/ssr/CheckCircle";
 import { useLocale, useTranslations } from "next-intl";
 import { ActionTitle } from "@/shared/components/actions/action-title";
 import { ActionWhy } from "@/shared/components/actions/action-why";

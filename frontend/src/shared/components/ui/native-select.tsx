@@ -1,6 +1,6 @@
 import * as React from "react"
 import { cn } from "cn"
-import { ChevronDownIcon } from "lucide-react"
+import { CaretDownIcon as ChevronDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 
 type NativeSelectProps = Omit<React.ComponentProps<"select">, "size"> & {
   size?: "sm" | "default"

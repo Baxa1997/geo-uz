@@ -1,4 +1,5 @@
-import { ArrowDown, ArrowUp } from "lucide-react";
+import { ArrowDownIcon as ArrowDown } from "@phosphor-icons/react/dist/ssr/ArrowDown";
+import { ArrowUpIcon as ArrowUp } from "@phosphor-icons/react/dist/ssr/ArrowUp";
 import { useLocale, useTranslations } from "next-intl";
 import { Hint } from "@/shared/components/hint";
 import { formatPercent } from "@/shared/helpers/numbers";

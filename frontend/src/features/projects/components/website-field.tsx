@@ -1,6 +1,6 @@
 "use client";
 
-import { Info } from "lucide-react";
+import { InfoIcon as Info } from "@phosphor-icons/react/dist/ssr/Info";
 import { useTranslations } from "next-intl";
 import { Field, FieldDescription, FieldError, FieldLabel } from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";

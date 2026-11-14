@@ -1,7 +1,8 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import { Send, Settings2 } from "lucide-react";
+import { PaperPlaneTiltIcon as Send } from "@phosphor-icons/react/dist/ssr/PaperPlaneTilt";
+import { SlidersHorizontalIcon as Settings2 } from "@phosphor-icons/react/dist/ssr/SlidersHorizontal";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Modal } from "@/shared/components/modal";

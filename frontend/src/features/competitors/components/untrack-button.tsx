@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { UserMinus } from "lucide-react";
+import { UserMinusIcon as UserMinus } from "@phosphor-icons/react/dist/ssr/UserMinus";
 import { useTranslations } from "next-intl";
 import { Hint } from "@/shared/components/hint";
 import { Button } from "@/shared/components/ui/button";

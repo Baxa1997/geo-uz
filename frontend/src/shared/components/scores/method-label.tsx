@@ -1,4 +1,4 @@
-import { Info } from "lucide-react";
+import { InfoIcon as Info } from "@phosphor-icons/react/dist/ssr/Info";
 import { useLocale, useTimeZone, useTranslations } from "next-intl";
 import { TIME_ZONE } from "@/shared/constants";
 import { formatLongDate } from "@/shared/helpers/dates";

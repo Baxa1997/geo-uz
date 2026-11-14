@@ -1,4 +1,6 @@
-import { ArrowRight, Lightbulb, TriangleAlert, type LucideIcon } from "lucide-react";
+import { ArrowRightIcon as ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight";
+import { LightbulbIcon as Lightbulb } from "@phosphor-icons/react/dist/ssr/Lightbulb";
+import { WarningIcon as TriangleAlert } from "@phosphor-icons/react/dist/ssr/Warning";
 import { useLocale, useMessages, useTranslations } from "next-intl";
 import { labelFor } from "@/shared/helpers/labels";
 import { formatPercent } from "@/shared/helpers/numbers";
@@ -7,6 +9,7 @@ import type { Action, Report } from "@/shared/types/api";
 import { sectionNumber } from "../constants";
 import { outlook, type Level, type Opportunity, type Risk } from "../helpers/risks";
 import { ReportCard } from "./report-parts";
+import type { AppIcon } from "@/shared/types/icon";
 
 /** A level's dot: a risk grows redder with its level, an opportunity greener. */
 const DOTS: Record<"risk" | "opportunity", Record<Level, string>> = {
@@ -74,7 +77,7 @@ export function Risks({ report, actions }: { report: Report; actions: Action[] }
     }
   };
 
-  const sides: { key: "risk" | "opportunity"; icon: LucideIcon; title: string; empty: string; lines: Line[] }[] = [
+  const sides: { key: "risk" | "opportunity"; icon: AppIcon; title: string; empty: string; lines: Line[] }[] = [
     {
       key: "risk",
       icon: TriangleAlert,

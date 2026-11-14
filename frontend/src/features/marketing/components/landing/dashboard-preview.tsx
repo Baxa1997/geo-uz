@@ -1,18 +1,9 @@
-import {
-  CalendarDays,
-  CircleAlert,
-  FileText,
-  Globe,
-  LayoutDashboard,
-  ListChecks,
-  MessageCircleQuestion,
-  MessagesSquare,
-  Tag,
-  Users,
-} from "lucide-react";
+import { CalendarDotsIcon as CalendarDays } from "@phosphor-icons/react/dist/ssr/CalendarDots";
+import { TagIcon as Tag } from "@phosphor-icons/react/dist/ssr/Tag";
 import { useTranslations } from "next-intl";
 import { DEMO_REPORT } from "@/mocks/demo";
 import { EngineIcon } from "@/shared/components/engine-icon";
+import { IconActions, IconAnswers, IconCompetitors, IconOverview, IconQuestions, IconReports, IconSources, IconWrongFacts } from "@/shared/components/own-icons";
 import { BrandTable } from "@/shared/components/scores/brand-table";
 import { HeadlineKpis } from "@/shared/components/scores/headline-kpis";
 import { SourceTypesChart } from "@/shared/components/scores/source-types-chart";
@@ -23,14 +14,14 @@ import { cn } from "@/shared/helpers/utils";
 
 /** The app's sidebar, sections included (features/workspace keeps the real one). */
 const NAV = [
-  { key: "overview", icon: LayoutDashboard },
-  { key: "prompts", icon: MessageCircleQuestion, heading: "monitor" },
-  { key: "answers", icon: MessagesSquare },
-  { key: "competitors", icon: Users },
-  { key: "sources", icon: Globe },
-  { key: "wrongFacts", icon: CircleAlert, heading: "improve" },
-  { key: "actions", icon: ListChecks },
-  { key: "reports", icon: FileText, heading: "share" },
+  { key: "overview", icon: IconOverview },
+  { key: "prompts", icon: IconQuestions, heading: "monitor" },
+  { key: "answers", icon: IconAnswers },
+  { key: "competitors", icon: IconCompetitors },
+  { key: "sources", icon: IconSources },
+  { key: "wrongFacts", icon: IconWrongFacts, heading: "improve" },
+  { key: "actions", icon: IconActions },
+  { key: "reports", icon: IconReports, heading: "share" },
 ] as const;
 
 /**

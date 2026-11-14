@@ -1,6 +1,8 @@
 "use client";
 
-import { Languages, Tag, X } from "lucide-react";
+import { TranslateIcon as Languages } from "@phosphor-icons/react/dist/ssr/Translate";
+import { TagIcon as Tag } from "@phosphor-icons/react/dist/ssr/Tag";
+import { XIcon as X } from "@phosphor-icons/react/dist/ssr/X";
 import { useSearchParams } from "next/navigation";
 import { useMessages, useTranslations } from "next-intl";
 import { useTransition } from "react";

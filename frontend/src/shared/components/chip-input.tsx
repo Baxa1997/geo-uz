@@ -1,6 +1,7 @@
 "use client";
 
-import { Plus, X } from "lucide-react";
+import { PlusIcon as Plus } from "@phosphor-icons/react/dist/ssr/Plus";
+import { XIcon as X } from "@phosphor-icons/react/dist/ssr/X";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 

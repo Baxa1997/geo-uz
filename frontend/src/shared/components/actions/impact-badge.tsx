@@ -1,4 +1,6 @@
-import { SignalHigh, SignalLow, SignalMedium } from "lucide-react";
+import { CellSignalHighIcon as SignalHigh } from "@phosphor-icons/react/dist/ssr/CellSignalHigh";
+import { CellSignalLowIcon as SignalLow } from "@phosphor-icons/react/dist/ssr/CellSignalLow";
+import { CellSignalMediumIcon as SignalMedium } from "@phosphor-icons/react/dist/ssr/CellSignalMedium";
 import { useTranslations } from "next-intl";
 import { cn } from "@/shared/helpers/utils";
 import type { ActionImpact } from "@/shared/types/api";

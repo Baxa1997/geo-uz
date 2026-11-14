@@ -1,6 +1,9 @@
-import { Circle, CircleCheck, CircleX, type LucideIcon } from "lucide-react";
+import { CircleIcon as Circle } from "@phosphor-icons/react/dist/ssr/Circle";
+import { CheckCircleIcon as CircleCheck } from "@phosphor-icons/react/dist/ssr/CheckCircle";
+import { XCircleIcon as CircleX } from "@phosphor-icons/react/dist/ssr/XCircle";
 import { cn } from "@/shared/helpers/utils";
 import type { ActionStatus } from "@/shared/types/api";
+import type { AppIcon } from "@/shared/types/icon";
 
 /** In progress, as Peec marks it: a ring with its right half filled, in amber. Drawn like the lucide circles beside it. */
 function HalfCircle({ className }: { className?: string }) {
@@ -12,7 +15,7 @@ function HalfCircle({ className }: { className?: string }) {
   );
 }
 
-const ICONS: Record<ActionStatus, { icon: LucideIcon | typeof HalfCircle; className: string }> = {
+const ICONS: Record<ActionStatus, { icon: AppIcon | typeof HalfCircle; className: string }> = {
   new: { icon: Circle, className: "text-muted-foreground" },
   in_progress: { icon: HalfCircle, className: "text-progress" },
   done: { icon: CircleCheck, className: "text-positive" },

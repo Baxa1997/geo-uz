@@ -1,6 +1,6 @@
 "use client";
 
-import { FileText } from "lucide-react";
+import { FileTextIcon as FileText } from "@phosphor-icons/react/dist/ssr/FileText";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { AnswersList } from "@/shared/components/answers/answers-list";
