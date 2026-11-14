@@ -60,7 +60,25 @@ Any other number makes a new account, which goes through onboarding and gets a p
    type check and the linter. Judge speed on a production build, not on `npm run dev`.
 5. **Commit only when the user asks.** Say plainly which branch the work is on.
 
-## Done (as of 10 October 2026)
+## Done (as of 14 November 2026)
+
+- **The pilot report as a product, and its generator (14 Nov), on the branch `pilot-report`; not merged.** The
+  user sent a report made by hand for a first client (a private school: five questions, ten pages) and asked
+  for honest feedback and the next move. The feedback, which the user accepted ("yes"): the hand-made report
+  is a better product than the Peec-style app, so the next move is to make that report repeatable before any
+  backend for the dashboard. Built: `/pilots/<slug>` in the frontend draws the report from one file
+  (`frontend/pilots/<slug>.json`; that client's report is the sample and prints as the same ten pages. Clients'
+  files stay on this computer: the GitHub repository is public, so `frontend/pilots/*.json` is not in git), and
+  `backend/pilot/` is a Python script that makes that file from a brief (ask ChatGPT with web search, read who
+  is named and who is **recommended**, check the cited pages and the client's site, draft the analysis, print
+  the cost). The script's counting is tested offline; **it has not been run against OpenAI** (no key on this
+  computer), so the first real run is also step 0 of `backend/PLAN.md`. What the report has that the app's
+  data doesn't yet: recommended apart from named, what ChatGPT states about each business, the facts check,
+  decisions with options and risk. The rules are in `frontend/CLAUDE.md`, "The pilot report", and
+  `backend/pilot/README.md`. Then ("start 4", the same day): a client's second report compares with the one
+  before. A brief names the earlier report (`previous`), the script counts what changed (`steps.compare`) and
+  the report opens with a "what changed" section; looked at with a temporary made-up file, since no second
+  measurement exists yet.
 
 - **Every page exists on mock data:** landing page, free check, login (phone and code, Telegram),
   onboarding in five steps, the first check's progress screen, project list, Overview, Savollar (questions),
@@ -332,6 +350,14 @@ Any other number makes a new account, which goes through onboarding and gets a p
   own branch, merged when the user says so.
 
 ## To do, in order
+
+0. **Pilots first (the user's decision, 14 Nov).** Run `backend/pilot` for a real client with a key, compare
+   its draft with the hand-made first report, and correct the prompts. Fix that report before it
+   is sent: read the client's website, ask each question three times and in Uzbek, fill the contacts. Then sell 5–10
+   pilots by hand. Only after that the backend, and then for the report and four pages (Overview, Savollar,
+   Javoblar, Harakatlar). Ideas agreed as direction, not built: the app opening on "how AI sees you" beside
+   the leader, counts instead of percentages while samples are small, the report's look in the app, a
+   category ranking (one measurement serves every business in it), Kazakhstan by hand-made Russian pilots.
 
 1. **The other pages, the same way, in the sidebar's order.** Each also gets hover explanations on its table
    headings, figures and marks (`Hint`), which only Savollar has so far:

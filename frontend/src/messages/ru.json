@@ -3523,5 +3523,215 @@
       "title": "Отчёт за {date}",
       "contents": "Содержание"
     }
+  },
+  "Pilot": {
+    "metaTitle": "{brand}: как ИИ видит бренд",
+    "kicker": "Отчёт о видимости в ИИ",
+    "pilot": "Пилотный замер · {month}",
+    "coverTitle": "Как ИИ видит {brand}",
+    "countOf": "{n} из {of}",
+    "coverNumber": "<b>{n}</b> из {of}",
+    "coverCount": "ответов {engine} называют {acc}",
+    "preparedBy": "Подготовлено",
+    "preparedFor": "Для",
+    "measuredOn": "Дата замера",
+    "scope": "Объём",
+    "scopeValue": "{questions, plural, one {# вопрос} few {# вопроса} many {# вопросов} other {# вопроса}}, {answers, plural, one {# ответ} few {# ответа} many {# ответов} other {# ответа}}, {engine}, {languages}",
+    "languages": {
+      "ru": "русский язык",
+      "uz": "узбекский язык"
+    },
+    "footer": "Пилотный замер · данные на {date}",
+    "print": "Печать или PDF",
+    "fig": "Рис. {n}",
+    "table": "Табл. {n}",
+    "you": "вы",
+    "yes": "да",
+    "no": "нет",
+    "silent": "ИИ не сообщает",
+    "takeaway": "Вывод",
+    "answersOf": "{n} из {of, plural, one {# ответа} other {# ответов}}",
+    "summary": {
+      "eyebrow": "Главное",
+      "youCard": "Как ИИ видит вас",
+      "leaderCard": "Как ИИ видит лидера",
+      "recommended": "Рекомендации",
+      "named": "Упоминания",
+      "kpiNamed": "ответов называют {acc}",
+      "kpiRecommended": "ответов рекомендуют {acc}",
+      "kpiLeader": "лидер: {n} из {of}",
+      "kpiOthers": "других {genPlural} названо в ответах",
+      "kpiOthersSub": "{n} из них рекомендованы",
+      "kpiSources": "источников, которые читает ИИ, включают {acc}",
+      "of": "из {of}",
+      "flags": "Красные флаги",
+      "strengths": "Что работает на вас",
+      "firstSteps": "Первые шаги"
+    },
+    "questions": {
+      "eyebrow": "Что мы проверили",
+      "method": "Метод",
+      "methodText": "{questions, plural, one {# вопрос, который задают} few {# вопроса, которые задают} many {# вопросов, которые задают} other {# вопроса, которые задают}} клиенты при выборе. {samples, plural, one {Каждый задан} other {Каждый задан # раза,}} в новом чате и без названия компании, чтобы увидеть, кого ИИ назовёт сам.",
+      "counting": "Как считали",
+      "countingText": "<b>Упоминание:</b> название есть в любом месте ответа. <b>Рекомендация:</b> ИИ назвал его в итоговом совете.",
+      "figure": "Что ответил {engine} на каждый вопрос: сколько {genPlural} он назвал и был ли среди них {brand}",
+      "colQuestion": "Вопрос клиента",
+      "colBrands": "В ответе",
+      "total": "всего {n}",
+      "aiRecommends": "ИИ рекомендует:",
+      "sum": "Итого по {answers, plural, one {# ответу} other {# ответам}}",
+      "sumText": "Названо других {genPlural}: {named}, из них рекомендованы {recommended}",
+      "legendRecommended": "рекомендованы в итоговом совете ИИ",
+      "legendNamed": "только названы"
+    },
+    "leaders": {
+      "eyebrow": "Кого рекомендует ИИ",
+      "figure": "Сколько раз ИИ рекомендует и называет, из {answers, plural, one {# ответа} other {# ответов}}",
+      "rec": "рек.",
+      "named": "назв.",
+      "legendRecommended": "рекомендация в итоговом совете",
+      "legendNamed": "упоминание в ответе",
+      "table": "Что ИИ сообщает о тех, кого рекомендует",
+      "colName": "Название"
+    },
+    "peers": {
+      "eyebrow": "Ближайшие конкуренты",
+      "profile": "Ваш профиль",
+      "table": "Похожие на вас в ответах ИИ",
+      "colPlace": "Где",
+      "colDescription": "Как ИИ описывает",
+      "colNamed": "Упоминания",
+      "colRecommended": "Рекоменд.",
+      "noDescription": "ИИ не описывает"
+    },
+    "reasons": {
+      "eyebrow": "Причины",
+      "table": "Вероятные причины",
+      "colReason": "Причина",
+      "colConfidence": "Уверенность",
+      "colEvidence": "Что мы нашли",
+      "confidence": {
+        "high": "высокая",
+        "medium": "средняя",
+        "low": "предположение"
+      },
+      "sourcesTable": "Где читает ИИ и где есть {brand}",
+      "colSource": "Источник",
+      "colKind": "Тип",
+      "colCited": "В ответах ИИ",
+      "colListed": "{brand} там",
+      "listed": {
+        "yes": "есть",
+        "no": "нет",
+        "unknown": "не проверено"
+      },
+      "kind": {
+        "media": "СМИ",
+        "catalog": "каталог",
+        "own": "свой сайт",
+        "social": "соцсеть",
+        "other": "другое"
+      }
+    },
+    "facts": {
+      "eyebrow": "Причины, продолжение",
+      "count": "{count, plural, one {# факт} few {# факта} many {# фактов} other {# факта}}",
+      "outOf": "из {count}",
+      "status": {
+        "found": "есть",
+        "partial": "частично",
+        "missing": "не найдено"
+      },
+      "table": "Какими фактами ИИ описывает других и что известно о {brand}",
+      "colFact": "Факт",
+      "colExample": "Пример из ответов ИИ",
+      "colFound": "Что найдено о {brand}",
+      "colStatus": "Статус"
+    },
+    "decisions": {
+      "eyebrow": "Решения для руководства",
+      "when": "Срок",
+      "effect": "Эффект",
+      "cost": "Затраты",
+      "effectLevel": {
+        "high": "высокий",
+        "medium": "средний",
+        "low": "низкий"
+      },
+      "costLevel": {
+        "high": "высокие",
+        "medium": "средние",
+        "low": "низкие"
+      },
+      "recommendation": "Рекомендация",
+      "why": "Почему",
+      "options": "Варианты",
+      "risk": "Риск"
+    },
+    "plan": {
+      "eyebrow": "План",
+      "figure": "План на {weeks, plural, one {# неделю} few {# недели} many {# недель} other {# недели}}: кто делает и когда готово",
+      "done": "готово: {done}",
+      "site": "свой сайт",
+      "external": "внешние источники",
+      "measure": "замер",
+      "scale": "шкала: недели"
+    },
+    "targets": {
+      "eyebrow": "Результат",
+      "table": "Показатели для повторного замера",
+      "colMetric": "Показатель",
+      "colNow": "Сейчас",
+      "colGoal": "Цель"
+    },
+    "changes": {
+      "eyebrow": "Что изменилось",
+      "coverWas": "было {n} из {of}, {date}",
+      "figures": "Главные показатели: было и стало",
+      "colFigure": "Показатель",
+      "colBefore": "Было · {date}",
+      "colAfter": "Стало · {date}",
+      "named": "Ответы ИИ называют {acc}",
+      "recommended": "Ответы ИИ рекомендуют {acc}",
+      "listed": "Источники ИИ включают {acc}",
+      "facts": "Факты найдены полностью",
+      "better": "лучше",
+      "worse": "хуже",
+      "up": "выше",
+      "down": "ниже",
+      "same": "без изменений",
+      "sample": "В прошлом замере было {before, plural, one {# ответ} few {# ответа} many {# ответов} other {# ответа}}, в этом {after}. Сравнивайте доли, а не числа: «1 из 5» и «3 из 15» означают одно и то же.",
+      "targets": "Цели прошлого отчёта",
+      "colGoal": "Цель",
+      "colWas": "Было",
+      "colNow": "Сейчас",
+      "colMet": "Итог",
+      "met": {
+        "yes": "достигнута",
+        "no": "не достигнута",
+        "unknown": "не измерялась"
+      },
+      "brands": "Кто вырос и кто потерял в ответах ИИ",
+      "colBrand": "Название",
+      "colRecommended": "Рекомендации",
+      "colNamed": "Упоминания",
+      "isNew": "не было",
+      "isGone": "нет в ответах",
+      "factChanges": "Факты, статус которых изменился",
+      "sourceChanges": "Источники, где изменилось ваше присутствие",
+      "nothing": "Без изменений с прошлого замера."
+    },
+    "limits": {
+      "eyebrow": "Ограничения",
+      "table": "Ограничения пилота и что с ними делать",
+      "colLimit": "Ограничение",
+      "colAction": "Что с этим делать",
+      "checks": "Проверить до решений",
+      "sources": "Источники",
+      "raw": "Исходные данные: {answers, plural, one {# ответ} few {# ответа} many {# ответов} other {# ответа}} {engine}. Полные тексты сохранены и доступны по запросу.",
+      "method": "Метод: {engine} через API с веб-поиском, модель {model}, {date}.",
+      "methodManual": "Метод: {engine} с веб-поиском, {date}.",
+      "cta": "Мы можем выполнить этот план и повторить замер."
+    }
   }
 }

@@ -3523,5 +3523,215 @@
       "title": "{date} hisoboti",
       "contents": "Mundarija"
     }
+  },
+  "Pilot": {
+    "metaTitle": "{brand}: sunʼiy intellekt brendni qanday koʻradi",
+    "kicker": "Sunʼiy intellektda koʻrinish hisoboti",
+    "pilot": "Sinov oʻlchovi · {month}",
+    "coverTitle": "Sunʼiy intellekt {brand}ni qanday koʻradi",
+    "countOf": "{of} tadan {n} ta",
+    "coverNumber": "{of} tadan <b>{n}</b> ta",
+    "coverCount": "{engine} javobida {one} tilga olingan",
+    "preparedBy": "Tayyorladi",
+    "preparedFor": "Kim uchun",
+    "measuredOn": "Oʻlchov sanasi",
+    "scope": "Hajmi",
+    "scopeValue": "{questions} ta savol, {answers} ta javob, {engine}, {languages}",
+    "languages": {
+      "ru": "rus tili",
+      "uz": "oʻzbek tili"
+    },
+    "footer": "Sinov oʻlchovi · {date} holatiga",
+    "print": "Chop etish yoki PDF",
+    "fig": "{n}-rasm",
+    "table": "{n}-jadval",
+    "you": "siz",
+    "yes": "ha",
+    "no": "yoʻq",
+    "silent": "SI aytmaydi",
+    "takeaway": "Xulosa",
+    "answersOf": "{of} ta javobdan {n} tasi",
+    "summary": {
+      "eyebrow": "Asosiysi",
+      "youCard": "SI sizni qanday koʻradi",
+      "leaderCard": "SI yetakchini qanday koʻradi",
+      "recommended": "Tavsiya",
+      "named": "Tilga olish",
+      "kpiNamed": "javobda {one} tilga olingan",
+      "kpiRecommended": "javobda {one} tavsiya qilingan",
+      "kpiLeader": "yetakchi: {of} tadan {n} ta",
+      "kpiOthers": "boshqa {genPlural} javoblarda tilga olingan",
+      "kpiOthersSub": "ulardan {n} tasi tavsiya qilingan",
+      "kpiSources": "SI oʻqiydigan manbada {one} bor",
+      "of": "/ {of}",
+      "flags": "Xavf belgilari",
+      "strengths": "Sizning foydangizga ishlaydi",
+      "firstSteps": "Birinchi qadamlar"
+    },
+    "questions": {
+      "eyebrow": "Nimani tekshirdik",
+      "method": "Usul",
+      "methodText": "Mijozlar tanlashda beradigan {questions} ta savol. Har biri {samples, plural, one {} other {# marta,}} yangi chatda va kompaniya nomisiz berildi: SI oʻzi kimni aytishini koʻrish uchun.",
+      "counting": "Qanday hisobladik",
+      "countingText": "<b>Tilga olish:</b> nom javobning istalgan joyida bor. <b>Tavsiya:</b> SI uni yakuniy maslahatida aytgan.",
+      "figure": "{engine} har bir savolga nima dedi: nechta {genPlural} aytdi va ular orasida {brand} bormi",
+      "colQuestion": "Mijoz savoli",
+      "colBrands": "Javobda",
+      "total": "jami {n}",
+      "aiRecommends": "SI tavsiya qiladi:",
+      "sum": "{answers} ta javob boʻyicha jami",
+      "sumText": "Boshqa {genPlural} tilga olingan: {named}, ulardan tavsiya qilingan: {recommended}",
+      "legendRecommended": "SI yakuniy maslahatida tavsiya qilgan",
+      "legendNamed": "faqat tilga olingan"
+    },
+    "leaders": {
+      "eyebrow": "SI kimni tavsiya qiladi",
+      "figure": "SI necha marta tavsiya qilgan va tilga olgan, {answers} ta javobdan",
+      "rec": "tavs.",
+      "named": "tilga",
+      "legendRecommended": "yakuniy maslahatda tavsiya",
+      "legendNamed": "javobda tilga olingan",
+      "table": "SI tavsiya qilganlari haqida nima deydi",
+      "colName": "Nomi"
+    },
+    "peers": {
+      "eyebrow": "Eng yaqin raqobatchilar",
+      "profile": "Sizning profilingiz",
+      "table": "SI javoblarida sizga oʻxshashlar",
+      "colPlace": "Qayerda",
+      "colDescription": "SI qanday taʼriflaydi",
+      "colNamed": "Tilga olish",
+      "colRecommended": "Tavsiya",
+      "noDescription": "SI taʼriflamaydi"
+    },
+    "reasons": {
+      "eyebrow": "Sabablar",
+      "table": "Ehtimoliy sabablar",
+      "colReason": "Sabab",
+      "colConfidence": "Ishonch",
+      "colEvidence": "Nima topdik",
+      "confidence": {
+        "high": "yuqori",
+        "medium": "oʻrta",
+        "low": "taxmin"
+      },
+      "sourcesTable": "SI qayerdan oʻqiydi va {brand} qayerda bor",
+      "colSource": "Manba",
+      "colKind": "Turi",
+      "colCited": "SI javoblarida",
+      "colListed": "{brand} u yerda",
+      "listed": {
+        "yes": "bor",
+        "no": "yoʻq",
+        "unknown": "tekshirilmagan"
+      },
+      "kind": {
+        "media": "OAV",
+        "catalog": "katalog",
+        "own": "oʻz sayti",
+        "social": "ijtimoiy tarmoq",
+        "other": "boshqa"
+      }
+    },
+    "facts": {
+      "eyebrow": "Sabablar, davomi",
+      "count": "{count} ta fakt",
+      "outOf": "/ {count}",
+      "status": {
+        "found": "bor",
+        "partial": "qisman",
+        "missing": "topilmadi"
+      },
+      "table": "SI boshqalarni qaysi faktlar bilan taʼriflaydi va {brand} haqida nima maʼlum",
+      "colFact": "Fakt",
+      "colExample": "SI javoblaridan misol",
+      "colFound": "{brand} haqida nima topildi",
+      "colStatus": "Holati"
+    },
+    "decisions": {
+      "eyebrow": "Rahbariyat uchun qarorlar",
+      "when": "Muddat",
+      "effect": "Taʼsir",
+      "cost": "Xarajat",
+      "effectLevel": {
+        "high": "yuqori",
+        "medium": "oʻrta",
+        "low": "past"
+      },
+      "costLevel": {
+        "high": "yuqori",
+        "medium": "oʻrta",
+        "low": "past"
+      },
+      "recommendation": "Tavsiya",
+      "why": "Nega",
+      "options": "Variantlar",
+      "risk": "Xavf"
+    },
+    "plan": {
+      "eyebrow": "Reja",
+      "figure": "{weeks} haftalik reja: kim bajaradi va qachon tayyor",
+      "done": "tayyor: {done}",
+      "site": "oʻz sayti",
+      "external": "tashqi manbalar",
+      "measure": "oʻlchov",
+      "scale": "shkala: haftalar"
+    },
+    "targets": {
+      "eyebrow": "Natija",
+      "table": "Qayta oʻlchov uchun koʻrsatkichlar",
+      "colMetric": "Koʻrsatkich",
+      "colNow": "Hozir",
+      "colGoal": "Maqsad"
+    },
+    "changes": {
+      "eyebrow": "Nima oʻzgardi",
+      "coverWas": "avval: {of} tadan {n} ta, {date}",
+      "figures": "Asosiy koʻrsatkichlar: avval va hozir",
+      "colFigure": "Koʻrsatkich",
+      "colBefore": "Avval · {date}",
+      "colAfter": "Hozir · {date}",
+      "named": "SI javoblarida {one} tilga olingan",
+      "recommended": "SI javoblarida {one} tavsiya qilingan",
+      "listed": "SI manbalarida {one} bor",
+      "facts": "Toʻliq topilgan faktlar",
+      "better": "yaxshiroq",
+      "worse": "yomonroq",
+      "up": "oshdi",
+      "down": "pasaydi",
+      "same": "oʻzgarishsiz",
+      "sample": "Avvalgi oʻlchovda {before} ta javob bor edi, bunisida {after} ta. Sonlarni emas, ulushlarni solishtiring: «5 tadan 1 ta» va «15 tadan 3 ta» bir xil.",
+      "targets": "Avvalgi hisobotning maqsadlari",
+      "colGoal": "Maqsad",
+      "colWas": "Avval",
+      "colNow": "Hozir",
+      "colMet": "Natija",
+      "met": {
+        "yes": "erishildi",
+        "no": "erishilmadi",
+        "unknown": "oʻlchanmadi"
+      },
+      "brands": "SI javoblarida kim oʻsdi va kim pasaydi",
+      "colBrand": "Nomi",
+      "colRecommended": "Tavsiya",
+      "colNamed": "Tilga olish",
+      "isNew": "yoʻq edi",
+      "isGone": "javoblarda yoʻq",
+      "factChanges": "Holati oʻzgargan faktlar",
+      "sourceChanges": "Sizning ishtirokingiz oʻzgargan manbalar",
+      "nothing": "Avvalgi oʻlchovdan beri oʻzgarish yoʻq."
+    },
+    "limits": {
+      "eyebrow": "Cheklovlar",
+      "table": "Sinov oʻlchovining cheklovlari va ular bilan nima qilish kerak",
+      "colLimit": "Cheklov",
+      "colAction": "Nima qilish kerak",
+      "checks": "Qarordan oldin tekshiring",
+      "sources": "Manbalar",
+      "raw": "Dastlabki maʼlumot: {engine}ning {answers} ta javobi. Toʻliq matnlar saqlangan va soʻrov boʻyicha beriladi.",
+      "method": "Usul: {engine}, API orqali, veb-qidiruv bilan, model {model}, {date}.",
+      "methodManual": "Usul: {engine}, veb-qidiruv bilan, {date}.",
+      "cta": "Biz bu rejani bajarib, oʻlchovni takrorlashimiz mumkin."
+    }
   }
 }
