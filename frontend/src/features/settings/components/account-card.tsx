@@ -6,7 +6,6 @@ import { useId, useState } from "react";
 import { Button } from "@/shared/components/ui/button";
 import { useRouter } from "@/i18n/navigation";
 import { api } from "@/shared/api/client";
-import { formatPhone } from "@/shared/helpers/phone";
 import type { User } from "@/shared/types/api";
 import { FIELD, SettingsCard, SettingsRow } from "./settings-parts";
 
@@ -49,11 +48,8 @@ export function AccountCard({ user }: { user: User }) {
           </span>
         </form>
       </SettingsRow>
-      <SettingsRow label={t("phone")} hint={t("phoneHint")}>
-        <p className="py-2 text-sm tabular-nums">{user.phone ? formatPhone(user.phone) : <span className="text-muted-foreground">{t("none")}</span>}</p>
-      </SettingsRow>
-      <SettingsRow label={t("telegram")} hint={t("telegramHint")}>
-        <p className="py-2 text-sm">{user.telegramUsername ? `@${user.telegramUsername}` : <span className="text-muted-foreground">{t("none")}</span>}</p>
+      <SettingsRow label={t("email")} hint={t("emailHint")}>
+        <p className="py-2 text-sm break-all">{user.email ?? <span className="text-muted-foreground">{t("none")}</span>}</p>
       </SettingsRow>
     </SettingsCard>
   );

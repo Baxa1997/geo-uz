@@ -1,8 +1,8 @@
 // In-memory mock of the backend. Runs on the Next.js server only (browser code
 // reaches it through ./actions.ts). Changes last until the dev server restarts.
 import { randomUUID } from "node:crypto";
-import { ApiError, type ApiClient } from "@/shared/api/client";
-import { ACTION_STEP_COUNT, FACT_MAX_LENGTH, PLAN_LIMITS, PROMPT_TEXT_MAX_LENGTH, PROMPT_TEXT_MIN_LENGTH } from "@/shared/constants";
+import { API_URL, ApiError, AUTH_LIVE, type ApiClient } from "@/shared/api/client";
+import { ACTION_STEP_COUNT, FACT_MAX_LENGTH, SESSION_COOKIE, PLAN_LIMITS, PROMPT_TEXT_MAX_LENGTH, PROMPT_TEXT_MIN_LENGTH } from "@/shared/constants";
 import { isValidDomain, normalizeDomain } from "@/shared/helpers/domain";
 import { isTracked, sameText } from "@/shared/helpers/prompts";
 import type {
@@ -34,6 +34,7 @@ import { clearSessionToken, readSessionToken, writeSessionToken } from "./sessio
 const LATENCY_MS = 300;
 const RESEND_SECONDS = 60;
 const UZ_PHONE = /^\+998\d{9}$/;
+const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
 // A run waits in the queue, collects ChatGPT's answers one by one, then analyzes them
 const RUN_QUEUED_MS = 1500;
@@ -127,9 +128,32 @@ async function respond<T>(value: T, latency = LATENCY_MS): Promise<T> {
   return structuredClone(value);
 }
 
+/**
+ * With the backend's login live (NEXT_PUBLIC_LIVE has "auth"), the session cookie is the backend's: ask it
+ * once who the token belongs to and keep the account here, so the mock pages know their visitor. Every such
+ * account also sees the sample project, or there would be nothing to look at behind a real login.
+ */
+async function backendUser(token: string): Promise<string | undefined> {
+  try {
+    const reply = await fetch(`${API_URL}/auth/me`, { headers: { Cookie: `${SESSION_COOKIE}=${token}` }, cache: "no-store" });
+    if (!reply.ok) return undefined;
+    const user = (await reply.json()) as User;
+    const account = state.accounts.find((a) => a.user.id === user.id);
+    if (account) account.user = user;
+    else state.accounts.push({ user });
+    state.sessions.set(token, user.id);
+    return user.id;
+  } catch {
+    return undefined;
+  }
+}
+
+const owns = (user: User, projectId: string) =>
+  state.owners.get(projectId) === user.id || (AUTH_LIVE && projectId === PROJECT.id);
+
 async function currentUser(): Promise<User> {
   const token = await readSessionToken();
-  const userId = token ? state.sessions.get(token) : undefined;
+  const userId = token ? (state.sessions.get(token) ?? (AUTH_LIVE ? await backendUser(token) : undefined)) : undefined;
   const account = state.accounts.find((a) => a.user.id === userId);
   if (!account) throw new ApiError(401, "Not logged in");
   return account.user;
@@ -158,7 +182,7 @@ function findProject(id: string): Project {
 async function findOwnProject(id: string): Promise<Project> {
   const user = await currentUser();
   const project = findProject(id);
-  if (state.owners.get(id) !== user.id) throw new ApiError(404, `Project ${id} not found`);
+  if (!owns(user, id)) throw new ApiError(404, `Project ${id} not found`);
   return project;
 }
 
@@ -325,7 +349,7 @@ const ownerMember = (user: User): Member => ({
   telegramUsername: user.telegramUsername,
   role: "owner",
   status: "active",
-  projectIds: state.projects.filter((project) => state.owners.get(project.id) === user.id).map((project) => project.id),
+  projectIds: state.projects.filter((project) => owns(user, project.id)).map((project) => project.id),
 });
 
 /** The members an owner invited: the sample account starts with its marketer. */
@@ -367,17 +391,18 @@ function finishedRun(projectId: string): MockRun {
 }
 
 export const mockApi: ApiClient = {
-  sendCode: async ({ phone }) => {
-    if (!UZ_PHONE.test(phone)) throw new ApiError(422, `Invalid phone number ${phone}`);
+  sendCode: async ({ email }) => {
+    if (!EMAIL.test(email.trim())) throw new ApiError(422, `Invalid email ${email}`);
     return respond({ resendIn: RESEND_SECONDS });
   },
 
   // Any 6-digit code works
-  verifyCode: async ({ phone, code }) => {
+  verifyCode: async ({ email, code }) => {
     if (!/^\d{6}$/.test(code)) throw new ApiError(400, "Wrong code");
+    const address = email.trim().toLowerCase();
     return logIn(
-      (account) => account.user.phone === phone,
-      () => ({ user: { id: newId("usr"), name: null, phone, telegramUsername: null } }),
+      (account) => account.user.email === address,
+      () => ({ user: { id: newId("usr"), name: null, email: address, phone: null, telegramUsername: null } }),
     );
   },
 
@@ -389,6 +414,7 @@ export const mockApi: ApiClient = {
         user: {
           id: newId("usr"),
           name: [auth.first_name, auth.last_name].filter(Boolean).join(" "),
+          email: null,
           phone: null,
           telegramUsername: auth.username ?? null,
         },
@@ -406,7 +432,7 @@ export const mockApi: ApiClient = {
 
   getProjects: async () => {
     const user = await currentUser();
-    return respond(state.projects.filter((p) => state.owners.get(p.id) === user.id));
+    return respond(state.projects.filter((p) => owns(user, p.id)));
   },
 
   createProject: async ({ name, aliases, domain, category, city, competitors, prompts = [], description = "", services = [] }) => {
@@ -782,7 +808,7 @@ export const mockApi: ApiClient = {
   getRunProgress: async (id) => {
     const user = await currentUser();
     const run = [...state.runs.values()].find((r) => r.id === id);
-    if (!run || state.owners.get(run.projectId) !== user.id) throw new ApiError(404, `Run ${id} not found`);
+    if (!run || !owns(user, run.projectId)) throw new ApiError(404, `Run ${id} not found`);
     return respond(progressOf(run), 150);
   },
 

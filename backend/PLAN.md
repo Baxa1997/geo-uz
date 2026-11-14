@@ -6,11 +6,11 @@ It does not repeat the API contract. The endpoints and types are in `frontend/CL
 
 Keep it current: when a page of the frontend is finished and corrected, add what it needs to "What each page needs" and a line to the change log at the end.
 
-Status: first version, written from the pages built by 5 October 2026. Nothing here is implemented.
+Status: written from the pages built by 5 October 2026 and kept current in the change log at the end. Built so far (14 Nov 2026, `backend/app/`, see `README.md`): login by email code and a new account's first run. The sections below still describe the first plan where the change log says otherwise: login is by email, not phone or Telegram, and the stack is Supabase and a server at Contabo.
 
 ## What the backend does
 
-1. Logs people in by phone (SMS code) or Telegram and keeps their projects.
+1. Logs people in by a code sent to their email (Google next; the first plan said phone and Telegram) and keeps their projects.
 2. Reads a website and suggests the brand profile, competitors and questions (onboarding, free check).
 3. Every week asks ChatGPT each project's questions, three times each, with web search on.
 4. Reads the answers: which businesses are named, in what order, in what tone, and which pages are cited.
@@ -180,8 +180,7 @@ A listing action also carries the number of answers citing the site and the comp
 
 ## Login and access
 
-- Phone numbers are Uzbek for now: `+998` and nine digits. Codes go by SMS.
-- Telegram login: check the widget's `hash` with the bot token.
+- Login is by a six-digit code sent to an email (since 14 Nov 2026; built). Google login comes next, through Supabase. The first plan's phone numbers with SMS codes and the Telegram widget are not built.
 - Every project endpoint checks the owner, except what the public report reads.
 - `POST /snapshot` and `POST /demo-requests` are open to anyone. The free check costs us money on every call, so it needs a limit (per IP, per domain, per day) before launch.
 
@@ -222,6 +221,17 @@ That is roughly one to two US cents per answer, and it has to cover the answer w
 19. **Kinds of pages.** Peec sorts cited pages into product page, comparison, list article, how-to and so on. It would tell a client what kind of page to write; it needs a model to classify every cited page. Not planned yet.
 
 ## Change log
+
+- **14 Nov 2026. The frontend's login is wired to this service.** The login page asks for an email and the code;
+  `NEXT_PUBLIC_LIVE=auth` in the frontend sends `sendCode`, `verifyCode`, `getMe`, `logout` and `updateMe` here
+  while every other call stays on mocks, and the mocks ask `GET /auth/me` whom a session belongs to. New here:
+  `PATCH /auth/me` `{name}` (the user's name, at most 120 characters, empty clears it). Tried in a browser on
+  this computer; no paid request was made. To follow from it: members are still invited by phone and SMS in the
+  contract and the mocks, and should be invited by email; the first-run page needs a way to replay a saved run
+  in development, so it can be built without asking the assistants.
+- **14 Nov 2026. The frontend's look and words changed, nothing for the backend but one name.** The Uzbek
+  interface calls the metrics Tilga olinish (visibility), Oʻrni (position) and Baho (tone); the API's field
+  names (`visibility`, `avgPosition`, `sentiment`) are unchanged.
 
 - **14 Nov 2026. The backend begins: `backend/app/`, its first slice** (see `backend/README.md`). The user's
   decisions the same day, which replace what this plan said before: **Supabase** for the database and the

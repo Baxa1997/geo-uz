@@ -152,6 +152,22 @@ def me(user: User = Depends(current_user)) -> Dict[str, Any]:
     return user_json(user)
 
 
+class MeUpdate(BaseModel):
+    name: str
+
+
+@app.patch("/auth/me")
+def update_me(body: MeUpdate, user: User = Depends(current_user)) -> Dict[str, Any]:
+    name = body.name.strip()
+    if len(name) > 120:
+        raise HTTPException(422, "name_too_long")
+    with SessionLocal() as db:
+        found = db.get(User, user.id)
+        found.name = name or None
+        db.commit()
+        return user_json(found)
+
+
 @app.post("/auth/logout", status_code=204)
 def logout(response: Response, geo_session: Optional[str] = Cookie(default=None)) -> None:
     if geo_session:

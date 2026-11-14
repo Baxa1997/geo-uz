@@ -2428,11 +2428,9 @@
       "save": "Saqlash",
       "failed": "Saqlab boʻlmadi.",
       "saved": "Saqlandi",
-      "phone": "Telefon raqami",
-      "phoneHint": "Shu raqam bilan kirasiz: SMS orqali kod yuboramiz.",
-      "telegram": "Telegram",
-      "telegramHint": "U orqali ham kirishingiz mumkin.",
-      "none": "Ulanmagan"
+      "email": "Email",
+      "emailHint": "Shu manzil bilan kirasiz: unga kod yuboramiz.",
+      "none": "Koʻrsatilmagan"
     },
     "members": {
       "title": "Aʼzolar",
@@ -2606,26 +2604,23 @@
   "Login": {
     "title": "Kirish",
     "descriptionCheck": "Kiring: bepul tekshiruv natijasi saqlanadi va undan loyihangizni sozlaymiz.",
-    "telegram": "Telegram orqali kirish",
-    "telegramPending": "Telegram bilan bogʻlanmoqda…",
-    "telegramFailed": "Telegram orqali kirib boʻlmadi. Telefon raqam bilan kiring.",
-    "or": "yoki",
-    "phone": "Telefon raqami",
-    "phoneInvalid": "Raqamni toʻliq kiriting, masalan: 90 123 45 67",
-    "sendCode": "SMS kod olish",
+    "email": "Email",
+    "emailPlaceholder": "siz@kompaniya.uz",
+    "emailInvalid": "Email manzilini toʻliq kiriting, masalan: siz@kompaniya.uz",
+    "sendCode": "Kodni olish",
     "sending": "Yuborilmoqda…",
     "sendFailed": "Kodni yuborib boʻlmadi. Qayta urinib koʻring.",
-    "codeSent": "Kod <b>{phone}</b> raqamiga SMS orqali yuborildi.",
-    "code": "SMS kod",
+    "codeSent": "<b>{email}</b> manziliga kod yubordik. Xat kelmasa, “Spam” jildini tekshiring.",
+    "code": "Kod",
     "codeInvalid": "6 xonali kodni kiriting.",
     "codeWrong": "Kod notoʻgʻri yoki eskirgan. Tekshirib, qayta kiriting.",
     "verifyFailed": "Kirib boʻlmadi. Qayta urinib koʻring.",
     "verify": "Kirish",
     "verifying": "Kirilmoqda…",
-    "changeNumber": "Raqamni oʻzgartirish",
+    "changeEmail": "Emailni oʻzgartirish",
     "resend": "Kodni qayta yuborish",
     "resendIn": "Qayta yuborish: {time}",
-    "mockHint": "Test rejimi: istalgan 6 xonali kod mos keladi. Maʼlumotlari bor demo kabinet: {phone}.",
+    "mockHint": "Sinov rejimi: istalgan 6 xonali kod mos keladi. Maʼlumotli namuna hisob: {email}.",
     "heading": "Hisobingizga kiring",
     "noAccount": "Hisobingiz yoʻqmi?",
     "startFree": "Bepul tekshiruvdan boshlang",
@@ -3356,7 +3351,7 @@
     "settingsAccount": {
       "account": {
         "title": "Hisobingiz",
-        "text": "Ismingiz hamda kirish uchun telefon raqamingiz va Telegramingiz."
+        "text": "Ismingiz va kirish uchun email manzilingiz."
       },
       "language": {
         "title": "Interfeys tili",

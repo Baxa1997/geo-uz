@@ -44,13 +44,24 @@ Read this section first in a new session: it says what exists, how to run it, an
 **Three parts exist, all on `main` (GitHub: Baxa1997/geo-uz, a public repository):**
 
 1. **`frontend/`: a Next.js 16 app with every page built on mock data** (Tashkent dental clinics), behind the API
-   contract in `frontend/CLAUDE.md`. Nothing in it calls the backend yet. Its login page still asks for a phone.
+   contract in `frontend/CLAUDE.md`. Since 14 Nov its login is the backend's (email and a code) when
+   `NEXT_PUBLIC_LIVE=auth` is set, as it is in this computer's `.env.local`; every other page is still mocks.
 2. **The pilot report**: `/pilots/<slug>` in the frontend draws a one-off report from `frontend/pilots/<slug>.json`,
    and `backend/pilot/` is the script that makes that file from a brief (`backend/pilot/README.md`). It has run
    for real for the first client.
 3. **`backend/app/`: the backend's first slice** (`backend/README.md`): login by a code sent to an email, and a new
    account's first run (`POST /first-runs`: website in, assistants asked, first statistics out). Tried on this
    computer with curl; not wired to the frontend, not deployed.
+
+**What was done on 14 Nov after the backend's first slice, in order** (each has its entry under "Done"):
+
+1. The look was made our own, so the app no longer reads as Peec: navy and paper colors, the Onest typeface,
+   the landing page's own marks, a taller header with the languages as a dropdown. Merged and pushed (`restyle`).
+2. The Uzbek metric names became Tilga olinish, Oʻrni, Baho. Merged and pushed with 1.
+3. Every icon was replaced: our own for the sidebar, metrics and action goals, Phosphor for the rest. Merged and
+   pushed with 1.
+4. The login page was moved to email and wired to the backend. Merged and pushed (`email-login`), when the user
+   said "commit, push".
 
 **The user's decisions that hold now (14 Nov):**
 
@@ -59,22 +70,32 @@ Read this section first in a new session: it says what exists, how to run it, an
 - Supabase holds the database and the login (email code and Google). A server at Contabo runs the Python backend.
   The frontend talks only to the backend.
 - The pilot report "is good for now"; its polishing and sending come after the platform's flow is set up.
+- The look is "navy and paper" with our own key icons and Phosphor for the rest; the Uzbek metric names are
+  Tilga olinish, Oʻrni, Baho (`frontend/CLAUDE.md`, "Our look").
+- No paid request (OpenAI or any other) until the user says so ("no request should be done"): the Gemini key,
+  the Supabase project and the Contabo server were promised for 15 Nov, and live runs wait for them.
 
 **Go on from here, in this order:**
 
-1. Frontend login by email: `features/auth` asks for an email and a code against `POST /auth/code` and
-   `/auth/code/verify` (the `User` type gains `email`; the phone forms go). Google later.
-2. A page after login that takes a website, starts `POST /first-runs`, shows its progress (`GET /first-runs/{id}`:
+1. Done (14 Nov, see "Done"): the login page asks for an email and a code against the backend. Google later.
+2. Next. Before it, the backend gets a development setting that replays a saved first run in the place of
+   asking the assistants, so the page is built and tried without a paid request (proposed to the user, 14 Nov;
+   not yet answered). A page after login that takes a website, starts `POST /first-runs`, shows its progress (`GET /first-runs/{id}`:
    `status`, `answered`, `total`) and then the first statistics (`GET /first-runs/{id}/result`, the `Snapshot`
    shape plus `engines`, `recommended`). The free check's parts (`features/marketing`: CheckRunner,
    SnapshotPreview, SiteAudit) are the closest thing built.
 3. Saving a first run as a project, then the setup steps (the onboarding wizard exists on mocks), then the
    backend behind the other pages in the build order of `backend/PLAN.md`.
-4. The mocks are switched off with one setting for the whole app (`NEXT_PUBLIC_USE_MOCKS`), so wiring a page
-   at a time needs either a switch per endpoint in `shared/api/client.ts` or the backend to cover a page's calls.
+4. A slice of the API goes live by its name in `NEXT_PUBLIC_LIVE` (`shared/api/client.ts`; "auth" so far), while
+   the rest stays on mocks; add a name per slice as the backend grows. Until the user says otherwise, **no paid
+   request is made** (the user, 14 Nov: "no request should be done"): build the first-run page against a saved
+   result and leave the one live run for when the keys arrive.
 
 **Waiting on the user (ask once, don't block on it):**
 
+- "Next" for the first-run page, and whether a saved run may be replayed in development to build it.
+- Whether the landing page should mark the weekly Telegram report "tez orada" and reword "no sign-up needed"
+  for the free check (both run ahead of the product; raised three times, not answered).
 - A Gemini API key: the Gemini client (`backend/app/engines.py`) is written from Google's documentation and has
   never run, so its cost and answers are unmeasured.
 - A Supabase project (URL, anon key, database connection string): Supabase's login is written and has never run.
@@ -97,8 +118,9 @@ that is committed.
 **To run it:**
 
 - Frontend: `cd frontend`, `npm run dev`, http://localhost:3000. On this computer `node` is not on the shell's
-  path: `export PATH="$HOME/.nvm/versions/node/v22.23.1/bin:$PATH"` first. In the mocks, the phone number
-  +998 90 123 45 67 with any six-digit code logs into the sample project "Oq Tabassum".
+  path: `export PATH="$HOME/.nvm/versions/node/v22.23.1/bin:$PATH"` first. Login needs the backend running
+  (below): any email, and the code from the backend's log; every account sees the sample project "Oq Tabassum".
+  With `NEXT_PUBLIC_LIVE` empty the login is a mock again: demo@geo.uz with any six-digit code.
 - A pilot report: http://localhost:3000/ru/pilots/<slug> (the first client's two files are in `frontend/pilots/`).
   To make one: `cd backend/pilot`, `set -a; . ./.env; set +a`, `python3 pilot.py briefs/<brief>.json`.
 - Backend: `cd backend`, `. .venv/bin/activate`, `uvicorn app.main:app --reload --port 8000`; `GET /health` says
@@ -123,6 +145,18 @@ that is committed.
    that no key and no client's name is in it.
 
 ## Done (as of 14 November 2026)
+
+- **Login by email, wired to the backend (14 Nov), on the branch `email-login`; merged and pushed the same day,
+  when the user said "commit, push".** The first page
+  that talks to the real backend. The login page asks for an email, then the six-digit code sent to it
+  (`features/auth`: EmailLogin, EmailForm, CodeForm); the phone form and the Telegram button are gone. The
+  account's settings show the email in the place of phone and Telegram. `NEXT_PUBLIC_LIVE=auth` sends the login
+  calls (`sendCode`, `verifyCode`, `getMe`, `logout`, `updateMe`) to the backend while the other calls stay on
+  mocks; the mocks then ask the backend who a session belongs to, and give every such account the sample
+  project. The backend gained `PATCH /auth/me` (the user's name). Tried in a browser against the local backend:
+  email, the code from the log, the dashboard, the account page; a wrong code and a bad address are refused. No
+  paid request was made. Left for later: Sozlamalar › Aʼzolar still invites by phone and SMS (mocks); the login
+  page's dark panel still has the old magnifier drawing.
 
 - **A look of our own, step 1: colors, typeface and the landing page (14 Nov), on the branch `restyle`; merged and
   pushed the same day, when the user said "everything is good, commit and push".** The user: "refactoring of UI, landing page, dashboard styles,
@@ -179,7 +213,8 @@ that is committed.
   domain than the one given, and to share its abbreviation with a leading competitor. Details in
   `backend/PLAN.md`, change log.
 
-- **Every page exists on mock data:** landing page, free check, login (phone and code, Telegram),
+- **Every page exists on mock data:** landing page, free check, login (phone and code, Telegram; by email since
+  14 Nov),
   onboarding in five steps, the first check's progress screen, project list, Overview, Savollar (questions),
   Javoblar (answers), Raqobatchilar (competitors), Manbalar (sources), Notoʻgʻri faktlar (wrong facts),
   Harakatlar (actions), Hisobotlar (reports), Sozlamalar (settings), and the public report.
@@ -445,7 +480,7 @@ that is committed.
   then `hisobotlar-correction` (the report as an official status document with a condition score, Hisobotlar
   opening on the latest condition), then `report-detail-width` (the report fills the panel's width), then
   `settings-and-overview` (Sozlamalar in Peec's layout, the Overview tightened, Savollar and a question's page in
-  Peec's design, brands' logos), then `plan-billing-correction` (Tarif's plans four in a row, as Peec's). Each time the user chose "commit, push" when asked (for Harakatlar: "push everything"). Each page gets its
+  Peec's design, brands' logos), then `plan-billing-correction` (Tarif's plans four in a row, as Peec's); on 14 Nov `pilot-report`, `pilot-first-run`, `models-and-site`, `backend-first-slice`, then `restyle` (the look of our own, the Uzbek metric names, the icons), then `email-login` (the login by email, wired to the backend). Each time the user chose "commit, push" when asked (for Harakatlar: "push everything"). Each page gets its
   own branch, merged when the user says so.
 
 ## To do, in order
@@ -455,8 +490,8 @@ that is committed.
    on Supabase (database, login by email code and Google) with the backend on a server at Contabo. The backend's
    first slice is built in `backend/app/`, merged and pushed on 14 Nov when the user said "commit, push" (see
    `backend/README.md`): email login and the first
-   run, tried on this computer. Next: the frontend's login page by email, a page that starts the first run and
-   shows its progress and first statistics, then saving the result as a project. Waiting on the user: a Gemini
+   run, tried on this computer. The frontend's login by email is done (14 Nov). Next: a page that starts the
+   first run and shows its progress and first statistics, then saving the result as a project. Waiting on the user: a Gemini
    key, a Supabase project, the Contabo server.
 
 0. **Pilots first (the user's decision, 14 Nov).** The first real run is done. Next: decide what the cost of

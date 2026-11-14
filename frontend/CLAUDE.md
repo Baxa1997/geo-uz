@@ -12,11 +12,18 @@ which sources ChatGPT cites, and whether facts about the brand are wrong.
 ## Current phase: the frontend on mocks, the backend begun (14 Nov 2026)
 Every page here still runs on MOCK data that matches the API contract below, switched for the whole app with one
 setting (`NEXT_PUBLIC_USE_MOCKS`). The backend has begun in `backend/app/` (`backend/README.md`): login by a code
-sent to an email, and a new account's first run. No page calls it yet. What the backend's first slice changes in
-the contract below, to apply when the pages are wired:
+sent to an email, and a new account's first run. The login is wired (14 Nov); no other page calls the backend.
 
-- Login is by email, not phone: `POST /auth/code` and `/auth/code/verify` take `email`; `User` gains `email`, and
-  `phone` and `telegramUsername` come back null. Telegram login and SMS are not built.
+**A slice at a time.** `NEXT_PUBLIC_LIVE` (in `.env.local`) lists the parts of the API the backend serves while
+the rest are mocks; `shared/api/client.ts` builds `api` from the mocks with those calls replaced. So far "auth":
+`sendCode`, `verifyCode`, `getMe`, `logout`, `updateMe`. With it on, the session cookie is the backend's; the
+mocks ask the backend once who a token belongs to (`mocks/api.ts`, `backendUser`) and let every such account
+see the sample project. Empty, the login is a mock again (demo@geo.uz, any six digits). What the backend's
+slices change in the contract below:
+
+- Login is by email, not phone (done): `POST /auth/code` and `/auth/code/verify` take `email`; `User` has `email`,
+  and `phone` and `telegramUsername` come back null. `PATCH /auth/me` takes `name`. Telegram login and SMS are
+  not built, and the login page no longer offers them.
 - A new account's first look is `POST /first-runs` (202, returns at once) with `GET /first-runs/{id}` for its
   progress and `GET /first-runs/{id}/result` for a `Snapshot` that also carries `engines` (scores per assistant),
   `recommended` (per brand id), `answers`, `description` and `services`; an answer says its `engine`, a mention
@@ -33,7 +40,8 @@ the contract below, to apply when the pages are wired:
 5. Scores: visibility %, share of voice, average position — per prompt and overall
 6. Report: web page + PDF, delivered via Telegram bot
 
-NOT in MVP: other engines (Yandex, Gemini), billing, self-serve signup, CMS plugins.
+NOT in MVP: other engines (Yandex, Gemini), billing, self-serve signup, CMS plugins. (Written in October. Since
+14 Nov the first flow is self-serve, login by email, then a first run on ChatGPT and Gemini: see `../CLAUDE.md`.)
 
 ## Product roadmap
 Two documents in the repository root hold the reasoning: "GEO Competitor Teardown & Our Feature List.md"
@@ -213,7 +221,8 @@ A strip of facts across the whole panel (a site's page) steps out of the page's 
 ## Stack
 Two separate folders, one git repository:
 
-- `frontend/`: Next.js (App Router) + TypeScript strict, Tailwind CSS, shadcn/ui,
+- `frontend/`: Next.js (App Router) + TypeScript strict, Tailwind CSS, shadcn/ui (its parts restyled and its
+  icons replaced: see "Our look"),
   TanStack Query for data fetching, next-intl for uz/ru/en. Charts are our own (`LinePlot`, `BarRows`):
   `recharts` is still in package.json but nothing imports it since the report's rewrite (Oct 8).
 - `backend/app/`: Python (3.9 on this computer), FastAPI, SQLAlchemy 2.0, SQLite here and Supabase's Postgres
@@ -239,7 +248,7 @@ frontend/src/
     marketing/            # landing (components/landing/: one file per section), free check,
                           #   components/layout/: navbar + footer of all public pages; SectionLink (a link to
                           #   "/#section", never prefetched); see "Keeping the landing page fast"
-    auth/                 # login screen (auth-layout + auth-panel): phone + SMS code, Telegram, where to go after login
+    auth/                 # login screen (auth-layout + auth-panel): an email, then the code sent to it; where to go after login
     workspace/            # shell: sidebar by task in sections (collapsible) with a "start here" checklist at its foot
                           #   (progress kept in the browser), project card, account, help sheet, placeholder (Reports),
                           #   GEO AI panel (design only, opened from a page, e.g. "Analyze" in Answers)
@@ -419,9 +428,11 @@ frontend/src/
 ## API contract (backend will implement this)
 Auth: the backend sets an httpOnly session cookie `geo_session` on login. The browser sends it with
 `credentials: "include"`; server-rendered pages forward it (shared/api/client.ts).
-- `POST /auth/code` → { resendIn } (body: phone, E.164 "+998…"; sends a 6-digit code by SMS)
-- `POST /auth/code/verify` → User (body: phone, code; creates the account on first login)
-- `POST /auth/telegram` → User (body: Telegram Login Widget fields; backend checks `hash` with the bot token)
+- `POST /auth/code` → { resendIn } (body: email; sends a 6-digit code to it. On this computer the code is printed
+  in the backend's log)
+- `POST /auth/code/verify` → User (body: email, code; creates the account on first login; 401 for a wrong or
+  expired code)
+- `POST /auth/telegram` → User (not built; the login page doesn't offer it)
 - `GET  /auth/me` → User (401 when logged out)
 - `POST /auth/logout` → 204
 - `GET  /projects` → Project[] (the current user's)
@@ -517,7 +528,8 @@ Auth: the backend sets an httpOnly session cookie `geo_session` on login. The br
 - `POST /support-messages` → 204 (body: text; from the in-app help sheet, logged-in user)
 
 Types:
-- User { id, name | null, phone | null, telegramUsername | null }
+- User { id, name | null, email | null, phone | null, telegramUsername | null } (login is by email: the backend
+  sends the last two as null)
 - Project { id, brand: Brand, competitors: Brand[], category, city, languages: ("uz"|"ru")[], description ("" if none),
   services: string[] (as the client wrote them), customers: string[] (customer types, from Discovery),
   identity: string[] (Peec's brand identity: a few words on what the brand stands for, from Sozlamalar › Profil),

@@ -5,19 +5,18 @@ import { useTranslations } from "next-intl";
 import { useId, useRef, useState, type FormEvent } from "react";
 import { Button } from "@/shared/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
-import { PhoneInput } from "@/shared/components/phone-input";
+import { Input } from "@/shared/components/ui/input";
 import { api } from "@/shared/api/client";
-import { PHONE_LOCAL_DIGITS, PHONE_PREFIX } from "@/shared/constants";
-import { AUTH_INPUT } from "../constants";
+import { AUTH_INPUT, EMAIL_PATTERN } from "../constants";
 
-/** Step 1 of phone login: the number, with +998 fixed in front. */
-export function PhoneForm({
-  digits,
-  onDigitsChange,
+/** Step 1 of login: the email address the code goes to. */
+export function EmailForm({
+  email,
+  onEmailChange,
   onSent,
 }: {
-  digits: string;
-  onDigitsChange: (digits: string) => void;
+  email: string;
+  onEmailChange: (email: string) => void;
   onSent: (resendIn: number) => void;
 }) {
   const t = useTranslations("Login");
@@ -25,14 +24,14 @@ export function PhoneForm({
   const inputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string>();
   const send = useMutation({
-    mutationFn: () => api.sendCode({ phone: `${PHONE_PREFIX}${digits}` }),
+    mutationFn: () => api.sendCode({ email: email.trim() }),
     onSuccess: ({ resendIn }) => onSent(resendIn),
   });
 
   function submit(event: FormEvent) {
     event.preventDefault();
-    if (digits.length !== PHONE_LOCAL_DIGITS) {
-      setError(t("phoneInvalid"));
+    if (!EMAIL_PATTERN.test(email.trim())) {
+      setError(t("emailInvalid"));
       inputRef.current?.focus();
       return;
     }
@@ -45,18 +44,24 @@ export function PhoneForm({
   return (
     <form onSubmit={submit} noValidate className="flex flex-col gap-5">
       <Field data-invalid={Boolean(error)}>
-        <FieldLabel htmlFor={`${id}-phone`}>{t("phone")}</FieldLabel>
-        <PhoneInput
+        <FieldLabel htmlFor={`${id}-email`}>{t("email")}</FieldLabel>
+        <Input
           ref={inputRef}
-          id={`${id}-phone`}
-          digits={digits}
-          onDigitsChange={(value) => {
-            onDigitsChange(value);
+          id={`${id}-email`}
+          type="email"
+          inputMode="email"
+          autoComplete="email"
+          autoCapitalize="none"
+          spellCheck={false}
+          placeholder={t("emailPlaceholder")}
+          value={email}
+          onChange={(event) => {
+            onEmailChange(event.target.value);
             setError(undefined);
           }}
           aria-invalid={Boolean(error)}
           aria-describedby={message ? `${id}-error` : undefined}
-          className={`${AUTH_INPUT} pl-15`}
+          className={AUTH_INPUT}
         />
         <FieldError id={`${id}-error`}>{message}</FieldError>
       </Field>

@@ -1,8 +1,8 @@
-/** SMS codes are 6 digits. */
-export const CODE_LENGTH = 6;
+/** The shape of an email address, as the backend checks it. */
+export const EMAIL_PATTERN = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
-/** Mock mode only: how long the pretend Telegram window takes. */
-export const TELEGRAM_MOCK_DELAY_MS = 800;
+/** Login codes are 6 digits. */
+export const CODE_LENGTH = 6;
 
 /** Tall, soft inputs of the login screen. */
 export const AUTH_INPUT = "h-12 rounded-xl bg-background px-3.5 text-base shadow-xs md:text-base";

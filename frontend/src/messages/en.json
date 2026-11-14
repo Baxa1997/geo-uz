@@ -2428,11 +2428,9 @@
       "save": "Save",
       "failed": "Couldn’t save.",
       "saved": "Saved",
-      "phone": "Phone number",
-      "phoneHint": "You log in with it: we send a code by SMS.",
-      "telegram": "Telegram",
-      "telegramHint": "You can log in with it too.",
-      "none": "Not connected"
+      "email": "Email",
+      "emailHint": "You log in with it: we send a code to it.",
+      "none": "Not set"
     },
     "members": {
       "title": "Members",
@@ -2606,26 +2604,23 @@
   "Login": {
     "title": "Log in",
     "descriptionCheck": "Log in: we’ll save your free check and use it to set up your project.",
-    "telegram": "Log in with Telegram",
-    "telegramPending": "Connecting to Telegram…",
-    "telegramFailed": "Couldn’t log in with Telegram. Use your phone number instead.",
-    "or": "or",
-    "phone": "Phone number",
-    "phoneInvalid": "Enter the full number, e.g. 90 123 45 67",
-    "sendCode": "Get SMS code",
+    "email": "Email",
+    "emailPlaceholder": "you@company.uz",
+    "emailInvalid": "Enter the full address, e.g. you@company.uz",
+    "sendCode": "Get the code",
     "sending": "Sending…",
     "sendFailed": "Couldn’t send the code. Try again.",
-    "codeSent": "We sent a code by SMS to <b>{phone}</b>.",
-    "code": "SMS code",
+    "codeSent": "We sent a code to <b>{email}</b>. If it isn’t there, check your spam folder.",
+    "code": "Code",
     "codeInvalid": "Enter the 6-digit code.",
     "codeWrong": "The code is wrong or expired. Check it and enter it again.",
     "verifyFailed": "Couldn’t log in. Try again.",
     "verify": "Log in",
     "verifying": "Logging in…",
-    "changeNumber": "Change number",
+    "changeEmail": "Change email",
     "resend": "Resend code",
     "resendIn": "Resend in {time}",
-    "mockHint": "Test mode: any 6-digit code works. Demo account with data: {phone}.",
+    "mockHint": "Test mode: any 6-digit code works. Demo account with data: {email}.",
     "heading": "Log in to your account",
     "noAccount": "No account yet?",
     "startFree": "Start with a free check",
@@ -3356,7 +3351,7 @@
     "settingsAccount": {
       "account": {
         "title": "Your account",
-        "text": "Your name, and the phone number and Telegram you log in with."
+        "text": "Your name and the email you log in with."
       },
       "language": {
         "title": "Interface language",

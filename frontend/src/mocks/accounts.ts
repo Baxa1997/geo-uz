@@ -1,4 +1,4 @@
-// Test accounts. Any phone number or the Telegram test account logs in, and a
+// Test accounts. Any email or the Telegram test account logs in, and a
 // new account starts with no projects (so it gets the onboarding wizard).
 // DEMO_USER already owns the Oq Tabassum project.
 import type { TelegramAuthRequest, User } from "@/shared/types/api";
@@ -6,6 +6,7 @@ import type { TelegramAuthRequest, User } from "@/shared/types/api";
 export const DEMO_USER: User = {
   id: "usr_demo",
   name: "Dilnoza Karimova",
+  email: "demo@geo.uz",
   phone: "+998901234567",
   telegramUsername: null,
 };
