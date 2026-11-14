@@ -11,3 +11,8 @@ node_modules/
 
 # Clients' pilot reports: real businesses' findings, kept on this computer only (the repository is public)
 /frontend/pilots/*.json
+
+# The backend on this computer: its Python environment, local database and keys
+/backend/.venv/
+/backend/*.db
+__pycache__/

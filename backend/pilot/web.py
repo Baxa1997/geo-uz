@@ -78,9 +78,17 @@ def fetch(url: str, timeout: int = 20) -> Optional[Tuple[str, List[Tuple[str, st
 
 
 def names(text: str, spellings: List[str]) -> bool:
-    """Whether the text names the brand by any of its spellings."""
+    """Whether the text names the brand by any of its spellings, as whole words.
+
+    A spelling of three letters or fewer is not looked for: an abbreviation like "TIS" sits inside other words
+    and often belongs to another business too, so a match on it proves nothing.
+    """
     lowered = text.casefold()
-    return any(spelling.casefold() in lowered for spelling in spellings if spelling.strip())
+    for spelling in spellings:
+        spelling = spelling.casefold().strip()
+        if len(spelling) > 3 and re.search(rf"(?<!\w){re.escape(spelling)}(?!\w)", lowered):
+            return True
+    return False
 
 
 # The pages of a business's site that hold the facts an assistant quotes: prices, programme, contacts
