@@ -8,7 +8,8 @@ export type PilotLanguage = "uz" | "ru" | "en";
 export type Level = "high" | "medium" | "low";
 export type FactStatus = "found" | "partial" | "missing";
 export type PlanKind = "site" | "external" | "measure";
-export type SourceKind = "media" | "catalog" | "own" | "social" | "other";
+/** `competitor`: the own website of a business the answers name; the client can't be listed there. */
+export type SourceKind = "media" | "catalog" | "competitor" | "own" | "social" | "other";
 export type TargetTone = "bad" | "warn" | "ok";
 
 /** A short point: its first words in bold, then the rest. */

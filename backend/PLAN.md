@@ -223,6 +223,25 @@ That is roughly one to two US cents per answer, and it has to cover the answer w
 
 ## Change log
 
+- **14 Nov 2026. Step 0 is done: the first real run of `backend/pilot`** (one client, 9 questions in Russian
+  and Uzbek × 3 samples + 1 direct question, model `gpt-6.1-sol`, web search located in Tashkent).
+  - **Cost of one answer: $0.077 on average** ($0.04–$0.17): about 24,600 input tokens (the pages the search
+    reads) and 1.9 searches. Reading an answer adds $0.005 (`gpt-6.1-terra`), the analysis $0.08 a report. A
+    whole 27-answer pilot is about $2.40. This is four to eight times the 1–2 cents under "Cost per plan":
+    Start's 300 answers a month are about $23 of asking alone. Open question 1 is answered; the prices, the
+    samples, the runs or the model have to change. A cheaper model was not tried.
+  - **API against the app (open question 3): they differ.** The user's hand-made report from the ChatGPT app
+    (5 answers) had Smart School in every answer and a closing "I would first consider…"; the API's 27 answers
+    lead with The British School (20 named, 13 recommended), Smart School is in 6, and most answers give a
+    shortlist with reasons and a question back to the user. The client is absent from the general questions
+    in both. Not yet measured side by side on the same day.
+  - **Recommended against named** needs a wide rule: a shortlist with reasons counts as a recommendation even
+    when hedged; a row of a price table or an address list does not. The first, narrow rule (closing advice
+    only) judged whole answers as recommending nobody.
+  - **Retrieved against cited (open question 17): very different.** 16–66 pages consulted an answer, 3–7 cited.
+  - Among the most cited sites are competitors' own websites; the report marks them and doesn't count them as
+    places to get listed. Only one page of the client's site was read (its inner links were not followed).
+
 - **14 Nov 2026. The pilot generator, `backend/pilot/` (see its README).** A script, no database: a brief →
   ChatGPT's answers with web search → who is named and recommended → cited pages and the client's site → a
   drafted analysis → `frontend/pilots/<slug>.json`. It is step 0: it prints tokens, searches and dollars per

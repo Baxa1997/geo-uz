@@ -3573,7 +3573,7 @@
       "method": "Usul",
       "methodText": "Mijozlar tanlashda beradigan {questions} ta savol. Har biri {samples, plural, one {} other {# marta,}} yangi chatda va kompaniya nomisiz berildi: SI oʻzi kimni aytishini koʻrish uchun.",
       "counting": "Qanday hisobladik",
-      "countingText": "<b>Tilga olish:</b> nom javobning istalgan joyida bor. <b>Tavsiya:</b> SI uni yakuniy maslahatida aytgan.",
+      "countingText": "<b>Tavsiya:</b> SI kompaniyani oʻzi koʻrib chiqishni taklif qiladi va kimga mos kelishini aytadi. <b>Tilga olish:</b> nom javobda bor, masalan narxlar jadvalida yoki manzillar roʻyxatida.",
       "figure": "{engine} har bir savolga nima dedi: nechta {genPlural} aytdi va ular orasida {brand} bormi",
       "colQuestion": "Mijoz savoli",
       "colBrands": "Javobda",
@@ -3581,7 +3581,7 @@
       "aiRecommends": "SI tavsiya qiladi:",
       "sum": "{answers} ta javob boʻyicha jami",
       "sumText": "Boshqa {genPlural} tilga olingan: {named}, ulardan tavsiya qilingan: {recommended}",
-      "legendRecommended": "SI yakuniy maslahatida tavsiya qilgan",
+      "legendRecommended": "SI tavsiya qilgan",
       "legendNamed": "faqat tilga olingan"
     },
     "leaders": {
@@ -3589,7 +3589,7 @@
       "figure": "SI necha marta tavsiya qilgan va tilga olgan, {answers} ta javobdan",
       "rec": "tavs.",
       "named": "tilga",
-      "legendRecommended": "yakuniy maslahatda tavsiya",
+      "legendRecommended": "tavsiya",
       "legendNamed": "javobda tilga olingan",
       "table": "SI tavsiya qilganlari haqida nima deydi",
       "colName": "Nomi"
@@ -3628,6 +3628,7 @@
       "kind": {
         "media": "OAV",
         "catalog": "katalog",
+        "competitor": "raqobatchi sayti",
         "own": "oʻz sayti",
         "social": "ijtimoiy tarmoq",
         "other": "boshqa"

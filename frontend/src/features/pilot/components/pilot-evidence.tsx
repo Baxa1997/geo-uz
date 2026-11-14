@@ -246,7 +246,7 @@ export function PilotPeers({ pilot, t, number, figure, table }: Props & { figure
                       <p className="border border-dashed border-(--p-bad) py-0.5 text-center text-[0.6875rem] font-semibold tracking-wider text-(--p-bad) uppercase">{range.label}</p>
                     ) : (
                       <div className="relative h-3.5 bg-(--p-soft)">
-                        {range.high === null ? (
+                        {range.high === null || range.high === range.low ? (
                           <span className="absolute top-0 size-3.5 -translate-x-1/2 rounded-full bg-(--p-bar)" style={{ left: at(range.low) }} />
                         ) : (
                           <span className="absolute inset-y-0 bg-(--p-bar)" style={{ left: at(range.low), width: percent(range.high - range.low, max - min) }} />

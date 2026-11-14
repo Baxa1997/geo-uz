@@ -80,6 +80,13 @@ Any other number makes a new account, which goes through onboarding and gets a p
   before. A brief names the earlier report (`previous`), the script counts what changed (`steps.compare`) and
   the report opens with a "what changed" section; looked at with a temporary made-up file, since no second
   measurement exists yet.
+- **The first real run (14 Nov), with the user's OpenAI key; not committed.** `backend/pilot` ran end to end
+  for the first client: 27 answers, a 15-page draft report at `/ru/pilots/<its slug>` (the file,
+  the brief and the key stay on this computer: `backend/pilot/.env` and `briefs/*` are ignored by git). An
+  answer costs about $0.077, far above the plan's budget, and the API's answers differ from the ChatGPT
+  app's: both are in `backend/PLAN.md`, change log. The prompts were corrected twice from what the run showed
+  (what counts as a recommendation, values in the report's language, short names, competitors' own sites,
+  short sentences). The draft still needs a person's read before it is sent.
 
 - **Every page exists on mock data:** landing page, free check, login (phone and code, Telegram),
   onboarding in five steps, the first check's progress screen, project list, Overview, Savollar (questions),
@@ -352,9 +359,10 @@ Any other number makes a new account, which goes through onboarding and gets a p
 
 ## To do, in order
 
-0. **Pilots first (the user's decision, 14 Nov).** Run `backend/pilot` for a real client with a key, compare
-   its draft with the hand-made first report, and correct the prompts. Fix that report before it
-   is sent: read the client's website, ask each question three times and in Uzbek, fill the contacts. Then sell 5–10
+0. **Pilots first (the user's decision, 14 Nov).** The first real run is done. Next: decide what the cost of
+   an answer ($0.077) does to the prices (try a cheaper model; fewer samples or runs; higher prices); read
+   and correct the first client's draft and fill the contacts before it is sent; make the script read more
+   than one page of a client's site. Then sell 5–10
    pilots by hand. Only after that the backend, and then for the report and four pages (Overview, Savollar,
    Javoblar, Harakatlar). Ideas agreed as direction, not built: the app opening on "how AI sees you" beside
    the leader, counts instead of percentages while samples are small, the report's look in the app, a

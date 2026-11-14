@@ -93,7 +93,7 @@ def main() -> None:
         if due("names"):
             mapping = steps.names(brief, work, answers, args.read_model, costs, "names" in redo)
         if due("sources"):
-            cited = steps.sources(brief, work, answers, "sources" in redo)
+            cited = steps.sources(brief, work, answers, "sources" in redo, model=args.read_model, costs=costs)
         if due("site"):
             pages = steps.site(brief, work, "site" in redo)
         if due("analyze"):
