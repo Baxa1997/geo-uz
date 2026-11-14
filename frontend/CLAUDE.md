@@ -703,6 +703,9 @@ its sample). It is read from `frontend/pilots/<slug>.json` (`helpers/load-pilot.
   where they stand, who gained and lost, the facts and sources whose state changed; the cover says what the
   number was. The two measurements may differ in size, so a change's direction is judged on the share, and
   the page says so. The client's figures read "better / worse"; another business's read "up / down" in gray.
+- **Several models** (`pilot.models`, when the script was run with `--also-model`): under the questions' figure,
+  a table of the client's counts and the most recommended business on each model, the report's own first, with
+  a line saying that single answers differ and the share over many is what holds.
 - **Counts, not percentages**: "0 из 5". A pilot has few answers. "Recommended" (in ChatGPT's closing advice)
   is counted apart from "named".
 - **Look.** Its own palette (navy, ink, a red, a green, an amber: `PALETTE` in the page) and a serif for

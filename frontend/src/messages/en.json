@@ -3582,7 +3582,12 @@
       "sum": "Total over {answers, plural, one {# answer} other {# answers}}",
       "sumText": "Other {genPlural} named: {named}, of them recommended: {recommended}",
       "legendRecommended": "recommended by AI",
-      "legendNamed": "only named"
+      "legendNamed": "only named",
+      "modelsTable": "The same questions on different {engine} models",
+      "colModel": "Model",
+      "colLeader": "Whom the model recommends most",
+      "thisReport": "this report",
+      "modelsNote": "One answer differs from the next, and one model from another: two runs of one question name about half the same businesses. The share over many answers is what holds, so the report counts that, not a single answer."
     },
     "leaders": {
       "eyebrow": "Whom AI recommends",

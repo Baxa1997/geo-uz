@@ -51,8 +51,8 @@ def domain_of(url: str) -> str:
     return host[4:] if host.startswith("www.") else host
 
 
-def fetch(url: str, timeout: int = 20) -> Optional[Tuple[str, List[Tuple[str, str]]]]:
-    """The page's text and its links (address, label). None when it can't be read."""
+def fetch(url: str, timeout: int = 20) -> Optional[Tuple[str, List[Tuple[str, str]], str]]:
+    """The page's text, its links (address, label) and the address it was finally served from. None when it can't be read."""
     if "//" not in url:
         url = f"https://{url}"
     if urlparse(url).scheme not in ("http", "https"):
@@ -74,7 +74,7 @@ def fetch(url: str, timeout: int = 20) -> Optional[Tuple[str, List[Tuple[str, st
         return None
     text = re.sub(r"\s+", " ", " ".join(parser.chunks)).strip()
     links = [(urljoin(final, href), label) for href, label in parser.links if href and not href.startswith(("#", "mailto:", "tel:", "javascript:"))]
-    return text, links
+    return text, links, final
 
 
 def names(text: str, spellings: List[str]) -> bool:
@@ -91,22 +91,33 @@ FACT_PAGES = re.compile(
 )
 
 
-def read_site(domain: str, pages: int = 6, limit: int = 45_000) -> List[dict]:
-    """The home page and the few inner pages most likely to state the business's facts, as text."""
+def read_site(domain: str, language: str = "ru", pages: int = 8, limit: int = 60_000) -> List[dict]:
+    """The home page and the inner pages most likely to state the business's facts, as text.
+
+    Follows the site to where it really lives (an address that redirects to another domain), opens its version
+    in the report's language when the home page links to one ("/ru"), and reads the pages whose address or
+    label speaks of prices, the programme, branches, admission or contacts.
+    """
     home = fetch(domain)
     if home is None:
         return []
-    text, links = home
-    read = [{"url": f"https://{domain_of(domain)}/", "text": text[: limit // 3]}]
-    seen = {read[0]["url"].rstrip("/")}
+    text, links, address = home
+    site = domain_of(address)
+    path = lambda url: urlparse(url).path.rstrip("/")  # noqa: E731
+    if path(address) != f"/{language}":
+        translated = next((href for href, _ in links if domain_of(href) == site and path(href) == f"/{language}"), None)
+        version = fetch(translated) if translated else None
+        if version:
+            text, links, address = version
+    read = [{"url": address, "text": text[: limit // 4]}]
+    seen = {path(address)}
     for href, label in links:
-        address = href.split("#")[0].rstrip("/")
-        if len(read) > pages or address in seen or domain_of(href) != domain_of(domain):
+        if len(read) > pages:
+            break
+        if domain_of(href) != site or path(href) in seen or not FACT_PAGES.search(f"{path(href)} {label}"):
             continue
-        if not FACT_PAGES.search(f"{href} {label}"):
-            continue
-        seen.add(address)
-        page = fetch(href)
+        seen.add(path(href))
+        page = fetch(href.split("#")[0])
         if page and page[0]:
-            read.append({"url": href, "text": page[0][: limit // pages]})
+            read.append({"url": page[2], "text": page[0][: limit // pages]})
     return read

@@ -101,7 +101,7 @@ export default async function PilotPage({ params }: Props) {
         {previous && previousDate && (
           <PilotChanges pilot={pilot} previous={previous} t={t} number={++section} firstTable={(table += changesTables(previous)) - changesTables(previous) + 1} dates={{ before: previousDate, after: date }} />
         )}
-        <PilotQuestions pilot={pilot} t={t} number={++section} figure={++figure} />
+        <PilotQuestions pilot={pilot} t={t} number={++section} figure={++figure} table={pilot.models?.length ? ++table : null} />
         <PilotLeaders pilot={pilot} t={t} number={++section} figure={++figure} table={++table} />
         {hasPeers && <PilotPeers pilot={pilot} t={t} number={++section} figure={hasRanges ? ++figure : null} table={++table} />}
         {pilot.reasons.length > 0 && <PilotReasons pilot={pilot} t={t} number={++section} tables={[++table, ++table]} />}
