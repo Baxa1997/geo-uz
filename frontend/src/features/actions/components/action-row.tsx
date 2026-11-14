@@ -1,6 +1,8 @@
 "use client";
 
-import { FileText, Globe, ListChecks } from "lucide-react";
+import { FileTextIcon as FileText } from "@phosphor-icons/react/dist/ssr/FileText";
+import { GlobeIcon as Globe } from "@phosphor-icons/react/dist/ssr/Globe";
+import { ListChecksIcon as ListChecks } from "@phosphor-icons/react/dist/ssr/ListChecks";
 import { useTranslations } from "next-intl";
 import { ActionTitle, useActionTitle } from "@/shared/components/actions/action-title";
 import { ImpactBadge } from "@/shared/components/actions/impact-badge";

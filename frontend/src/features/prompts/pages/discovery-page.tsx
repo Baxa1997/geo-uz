@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { getMessages, getTranslations } from "next-intl/server";
 import { cache } from "react";
-import { ArrowRight, Languages, ListChecks, Users } from "lucide-react";
+import { ArrowRightIcon as ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight";
+import { TranslateIcon as Languages } from "@phosphor-icons/react/dist/ssr/Translate";
+import { ListChecksIcon as ListChecks } from "@phosphor-icons/react/dist/ssr/ListChecks";
+import { UsersIcon as Users } from "@phosphor-icons/react/dist/ssr/Users";
 import { Page } from "@/shared/components/page";
 import { Link } from "@/i18n/navigation";
 import { setPageLocale } from "@/i18n/page-locale";

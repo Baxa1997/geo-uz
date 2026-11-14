@@ -1,6 +1,10 @@
 "use client";
 
-import { ArrowDown, ArrowRight, ArrowUp, FileDown, Minus } from "lucide-react";
+import { ArrowDownIcon as ArrowDown } from "@phosphor-icons/react/dist/ssr/ArrowDown";
+import { ArrowRightIcon as ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight";
+import { ArrowUpIcon as ArrowUp } from "@phosphor-icons/react/dist/ssr/ArrowUp";
+import { FileArrowDownIcon as FileDown } from "@phosphor-icons/react/dist/ssr/FileArrowDown";
+import { MinusIcon as Minus } from "@phosphor-icons/react/dist/ssr/Minus";
 import { useLocale, useTimeZone, useTranslations } from "next-intl";
 import { CsvButton } from "@/shared/components/csv-button";
 import { Hint } from "@/shared/components/hint";

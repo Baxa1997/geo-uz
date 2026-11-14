@@ -1,4 +1,4 @@
-import { Plus } from "lucide-react";
+import { PlusIcon as Plus } from "@phosphor-icons/react/dist/ssr/Plus";
 import { useTranslations } from "next-intl";
 import { FAQ, SECTION } from "../../constants";
 import { Section } from "./section";
@@ -12,11 +12,11 @@ export function Faq() {
       <h2
         id="faq-title"
         data-reveal
-        className="text-3xl font-semibold tracking-tight text-balance sm:text-5xl/[1.1] lg:sticky lg:top-24 lg:self-start"
+        className="text-3xl font-bold tracking-[-0.03em] text-balance sm:text-5xl/[1.1] lg:sticky lg:top-24 lg:self-start"
       >
         {t("title")} <span className="text-muted-foreground">{t("muted")}</span>
       </h2>
-      <div data-reveal className="divide-y rounded-2xl border bg-background px-5 shadow-xs">
+      <div data-reveal className="divide-y rounded-xl border bg-background px-5">
         {FAQ.map((key) => (
           <details key={key} className="group">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-5 font-medium [&::-webkit-details-marker]:hidden">

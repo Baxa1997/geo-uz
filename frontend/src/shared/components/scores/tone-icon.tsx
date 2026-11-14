@@ -1,4 +1,6 @@
-import { Frown, Meh, Smile } from "lucide-react";
+import { SmileySadIcon as Frown } from "@phosphor-icons/react/dist/ssr/SmileySad";
+import { SmileyMehIcon as Meh } from "@phosphor-icons/react/dist/ssr/SmileyMeh";
+import { SmileyIcon as Smile } from "@phosphor-icons/react/dist/ssr/Smiley";
 import { useTranslations } from "next-intl";
 import { Hint } from "@/shared/components/hint";
 import { cn } from "@/shared/helpers/utils";

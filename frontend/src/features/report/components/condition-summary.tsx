@@ -1,4 +1,6 @@
-import { ArrowDown, ArrowUp, Minus } from "lucide-react";
+import { ArrowDownIcon as ArrowDown } from "@phosphor-icons/react/dist/ssr/ArrowDown";
+import { ArrowUpIcon as ArrowUp } from "@phosphor-icons/react/dist/ssr/ArrowUp";
+import { MinusIcon as Minus } from "@phosphor-icons/react/dist/ssr/Minus";
 import { useLocale, useTimeZone, useTranslations } from "next-intl";
 import { TIME_ZONE } from "@/shared/constants";
 import { CONDITION_AREAS, conditionStatus, FAIR_FROM, GOOD_FROM } from "@/shared/helpers/condition";

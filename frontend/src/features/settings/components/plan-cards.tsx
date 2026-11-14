@@ -1,7 +1,12 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import { Check, FolderOpen, Lock, Minus, RefreshCw, Users, type LucideIcon } from "lucide-react";
+import { CheckIcon as Check } from "@phosphor-icons/react/dist/ssr/Check";
+import { FolderOpenIcon as FolderOpen } from "@phosphor-icons/react/dist/ssr/FolderOpen";
+import { LockIcon as Lock } from "@phosphor-icons/react/dist/ssr/Lock";
+import { MinusIcon as Minus } from "@phosphor-icons/react/dist/ssr/Minus";
+import { ArrowsClockwiseIcon as RefreshCw } from "@phosphor-icons/react/dist/ssr/ArrowsClockwise";
+import { UsersIcon as Users } from "@phosphor-icons/react/dist/ssr/Users";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { EngineIcon } from "@/shared/components/engine-icon";
@@ -12,6 +17,7 @@ import { api } from "@/shared/api/client";
 import { ENGINES, MANAGED_PRICE_FROM, PLAN_BRANDS, PLAN_LIMITS, PLAN_PRICES, PLANS, YEARLY_MONTHS_PAID } from "@/shared/constants";
 import { cn } from "@/shared/helpers/utils";
 import type { BillingCycle, Plan } from "@/shared/types/api";
+import type { AppIcon } from "@/shared/types/icon";
 
 type Choice = Plan | "managed";
 type Ask = Choice | "cancel";
@@ -26,7 +32,7 @@ const INCLUDED: Record<Choice, (typeof FEATURES)[number][]> = {
 };
 
 /** The numbers of a plan, each with its mark, as Peec's "Tracked prompts", "Projects", "Countries per project". */
-const LIMITS: { key: "prompts" | "brands" | "competitors"; icon: LucideIcon }[] = [
+const LIMITS: { key: "prompts" | "brands" | "competitors"; icon: AppIcon }[] = [
   { key: "prompts", icon: RefreshCw },
   { key: "brands", icon: FolderOpen },
   { key: "competitors", icon: Users },

@@ -1,7 +1,7 @@
-import { Check } from "lucide-react";
+import { CheckIcon as Check } from "@phosphor-icons/react/dist/ssr/Check";
 import { useTranslations } from "next-intl";
 import { SECTION } from "../../constants";
-import { Pill, Section } from "./section";
+import { Kicker, Section } from "./section";
 
 const FACTS = ["f1", "f2", "f3"] as const;
 
@@ -11,11 +11,11 @@ export function Statement() {
 
   return (
     <Section id={SECTION.method} labelledBy="method-title" className="items-center text-center">
-      <Pill>{t("pill")}</Pill>
+      <Kicker>{t("pill")}</Kicker>
       <h2
         id="method-title"
         data-reveal
-        className="max-w-4xl text-2xl/snug font-medium tracking-tight text-balance sm:text-4xl/snug"
+        className="max-w-4xl text-2xl/snug font-semibold tracking-[-0.02em] text-balance sm:text-4xl/snug"
       >
         {t("text")}
       </h2>

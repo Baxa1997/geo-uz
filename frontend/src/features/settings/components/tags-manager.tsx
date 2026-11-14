@@ -1,7 +1,12 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import { MoreHorizontal, Pencil, Plus, Tag, Trash2, X } from "lucide-react";
+import { DotsThreeIcon as MoreHorizontal } from "@phosphor-icons/react/dist/ssr/DotsThree";
+import { PencilSimpleIcon as Pencil } from "@phosphor-icons/react/dist/ssr/PencilSimple";
+import { PlusIcon as Plus } from "@phosphor-icons/react/dist/ssr/Plus";
+import { TagIcon as Tag } from "@phosphor-icons/react/dist/ssr/Tag";
+import { TrashIcon as Trash2 } from "@phosphor-icons/react/dist/ssr/Trash";
+import { XIcon as X } from "@phosphor-icons/react/dist/ssr/X";
 import { useTranslations } from "next-intl";
 import { useId, useState } from "react";
 import { Hint } from "@/shared/components/hint";

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus } from "lucide-react";
+import { PlusIcon as Plus } from "@phosphor-icons/react/dist/ssr/Plus";
 import { useMessages, useTranslations } from "next-intl";
 import { useId, useState, type FormEvent } from "react";
 import { FormSelect } from "@/shared/components/form-select";

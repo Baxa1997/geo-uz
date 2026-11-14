@@ -1,4 +1,6 @@
-import { Bot, Search, Sparkles } from "lucide-react";
+import { RobotIcon as Bot } from "@phosphor-icons/react/dist/ssr/Robot";
+import { MagnifyingGlassIcon as Search } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass";
+import { SparkleIcon as Sparkles } from "@phosphor-icons/react/dist/ssr/Sparkle";
 import type { EngineKey } from "@/shared/constants";
 import { cn } from "@/shared/helpers/utils";
 

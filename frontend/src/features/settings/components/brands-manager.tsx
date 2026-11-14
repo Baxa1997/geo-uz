@@ -1,7 +1,13 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Check, MoreHorizontal, Pencil, Plus, Search, UserMinus, X } from "lucide-react";
+import { CheckIcon as Check } from "@phosphor-icons/react/dist/ssr/Check";
+import { DotsThreeIcon as MoreHorizontal } from "@phosphor-icons/react/dist/ssr/DotsThree";
+import { PencilSimpleIcon as Pencil } from "@phosphor-icons/react/dist/ssr/PencilSimple";
+import { PlusIcon as Plus } from "@phosphor-icons/react/dist/ssr/Plus";
+import { MagnifyingGlassIcon as Search } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass";
+import { UserMinusIcon as UserMinus } from "@phosphor-icons/react/dist/ssr/UserMinus";
+import { XIcon as X } from "@phosphor-icons/react/dist/ssr/X";
 import { useTranslations } from "next-intl";
 import { useId, useState } from "react";
 import { ChipInput } from "@/shared/components/chip-input";

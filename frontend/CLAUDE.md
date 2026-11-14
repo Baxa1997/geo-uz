@@ -9,10 +9,19 @@ It asks ChatGPT the questions customers ask ("best dental clinic in Tashkent?"),
 in Uzbek and Russian, and measures how often a brand appears versus competitors,
 which sources ChatGPT cites, and whether facts about the brand are wrong.
 
-## Current phase: FRONTEND FIRST
-The backend does not exist yet. Build the frontend against MOCK data that matches
-the API contract below exactly, so it can later be switched to the real backend
-by changing one setting (`NEXT_PUBLIC_USE_MOCKS=false`).
+## Current phase: the frontend on mocks, the backend begun (14 Nov 2026)
+Every page here still runs on MOCK data that matches the API contract below, switched for the whole app with one
+setting (`NEXT_PUBLIC_USE_MOCKS`). The backend has begun in `backend/app/` (`backend/README.md`): login by a code
+sent to an email, and a new account's first run. No page calls it yet. What the backend's first slice changes in
+the contract below, to apply when the pages are wired:
+
+- Login is by email, not phone: `POST /auth/code` and `/auth/code/verify` take `email`; `User` gains `email`, and
+  `phone` and `telegramUsername` come back null. Telegram login and SMS are not built.
+- A new account's first look is `POST /first-runs` (202, returns at once) with `GET /first-runs/{id}` for its
+  progress and `GET /first-runs/{id}/result` for a `Snapshot` that also carries `engines` (scores per assistant),
+  `recommended` (per brand id), `answers`, `description` and `services`; an answer says its `engine`, a mention
+  whether it is `recommended`. `POST /snapshot` is not built.
+- Two assistants, ChatGPT and Gemini, not one.
 
 ## MVP scope
 1. Brand setup: name, aliases (Latin + Cyrillic spellings), domain, description, category, city, services,
@@ -89,6 +98,48 @@ after week and switches metric) and is labelled as sample data. All motion on th
 client component, stops under `prefers-reduced-motion`, pauses off screen, and ends: nothing animates
 forever (see below). The headline is never animated.
 
+### Our look
+Peec's layout, not Peec's look (the user, 14 Nov: "so it does not look like 100% as Peec AI"; they chose "navy and
+paper", the pilot report's look). The tokens are in `globals.css`:
+
+- **Colors.** Navy ink for text (`--foreground`), navy for the main buttons and the brand (`--primary`, `--brand`:
+  the pilot report's `#1c2e6e`), warm grays for grounds and lines (`--muted`, `--border`, `--sidebar`), white
+  cards. No pure gray. The charts' colors (`--series-*`, `--you`) are not part of it: see "Charts".
+- **Type.** Onest for text and headings (`app/fonts.ts`; Cyrillic drawn with the Latin), JetBrains Mono for
+  small labels. The public pages add one accent, Source Serif 4 in italic, the pilot report's serif
+  (`features/marketing/fonts.ts`, the class `font-display`): the last words of the hero's headline, nothing else.
+- **The landing page's marks**, in the place of Peec's (corrected by the user the same day, with another
+  product's page as the picture: "main text … professional pages' font style", "header a little bit bigger",
+  the languages as a dropdown, icons in tiles):
+  - The headline is a heavy sans line, tight (`font-bold`, `tracking-[-0.04em]`), with its last words in the
+    serif italic in navy, not a black line over a gray one. Section headings are the same sans, bold.
+  - The sentence under it says what we measure in plain words ("how often you are named, in what place and in
+    what light") and speaks of AI in general. It does not use the three terms: the user finds "Koʻrinish, Oʻrin,
+    Ohang" hard to understand even in Uzbek.
+  - A section's label is a numbered kicker (`Kicker`: "01 —— AI METRICS", counted by CSS from the marketing
+    layout's `counter-reset`), not a bordered pill with an icon.
+  - Plain paper behind the hero (no dotted texture, no glows), no hairlines down the page's sides, flat cards (a
+    line, no shadow) with a smaller radius, a navy closing band with a white button.
+  - The navbar is 80px tall with text in the body's size; the language is a button (globe, "UZ", chevron) that
+    opens the three languages under their own names with a check on the current one (`LocaleSwitcher menu`; the
+    app keeps the three short links).
+  - An icon on the public pages sits in a filled rounded square, white on a color of its own (`TILE_COLORS`): the
+    navbar's menus and the "why us" cards.
+- **The logo** (`LogoMark`): three lines of an answer on navy, the middle one bright among the faint ones: the
+  line that names you. A working mark, like the name.
+- **Icons** (14 Nov). Two sources, no Lucide (the set Peec uses; the package is removed):
+  - **Our own** (`shared/components/own-icons.tsx`), where a visitor looks most: the sidebar's pages, the four
+    metrics (`IconMentions`, `IconVoiceShare`, `IconPlace`, `IconRating`) and the action goals. Drawn on a 24
+    grid with a 1.5 line; a filled dot in them is "you".
+  - **Phosphor** for everything else, each imported from its own file and named as the code calls it:
+    `import { CaretDownIcon as ChevronDown } from "@phosphor-icons/react/dist/ssr/CaretDown"`. Always the
+    `dist/ssr` file (it works in server and client components) and never the package's root, which would pull
+    the whole set into a page. A component that takes an icon types it `AppIcon` (`shared/types/icon`).
+  - An icon is sized by its class; without one it is 24px (a rule in `globals.css`).
+- **Metric names in Uzbek** (the user's choice, 14 Nov: the old ones were "not very understandable even in
+  Uzbek"): Tilga olinish (was Koʻrinish), Oʻrni (was Oʻrin), Baho (was Ohang). "Umumiy koʻrinish" (the Overview)
+  and "AI koʻrinish" as the name of the field keep the word. Russian and English are unchanged.
+
 ### Keeping the landing page fast
 Measured on the production build as a slow phone would load it (4x slower CPU, slow 4G), Oct 6: the page
 weighs about 350 KB (scripts 200 KB, HTML 52 KB, fonts 67 KB, CSS 24 KB), paints its headline in 1.7 s
@@ -110,8 +161,8 @@ from Chrome's trace): 8 layers, no dropped frames while scrolling, and the page 
   dependency to anything the landing page renders.
 - **Links to the page's own sections** use `SectionLink` (marketing/components), which is never prefetched;
   so are the logo and the language links. A prefetched link to "/#pricing" downloads the page it is on.
-- **Nothing that moves sits under a filter, a mask or a backdrop blur.** The hero's glows are radial
-  gradients, not blurred discs; the preview fades into the page under a painted gradient to `--page` (the
+- **Nothing that moves sits under a filter, a mask or a backdrop blur.** The hero has no glows or texture
+  (since 14 Nov); the preview fades into the page under a painted gradient to `--page` (the
   marketing layout's opaque background), not under a mask. No sticky bar blurs what is behind it (the navbar,
   the workspace's page title bar): that blur was almost half of the graphics card's work during a scroll.
 - **Every animation ends and leaves nothing applied** (`backwards` fill, a finite count: see globals.css). An
@@ -165,8 +216,9 @@ Two separate folders, one git repository:
 - `frontend/`: Next.js (App Router) + TypeScript strict, Tailwind CSS, shadcn/ui,
   TanStack Query for data fetching, next-intl for uz/ru/en. Charts are our own (`LinePlot`, `BarRows`):
   `recharts` is still in package.json but nothing imports it since the report's rewrite (Oct 8).
-- `backend/` (later): Python 3.12, FastAPI, SQLAlchemy 2.0 + Alembic, PostgreSQL,
-  Pydantic v2, pytest, managed with uv. Scheduled runs with Celery or RQ + Redis.
+- `backend/app/`: Python (3.9 on this computer), FastAPI, SQLAlchemy 2.0, SQLite here and Supabase's Postgres
+  on the server, in a plain `.venv`. No Alembic, tests or queue yet: tables are made at start, a first run is a
+  thread. Supabase also does the login; the service runs on a server at Contabo (the user's choices, 14 Nov).
 - API contract: once the backend exists, FastAPI generates OpenAPI and the frontend
   generates its types with `openapi-typescript` (`npm run gen:api`).
   Until then, types are hand-written in `frontend/src/shared/types/api.ts` from the contract below.

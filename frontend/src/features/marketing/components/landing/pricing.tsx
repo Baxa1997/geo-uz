@@ -1,4 +1,6 @@
-import { ArrowRight, Check, Tags, Wrench } from "lucide-react";
+import { ArrowRightIcon as ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight";
+import { CheckIcon as Check } from "@phosphor-icons/react/dist/ssr/Check";
+import { WrenchIcon as Wrench } from "@phosphor-icons/react/dist/ssr/Wrench";
 import { useTranslations } from "next-intl";
 import { buttonVariants } from "@/shared/components/ui/button";
 import { cn } from "@/shared/helpers/utils";
@@ -14,13 +16,13 @@ export function Pricing() {
 
   return (
     <Section id={SECTION.pricing} labelledBy="pricing-title">
-      <SectionIntro id="pricing-title" icon={Tags} pill={t("pill")} title={t("title")} sub={t("sub")} />
+      <SectionIntro id="pricing-title" pill={t("pill")} title={t("title")} sub={t("sub")} />
 
       <div className="flex flex-col gap-3">
         <ul data-reveal className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {PRICING.map(({ key, price, period, recommended, target }) => (
             <li key={key}>
-              <Panel className={cn("relative flex h-full flex-col gap-6 p-6 sm:p-8", recommended && "shadow-xl ring-1 ring-foreground")}>
+              <Panel className={cn("relative flex h-full flex-col gap-6 p-6 sm:p-8", recommended && "border-brand ring-1 ring-brand")}>
                 {recommended && (
                   <MonoLabel className="absolute -top-3 left-6 rounded-md bg-brand px-2 py-1 text-brand-foreground">
                     {t("recommended")}
@@ -30,7 +32,7 @@ export function Pricing() {
                   <h3 className="text-lg font-medium">{t(`tiers.${key}.name`)}</h3>
                   {/* The period sits under the price in every card, so long prices don't push it around */}
                   <p className="flex flex-col gap-0.5">
-                    <span className="text-3xl font-semibold tracking-tight whitespace-nowrap">
+                    <span className="text-3xl font-bold tracking-[-0.03em] whitespace-nowrap">
                       {t("price", { amount: price })}
                     </span>
                     <span className="min-h-5 text-sm text-muted-foreground">{period && t("perMonth")}</span>
@@ -61,9 +63,9 @@ export function Pricing() {
 
         <div
           data-reveal
-          className="flex flex-col gap-4 rounded-2xl border bg-muted/40 p-4 sm:flex-row sm:items-center sm:gap-5 sm:p-5"
+          className="flex flex-col gap-4 rounded-xl border bg-muted/60 p-4 sm:flex-row sm:items-center sm:gap-5 sm:p-5"
         >
-          <span aria-hidden className="flex size-11 shrink-0 items-center justify-center rounded-xl border bg-background shadow-xs">
+          <span aria-hidden className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-brand text-white">
             <Wrench className="size-5" />
           </span>
           <p className="flex-1 text-lg text-pretty">
@@ -72,7 +74,7 @@ export function Pricing() {
           </p>
           <SectionLink
             hash={SECTION.demo}
-            className={cn(buttonVariants({ variant: "outline", size: "lg" }), "h-11 bg-background px-4 shadow-xs")}
+            className={cn(buttonVariants({ variant: "outline", size: "lg" }), "h-11 bg-background px-4")}
           >
             {t("managedCta")}
             <ArrowRight aria-hidden data-icon="inline-end" />

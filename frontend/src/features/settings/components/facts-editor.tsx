@@ -1,7 +1,9 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import { Plus, Sparkles, X } from "lucide-react";
+import { PlusIcon as Plus } from "@phosphor-icons/react/dist/ssr/Plus";
+import { SparkleIcon as Sparkles } from "@phosphor-icons/react/dist/ssr/Sparkle";
+import { XIcon as X } from "@phosphor-icons/react/dist/ssr/X";
 import { useTranslations } from "next-intl";
 import { useId, useState } from "react";
 import { Button } from "@/shared/components/ui/button";

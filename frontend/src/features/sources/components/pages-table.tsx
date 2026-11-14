@@ -1,6 +1,7 @@
 "use client";
 
-import { Shapes, Users } from "lucide-react";
+import { ShapesIcon as Shapes } from "@phosphor-icons/react/dist/ssr/Shapes";
+import { UsersIcon as Users } from "@phosphor-icons/react/dist/ssr/Users";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { CsvButton } from "@/shared/components/csv-button";

@@ -18,8 +18,8 @@ export function NavbarShell({ children }: { children: React.ReactNode }) {
   const scrolled = useSyncExternalStore(subscribe, () => window.scrollY > 8, () => false);
 
   return (
-    <header data-scrolled={scrolled || undefined} className="group sticky top-0 z-40 h-16">
-      <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-8 rounded-2xl border border-transparent px-4 transition-all duration-300 ease-out group-data-scrolled:h-14 group-data-scrolled:w-[calc(100%-1rem)] group-data-scrolled:max-w-5xl group-data-scrolled:translate-y-2.5 group-data-scrolled:border-border group-data-scrolled:bg-background/95 group-data-scrolled:px-3 group-data-scrolled:shadow-lg group-data-scrolled:shadow-black/5 motion-reduce:transition-none sm:px-6 sm:group-data-scrolled:w-[calc(100%-2rem)] sm:group-data-scrolled:px-4">
+    <header data-scrolled={scrolled || undefined} className="group sticky top-0 z-40 h-20">
+      <div className="mx-auto flex h-20 w-full max-w-7xl items-center gap-8 rounded-2xl border border-transparent px-4 transition-all duration-300 ease-out group-data-scrolled:h-16 group-data-scrolled:w-[calc(100%-1rem)] group-data-scrolled:max-w-6xl group-data-scrolled:translate-y-2.5 group-data-scrolled:border-border group-data-scrolled:bg-background/95 group-data-scrolled:px-3 group-data-scrolled:shadow-lg group-data-scrolled:shadow-black/5 motion-reduce:transition-none sm:px-6 sm:group-data-scrolled:w-[calc(100%-2rem)] sm:group-data-scrolled:px-4">
         {children}
       </div>
     </header>

@@ -1,6 +1,10 @@
 "use client";
 
-import { ChevronLeft, LayoutGrid, LifeBuoy, Menu, PanelLeft } from "lucide-react";
+import { CaretLeftIcon as ChevronLeft } from "@phosphor-icons/react/dist/ssr/CaretLeft";
+import { SquaresFourIcon as LayoutGrid } from "@phosphor-icons/react/dist/ssr/SquaresFour";
+import { LifebuoyIcon as LifeBuoy } from "@phosphor-icons/react/dist/ssr/Lifebuoy";
+import { ListIcon as Menu } from "@phosphor-icons/react/dist/ssr/List";
+import { SidebarSimpleIcon as PanelLeft } from "@phosphor-icons/react/dist/ssr/SidebarSimple";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useState } from "react";

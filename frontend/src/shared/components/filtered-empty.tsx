@@ -1,4 +1,4 @@
-import { FilterX } from "lucide-react";
+import { FunnelXIcon as FilterX } from "@phosphor-icons/react/dist/ssr/FunnelX";
 import { useTranslations } from "next-intl";
 import { EmptyState } from "@/shared/components/empty-state";
 import { buttonVariants } from "@/shared/components/ui/button";

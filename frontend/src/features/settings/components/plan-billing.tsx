@@ -1,4 +1,5 @@
-import { CreditCard, FileText } from "lucide-react";
+import { CreditCardIcon as CreditCard } from "@phosphor-icons/react/dist/ssr/CreditCard";
+import { FileTextIcon as FileText } from "@phosphor-icons/react/dist/ssr/FileText";
 import { useTranslations } from "next-intl";
 
 /**

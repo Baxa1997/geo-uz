@@ -1,4 +1,4 @@
-import { Check } from "lucide-react";
+import { CheckIcon as Check } from "@phosphor-icons/react/dist/ssr/Check";
 import { useTranslations } from "next-intl";
 import { SECTION } from "../../constants";
 import { DemoForm } from "./demo-form";
@@ -10,7 +10,7 @@ export function DemoSection() {
   return (
     <Section id={SECTION.demo} labelledBy="demo-title" className="items-center lg:grid lg:grid-cols-2 lg:gap-16">
       <div data-reveal className="flex flex-col gap-4">
-        <h2 id="demo-title" className="text-3xl font-semibold tracking-tight text-balance sm:text-5xl/[1.1]">
+        <h2 id="demo-title" className="text-3xl font-bold tracking-[-0.03em] text-balance sm:text-5xl/[1.1]">
           {t("title")}
         </h2>
         <p className="text-pretty text-muted-foreground">{t("text")}</p>

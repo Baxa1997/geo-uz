@@ -1,6 +1,6 @@
 "use client";
 
-import { Maximize2 } from "lucide-react";
+import { ArrowsOutSimpleIcon as Maximize2 } from "@phosphor-icons/react/dist/ssr/ArrowsOutSimple";
 import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
 import { useState } from "react";

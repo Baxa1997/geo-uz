@@ -1,22 +1,12 @@
-import {
-  Building2,
-  CircleAlert,
-  CreditCard,
-  FileCheck2,
-  FileText,
-  Globe,
-  LayoutDashboard,
-  ListChecks,
-  MessageCircleQuestion,
-  MessagesSquare,
-  Settings,
-  SlidersHorizontal,
-  Tag,
-  UserRound,
-  Users,
-  UsersRound,
-  type LucideIcon,
-} from "lucide-react";
+import { BuildingsIcon as Building2 } from "@phosphor-icons/react/dist/ssr/Buildings";
+import { CreditCardIcon as CreditCard } from "@phosphor-icons/react/dist/ssr/CreditCard";
+import { SealCheckIcon as FileCheck2 } from "@phosphor-icons/react/dist/ssr/SealCheck";
+import { SlidersHorizontalIcon as SlidersHorizontal } from "@phosphor-icons/react/dist/ssr/SlidersHorizontal";
+import { TagIcon as Tag } from "@phosphor-icons/react/dist/ssr/Tag";
+import { UserIcon as UserRound } from "@phosphor-icons/react/dist/ssr/User";
+import { UsersThreeIcon as UsersRound } from "@phosphor-icons/react/dist/ssr/UsersThree";
+import { IconActions, IconAnswers, IconCompetitors, IconOverview, IconQuestions, IconReports, IconSettings, IconSources, IconWrongFacts } from "@/shared/components/own-icons";
+import type { AppIcon } from "@/shared/types/icon";
 
 /** Cookie that remembers a collapsed sidebar, so the server renders it that way too. */
 export const SIDEBAR_COOKIE = "geo_sidebar";
@@ -25,7 +15,7 @@ export const SIDEBAR_COOKIE = "geo_sidebar";
 export interface NavItem {
   key: "overview" | "prompts" | "answers" | "competitors" | "sources" | "wrongFacts" | "actions" | "reports" | "settings";
   path: string;
-  icon: LucideIcon;
+  icon: AppIcon;
 }
 
 /**
@@ -34,34 +24,34 @@ export interface NavItem {
  * messages/Sidebar.groups; the first section has none.
  */
 export const NAV_GROUPS: { key: "home" | "monitor" | "improve" | "share"; items: NavItem[] }[] = [
-  { key: "home", items: [{ key: "overview", path: "", icon: LayoutDashboard }] },
+  { key: "home", items: [{ key: "overview", path: "", icon: IconOverview }] },
   {
     key: "monitor",
     items: [
-      { key: "prompts", path: "/prompts", icon: MessageCircleQuestion },
-      { key: "answers", path: "/answers", icon: MessagesSquare },
-      { key: "competitors", path: "/competitors", icon: Users },
-      { key: "sources", path: "/sources", icon: Globe },
+      { key: "prompts", path: "/prompts", icon: IconQuestions },
+      { key: "answers", path: "/answers", icon: IconAnswers },
+      { key: "competitors", path: "/competitors", icon: IconCompetitors },
+      { key: "sources", path: "/sources", icon: IconSources },
     ],
   },
   {
     key: "improve",
     items: [
-      { key: "wrongFacts", path: "/wrong-facts", icon: CircleAlert },
-      { key: "actions", path: "/actions", icon: ListChecks },
+      { key: "wrongFacts", path: "/wrong-facts", icon: IconWrongFacts },
+      { key: "actions", path: "/actions", icon: IconActions },
     ],
   },
-  { key: "share", items: [{ key: "reports", path: "/reports", icon: FileText }] },
+  { key: "share", items: [{ key: "reports", path: "/reports", icon: IconReports }] },
 ];
 
 /** At the bottom of the sidebar, above help and the account. */
-export const SETTINGS: NavItem = { key: "settings", path: "/settings", icon: Settings };
+export const SETTINGS: NavItem = { key: "settings", path: "/settings", icon: IconSettings };
 
 /**
  * The settings' own menu, which takes the sidebar's place on a settings page, as Peec's does: the
  * project's settings, then the account's. `path` follows /projects/[id]; labels in messages/Sidebar.settingsNav.
  */
-export const SETTINGS_GROUPS: { key: "project" | "account"; items: { key: "profile" | "facts" | "brands" | "tags" | "account" | "members" | "plan"; path: string; icon: LucideIcon }[] }[] = [
+export const SETTINGS_GROUPS: { key: "project" | "account"; items: { key: "profile" | "facts" | "brands" | "tags" | "account" | "members" | "plan"; path: string; icon: AppIcon }[] }[] = [
   {
     key: "project",
     items: [

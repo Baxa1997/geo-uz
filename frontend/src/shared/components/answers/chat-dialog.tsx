@@ -1,7 +1,15 @@
 "use client";
 
 import { Dialog } from "@base-ui/react/dialog";
-import { ArrowLeft, ArrowRight, ArrowUpRight, Globe, ListOrdered, MapPin, Search, User, X } from "lucide-react";
+import { ArrowLeftIcon as ArrowLeft } from "@phosphor-icons/react/dist/ssr/ArrowLeft";
+import { ArrowRightIcon as ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight";
+import { ArrowUpRightIcon as ArrowUpRight } from "@phosphor-icons/react/dist/ssr/ArrowUpRight";
+import { GlobeIcon as Globe } from "@phosphor-icons/react/dist/ssr/Globe";
+import { ListNumbersIcon as ListOrdered } from "@phosphor-icons/react/dist/ssr/ListNumbers";
+import { MapPinIcon as MapPin } from "@phosphor-icons/react/dist/ssr/MapPin";
+import { MagnifyingGlassIcon as Search } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass";
+import { UserIcon as User } from "@phosphor-icons/react/dist/ssr/User";
+import { XIcon as X } from "@phosphor-icons/react/dist/ssr/X";
 import { useLocale, useMessages, useTimeZone, useTranslations } from "next-intl";
 import { useRef, useState, type KeyboardEvent } from "react";
 import { EngineIcon } from "@/shared/components/engine-icon";

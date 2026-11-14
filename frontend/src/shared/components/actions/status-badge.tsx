@@ -1,4 +1,7 @@
-import { Ban, CircleCheck, CircleDot, Play } from "lucide-react";
+import { ProhibitIcon as Ban } from "@phosphor-icons/react/dist/ssr/Prohibit";
+import { CheckCircleIcon as CircleCheck } from "@phosphor-icons/react/dist/ssr/CheckCircle";
+import { RadioButtonIcon as CircleDot } from "@phosphor-icons/react/dist/ssr/RadioButton";
+import { PlayIcon as Play } from "@phosphor-icons/react/dist/ssr/Play";
 import { useTranslations } from "next-intl";
 import { cn } from "@/shared/helpers/utils";
 import type { ActionStatus } from "@/shared/types/api";

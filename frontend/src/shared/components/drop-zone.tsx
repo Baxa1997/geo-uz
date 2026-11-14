@@ -1,6 +1,7 @@
 "use client";
 
-import { FileText, Upload } from "lucide-react";
+import { FileTextIcon as FileText } from "@phosphor-icons/react/dist/ssr/FileText";
+import { UploadSimpleIcon as Upload } from "@phosphor-icons/react/dist/ssr/UploadSimple";
 import { useId, useState } from "react";
 import { cn } from "@/shared/helpers/utils";
 

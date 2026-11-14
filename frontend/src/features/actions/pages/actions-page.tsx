@@ -1,4 +1,5 @@
-import { ArrowRight, ListChecks } from "lucide-react";
+import { ArrowRightIcon as ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight";
+import { ListChecksIcon as ListChecks } from "@phosphor-icons/react/dist/ssr/ListChecks";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { cache } from "react";

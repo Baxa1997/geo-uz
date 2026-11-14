@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQueryClient, type UseMutationResult } from "@tanstack/react-query";
-import { CalendarClock } from "lucide-react";
+import { CalendarCheckIcon as CalendarClock } from "@phosphor-icons/react/dist/ssr/CalendarCheck";
 import { useTranslations } from "next-intl";
 import { useId, useRef, useState, type FormEvent } from "react";
 import { LocaleSwitcher } from "@/shared/components/locale-switcher";

@@ -1,4 +1,4 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRightIcon as ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight";
 import { useId } from "react";
 import { useLocale, useTimeZone, useTranslations } from "next-intl";
 import { buttonVariants } from "@/shared/components/ui/button";

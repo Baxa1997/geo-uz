@@ -1,5 +1,5 @@
-import type { LucideIcon } from "lucide-react";
 import { cn } from "@/shared/helpers/utils";
+import type { AppIcon } from "@/shared/types/icon";
 
 /** Dashed card with an icon tile: nothing found, nothing yet, coming soon. */
 export function EmptyState({
@@ -9,7 +9,7 @@ export function EmptyState({
   children,
   className,
 }: {
-  icon: LucideIcon;
+  icon: AppIcon;
   title: string;
   text?: string;
   children?: React.ReactNode;

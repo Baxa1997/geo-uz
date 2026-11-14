@@ -1,4 +1,5 @@
-import { Check, Minus } from "lucide-react";
+import { CheckIcon as Check } from "@phosphor-icons/react/dist/ssr/Check";
+import { MinusIcon as Minus } from "@phosphor-icons/react/dist/ssr/Minus";
 import { useFormatter, useTranslations } from "next-intl";
 import { PLAN_TABLE, PRICING, type PlanCell } from "../../constants";
 

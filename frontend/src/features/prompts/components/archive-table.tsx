@@ -1,6 +1,6 @@
 "use client";
 
-import { ArchiveRestore } from "lucide-react";
+import { ArrowCounterClockwiseIcon as ArchiveRestore } from "@phosphor-icons/react/dist/ssr/ArrowCounterClockwise";
 import { useLocale, useTimeZone, useTranslations } from "next-intl";
 import { Hint } from "@/shared/components/hint";
 import { Link } from "@/i18n/navigation";

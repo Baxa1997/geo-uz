@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
+import { CaretDownIcon as ChevronDown } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { FilterChips } from "@/shared/components/filter-chips";

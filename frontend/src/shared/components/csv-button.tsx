@@ -1,6 +1,6 @@
 "use client";
 
-import { Download } from "lucide-react";
+import { DownloadSimpleIcon as Download } from "@phosphor-icons/react/dist/ssr/DownloadSimple";
 import { Hint } from "@/shared/components/hint";
 import { Button } from "@/shared/components/ui/button";
 import { downloadCsv, type CsvCell } from "@/shared/helpers/csv";

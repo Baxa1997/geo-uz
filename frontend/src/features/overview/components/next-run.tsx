@@ -1,4 +1,4 @@
-import { CalendarClock } from "lucide-react";
+import { CalendarCheckIcon as CalendarClock } from "@phosphor-icons/react/dist/ssr/CalendarCheck";
 import { useLocale, useTimeZone, useTranslations } from "next-intl";
 import { TIME_ZONE } from "@/shared/constants";
 import { formatWeekdayDate } from "@/shared/helpers/dates";

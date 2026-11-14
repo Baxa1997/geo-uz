@@ -1,6 +1,13 @@
 "use client";
 
-import { Check, ChevronsRight, Copy, ExternalLink, MessageSquare, RotateCcw, Undo2, X } from "lucide-react";
+import { CheckIcon as Check } from "@phosphor-icons/react/dist/ssr/Check";
+import { CaretDoubleRightIcon as ChevronsRight } from "@phosphor-icons/react/dist/ssr/CaretDoubleRight";
+import { CopyIcon as Copy } from "@phosphor-icons/react/dist/ssr/Copy";
+import { ArrowSquareOutIcon as ExternalLink } from "@phosphor-icons/react/dist/ssr/ArrowSquareOut";
+import { ChatTextIcon as MessageSquare } from "@phosphor-icons/react/dist/ssr/ChatText";
+import { ArrowCounterClockwiseIcon as RotateCcw } from "@phosphor-icons/react/dist/ssr/ArrowCounterClockwise";
+import { ArrowUUpLeftIcon as Undo2 } from "@phosphor-icons/react/dist/ssr/ArrowUUpLeft";
+import { XIcon as X } from "@phosphor-icons/react/dist/ssr/X";
 import { useLocale, useMessages, useTranslations } from "next-intl";
 import { useState } from "react";
 import { ActionWhy } from "@/shared/components/actions/action-why";

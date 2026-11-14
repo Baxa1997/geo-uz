@@ -1,6 +1,9 @@
 "use client";
 
-import { Circle, Minus, Plus, X } from "lucide-react";
+import { CircleIcon as Circle } from "@phosphor-icons/react/dist/ssr/Circle";
+import { MinusIcon as Minus } from "@phosphor-icons/react/dist/ssr/Minus";
+import { PlusIcon as Plus } from "@phosphor-icons/react/dist/ssr/Plus";
+import { XIcon as X } from "@phosphor-icons/react/dist/ssr/X";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { START_STEPS } from "../constants";

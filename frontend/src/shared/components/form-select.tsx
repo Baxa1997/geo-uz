@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronsUpDown } from "lucide-react";
+import { CaretUpDownIcon as ChevronsUpDown } from "@phosphor-icons/react/dist/ssr/CaretUpDown";
 
 /** A choice from a list in a window, in Peec's form: a tall rounded box with up and down arrows. */
 export function FormSelect({

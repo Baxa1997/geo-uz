@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight } from "lucide-react";
+import { ArrowRightIcon as ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight";
 import { useMessages, useTranslations } from "next-intl";
 import { useEffect, useRef } from "react";
 import { HeadlineScore } from "@/shared/components/scores/headline-score";

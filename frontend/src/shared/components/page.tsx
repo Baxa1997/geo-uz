@@ -1,4 +1,4 @@
-import { ChevronRight } from "lucide-react";
+import { CaretRightIcon as ChevronRight } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { useTranslations } from "next-intl";
 import { Fragment } from "react";
 import { EngineSwitcher } from "@/shared/components/engine-switcher";

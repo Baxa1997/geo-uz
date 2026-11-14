@@ -1,13 +1,14 @@
 "use client";
 
-import { Eye, ListOrdered, PieChart, Smile, type LucideIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { IconMentions, IconPlace, IconRating, IconVoiceShare } from "@/shared/components/own-icons";
 import { Segmented, SegmentedButton } from "@/shared/components/segmented";
 import { METRICS } from "@/shared/helpers/scores";
 import { cn } from "@/shared/helpers/utils";
 import type { Metric } from "@/shared/types/scores";
+import type { AppIcon } from "@/shared/types/icon";
 
-const ICONS: Record<Metric, LucideIcon> = { visibility: Eye, shareOfVoice: PieChart, sentiment: Smile, position: ListOrdered };
+const ICONS: Record<Metric, AppIcon> = { visibility: IconMentions, shareOfVoice: IconVoiceShare, sentiment: IconRating, position: IconPlace };
 
 /**
  * The four metrics as tabs, for a chart card's tools: the chosen one shows its name, the others their

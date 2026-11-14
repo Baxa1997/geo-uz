@@ -1,10 +1,15 @@
-import { ArrowDown, ArrowUp, CircleCheck, Plus, TriangleAlert, type LucideIcon } from "lucide-react";
+import { ArrowDownIcon as ArrowDown } from "@phosphor-icons/react/dist/ssr/ArrowDown";
+import { ArrowUpIcon as ArrowUp } from "@phosphor-icons/react/dist/ssr/ArrowUp";
+import { CheckCircleIcon as CircleCheck } from "@phosphor-icons/react/dist/ssr/CheckCircle";
+import { PlusIcon as Plus } from "@phosphor-icons/react/dist/ssr/Plus";
+import { WarningIcon as TriangleAlert } from "@phosphor-icons/react/dist/ssr/Warning";
 import { useTranslations } from "next-intl";
 import { cn } from "@/shared/helpers/utils";
 import type { WeekEvent } from "../helpers/weeks";
+import type { AppIcon } from "@/shared/types/icon";
 
 /** How each kind of event is marked: the way it moved, colored by what it means for the client. */
-const ICONS: Record<WeekEvent["kind"], LucideIcon> = {
+const ICONS: Record<WeekEvent["kind"], AppIcon> = {
   placeUp: ArrowUp,
   placeDown: ArrowDown,
   passedYou: ArrowDown,

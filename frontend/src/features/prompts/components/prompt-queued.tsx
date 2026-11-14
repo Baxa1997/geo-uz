@@ -1,4 +1,4 @@
-import { Hourglass } from "lucide-react";
+import { HourglassIcon as Hourglass } from "@phosphor-icons/react/dist/ssr/Hourglass";
 import { useLocale, useTimeZone, useTranslations } from "next-intl";
 import { EmptyState } from "@/shared/components/empty-state";
 import { TIME_ZONE } from "@/shared/constants";

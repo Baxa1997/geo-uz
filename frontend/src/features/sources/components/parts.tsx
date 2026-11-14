@@ -1,4 +1,7 @@
-import { CircleCheck, CircleHelp, CircleX, Search } from "lucide-react";
+import { CheckCircleIcon as CircleCheck } from "@phosphor-icons/react/dist/ssr/CheckCircle";
+import { QuestionIcon as CircleHelp } from "@phosphor-icons/react/dist/ssr/Question";
+import { XCircleIcon as CircleX } from "@phosphor-icons/react/dist/ssr/XCircle";
+import { MagnifyingGlassIcon as Search } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass";
 import { useTranslations } from "next-intl";
 import { Hint } from "@/shared/components/hint";
 import { SourceTypeDot } from "@/shared/components/scores/source-type-dot";

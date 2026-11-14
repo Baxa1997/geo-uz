@@ -1,7 +1,8 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Maximize2, Pencil } from "lucide-react";
+import { ArrowsOutSimpleIcon as Maximize2 } from "@phosphor-icons/react/dist/ssr/ArrowsOutSimple";
+import { PencilSimpleIcon as Pencil } from "@phosphor-icons/react/dist/ssr/PencilSimple";
 import { useMessages, useTranslations } from "next-intl";
 import { useId, useState } from "react";
 import { ChipInput } from "@/shared/components/chip-input";

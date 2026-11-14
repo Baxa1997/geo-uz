@@ -1,6 +1,13 @@
 "use client";
 
-import { ArrowUp, ChevronRight, Maximize2, MessageCircle, Minimize2, Sparkles, SquarePen, X } from "lucide-react";
+import { ArrowUpIcon as ArrowUp } from "@phosphor-icons/react/dist/ssr/ArrowUp";
+import { CaretRightIcon as ChevronRight } from "@phosphor-icons/react/dist/ssr/CaretRight";
+import { ArrowsOutSimpleIcon as Maximize2 } from "@phosphor-icons/react/dist/ssr/ArrowsOutSimple";
+import { ChatCircleIcon as MessageCircle } from "@phosphor-icons/react/dist/ssr/ChatCircle";
+import { ArrowsInSimpleIcon as Minimize2 } from "@phosphor-icons/react/dist/ssr/ArrowsInSimple";
+import { SparkleIcon as Sparkles } from "@phosphor-icons/react/dist/ssr/Sparkle";
+import { NotePencilIcon as SquarePen } from "@phosphor-icons/react/dist/ssr/NotePencil";
+import { XIcon as X } from "@phosphor-icons/react/dist/ssr/X";
 import { useTranslations } from "next-intl";
 import { useState, type FormEvent } from "react";
 import { cn } from "@/shared/helpers/utils";

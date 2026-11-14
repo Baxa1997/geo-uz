@@ -1,4 +1,4 @@
-import { ChartNoAxesColumn } from "lucide-react";
+import { ChartBarIcon as ChartNoAxesColumn } from "@phosphor-icons/react/dist/ssr/ChartBar";
 import { useTranslations } from "next-intl";
 import { buttonVariants } from "@/shared/components/ui/button";
 import { Card, CardContent } from "@/shared/components/ui/card";

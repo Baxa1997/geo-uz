@@ -1,7 +1,9 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Check, Sparkles } from "lucide-react";
+import { ArrowLeftIcon as ArrowLeft } from "@phosphor-icons/react/dist/ssr/ArrowLeft";
+import { CheckIcon as Check } from "@phosphor-icons/react/dist/ssr/Check";
+import { SparkleIcon as Sparkles } from "@phosphor-icons/react/dist/ssr/Sparkle";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { ChipInput } from "@/shared/components/chip-input";

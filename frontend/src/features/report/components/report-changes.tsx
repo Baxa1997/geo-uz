@@ -1,10 +1,16 @@
-import { ArrowDown, ArrowUp, CircleCheck, Minus, Plus, TriangleAlert, type LucideIcon } from "lucide-react";
+import { ArrowDownIcon as ArrowDown } from "@phosphor-icons/react/dist/ssr/ArrowDown";
+import { ArrowUpIcon as ArrowUp } from "@phosphor-icons/react/dist/ssr/ArrowUp";
+import { CheckCircleIcon as CircleCheck } from "@phosphor-icons/react/dist/ssr/CheckCircle";
+import { MinusIcon as Minus } from "@phosphor-icons/react/dist/ssr/Minus";
+import { PlusIcon as Plus } from "@phosphor-icons/react/dist/ssr/Plus";
+import { WarningIcon as TriangleAlert } from "@phosphor-icons/react/dist/ssr/Warning";
 import { useTranslations } from "next-intl";
 import { ActionTitle } from "@/shared/components/actions/action-title";
 import { siteMovers } from "@/shared/helpers/source-movers";
 import { cn } from "@/shared/helpers/utils";
 import type { Action, HistoryPoint, Report } from "@/shared/types/api";
 import { ReportCard } from "./report-parts";
+import type { AppIcon } from "@/shared/types/icon";
 
 /** Each kind of change names at most this many sites. */
 const SITES = 3;
@@ -19,7 +25,7 @@ const COLORS: Record<Tone, string> = { good: "text-better", bad: "text-worse", n
 interface Item {
   key: string;
   /** The way it moved (the mark), and what that means for the client (its color). */
-  icon: LucideIcon;
+  icon: AppIcon;
   tone: Tone;
   text: React.ReactNode;
 }

@@ -1,4 +1,3 @@
-import { ChartScatter } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { DEMO_REPORT } from "@/mocks/demo";
 import { outOf100, rankedBrands } from "@/shared/helpers/scores";
@@ -22,8 +21,8 @@ export function Reports() {
 
   return (
     <Section id={SECTION.reports} labelledBy="reports-title">
-      <SectionIntro id="reports-title" icon={ChartScatter} pill={t("pill")} title={t("title")} sub={t("sub")} />
-      <div data-reveal className="grid gap-3 rounded-2xl border bg-muted/40 p-3 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+      <SectionIntro id="reports-title" pill={t("pill")} title={t("title")} sub={t("sub")} />
+      <div data-reveal className="grid gap-3 rounded-xl border bg-muted/60 p-3 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
         <figure className="flex flex-col gap-2 p-2 sm:p-4">
           <svg viewBox={`0 0 ${SIZE.width} ${SIZE.height}`} role="img" aria-labelledby="quadrant-title" className="w-full">
             <title id="quadrant-title">{t("chartLabel")}</title>
@@ -72,7 +71,7 @@ export function Reports() {
 
         <Panel className="flex flex-col justify-center gap-8 p-6 sm:p-10">
           {REPORT_CHANNELS.map(({ key, icon: Icon }) => (
-            <div key={key} className="flex flex-col gap-2 border-l-2 pl-5">
+            <div key={key} className="flex flex-col gap-2 border-l-2 border-brand/30 pl-5">
               <h3 className="flex items-center gap-2 font-semibold">
                 <Icon aria-hidden className="size-4 text-muted-foreground" />
                 {t(`items.${key}.title`)}

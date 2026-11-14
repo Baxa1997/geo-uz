@@ -1,25 +1,23 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  Archive,
-  ChevronDown,
-  ChevronsLeft,
-  ChevronsRight,
-  ChevronsUpDown,
-  ChevronUp,
-  CircleAlert,
-  CircleSlash,
-  FolderInput,
-  ListTree,
-  Pencil,
-  Plus,
-  Search,
-  Sparkles,
-  Tag,
-  UploadCloud,
-  X,
-} from "lucide-react";
+import { ArchiveIcon as Archive } from "@phosphor-icons/react/dist/ssr/Archive";
+import { CaretDownIcon as ChevronDown } from "@phosphor-icons/react/dist/ssr/CaretDown";
+import { CaretUpIcon as ChevronUp } from "@phosphor-icons/react/dist/ssr/CaretUp";
+import { CaretDoubleLeftIcon as ChevronsLeft } from "@phosphor-icons/react/dist/ssr/CaretDoubleLeft";
+import { CaretDoubleRightIcon as ChevronsRight } from "@phosphor-icons/react/dist/ssr/CaretDoubleRight";
+import { CaretUpDownIcon as ChevronsUpDown } from "@phosphor-icons/react/dist/ssr/CaretUpDown";
+import { WarningCircleIcon as CircleAlert } from "@phosphor-icons/react/dist/ssr/WarningCircle";
+import { ProhibitIcon as CircleSlash } from "@phosphor-icons/react/dist/ssr/Prohibit";
+import { FolderSimplePlusIcon as FolderInput } from "@phosphor-icons/react/dist/ssr/FolderSimplePlus";
+import { TreeViewIcon as ListTree } from "@phosphor-icons/react/dist/ssr/TreeView";
+import { PencilSimpleIcon as Pencil } from "@phosphor-icons/react/dist/ssr/PencilSimple";
+import { PlusIcon as Plus } from "@phosphor-icons/react/dist/ssr/Plus";
+import { MagnifyingGlassIcon as Search } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass";
+import { SparkleIcon as Sparkles } from "@phosphor-icons/react/dist/ssr/Sparkle";
+import { TagIcon as Tag } from "@phosphor-icons/react/dist/ssr/Tag";
+import { CloudArrowUpIcon as UploadCloud } from "@phosphor-icons/react/dist/ssr/CloudArrowUp";
+import { XIcon as X } from "@phosphor-icons/react/dist/ssr/X";
 import { useLocale, useMessages, useTimeZone, useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";

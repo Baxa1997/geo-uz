@@ -1,6 +1,6 @@
 "use client";
 
-import { Bot } from "lucide-react";
+import { RobotIcon as Bot } from "@phosphor-icons/react/dist/ssr/Robot";
 import { useTranslations } from "next-intl";
 import { useId, useRef, useState, type KeyboardEvent } from "react";
 import { ToneIcon } from "@/shared/components/scores/tone-icon";

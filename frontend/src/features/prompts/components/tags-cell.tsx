@@ -1,7 +1,8 @@
 "use client";
 
 import { Popover } from "@base-ui/react/popover";
-import { Check, Plus } from "lucide-react";
+import { CheckIcon as Check } from "@phosphor-icons/react/dist/ssr/Check";
+import { PlusIcon as Plus } from "@phosphor-icons/react/dist/ssr/Plus";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { cn } from "@/shared/helpers/utils";

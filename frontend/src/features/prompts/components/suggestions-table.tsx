@@ -1,6 +1,7 @@
 "use client";
 
-import { Check, X } from "lucide-react";
+import { CheckIcon as Check } from "@phosphor-icons/react/dist/ssr/Check";
+import { XIcon as X } from "@phosphor-icons/react/dist/ssr/X";
 import { useLocale, useTimeZone, useTranslations } from "next-intl";
 import { Hint } from "@/shared/components/hint";
 import { TIME_ZONE } from "@/shared/constants";
