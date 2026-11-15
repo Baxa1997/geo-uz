@@ -185,10 +185,13 @@ that is committed.
   check free and every next one only on a paid account; Standard $39.99 weekly, Pro $89.99 "every 2 or 3
   days", Enterprise by contact for several projects; "if I'm going wrong, correct"; every piece of
   information filled in at setup. Built as the table in `PLAN.md` ("Prices and the free first check"), with
-  one correction the user has not answered: Pro twice a week with 50 questions. The pages show dollars and
+  one correction, which the user confirmed the same day ("yes agree with your questions count"): Pro twice
+  a week with 50 questions. The pages show dollars and
   the names Standard, Pro, Enterprise; a trial project says so on the Overview and on Tarif; the setup's
-  profile step requires the name, description, field, services and city. Gemini has never run from GEO: the
-  server has no Google credentials for it (the IELTS project's were read to copy the method, not copied).
+  profile step requires the name, description, field, services and city. Gemini has never answered a question from GEO. Since
+  15 Nov ("do it") the server has Google credentials for it: the IELTS project's Google Cloud project and a
+  copy of its credentials file in GEO's own folder, for now; a login token is made and `/health` lists
+  `gemini`. The IELTS project itself was not changed. A Google Cloud project of GEO's own is still owed.
   Tried in a browser in Uzbek: the Overview's notice, Tarif, the landing page's prices. No paid request.
 
 - **Built, waiting for the user's look (not yet "done"): fixes and wrong facts, stage 4 of `PLAN.md` (15 Nov),

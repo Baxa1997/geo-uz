@@ -50,8 +50,8 @@ a full site audit.
 
 After the free check nothing more is checked until a plan is paid; we switch plans on by hand
 (`python -m app.admin`). The user proposed Pro "every 2 or 3 days"; it was built as twice a week with 50
-questions because every other day with 75 would cost $55–80 of the $89.99. **The user has not confirmed that
-correction yet.** Managed GEO stays on the pages, priced by agreement.
+questions because every other day with 75 would cost $55–80 of the $89.99. The user confirmed that
+correction on 15 Nov ("yes agree with your questions count"). Managed GEO stays on the pages, priced by agreement.
 
 ## The stages, in order
 
@@ -154,8 +154,8 @@ The "what to do" half: the part that keeps a small business paying.
 
 | Decision | Why it blocks | Needed by |
 | --- | --- | --- |
-| Prices against cost | Decided 15 Nov (the table above); the Pro correction (twice a week, 50 questions) waits for the user's yes | — |
-| The Google credentials for Gemini | Whether GEO may use the IELTS project's Google Cloud project and credentials file, or gets its own | the first live check |
+| Prices against cost | Decided 15 Nov (the table above), with Pro as twice a week and 50 questions, confirmed by the user | — |
+| The Google credentials for Gemini | Set on the server on 15 Nov ("do it"): for now the IELTS project's Google Cloud project, with a copy of its credentials file. A project of GEO's own, to keep the bills apart, is still owed | Stage 5 |
 | Permission to spend, and the keys on the server | No check can run on the server without them | Stage 2 |
 | The product's name and domain | The emails' sender, the site's address, the logo | Stage 5 |
 | Pilots or self-serve first | Whether to sell hand-made reports while the platform is built | any time |
