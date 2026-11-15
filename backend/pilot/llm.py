@@ -81,6 +81,8 @@ def ask(model: str, question: str, country: str, city: str, timezone: str, conte
             "model": model,
             "input": question,
             "tools": [tool],
+            # The search is not left to the model: an answer from memory has no sources to count
+            "tool_choice": "required",
             # Every page the search consulted, not only the ones the answer shows as its sources
             "include": ["web_search_call.action.sources"],
         }

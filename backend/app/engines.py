@@ -68,7 +68,7 @@ def ask(engine: str, question: str, country: str, city: str, timezone: str) -> D
     if engine == "chatgpt":
         return _chatgpt(question, country, city, timezone)
     if engine == "gemini":
-        return _gemini(question)
+        return _gemini(question, country, city)
     raise EngineError(f"Unknown assistant: {engine}")
 
 
@@ -151,8 +151,13 @@ def _text(reply: Dict[str, Any]) -> str:
     return "".join(part.get("text") or "" for part in (candidate.get("content") or {}).get("parts") or [] if not part.get("thought"))
 
 
-def _gemini_vertex(question: str) -> Dict[str, Any]:
-    body = {"contents": [{"role": "user", "parts": [{"text": question}]}], "tools": [{"googleSearch": {}}]}
+def _gemini_vertex(question: str, country: str, city: str) -> Dict[str, Any]:
+    body: Dict[str, Any] = {"contents": [{"role": "user", "parts": [{"text": question}]}], "tools": [{"googleSearch": {}}]}
+    # Where the customer is, as the Gemini app knows it of its user and as ChatGPT's search tool is told.
+    # Nothing else is added to the question.
+    place = ", ".join(part for part in (city, f"country code {country}" if country else "") if part)
+    if place:
+        body["systemInstruction"] = {"parts": [{"text": f"The user's location: {place}."}]}
     reply = _vertex(settings.gemini_model, body, ASK_SECONDS)
     # Google Search is on, but Gemini decides itself whether to search, and now and then answers from memory
     # (one answer in five on gemini-3.8-flash, 15 Nov 2026). Such an answer has no sources: asked once more.
@@ -177,9 +182,9 @@ def _gemini_vertex(question: str) -> Dict[str, Any]:
     return {"engine": "gemini", "model": settings.gemini_model, "text": text, "citations": citations, "searches": searches, "usd": VERTEX_GROUNDED_USD if searches or citations else 0.0}
 
 
-def _gemini(question: str) -> Dict[str, Any]:
+def _gemini(question: str, country: str = "", city: str = "") -> Dict[str, Any]:
     if settings.google_cloud_project:
-        return _gemini_vertex(question)
+        return _gemini_vertex(question, country, city)
     body = {"model": settings.gemini_model, "input": question, "tools": [{"type": "google_search"}]}
     request = urllib.request.Request(
         GEMINI_URL,
