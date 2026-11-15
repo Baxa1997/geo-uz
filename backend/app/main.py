@@ -13,6 +13,7 @@ import hmac
 import json
 import re
 import secrets
+import smtplib
 import threading
 import time
 import urllib.error
@@ -24,7 +25,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sqlalchemy import func, select
 
-from . import firstrun
+from . import firstrun, mail
 from .config import settings
 from .db import FirstRun, LoginCode, Session, SessionLocal, User, create_tables, now
 
@@ -93,10 +94,18 @@ def send_code(body: CodeRequest) -> Dict[str, int]:
         if last and (now() - last.sent_at).total_seconds() < RESEND_SECONDS:
             return {"resendIn": RESEND_SECONDS - int((now() - last.sent_at).total_seconds())}
         code = f"{secrets.randbelow(1_000_000):06d}"
+        if settings.own_email:
+            # Sent before it is stored: a code nobody received must not start the wait for the next one
+            try:
+                mail.send_code(email, code, CODE_MINUTES)
+            except (OSError, smtplib.SMTPException) as error:
+                print(f"login email failed: {error!r}")
+                raise HTTPException(503, "email_unavailable") from error
+        else:
+            # Development only: no email is sent, the code is in the server's log
+            print(f"LOGIN CODE for {email}: {code}")
         db.merge(LoginCode(email=email, code_hash=digest(code), expires_at=now() + datetime.timedelta(minutes=CODE_MINUTES), sent_at=now(), attempts=0))
         db.commit()
-    # Development only: no email is sent, the code is in the server's log
-    print(f"LOGIN CODE for {email}: {code}")
     return {"resendIn": RESEND_SECONDS}
 
 
@@ -295,4 +304,4 @@ def first_run_result(run_id: str, user: User = Depends(current_user)) -> Any:
 
 @app.get("/health")
 def health() -> Dict[str, Any]:
-    return {"ok": True, "engines": settings.engines, "replay": settings.first_run_replay, "login": "supabase" if settings.supabase_login else "development"}
+    return {"ok": True, "engines": settings.engines, "replay": settings.first_run_replay, "login": settings.login}
