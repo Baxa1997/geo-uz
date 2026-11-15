@@ -176,6 +176,15 @@ def _kind(domain: str, own: str, competitors: List[str]) -> str:
     return "news" if among(NEWS) else "directory" if among(DIRECTORIES) else "social" if among(SOCIAL) else "other"
 
 
+def questions_for(engine: str, asked: List[str], count: int) -> List[int]:
+    """Which questions an assistant gets in a first run. With Gemini beside it, ChatGPT gets
+    `FIRST_RUN_CHATGPT_QUESTIONS` of them, spread evenly so both languages are among them; otherwise all."""
+    limit = settings.first_run_chatgpt_questions
+    if engine != "chatgpt" or "gemini" not in asked or limit >= count:
+        return list(range(count))
+    return sorted({round(index * count / limit) for index in range(limit)}) if limit > 0 else []
+
+
 def run(domain: str, category: Optional[str], city: Optional[str], progress: Progress, engine_names: Optional[List[str]] = None) -> Tuple[Dict[str, Any], Dict[str, Any], float]:
     """The whole first run. Returns the Snapshot, the raw answers and the cost in US dollars."""
     asked = engine_names or settings.engines
@@ -195,7 +204,7 @@ def run(domain: str, category: Optional[str], city: Optional[str], progress: Pro
     place = (who["country"].upper()[:2] or "UZ", who["cityEn"] or who["city"], "Asia/Almaty" if who["country"].upper().startswith("KZ") else "Asia/Tashkent")
 
     # Every question to every assistant, a few at a time; one that fails is left out and the run goes on
-    jobs = [(q, engine) for q in range(len(who["questions"])) for engine in asked]
+    jobs = [(q, engine) for engine in asked for q in questions_for(engine, asked, len(who["questions"]))]
     answers: List[Dict[str, Any]] = []
     progress("asking", 0, len(jobs))
     with ThreadPoolExecutor(max_workers=5) as pool:

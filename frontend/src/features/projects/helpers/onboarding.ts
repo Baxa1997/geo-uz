@@ -77,7 +77,16 @@ export function validateWebsite(website: string): OnboardingErrors {
   return isValidDomain(domain) ? {} : { website: "websiteInvalid" };
 }
 
-export const validateSite = (site: SiteDraft): OnboardingErrors => (site.name.trim() ? {} : { name: "nameRequired" });
+/** Every field of the profile is needed (the user's rule, 15 Nov): the questions and the fixes are written from it. Other spellings stay optional. */
+export function validateSite(site: SiteDraft): OnboardingErrors {
+  const errors: OnboardingErrors = {};
+  if (!site.name.trim()) errors.name = "nameRequired";
+  if (!site.description.trim()) errors.description = "descriptionRequired";
+  if (!site.category.trim()) errors.category = "categoryRequired";
+  if (site.services.length === 0) errors.services = "servicesRequired";
+  if (!site.city.trim()) errors.city = "cityRequired";
+  return errors;
+}
 
 /** 1 to 5 competitors; the manual one needs a name, a valid website if any, and mustn't repeat a suggestion. */
 export function validateChoice(choice: CompetitorChoice): OnboardingErrors {

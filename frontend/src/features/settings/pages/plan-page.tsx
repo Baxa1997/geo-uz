@@ -24,7 +24,7 @@ export default async function PlanPage({ params }: Props) {
     <Page title={t("settingsNav.plan")} crumbs={[{ href: `/projects/${project.id}/settings`, label: t("settings") }]} tour="settingsPlan">
       <div className="flex flex-col gap-8">
         <PlanOverview project={project} />
-        <PlanCards projectId={project.id} current={project.plan} cycle={project.billing.cycle} />
+        <PlanCards projectId={project.id} current={project.billing.status === "trial" ? null : project.plan} cycle={project.billing.cycle} />
         <PlanBilling />
       </div>
     </Page>

@@ -60,6 +60,10 @@ export type OnboardingErrorKey =
   | "websiteRequired"
   | "websiteInvalid"
   | "nameRequired"
+  | "descriptionRequired"
+  | "categoryRequired"
+  | "servicesRequired"
+  | "cityRequired"
   | "competitorRequired"
   | "competitorsMax"
   | "manualNameRequired"
@@ -69,5 +73,5 @@ export type OnboardingErrorKey =
   | "questionsRequired";
 
 export type OnboardingErrors = Partial<
-  Record<"website" | "name" | "competitors" | "manualName" | "manualDomain" | "topics" | "questions", OnboardingErrorKey>
+  Record<"website" | "name" | "description" | "category" | "services" | "city" | "competitors" | "manualName" | "manualDomain" | "topics" | "questions", OnboardingErrorKey>
 >;

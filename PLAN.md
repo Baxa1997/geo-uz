@@ -39,6 +39,20 @@ a full site audit.
 | Frontend on Vercel | Deployed; behind Vercel's own login |
 | The pilot report (a one-off report made by script) | Works; run once for a first client |
 
+## Prices and the free first check (the user's decision, 15 Nov 2026)
+
+| Plan | Price a month | Checked | Questions | Notes |
+| --- | --- | --- | --- | --- |
+| Free first check | $0 | once | 10 on Gemini, 5 of them on ChatGPT | every new account; costs us about $0.50 |
+| Standard (`start`) | $39.99 | weekly, Mondays | 25 | checks cost about $9 a month on two assistants |
+| Pro (`business`) | $89.99 | twice a week, Mondays and Thursdays | 50 | wrong facts included; about $35 a month |
+| Enterprise (`agency`) | by agreement | twice a week | 300, several projects | "contact us" |
+
+After the free check nothing more is checked until a plan is paid; we switch plans on by hand
+(`python -m app.admin`). The user proposed Pro "every 2 or 3 days"; it was built as twice a week with 50
+questions because every other day with 75 would cost $55–80 of the $89.99. **The user has not confirmed that
+correction yet.** Managed GEO stays on the pages, priced by agreement.
+
 ## The stages, in order
 
 Each stage ends with something the user can open and check. A stage is marked done only after the user says so.
@@ -140,7 +154,8 @@ The "what to do" half: the part that keeps a small business paying.
 
 | Decision | Why it blocks | Needed by |
 | --- | --- | --- |
-| Prices against cost | An answer costs about $0.049; the plans assume 1–2 cents. Biznes and Agentlik cost more to run than they charge, and Gemini roughly doubles it | Stage 2 |
+| Prices against cost | Decided 15 Nov (the table above); the Pro correction (twice a week, 50 questions) waits for the user's yes | — |
+| The Google credentials for Gemini | Whether GEO may use the IELTS project's Google Cloud project and credentials file, or gets its own | the first live check |
 | Permission to spend, and the keys on the server | No check can run on the server without them | Stage 2 |
 | The product's name and domain | The emails' sender, the site's address, the logo | Stage 5 |
 | Pilots or self-serve first | Whether to sell hand-made reports while the platform is built | any time |

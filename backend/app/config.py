@@ -50,10 +50,18 @@ class Settings:
     gemini_key: Optional[str] = field(default_factory=lambda: os.environ.get("GEMINI_API_KEY"))
     # The models that answer customers' questions, and the one that reads the answers
     chatgpt_model: str = field(default_factory=lambda: os.environ.get("CHATGPT_MODEL", "gpt-6.1-terra"))
-    gemini_model: str = field(default_factory=lambda: os.environ.get("GEMINI_MODEL", "gemini-4-hydrogen"))
+    gemini_model: str = field(default_factory=lambda: os.environ.get("GEMINI_MODEL", "gemini-3.5-flash"))
+    # Gemini through Vertex AI (Google Cloud): the project, its location ("global" for Gemini 3 models) and a
+    # credentials file named by GOOGLE_APPLICATION_CREDENTIALS, which Google's own library reads. With a
+    # project set, Vertex is used and GEMINI_API_KEY is not.
+    google_cloud_project: Optional[str] = field(default_factory=lambda: os.environ.get("GOOGLE_CLOUD_PROJECT"))
+    google_cloud_location: str = field(default_factory=lambda: os.environ.get("GOOGLE_CLOUD_LOCATION", "global"))
     read_model: str = field(default_factory=lambda: os.environ.get("READ_MODEL", "gpt-6.1-terra"))
     # The first run a new account gets: questions, each asked once to every assistant
     first_run_questions: int = field(default_factory=lambda: int(os.environ.get("FIRST_RUN_QUESTIONS", "10")))
+    # Of those, how many ChatGPT is asked when Gemini is asked too (the user's decision, 15 Nov 2026: Gemini
+    # answers all of them, ChatGPT about half, to keep a free first check cheap). Alone, ChatGPT is asked all.
+    first_run_chatgpt_questions: int = field(default_factory=lambda: int(os.environ.get("FIRST_RUN_CHATGPT_QUESTIONS", "5")))
     # A first run costs real money: how many one account may start in a day
     first_runs_a_day: int = field(default_factory=lambda: int(os.environ.get("FIRST_RUNS_A_DAY", "3")))
     # Development: a first run replays the latest saved one in the place of asking the assistants, so the
@@ -88,7 +96,7 @@ class Settings:
     @property
     def engines(self) -> List[str]:
         """The assistants that can be asked now: those with a key."""
-        return [name for name, key in (("chatgpt", self.openai_key), ("gemini", self.gemini_key)) if key]
+        return [name for name, key in (("chatgpt", self.openai_key), ("gemini", self.gemini_key or self.google_cloud_project)) if key]
 
 
 settings = Settings()

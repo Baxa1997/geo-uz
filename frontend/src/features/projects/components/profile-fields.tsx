@@ -41,7 +41,7 @@ export function ProfileFields({
         <FieldError>{errors.name && t(errors.name)}</FieldError>
       </Field>
 
-      <Field>
+      <Field data-invalid={Boolean(errors.description)}>
         <FieldLabel htmlFor={`${id}-description`}>{t("description")}</FieldLabel>
         <FieldDescription id={`${id}-description-hint`}>{t("descriptionHint")}</FieldDescription>
         <Textarea
@@ -52,7 +52,9 @@ export function ProfileFields({
           rows={3}
           className="min-h-24 text-sm"
           aria-describedby={`${id}-description-hint`}
+          aria-invalid={Boolean(errors.description)}
         />
+        <FieldError>{errors.description && t(errors.description)}</FieldError>
       </Field>
 
       <Field>
@@ -64,6 +66,7 @@ export function ProfileFields({
           value={site.category}
           onChange={(category) => onChange({ category })}
         />
+        <FieldError>{errors.category && t(errors.category)}</FieldError>
       </Field>
 
       <ChipInput
@@ -74,6 +77,11 @@ export function ProfileFields({
         max={MAX_SERVICES}
         onChange={(services) => onChange({ services })}
       />
+      {errors.services && (
+        <p role="alert" tabIndex={-1} className="-mt-3 text-sm text-destructive">
+          {t(errors.services)}
+        </p>
+      )}
 
       <Field>
         <FieldLabel htmlFor={`${id}-city`}>{t("city")}</FieldLabel>
@@ -84,6 +92,7 @@ export function ProfileFields({
           value={site.city}
           onChange={(city) => onChange({ city })}
         />
+        <FieldError>{errors.city && t(errors.city)}</FieldError>
       </Field>
 
       <ChipInput

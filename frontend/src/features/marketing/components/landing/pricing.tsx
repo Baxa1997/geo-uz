@@ -4,7 +4,8 @@ import { WrenchIcon as Wrench } from "@phosphor-icons/react/dist/ssr/Wrench";
 import { useTranslations } from "next-intl";
 import { buttonVariants } from "@/shared/components/ui/button";
 import { cn } from "@/shared/helpers/utils";
-import { MANAGED_PRICE_FROM, PRICING, PRICING_FEATURES, SECTION } from "../../constants";
+import { PRICING, PRICING_FEATURES, SECTION } from "../../constants";
+import { formatPrice } from "@/shared/constants";
 import { MonoLabel } from "./mono-label";
 import { PlanTable } from "./plan-table";
 import { Panel, Section, SectionIntro } from "./section";
@@ -33,7 +34,7 @@ export function Pricing() {
                   {/* The period sits under the price in every card, so long prices don't push it around */}
                   <p className="flex flex-col gap-0.5">
                     <span className="text-3xl font-bold tracking-[-0.03em] whitespace-nowrap">
-                      {t("price", { amount: price })}
+                      {price === null ? t("byAgreement") : t("price", { amount: formatPrice(price) })}
                     </span>
                     <span className="min-h-5 text-sm text-muted-foreground">{period && t("perMonth")}</span>
                   </p>
@@ -70,7 +71,7 @@ export function Pricing() {
           </span>
           <p className="flex-1 text-lg text-pretty">
             <span className="font-medium">{t("managedTitle")}</span>{" "}
-            <span className="text-muted-foreground">{t("managed", { amount: MANAGED_PRICE_FROM })}</span>
+            <span className="text-muted-foreground">{t("managed")}</span>
           </p>
           <SectionLink
             hash={SECTION.demo}

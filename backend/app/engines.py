@@ -1,17 +1,20 @@
 """The assistants a customer's question is asked to, each answering in one shape.
 
 ChatGPT goes through OpenAI's Responses API with web search (the pilot script's client). Gemini goes through
-Google's Interactions API with Google Search (checked against Google's documentation on 14 Nov 2026; not yet
-run with a key, so its cost and answers are unmeasured).
+Vertex AI's `generateContent` with Google Search when `GOOGLE_CLOUD_PROJECT` is set (the way the user's other
+project on the same server reaches it: a credentials file and a plain POST), else through Google's
+Interactions API with a key. Neither Gemini path has run yet, so its cost and answers are unmeasured.
 """
 
 from __future__ import annotations
 
 import json
 import sys
+import threading
 import time
 import urllib.error
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Dict, List, Optional
 
 from .config import BACKEND, settings
@@ -25,6 +28,9 @@ ENGINE_NAMES = {"chatgpt": "ChatGPT", "gemini": "Gemini"}
 GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/interactions"
 # One Google search the model runs, in US dollars (after the free monthly allowance)
 GEMINI_SEARCH_USD = 0.014
+# An answer grounded with Google Search on Vertex, in US dollars: Google's list price per grounded request.
+# Tokens come on top and aren't priced here, so the total is a floor until a real run is measured.
+VERTEX_GROUNDED_USD = 0.035
 
 
 class EngineError(RuntimeError):
@@ -55,7 +61,83 @@ def _chatgpt(question: str, country: str, city: str, timezone: str) -> Dict[str,
     }
 
 
+_vertex_token: Dict[str, Any] = {"token": None, "expiry": 0.0}
+_vertex_lock = threading.Lock()
+
+
+def _vertex_bearer() -> str:
+    """A Google Cloud access token from the credentials file, kept until five minutes before it expires."""
+    with _vertex_lock:
+        if _vertex_token["token"] and time.time() < _vertex_token["expiry"] - 300:
+            return _vertex_token["token"]
+        try:
+            from google.auth import default as credentials_default
+            from google.auth.transport.requests import Request as AuthRequest
+
+            credentials, _ = credentials_default(scopes=["https://www.googleapis.com/auth/cloud-platform"])
+            credentials.refresh(AuthRequest())
+        except Exception as error:  # no library, no file, or Google unreachable
+            raise EngineError(f"Vertex credentials: {error}") from error
+        _vertex_token["token"] = credentials.token
+        _vertex_token["expiry"] = credentials.expiry.timestamp() if credentials.expiry else time.time() + 3000
+        return credentials.token
+
+
+def _landing(url: str) -> str:
+    """Vertex cites pages through its own redirect links: the address the link leads to, or the link itself."""
+    if "grounding-api-redirect" not in url:
+        return url
+    try:
+        request = urllib.request.Request(url, method="HEAD", headers={"User-Agent": web.USER_AGENT})
+        with urllib.request.urlopen(request, timeout=8) as reply:
+            return reply.geturl()
+    except (urllib.error.URLError, TimeoutError, ValueError, OSError):
+        return url
+
+
+def _gemini_vertex(question: str) -> Dict[str, Any]:
+    location = settings.google_cloud_location
+    host = "aiplatform.googleapis.com" if location == "global" else f"{location}-aiplatform.googleapis.com"
+    url = f"https://{host}/v1/projects/{settings.google_cloud_project}/locations/{location}/publishers/google/models/{settings.gemini_model}:generateContent"
+    body = {"contents": [{"role": "user", "parts": [{"text": question}]}], "tools": [{"googleSearch": {}}]}
+    reply: Optional[Dict[str, Any]] = None
+    for attempt in range(3):
+        request = urllib.request.Request(url, data=json.dumps(body).encode("utf-8"), headers={"Authorization": f"Bearer {_vertex_bearer()}", "Content-Type": "application/json"})
+        try:
+            with urllib.request.urlopen(request, timeout=300) as response:
+                reply = json.loads(response.read().decode("utf-8"))
+            break
+        except urllib.error.HTTPError as error:
+            detail = error.read().decode("utf-8", "replace")[:300]
+            if attempt < 2 and (error.code == 429 or error.code >= 500):
+                time.sleep(4 * 2**attempt)
+                continue
+            raise EngineError(f"Vertex answered {error.code}: {detail}") from error
+        except (urllib.error.URLError, TimeoutError) as error:
+            if attempt < 2:
+                time.sleep(4 * 2**attempt)
+                continue
+            raise EngineError(f"Vertex could not be reached: {error}") from error
+    candidate = ((reply or {}).get("candidates") or [{}])[0]
+    text = "".join(part.get("text") or "" for part in (candidate.get("content") or {}).get("parts") or [])
+    grounding = candidate.get("groundingMetadata") or {}
+    pages = [chunk["web"] for chunk in grounding.get("groundingChunks") or [] if (chunk.get("web") or {}).get("uri")]
+    with ThreadPoolExecutor(max_workers=6) as pool:
+        landed = list(pool.map(lambda page: _landing(page["uri"]), pages))
+    citations: List[Dict[str, Optional[str]]] = []
+    for page, address in zip(pages, landed):
+        # A link that didn't resolve still names its site: Vertex puts the site's domain in the title
+        if "grounding-api-redirect" in address and "." in (page.get("title") or ""):
+            address = f"https://{page['title'].strip()}"
+        if all(address != seen["url"] for seen in citations):
+            citations.append({"url": address, "title": page.get("title")})
+    searches = list(grounding.get("webSearchQueries") or [])
+    return {"engine": "gemini", "model": settings.gemini_model, "text": text, "citations": citations, "searches": searches, "usd": VERTEX_GROUNDED_USD if searches or citations else 0.0}
+
+
 def _gemini(question: str) -> Dict[str, Any]:
+    if settings.google_cloud_project:
+        return _gemini_vertex(question)
     body = {"model": settings.gemini_model, "input": question, "tools": [{"type": "google_search"}]}
     request = urllib.request.Request(
         GEMINI_URL,
