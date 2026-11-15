@@ -68,13 +68,20 @@ const BROWSER_API = "/api/backend";
 
 /**
  * The parts of the API the backend already serves while the rest are still mocks, as a list in
- * NEXT_PUBLIC_LIVE ("auth,first-run"). The backend is built a slice at a time, and a page is wired when its slice
+ * NEXT_PUBLIC_LIVE ("auth,first-run,projects"). The backend is built a slice at a time, and a page is wired when its slice
  * exists. With "auth" live, login and the session are the backend's, and the mocks ask it who the visitor is.
  */
 const LIVE = new Set((process.env.NEXT_PUBLIC_LIVE ?? "").split(",").map((part) => part.trim()).filter(Boolean));
 export const AUTH_LIVE = !USE_MOCKS || LIVE.has("auth");
 /** A first run is the backend's (it needs the backend's login, so "auth" too). */
 export const FIRST_RUN_LIVE = !USE_MOCKS || (LIVE.has("first-run") && LIVE.has("auth"));
+
+/**
+ * Projects are the backend's: the project list, a project's questions and its report. Every call about a
+ * project then goes to the backend, the ones it doesn't serve yet too (they fail, and the page says so):
+ * a real project doesn't exist in the mocks.
+ */
+export const PROJECTS_LIVE = !USE_MOCKS || (LIVE.has("projects") && LIVE.has("auth"));
 
 export interface ApiClient {
   sendCode(body: SendCodeRequest): Promise<SendCodeResponse>;
@@ -386,6 +393,30 @@ const liveFirstRun: Partial<ApiClient> = {
   getFirstRunResult: httpApi.getFirstRunResult,
 };
 
+/** What stays on mocks while projects are live: the landing page's forms, the free check and the setup's suggestions. */
+const NOT_PROJECTS: (keyof ApiClient)[] = [
+  "sendCode",
+  "verifyCode",
+  "loginWithTelegram",
+  "getMe",
+  "logout",
+  "updateMe",
+  "startFirstRun",
+  "getFirstRuns",
+  "getFirstRun",
+  "getFirstRunResult",
+  "createSnapshot",
+  "getSnapshot",
+  "analyzeSite",
+  "suggestCompetitors",
+  "suggestPrompts",
+  "createDemoRequest",
+  "sendSupportMessage",
+];
+
+/** The calls of the projects slice: everything else. */
+const liveProjects = Object.fromEntries(Object.entries(httpApi).filter(([name]) => !NOT_PROJECTS.includes(name as keyof ApiClient))) as Partial<ApiClient>;
+
 export const api: ApiClient = USE_MOCKS
-  ? { ...mockBridge(), ...(AUTH_LIVE ? liveAuth : {}), ...(FIRST_RUN_LIVE ? liveFirstRun : {}) }
+  ? { ...mockBridge(), ...(AUTH_LIVE ? liveAuth : {}), ...(FIRST_RUN_LIVE ? liveFirstRun : {}), ...(PROJECTS_LIVE ? liveProjects : {}) }
   : httpApi;

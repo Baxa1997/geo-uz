@@ -184,6 +184,7 @@
     "accuracy": {
       "lead": "ChatGPT siz haqingizda qanday baho bilan gapiradi va aytgani toʻgʻrimi. Notoʻgʻri narx yoki manzil mijoz yoʻqotishga olib keladi.",
       "none": "Bu tekshiruvda notoʻgʻri fakt topilmadi.",
+      "notChecked": "Javoblar hali faktlaringiz bilan solishtirilmagan.",
       "says": "ChatGPT aytadi",
       "correct": "Toʻgʻrisi",
       "question": "Savol",
@@ -278,6 +279,7 @@
       "sitesNone": "Saytlarda sezilarli oʻzgarish yoʻq.",
       "factNew": "Yangi: “{claim}”",
       "factsNone": "Bu hafta yangi notoʻgʻri fakt topilmadi.",
+      "factsNotChecked": "Notoʻgʻri faktlar hali tekshirilmagan.",
       "doneNone": "Bu hafta bajarilgan deb belgilangan harakat yoʻq.",
       "doneNote": "Ularning taʼsiri keyingi tekshiruvlarda koʻrinadi."
     },
@@ -343,6 +345,7 @@
       "accuracy": "ChatGPT siz haqingizda gapirgandagi baho — 100 dan {score} ({tone}).",
       "accuracyFacts": "U siz haqingizda {count} ta notoʻgʻri fakt aytmoqda; har biri bu bahodan {penalty} ball ayiradi.",
       "accuracyClean": "Siz haqingizda notoʻgʻri fakt topilmadi.",
+      "accuracyNotChecked": "Notoʻgʻri faktlar hali tekshirilmagan.",
       "accuracyNotNamed": "ChatGPT sizni tilga olmayapti, shuning uchun bahoni hozircha oʻlchab boʻlmaydi."
     },
     "events": {
@@ -1455,6 +1458,7 @@
     "webSearchCell": "{total} ta javobdan {count} tasida ChatGPT internetdan qidirgan",
     "wrongFactsSome": "{count} ta notoʻgʻri fakt — koʻrish uchun bosing",
     "wrongFactsNone": "Notoʻgʻri fakt topilmadi",
+    "wrongFactsNotChecked": "Hali tekshirilmagan",
     "openQuestion": "Savol sahifasini ochish",
     "topic": "Mavzu",
     "cancel": "Bekor qilish",
@@ -2953,6 +2957,7 @@
       "found": "Topilgan"
     },
     "fix": "Tuzatish rejasi",
+    "notChecked": "Javoblar hali faktlaringiz bilan solishtirilmagan. Sozlamalar › Faktlar boʻlimiga biznesingiz haqidagi toʻgʻri maʼlumotlarni yozing: keyingi tekshiruvda javoblar ular bilan solishtiriladi.",
     "empty": "Notoʻgʻri maʼlumot topilmadi."
   },
   "Standing": {

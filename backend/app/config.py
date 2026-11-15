@@ -59,6 +59,14 @@ class Settings:
     # Development: a first run replays the latest saved one in the place of asking the assistants, so the
     # pages can be built and tried without a paid request. Never set on the server.
     first_run_replay: bool = field(default_factory=lambda: os.environ.get("FIRST_RUN_REPLAY", "false") == "true")
+    # A weekly check: how many times each tracked question is asked to each assistant. One until the prices
+    # are decided: every extra sample multiplies what a check costs.
+    run_samples: int = field(default_factory=lambda: int(os.environ.get("RUN_SAMPLES", "1")))
+    # Whether the server's timer starts the weekly checks (Mondays, 01:00 UTC): the report then says when the
+    # next one is. Set where the timer is installed, nowhere else.
+    weekly_runs: bool = field(default_factory=lambda: os.environ.get("WEEKLY_RUNS", "false") == "true")
+    # The browser that prints a report as a PDF (Chrome or Chromium). Left out, the usual places are tried.
+    chrome_path: Optional[str] = field(default_factory=lambda: os.environ.get("CHROME_PATH"))
     session_days: int = 30
     # Cookies go over HTTPS only on the server
     secure_cookies: bool = field(default_factory=lambda: os.environ.get("SECURE_COOKIES", "false") == "true")

@@ -184,6 +184,7 @@
     "accuracy": {
       "lead": "How ChatGPT speaks of you, and whether what it says is true. A wrong price or address costs customers.",
       "none": "No wrong facts were found in this check.",
+      "notChecked": "The answers haven’t been checked against your facts yet.",
       "says": "ChatGPT says",
       "correct": "Correct",
       "question": "Question",
@@ -278,6 +279,7 @@
       "sitesNone": "No notable change in the sites.",
       "factNew": "New: “{claim}”",
       "factsNone": "No new wrong facts this week.",
+      "factsNotChecked": "Wrong facts haven’t been checked yet.",
       "doneNone": "No action was marked done this week.",
       "doneNote": "Their effect shows in the checks after."
     },
@@ -343,6 +345,7 @@
       "accuracy": "ChatGPT’s tone about you is {score} out of 100 ({tone}).",
       "accuracyFacts": "It states {count, plural, one {# wrong fact} other {# wrong facts}} about you; each takes {penalty} points off this score.",
       "accuracyClean": "No wrong facts about you were found.",
+      "accuracyNotChecked": "Wrong facts haven’t been checked yet.",
       "accuracyNotNamed": "ChatGPT doesn’t name you, so there is no tone to measure yet."
     },
     "events": {
@@ -1455,6 +1458,7 @@
     "webSearchCell": "ChatGPT searched the web for {count} of {total} answers",
     "wrongFactsSome": "{count, plural, one {# wrong fact} other {# wrong facts}}: click to see",
     "wrongFactsNone": "No wrong facts found",
+    "wrongFactsNotChecked": "Not checked yet",
     "openQuestion": "Open the question’s page",
     "topic": "Topic",
     "cancel": "Cancel",
@@ -2953,6 +2957,7 @@
       "found": "Found"
     },
     "fix": "Plan the fixes",
+    "notChecked": "The answers haven’t been checked against your facts yet. Write the true facts about your business in Settings › Facts: the next check compares the answers with them.",
     "empty": "No wrong facts found."
   },
   "Standing": {

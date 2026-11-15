@@ -32,14 +32,19 @@ The code works for {minutes} minutes. If you did not ask for it, ignore this ema
 
 def send_code(to: str, code: str, minutes: int) -> None:
     """Raises `OSError` or `smtplib.SMTPException` when the email could not be handed over."""
-    sender = settings.smtp_from or settings.smtp_user or "no-reply@localhost"
     message = EmailMessage()
     # The code is in the subject too: it shows in the phone's notification without opening the email
     message["Subject"] = f"GEO: {code}"
-    message["From"] = formataddr(("GEO", sender))
-    message["To"] = to
     message.set_content(TEXT.format(code=code, minutes=minutes))
     message.add_alternative(HTML.format(code=code, minutes=minutes), subtype="html")
+    send(to, message)
+
+
+def send(to: str, message: EmailMessage) -> None:
+    """Hands a prepared message (subject and content) to the SMTP account."""
+    sender = settings.smtp_from or settings.smtp_user or "no-reply@localhost"
+    message["From"] = formataddr(("GEO", sender))
+    message["To"] = to
     host, port = settings.smtp_host or "", settings.smtp_port
     if port == 465:
         server: smtplib.SMTP = smtplib.SMTP_SSL(host, port, timeout=20, context=ssl.create_default_context())

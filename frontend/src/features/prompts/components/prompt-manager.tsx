@@ -135,6 +135,7 @@ export function PromptManager({
   filename,
   nextRunAt,
   wrongFacts,
+  factsChecked = true,
   wrongFactsHref,
   discoveryHref,
   city,
@@ -173,6 +174,8 @@ export function PromptManager({
   nextRunAt: string | null;
   /** What ChatGPT gets wrong about the client, each with the question it came up in. */
   wrongFacts: WrongFact[];
+  /** False when the answers weren't checked against the brand's facts: a dash then reads "not checked yet". */
+  factsChecked?: boolean;
   /** The page that lists them. */
   wrongFactsHref: string;
   /** Peec's Discovery: services, customers and languages make new suggestions. */
@@ -619,7 +622,7 @@ export function PromptManager({
         )}
       </Hint>
     ) : (
-      <Hint text={t("wrongFactsNone")} focusable={false} className="text-muted-foreground">
+      <Hint text={t(factsChecked ? "wrongFactsNone" : "wrongFactsNotChecked")} focusable={false} className="text-muted-foreground">
         —
       </Hint>
     );

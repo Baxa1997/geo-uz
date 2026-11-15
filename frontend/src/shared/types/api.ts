@@ -400,6 +400,12 @@ export interface Report {
   prompts: PromptResult[];
   topSources: Source[];
   wrongFacts: WrongFact[];
+  /**
+   * False when nobody checked this run's answers against the brand's facts (no facts given, a plan without
+   * the check, or a run from before it existed): an empty `wrongFacts` then means "not checked", never
+   * "none found". Absent means checked.
+   */
+  factsChecked?: boolean;
   /** Past runs, oldest first, ending with this one (a single point after the first run). */
   history: HistoryPoint[];
   /** The cited sites over the same runs, oldest first, ending with this one (whose counts are `topSources`). */
@@ -453,6 +459,11 @@ export interface CreateProjectRequest {
   /** Brand profile from onboarding; the new-project form leaves them out. */
   description?: string;
   services?: string[];
+  /**
+   * The account's first run, when the setup was filled in from it: its answers become the project's first
+   * check for the questions that were kept, so the dashboard opens on numbers and nothing is asked twice.
+   */
+  firstRunId?: string;
 }
 
 /** POST /projects: the new project and the run that checks its prompts for the first time. */

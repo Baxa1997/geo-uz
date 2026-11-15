@@ -330,5 +330,6 @@ def run(domain: str, category: Optional[str], city: Optional[str], progress: Pro
         "topSources": sources,
         "siteChecks": checks,
     }
-    raw = {"profile": who, "answers": [{key: answer[key] for key in ("question", "engine", "model", "text", "citations", "searches", "businesses")} for answer in answers]}
+    # `order`: every business an answer names, one name each, in order; a project keeps those it doesn't track too
+    raw = {"profile": who, "answers": [{key: answer[key] for key in ("question", "engine", "model", "text", "citations", "searches", "businesses", "order")} for answer in answers]}
     return snapshot, raw, round(cost, 4)

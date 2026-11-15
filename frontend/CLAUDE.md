@@ -17,7 +17,12 @@ sent to an email, and a new account's first run. The login is wired (14 Nov); no
 **A slice at a time.** `NEXT_PUBLIC_LIVE` (in `.env.local`) lists the parts of the API the backend serves while
 the rest are mocks; `shared/api/client.ts` builds `api` from the mocks with those calls replaced. So far "auth"
 (`sendCode`, `verifyCode`, `getMe`, `logout`, `updateMe`) and "first-run" (`startFirstRun`, `getFirstRuns`,
-`getFirstRun`, `getFirstRunResult`; the page is `/onboarding/first-run`, see `features/projects`). With it on, the session cookie is the backend's; the
+`getFirstRun`, `getFirstRunResult`; the page is `/onboarding/first-run`, see `features/projects`), and since
+15 Nov "projects": every call about a project (all but login, the first run, the free check, the setup's
+suggestions and the landing page's forms). The backend serves the reads (`backend/README.md`); the writes it
+doesn't have yet fail on a real project. `Report.factsChecked` false means nobody checked the answers against
+the brand's facts: an empty list of wrong facts then reads "not checked yet", never "none found". The setup
+sends `firstRunId` with `POST /projects`. With it on, the session cookie is the backend's; the
 mocks ask the backend once who a token belongs to (`mocks/api.ts`, `backendUser`) and let every such account
 see the sample project. Empty, the login is a mock again (demo@geo.uz, any six digits). What the backend's
 slices change in the contract below:

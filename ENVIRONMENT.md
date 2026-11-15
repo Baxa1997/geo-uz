@@ -1,0 +1,60 @@
+# Variables
+
+Every setting the project reads from its environment, where each is set, and what it does. **No values of
+secrets are written here or anywhere in this repository** (it is public): secrets live in files that git
+ignores and on the server.
+
+Rule: when a change adds, renames or removes a variable, this file is updated in the same piece of work, and
+the user is told in the reply which variable, where to set it (this computer, Vercel, the server) and to what.
+
+## Where they are set
+
+| Place | File or screen | Read by |
+| --- | --- | --- |
+| This computer, frontend | `frontend/.env.local` (ignored by git; `frontend/.env.example` is its pattern) | `npm run dev` |
+| This computer, backend | `backend/.env`, and `backend/pilot/.env` for the OpenAI key (both ignored) | `uvicorn`, the pilot script |
+| Vercel (the frontend) | Project → Settings → Environment Variables; a change needs a redeploy | the deployed site |
+| The server (the backend) | `/opt/geo-backend/.env`, readable by the service's user only | the `geo-backend` service; restart it after a change |
+| Hand-over | `backend/.env.server` (ignored): values the user writes for the server, copied there over SSH | nobody; it is a way to pass secrets without the chat |
+
+## Frontend
+
+All three are public (built into the site), none is a secret.
+
+| Variable | What it does | This computer | Vercel |
+| --- | --- | --- | --- |
+| `NEXT_PUBLIC_API_URL` | The backend's address. The browser reaches it through the site itself (`/api/backend`) | `http://localhost:8000` | `https://geo-api.shopsready.com` |
+| `NEXT_PUBLIC_USE_MOCKS` | `true`: pages the backend doesn't serve yet use sample data. `false`: everything calls the backend | `true` | `true` |
+| `NEXT_PUBLIC_LIVE` | The parts of the API that are the backend's while the rest are sample data: `auth`, `first-run`, `projects` (since 15 Nov: the project list, a project's questions and its report) | `auth,first-run,projects` | `auth,first-run` (add `,projects` once the server has the new backend) |
+
+## Backend
+
+| Variable | Secret | What it does | Default | Set on the server (15 Nov 2026) |
+| --- | --- | --- | --- | --- |
+| `DATABASE_URL` | yes | The database. Supabase's Postgres as `postgresql+psycopg://…` | a file, `backend/local.db` | yes |
+| `SUPABASE_URL` | no | The Supabase project. With the key below and no `SMTP_HOST`, Supabase sends and checks login codes | none | yes (unused while `SMTP_HOST` is set) |
+| `SUPABASE_ANON_KEY` | no (public key) | The Supabase project's public key | none | yes (unused while `SMTP_HOST` is set) |
+| `SMTP_HOST` | no | The mail server for the login email. Set: the backend makes the code and sends it itself | none: the code is printed in the log | yes |
+| `SMTP_PORT` | no | 465 for SSL; another port uses STARTTLS when offered | `465` | yes |
+| `SMTP_USER` | no | The mail account | none | yes |
+| `SMTP_PASSWORD` | yes | The mail account's password (Gmail: an app password) | none | yes |
+| `SMTP_FROM` | no | The sender's address when it differs from `SMTP_USER` | `SMTP_USER` | no |
+| `OPENAI_API_KEY` | yes | Asks ChatGPT and reads the answers. Without it ChatGPT is not asked | none | **no** |
+| `GEMINI_API_KEY` | yes | Asks Gemini. Without it Gemini is not asked | none | **no** |
+| `CHATGPT_MODEL` | no | The model that answers the questions | `gpt-6.1-terra` | no |
+| `GEMINI_MODEL` | no | Gemini's model | `gemini-4-hydrogen` | no |
+| `READ_MODEL` | no | The model that reads who an answer names | `gpt-6.1-terra` | no |
+| `FIRST_RUN_QUESTIONS` | no | Questions in a new account's first run | `10` | no |
+| `FIRST_RUNS_A_DAY` | no | First runs one account may start in a day (each costs money) | `3` | no |
+| `FIRST_RUN_REPLAY` | no | Development: a first run replays a saved one and asks nobody. Never on the server | `false` | no (on this computer: `true`) |
+| `RUN_SAMPLES` | no | A weekly check: how many times each tracked question is asked to each assistant. Every extra one multiplies the check's cost; waits for the prices decision | `1` | no (the default) |
+| `WEEKLY_RUNS` | no | `true` where the server's timer starts the weekly checks: the report then says when the next check is | `false` | no: set it when the timer is installed |
+| `CHROME_PATH` | no | The browser that prints a report as a PDF (Chrome or Chromium). Left out, the usual places are tried | found by itself | no: no browser is installed on the server yet |
+| `FRONTEND_ORIGIN` | no | The site's public address. Since 15 Nov it is the address in a report's link and email, and the page the server prints as a PDF, so it must open without Vercel's own login. Also the site allowed to call the backend directly (CORS) | `http://localhost:3000` | default: **to be set to the site's public address before reports are sent** |
+| `SECURE_COOKIES` | no | `true`: the login cookie only over HTTPS | `false` | `true` |
+
+## Not variables, but needed to run it
+
+- The server's address and login, the DNS record `geo-api.shopsready.com`, the Supabase project: see `CLAUDE.md`,
+  "Where the project stands", and `backend/README.md`, "On the server".
+- Passwords that passed through a chat must be replaced: see `CLAUDE.md`, "Waiting on the user".

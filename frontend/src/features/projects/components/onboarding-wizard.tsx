@@ -174,7 +174,7 @@ export function OnboardingWizard({
     if (step === "competitors") return void nextFromCompetitors();
     if (step === "topics") return nextFromTopics();
     if (!site || !choice || !suggested || failed(validateQuestions(suggested.questions, suggested.topics))) return;
-    create.mutate(onboardingRequest(site, choice, suggested.topics, suggested.questions));
+    create.mutate({ ...onboardingRequest(site, choice, suggested.topics, suggested.questions), ...(firstRun ? { firstRunId: firstRun.id } : {}) });
   }
 
   const pending = analyze.isPending

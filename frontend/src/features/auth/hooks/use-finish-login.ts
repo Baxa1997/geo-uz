@@ -18,7 +18,11 @@ export function useFinishLogin(target: LoginTarget) {
     const projects = await api.getProjects();
     queryClient.setQueryData(queryKeys.projects(), projects);
     // With the backend's first run live, an account that has never run one starts there: its website first
-    if (FIRST_RUN_LIVE && !target.next && (await api.getFirstRuns()).length === 0) return router.replace("/onboarding/first-run");
+    // and one that ran it but never finished the setup goes on from that run's statistics
+    if (FIRST_RUN_LIVE && !target.next && projects.length === 0) {
+      const [latest] = await api.getFirstRuns();
+      return router.replace(latest ? { pathname: "/onboarding/first-run", query: { run: latest.id } } : "/onboarding/first-run");
+    }
     router.replace(afterLoginPath(projects.length > 0, target));
   };
 }

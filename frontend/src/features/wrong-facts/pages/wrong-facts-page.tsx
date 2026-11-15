@@ -71,6 +71,7 @@ export default async function WrongFactsPage({ params, searchParams }: Props) {
       <div data-tour="table">
         <WrongFactsTable
           facts={facts}
+          checked={report.factsChecked !== false}
           prompts={report.prompts}
           answersHref={(promptId) => withFilters(`${base}/answers`, filters, { prompt: promptId })}
           actionsHref={`${base}/actions`}

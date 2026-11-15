@@ -3,6 +3,9 @@
 Start here in a new session: this file says what the project is, how the work is organized, what is done and
 what comes next. "Where the project stands" below is the place to pick the work up from. The details live in three other places, and each should be read before the work it covers:
 
+- `PLAN.md`: the plan to the MVP: what the MVP is, the five stages in order, every value the product shows and
+  whether it is real yet, the decisions the user owes. Read it before choosing what to build next.
+- `ENVIRONMENT.md`: every variable, what it does and where it is set (this computer, Vercel, the server).
 - `frontend/CLAUDE.md`: folder structure, the API contract, how the scores and charts work, and the rules
   that keep the landing page fast. Read it before changing frontend code.
 - `backend/PLAN.md`: what the backend has to do, written from the frontend pages, with a change log of what
@@ -161,11 +164,56 @@ that is committed.
 3. **Three languages, always.** Every piece of interface text goes into `uz.json`, `ru.json` and `en.json`.
 4. **Check before saying done.** Open the change in a real browser, on desktop and phone width, and run the
    type check and the linter. Judge speed on a production build, not on `npm run dev`.
+6. **Variables are reported (the user's rule, 15 Nov).** A change that adds, renames or removes a variable
+   updates `ENVIRONMENT.md` in the same piece of work, and the reply names the variable, where the user has to
+   set it (this computer, Vercel, the server) and to what. A secret's value is never written in the repository
+   or asked for in chat: it goes into `backend/.env.server`, which git ignores.
+7. **Finished means the user said so (the user's rule, 15 Nov).** When a feature is built and checked, say so
+   and ask the user to confirm it. Only after they do is it written as finished in "Done" and in `PLAN.md`;
+   until then it is recorded as built and waiting for their look. Every feature that is confirmed is
+   documented: what it does, where it lives, how to run it, what it needs.
 5. **Commit only when the user asks.** Say plainly which branch the work is on. "commit, push" has meant each
    time: a branch for the work, a commit, a merge into `main`, and a push of both. Before any commit, check
    that no key and no client's name is in it.
 
 ## Done (as of 15 November 2026)
+
+- **Built, waiting for the user's look (not yet "done"): fixes and wrong facts, stage 4 of `PLAN.md` (15 Nov),
+  on the branch `real-projects`, not committed.** The user said "yes, start stage 4" (whether "yes" also
+  confirmed stages 1–3 was asked and not answered: they stay "waiting"). `backend/app/fixes.py`: the most
+  cited pages are read, the actions are made by rule (listings, pages to write, site fixes, wrong facts) and
+  keep the client's status from check to check, a done action gets its proof after the next check, and
+  Harakatlar works on a real project. Wrong facts and the briefs of pages use a model inside a live check:
+  written, never run. `Report.factsChecked` tells the pages when wrong facts were not checked. No paid request.
+  Tried by script and in a browser (Harakatlar, Notoʻgʻri faktlar) in Uzbek. No new variable.
+
+- **Built, waiting for the user's look (not yet "done"): the report's delivery, stage 3 of `PLAN.md` (15 Nov),
+  on the branch `real-projects`, not committed.** The user said "start stage 3". A real project's report opens
+  by its link without login; the backend prints that page as a PDF with a headless Chrome and, after a weekly
+  check, emails the summary, the link and the PDF to the address set in Hisobotlar (`backend/app/delivery.py`).
+  On a real project the report and the pages say "not checked yet" where they said no wrong fact was found.
+  Tried on this computer: the link, a 10-page PDF in Russian, the email into a local test mail server. No
+  paid request, no real email. New variable `CHROME_PATH`; `FRONTEND_ORIGIN` must become the site's public
+  address. Not done: Chrome on the server, an email to a real inbox, the report in Telegram.
+
+- **Built, waiting for the user's look (not yet "done"): the pages' buttons and the weekly check, stage 2 of
+  `PLAN.md` (15 Nov), on the branch `real-projects`, not committed.** The user said "do next stage". On a real
+  project the buttons now reach the backend: questions (add, edit, archive, topics, tags, fact-checking),
+  competitors (add from the untracked brands, edit, stop tracking, hide), the brand profile, facts, where the
+  report goes, a plan request. `backend/app/weekly.py` is the weekly check; it has never asked an assistant
+  and was tried as a replay, which gave the charts their second point. No paid request was made. New
+  variables: `RUN_SAMPLES`, `WEEKLY_RUNS` (`ENVIRONMENT.md`). Not built: suggested questions, connecting
+  Telegram, inviting members, the timer on the server. Tried by script and, for adding a question, in a browser.
+
+- **Built, waiting for the user's look (not yet "done"): real projects, stage 1 of `PLAN.md` (15 Nov), on the
+  branch `real-projects`, not committed.** The user asked "so what is next" after the plan; stage 1 needs
+  nothing from them and no paid request. The setup's last button saves a real project from the first run
+  (`POST /projects` with `firstRunId`), and the project list, Overview, Savollar, Javoblar, Raqobatchilar,
+  Manbalar, Hisobotlar and Sozlamalar read it from the backend (`backend/app/projects.py`; the slice
+  `projects` in `NEXT_PUBLIC_LIVE`). Harakatlar and Notoʻgʻri faktlar say "not checked yet" on a real project.
+  Read only: the pages' buttons fail until stage 2. Tried in a browser in Uzbek on desktop and phone width, on
+  the replayed run. Not tried: Russian and English, the buttons, a second account. Not deployed. On the same
+  branch, the user's two rules (6 and 7 below), `ENVIRONMENT.md` and `PLAN.md`.
 
 - **The backend is on the Contabo server (15 Nov), reachable only from the server itself.** The user gave the
   server and chose, when asked: deploy now beside the other projects, log in by an SSH key. The server already
