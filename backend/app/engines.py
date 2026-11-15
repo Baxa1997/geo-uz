@@ -9,7 +9,8 @@ The models that read and write for us (who an answer names, a website's profile 
 a brief) are Gemini's on Vertex too when a Google Cloud project is set (`READ_MODEL`, `WRITE_MODEL`). Measured
 on 15 Nov 2026 on a saved run's ten answers: Gemini 4 Hydrogen, Gemini 4 Argon and Gemini 3.6 Flash each read
 them as OpenAI's model had, but the two Gemini 4 models now and then held a call for 70 to 130 seconds. So
-such a call has a time limit, after which Gemini 3.6 Flash does it, and OpenAI's model after that.
+such a call has a time limit, after which a Flash model does it, and OpenAI's model after that. Since the
+same day the Flash model is Gemini 3.8 Flash (the user's choice), for asking, reading and standing in.
 """
 
 from __future__ import annotations
@@ -39,15 +40,16 @@ GEMINI_SEARCH_USD = 0.014
 VERTEX_GROUNDED_USD = 0.035
 # US dollars per million tokens (input, output) of the Gemini models that read and write for us. Thinking
 # tokens are billed as output. Hydrogen's is the launch price (12 Nov 2026) as price lists give it; Argon's
-# doubles on 1 Dec 2026 and 3.6 Flash's on 1 Jan 2027. A model that isn't here is counted as costing
+# doubles on 1 Dec 2026 and the Flash models' on 1 Jan 2027. A model that isn't here is counted as costing
 # nothing: add its line.
 GEMINI_PRICES: Dict[str, tuple] = {
     "gemini-4-hydrogen": (1.50, 7.50),
     "gemini-4-argon": (2.0, 10.0),
     "gemini-3.6-flash": (0.75, 3.75),
+    "gemini-3.8-flash": (0.75, 3.75),
 }
 # Who does a reading or writing call when its model fails or is too slow: this Gemini model, then OpenAI's
-STANDIN_MODEL = "gemini-3.6-flash"
+STANDIN_MODEL = "gemini-3.8-flash"
 FALLBACK_MODEL = "gpt-6.1-terra"
 # Seconds a reading and a writing call may take before the stand-in does it (a usual one: 4-14 and 20-30)
 # Seconds an answer with Google Search may take before it is asked again: a usual one takes 12 to 30, and
@@ -150,7 +152,14 @@ def _text(reply: Dict[str, Any]) -> str:
 
 
 def _gemini_vertex(question: str) -> Dict[str, Any]:
-    reply = _vertex(settings.gemini_model, {"contents": [{"role": "user", "parts": [{"text": question}]}], "tools": [{"googleSearch": {}}]}, ASK_SECONDS)
+    body = {"contents": [{"role": "user", "parts": [{"text": question}]}], "tools": [{"googleSearch": {}}]}
+    reply = _vertex(settings.gemini_model, body, ASK_SECONDS)
+    # Google Search is on, but Gemini decides itself whether to search, and now and then answers from memory
+    # (one answer in five on gemini-3.8-flash, 15 Nov 2026). Such an answer has no sources: asked once more.
+    if not ((reply.get("candidates") or [{}])[0].get("groundingMetadata") or {}).get("groundingChunks"):
+        again = _vertex(settings.gemini_model, body, ASK_SECONDS)
+        if ((again.get("candidates") or [{}])[0].get("groundingMetadata") or {}).get("groundingChunks"):
+            reply = again
     candidate = (reply.get("candidates") or [{}])[0]
     text = _text(reply)
     grounding = candidate.get("groundingMetadata") or {}

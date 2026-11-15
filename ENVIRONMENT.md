@@ -45,9 +45,9 @@ All three are public (built into the site), none is a secret.
 | `GOOGLE_CLOUD_LOCATION` | no | The Vertex location; Gemini 3 models answer only at `global` | `global` | no (the default) |
 | `GOOGLE_APPLICATION_CREDENTIALS` | yes (the file it names) | The path of the Google credentials file Vertex is reached with. Read by Google's own library | none | yes (a copy of the IELTS project's file, for now) |
 | `CHATGPT_MODEL` | no | The model that answers the questions | `gpt-6.1-terra` | no |
-| `GEMINI_MODEL` | no | The Gemini model that answers the questions | `gemini-3.5-flash` (since 15 Nov: the model the user's other project already uses on Vertex) | no |
-| `READ_MODEL` | no | The model that reads who an answer names, gathers a business's spellings and checks facts. A name that starts with `gemini` goes to Vertex | `gemini-3.6-flash` when `GOOGLE_CLOUD_PROJECT` is set (since 15 Nov), else `gpt-6.1-terra` | no (the default) |
-| `WRITE_MODEL` | no | New on 15 Nov. The model that writes a website's profile and questions, the first check's conclusion and the briefs of pages. If it fails or takes over a minute, `gemini-3.6-flash` does the call, then OpenAI's model | `gemini-4-hydrogen` when `GOOGLE_CLOUD_PROJECT` is set, else `gpt-6.1-terra` | no (the default) |
+| `GEMINI_MODEL` | no | The Gemini model that answers the questions | `gemini-3.8-flash` (the user's choice, 15 Nov). Asked with Google Search on; an answer that came without a search is asked once more | no |
+| `READ_MODEL` | no | The model that reads who an answer names, gathers a business's spellings and checks facts. A name that starts with `gemini` goes to Vertex | `gemini-3.8-flash` when `GOOGLE_CLOUD_PROJECT` is set (since 15 Nov), else `gpt-6.1-terra` | no (the default) |
+| `WRITE_MODEL` | no | New on 15 Nov. The model that writes a website's profile and questions, the first check's conclusion and the briefs of pages. If it fails or takes over a minute, `gemini-3.8-flash` does the call, then OpenAI's model | `gemini-4-hydrogen` when `GOOGLE_CLOUD_PROJECT` is set, else `gpt-6.1-terra` | no (the default) |
 | `FIRST_RUN_QUESTIONS` | no | Questions in a new account's first run | `10` | no |
 | `FIRST_RUN_CHATGPT_QUESTIONS` | no | Of a first check's questions, how many ChatGPT is asked when Gemini is asked too (Gemini gets all) | `5` | no (the default) |
 | `FIRST_RUNS_A_DAY` | no | First runs one account may start in a day (each costs money) | `3` | no |

@@ -189,7 +189,9 @@ that is committed.
   `gemini-4-hydrogen` (`WRITE_MODEL`, new), each with a time limit and a stand-in (`backend/README.md`). Gemini
   answered customers' questions from GEO for the first time: a first check on Gemini alone took 153 seconds
   and cost $0.53. The result page shows the conclusion ("Xulosa") under the numbers. Not tried: the
-  conclusion on the page with a live run from the site, and ChatGPT with Gemini in one check.
+  conclusion on the page with a live run from the site, and ChatGPT with Gemini in one check. Then ("use the
+  flash 3.8 latest"): `gemini-3.8-flash` answers the questions, reads the answers and stands in; an answer
+  that came without a Google search is asked once more. Merged, pushed and deployed (`gemini-38-flash`).
 
 - **Built, waiting for the user's look: the setup fits any business (15 Nov), on the branch
   `setup-any-business`; merged and pushed the same day ("push and deploy everything").** The user tried a new account with a chatbot company and found the
