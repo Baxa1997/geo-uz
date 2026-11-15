@@ -81,7 +81,7 @@ export function useAreaFindings(report: Report): Record<ConditionArea, AreaFindi
       ? [t("accuracyNotNamed")]
       : [
           t("accuracy", { score: Math.round(you.sentiment), tone: tones(toneOf(you.sentiment)).toLowerCase() }),
-          facts.wrongFacts > 0 ? t("accuracyFacts", { count: facts.wrongFacts, penalty: WRONG_FACT_PENALTY }) : t("accuracyClean"),
+          facts.wrongFacts > 0 ? t("accuracyFacts", { count: facts.wrongFacts, penalty: WRONG_FACT_PENALTY }) : t(report.factsChecked === false ? "accuracyNotChecked" : "accuracyClean"),
         ];
 
   const sentence = (parts: string[]) => parts.filter(Boolean).join(" ");

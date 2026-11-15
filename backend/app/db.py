@@ -1,7 +1,8 @@
 """The tables, for SQLite on this computer and Supabase's Postgres on the server (the same models).
 
-Only what the first slice needs: people, their sessions and login codes, and first runs. The rest of
-`backend/PLAN.md`'s data model (projects, prompts, weekly runs) comes with the pages that need it.
+People, their sessions and login codes, first runs, and projects with their brands, questions, runs and
+answers. The rest of `backend/PLAN.md`'s data model (suggestions, actions, wrong facts) comes with the pages
+that need it.
 """
 
 from __future__ import annotations
@@ -10,7 +11,7 @@ import datetime
 import uuid
 from typing import Any, Optional
 
-from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, Text, create_engine, text
+from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Integer, String, Text, create_engine, inspect, text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
 
 from .config import settings
@@ -77,6 +78,148 @@ class FirstRun(Base):
     created_at: Mapped[datetime.datetime] = mapped_column(DateTime, default=now, index=True)
     finished_at: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime, nullable=True)
 
+class Project(Base):
+    __tablename__ = "projects"
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=new_id)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id"), index=True)
+    category: Mapped[str] = mapped_column(String(200), default="")
+    city: Mapped[str] = mapped_column(String(200), default="")
+    description: Mapped[str] = mapped_column(Text, default="")
+    services: Mapped[Any] = mapped_column(JSON, default=list)
+    customers: Mapped[Any] = mapped_column(JSON, default=list)
+    identity: Mapped[Any] = mapped_column(JSON, default=list)
+    plan: Mapped[str] = mapped_column(String(20), default="start")
+    # The four checks of the client's website, as the first run found them
+    site_checks: Mapped[Optional[Any]] = mapped_column(JSON, nullable=True)
+    first_run_id: Mapped[Optional[str]] = mapped_column(String(32), nullable=True)
+    # Topics and tags that no question carries yet, the untracked brands the client hid, the brand's facts,
+    # and where the report goes: small lists the pages edit as a whole
+    topics: Mapped[Optional[Any]] = mapped_column(JSON, nullable=True)
+    tags: Mapped[Optional[Any]] = mapped_column(JSON, nullable=True)
+    dismissed: Mapped[Optional[Any]] = mapped_column(JSON, nullable=True)
+    facts: Mapped[Optional[Any]] = mapped_column(JSON, nullable=True)
+    report_settings: Mapped[Optional[Any]] = mapped_column(JSON, nullable=True)
+    created_at: Mapped[datetime.datetime] = mapped_column(DateTime, default=now, index=True)
+
+
+class Brand(Base):
+    """The client's own brand (position 0) and the competitors it tracks, in a fixed order: the order is a brand's chart color."""
+
+    __tablename__ = "brands"
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=new_id)
+    project_id: Mapped[str] = mapped_column(ForeignKey("projects.id"), index=True)
+    own: Mapped[bool] = mapped_column(Boolean, default=False)
+    name: Mapped[str] = mapped_column(String(200))
+    aliases: Mapped[Any] = mapped_column(JSON, default=list)
+    domain: Mapped[str] = mapped_column(String(255), default="")
+    position: Mapped[int] = mapped_column(Integer, default=0)
+
+
+class Prompt(Base):
+    __tablename__ = "prompts"
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=new_id)
+    project_id: Mapped[str] = mapped_column(ForeignKey("projects.id"), index=True)
+    text: Mapped[str] = mapped_column(Text)
+    language: Mapped[str] = mapped_column(String(2))
+    topic: Mapped[str] = mapped_column(String(200), default="")
+    location: Mapped[str] = mapped_column(String(200), default="")
+    fact_check: Mapped[bool] = mapped_column(Boolean, default=True)
+    tags: Mapped[Any] = mapped_column(JSON, default=list)
+    position: Mapped[int] = mapped_column(Integer, default=0)
+    created_at: Mapped[datetime.datetime] = mapped_column(DateTime, default=now)
+    archived_at: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime, nullable=True)
+
+
+class Run(Base):
+    """One check of a project: every tracked question asked. `first` is the account's first run, saved as a project."""
+
+    __tablename__ = "runs"
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=new_id)
+    project_id: Mapped[str] = mapped_column(ForeignKey("projects.id"), index=True)
+    kind: Mapped[str] = mapped_column(String(20), default="weekly")
+    # queued, running, analyzing, done, failed
+    status: Mapped[str] = mapped_column(String(20), default="queued")
+    answered: Mapped[int] = mapped_column(Integer, default=0)
+    total: Mapped[int] = mapped_column(Integer, default=0)
+    # The `ReportMethod` the frontend shows: assistants, models, web search, samples
+    method: Mapped[Any] = mapped_column(JSON, default=dict)
+    # Cited site -> {"type", "brandListed"}, as found when the run read the cited pages
+    sources: Mapped[Any] = mapped_column(JSON, default=dict)
+    # What it cost us, in US dollars, and why it failed
+    cost_usd: Mapped[Optional[float]] = mapped_column(nullable=True)
+    error: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    # Whether this run's answers were checked against the client's facts: an empty list of wrong facts
+    # means "none found" only then
+    facts_checked: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True)
+    collected_at: Mapped[datetime.datetime] = mapped_column(DateTime, default=now, index=True)
+
+
+class Action(Base):
+    """A recommended fix. `key` says what it is about ("listing:2gis.uz") and never changes, so a later check
+    finds the same row and the client's status on it is kept."""
+
+    __tablename__ = "actions"
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=new_id)
+    project_id: Mapped[str] = mapped_column(ForeignKey("projects.id"), index=True)
+    key: Mapped[str] = mapped_column(String(400), index=True)
+    kind: Mapped[str] = mapped_column(String(20))
+    # The kind's own fields, as the frontend's `Action` names them
+    details: Mapped[Any] = mapped_column(JSON, default=dict)
+    impact: Mapped[str] = mapped_column(String(10), default="medium")
+    prompt_ids: Mapped[Any] = mapped_column(JSON, default=list)
+    # new, in_progress, done, declined
+    status: Mapped[str] = mapped_column(String(20), default="new")
+    steps_done: Mapped[Any] = mapped_column(JSON, default=list)
+    created_at: Mapped[datetime.datetime] = mapped_column(DateTime, default=now)
+    done_at: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime, nullable=True)
+
+
+class WrongFact(Base):
+    """Something an assistant states about the client that contradicts one of the client's own facts."""
+
+    __tablename__ = "wrong_facts"
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=new_id)
+    project_id: Mapped[str] = mapped_column(ForeignKey("projects.id"), index=True)
+    claim: Mapped[str] = mapped_column(Text)
+    correct: Mapped[str] = mapped_column(Text)
+    prompt_id: Mapped[str] = mapped_column(String(32))
+    first_run_id: Mapped[str] = mapped_column(String(32))
+    last_run_id: Mapped[str] = mapped_column(String(32))
+
+
+class Answer(Base):
+    __tablename__ = "answers"
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=new_id)
+    run_id: Mapped[str] = mapped_column(ForeignKey("runs.id"), index=True)
+    model: Mapped[Optional[str]] = mapped_column(String(80), nullable=True)
+    prompt_id: Mapped[str] = mapped_column(ForeignKey("prompts.id"), index=True)
+    sample: Mapped[int] = mapped_column(Integer, default=1)
+    engine: Mapped[str] = mapped_column(String(20), default="chatgpt")
+    text: Mapped[str] = mapped_column(Text)
+    searches: Mapped[Any] = mapped_column(JSON, default=list)
+
+
+class Mention(Base):
+    """A business an answer names. `brand_id` is empty for one the project doesn't track: the "new competitor" list."""
+
+    __tablename__ = "mentions"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    answer_id: Mapped[str] = mapped_column(ForeignKey("answers.id"), index=True)
+    brand_id: Mapped[Optional[str]] = mapped_column(String(32), nullable=True)
+    name: Mapped[str] = mapped_column(String(300))
+    position: Mapped[int] = mapped_column(Integer)
+    tone: Mapped[str] = mapped_column(String(10), default="neutral")
+    recommended: Mapped[bool] = mapped_column(Boolean, default=False)
+
+
+class Citation(Base):
+    __tablename__ = "citations"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    answer_id: Mapped[str] = mapped_column(ForeignKey("answers.id"), index=True)
+    url: Mapped[str] = mapped_column(Text)
+    domain: Mapped[str] = mapped_column(String(255))
+    title: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
 
 engine = create_engine(settings.database_url, pool_pre_ping=True, connect_args={"check_same_thread": False} if settings.database_url.startswith("sqlite") else {})
 SessionLocal = sessionmaker(engine, expire_on_commit=False)
@@ -84,6 +227,15 @@ SessionLocal = sessionmaker(engine, expire_on_commit=False)
 
 def create_tables() -> None:
     Base.metadata.create_all(engine)
+    # A column added to a table that exists already: `create_all` makes new tables only. Every such column
+    # is nullable, so adding it is safe on a database with rows.
+    existing = inspect(engine)
+    with engine.begin() as db:
+        for table in Base.metadata.sorted_tables:
+            have = {column["name"] for column in existing.get_columns(table.name)}
+            for column in table.columns:
+                if column.name not in have:
+                    db.execute(text(f'alter table "{table.name}" add column "{column.name}" {column.type.compile(engine.dialect)}'))
     if engine.dialect.name == "postgresql":
         # Supabase serves every table of the public schema through its own API to anyone holding the
         # project's public key, unless the table is locked. Only this service may read ours (it connects

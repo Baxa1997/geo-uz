@@ -73,7 +73,7 @@ export function Accuracy({ report }: { report: Report }) {
         {report.wrongFacts.length === 0 ? (
           <p className="flex items-start gap-2 text-sm">
             <CircleCheck aria-hidden className="mt-0.5 size-4 shrink-0 text-positive" />
-            {t("none")}
+            {t(report.factsChecked === false ? "notChecked" : "none")}
           </p>
         ) : (
           <ul className="flex flex-col gap-3">

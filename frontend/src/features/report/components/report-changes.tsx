@@ -106,7 +106,7 @@ export function ReportChanges({ report, actions }: { report: Report; actions: Ac
   const groups = [
     { key: "brands", items: brands, empty: "" },
     { key: "sources", items: sites, empty: t("sitesNone") },
-    { key: "facts", items: facts, empty: t("factsNone") },
+    { key: "facts", items: facts, empty: t(report.factsChecked === false ? "factsNotChecked" : "factsNone") },
     { key: "done", items: done, empty: t("doneNone"), note: done.length > 0 ? t("doneNote") : undefined },
   ] as const;
 

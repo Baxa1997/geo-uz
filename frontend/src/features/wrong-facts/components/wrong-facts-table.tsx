@@ -17,8 +17,11 @@ export function WrongFactsTable({
   prompts,
   answersHref,
   actionsHref,
+  checked = true,
 }: {
   facts: WrongFact[];
+  /** False when the answers weren't checked against the brand's facts: an empty table then says so. */
+  checked?: boolean;
   prompts: PromptResult[];
   answersHref: (promptId: string) => string;
   actionsHref: string;
@@ -41,7 +44,7 @@ export function WrongFactsTable({
       }
     >
       {facts.length === 0 ? (
-        <p className="p-4 text-sm text-muted-foreground">{t("empty")}</p>
+        <p className="p-4 text-sm text-muted-foreground">{t(checked ? "empty" : "notChecked")}</p>
       ) : (
         <div className="@container">
           <table className="w-full table-fixed text-sm">

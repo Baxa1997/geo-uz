@@ -1,6 +1,7 @@
 """The API the frontend calls (`frontend/CLAUDE.md`, "API contract"), a slice at a time.
 
-Built so far: login by a code sent to an email, and a new account's first run.
+Built so far: login by a code sent to an email, a new account's first run, and projects with their report
+(read only: a first run saved as a project).
 
     uvicorn app.main:app --reload --port 8000      (from backend/, with its .venv active)
 """
@@ -20,14 +21,14 @@ import urllib.error
 import urllib.request
 from typing import Any, Dict, Optional
 
-from fastapi import Cookie, Depends, FastAPI, HTTPException, Response
+from fastapi import Body, Cookie, Depends, FastAPI, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sqlalchemy import func, select
 
-from . import firstrun, mail
+from . import delivery, firstrun, fixes, mail, projects
 from .config import settings
-from .db import FirstRun, LoginCode, Session, SessionLocal, User, create_tables, now
+from .db import FirstRun, LoginCode, Project, Run, Session, SessionLocal, User, create_tables, now
 
 SESSION_COOKIE = "geo_session"
 CODE_MINUTES = 10
@@ -205,10 +206,11 @@ def run_json(run: FirstRun) -> Dict[str, Any]:
 def replay(run_id: str, progress: Any) -> Dict[str, Any]:
     """Development (`FIRST_RUN_REPLAY`): the latest saved run again, at a watchable pace, asking nobody."""
     with SessionLocal() as db:
-        saved = db.scalar(select(FirstRun).where(FirstRun.status == "done", FirstRun.id != run_id).order_by(FirstRun.created_at.desc()))
+        # A run that kept its raw answers first: a project saved from the replay then has all of it
+        saved = db.scalar(select(FirstRun).where(FirstRun.status == "done", FirstRun.id != run_id).order_by(FirstRun.raw.is_(None), FirstRun.created_at.desc()))
         if saved is None or not saved.result:
             raise firstrun.FirstRunError("no_saved_run")
-        result = dict(saved.result)
+        result, raw = dict(saved.result), saved.raw
     total = int(result.get("answers") or 0) or sum(len(item["answers"]) for item in result.get("prompts", []))
     progress("reading_site", 0, total)
     time.sleep(2)
@@ -218,7 +220,7 @@ def replay(run_id: str, progress: Any) -> Dict[str, Any]:
     progress("reading_answers", total, total)
     time.sleep(2)
     # `replayed` tells the page to say that these are a saved run's numbers, not this website's
-    return {"status": "done", "result": {**result, "id": run_id, "replayed": True}, "cost_usd": 0.0}
+    return {"status": "done", "result": {**result, "id": run_id, "replayed": True}, "raw": raw, "cost_usd": 0.0}
 
 
 def work(run_id: str, domain: str, category: Optional[str], city: Optional[str]) -> None:
@@ -300,6 +302,254 @@ def first_run_result(run_id: str, user: User = Depends(current_user)) -> Any:
     if run.status != "done":
         raise HTTPException(409, run.error or run.status)
     return run.result
+
+
+# --- projects ------------------------------------------------------------------------------------------
+# A first run saved as a project, what the dashboard's pages read, and what their buttons change. The weekly
+# check itself is `app/weekly.py`, started by the server's timer.
+
+
+def in_project(work: Any) -> Any:
+    """Runs `work(db)` and turns a ProjectError into its HTTP answer."""
+    try:
+        with SessionLocal() as db:
+            done = work(db)
+            db.commit()
+            return done
+    except projects.ProjectError as error:
+        raise HTTPException(error.status, error.code) from error
+
+
+@app.get("/projects")
+def list_projects(user: User = Depends(current_user)) -> Any:
+    return in_project(lambda db: [projects.project_json(db, project) for project in db.scalars(select(Project).where(Project.user_id == user.id).order_by(Project.created_at))])
+
+
+@app.post("/projects")
+def create_project(body: Dict[str, Any] = Body(...), user: User = Depends(current_user)) -> Any:
+    def work(db: Any) -> Dict[str, Any]:
+        project, run_id = projects.create(db, user, body)
+        if run_id:
+            fixes.sync(db, project)
+        return {"project": projects.project_json(db, project), "runId": run_id}
+
+    made = in_project(work)
+    if made["runId"]:
+        # The cited pages are read after the answer is sent: who each names, and whether the client is on them
+        threading.Thread(target=fixes.after_creation, args=(made["project"]["id"], made["runId"]), daemon=True).start()
+    return made
+
+
+@app.get("/projects/{project_id}")
+def get_project(project_id: str, user: User = Depends(current_user)) -> Any:
+    return in_project(lambda db: projects.project_json(db, projects.own(db, user, project_id)))
+
+
+@app.get("/projects/{project_id}/prompts")
+def get_prompts(project_id: str, user: User = Depends(current_user)) -> Any:
+    return in_project(lambda db: [projects.prompt_json(prompt) for prompt in projects.prompts_of(db, projects.own(db, user, project_id).id)])
+
+
+# The report is read without login: its page is the link a client shares (`/projects/{id}/report`), and the
+# server prints the same page as a PDF. The project's id, 32 random characters, is what the link's holder knows.
+@app.get("/projects/{project_id}/report")
+def get_report(project_id: str, language: Optional[str] = None, topic: Optional[str] = None) -> Any:
+    return in_project(lambda db: projects.report(db, projects.shared(db, project_id), language=language, topic=topic))
+
+
+@app.get("/projects/{project_id}/prompts/{prompt_id}/report")
+def get_prompt_report(project_id: str, prompt_id: str, user: User = Depends(current_user)) -> Any:
+    return in_project(lambda db: projects.report(db, projects.own(db, user, project_id), prompt_id=prompt_id))
+
+
+@app.get("/projects/{project_id}/reports/{run_id}")
+def get_run_report(project_id: str, run_id: str) -> Any:
+    return in_project(lambda db: projects.report(db, projects.shared(db, project_id), run_id=run_id))
+
+
+@app.get("/projects/{project_id}/reports/{run_id}/pdf")
+def get_report_pdf(project_id: str, run_id: str, lang: str = "uz", user: User = Depends(current_user)) -> Response:
+    """The run's report as a PDF, printed from the report's own page."""
+    in_project(lambda db: projects.report(db, projects.own(db, user, project_id), run_id=run_id) and None)
+    try:
+        printed = delivery.pdf(project_id, run_id, lang if lang in ("uz", "ru", "en") else "uz")
+    except delivery.DeliveryError as error:
+        raise HTTPException(503, error.args[0]) from error
+    return Response(printed, media_type="application/pdf", headers={"Content-Disposition": f'attachment; filename="geo-report-{run_id[:8]}.pdf"'})
+
+
+@app.get("/projects/{project_id}/topics")
+def get_topics(project_id: str, user: User = Depends(current_user)) -> Any:
+    return in_project(lambda db: projects.topics(db, projects.own(db, user, project_id)))
+
+
+@app.get("/projects/{project_id}/tags")
+def get_tags(project_id: str, user: User = Depends(current_user)) -> Any:
+    return in_project(lambda db: projects.tags(db, projects.own(db, user, project_id)))
+
+
+# Nothing is kept for these yet; an empty answer lets their pages open on a real project
+@app.get("/projects/{project_id}/prompt-suggestions")
+def nothing_yet(project_id: str, user: User = Depends(current_user)) -> Any:
+    return in_project(lambda db: [] if projects.own(db, user, project_id) else [])
+
+
+@app.get("/projects/{project_id}/actions")
+def get_actions(project_id: str) -> Any:
+    """Read without login, like the report: the report lists its recommendations."""
+    return in_project(lambda db: fixes.listed(db, projects.shared(db, project_id)))
+
+
+Json = Dict[str, Any]
+
+
+def changed(user: User, project_id: str, change: Any, answer: Any = None) -> Any:
+    """Makes a change to the user's own project; answers with `answer(db, project)`, or with the project."""
+
+    def work(db: Any) -> Any:
+        project = projects.own(db, user, project_id)
+        made = change(db, project)
+        db.flush()
+        return answer(db, project) if answer else made if made is not None else projects.project_json(db, project)
+
+    return in_project(work)
+
+
+@app.patch("/projects/{project_id}")
+def update_project(project_id: str, body: Json = Body(...), user: User = Depends(current_user)) -> Any:
+    return changed(user, project_id, lambda db, project: projects.update_project(db, project, body))
+
+
+@app.post("/projects/{project_id}/competitors")
+def add_competitor(project_id: str, body: Json = Body(...), user: User = Depends(current_user)) -> Any:
+    return changed(user, project_id, lambda db, project: projects.add_competitor(db, project, body))
+
+
+@app.patch("/projects/{project_id}/competitors/{brand_id}")
+def update_competitor(project_id: str, brand_id: str, body: Json = Body(...), user: User = Depends(current_user)) -> Any:
+    return changed(user, project_id, lambda db, project: projects.update_competitor(db, project, brand_id, body))
+
+
+@app.delete("/projects/{project_id}/competitors/{brand_id}")
+def remove_competitor(project_id: str, brand_id: str, user: User = Depends(current_user)) -> Any:
+    return changed(user, project_id, lambda db, project: projects.remove_competitor(db, project, brand_id))
+
+
+@app.patch("/projects/{project_id}/untracked-brands", status_code=204)
+def dismiss_brand(project_id: str, body: Json = Body(...), user: User = Depends(current_user)) -> None:
+    changed(user, project_id, lambda db, project: projects.dismiss_brand(db, project, body))
+
+
+@app.post("/projects/{project_id}/prompts")
+def add_prompts(project_id: str, body: Json = Body(...), user: User = Depends(current_user)) -> Any:
+    return changed(user, project_id, lambda db, project: projects.add_prompts(db, project, body))
+
+
+@app.patch("/projects/{project_id}/prompts")
+def update_prompts(project_id: str, body: Json = Body(...), user: User = Depends(current_user)) -> Any:
+    return changed(user, project_id, lambda db, project: projects.update_prompts(db, project, body))
+
+
+@app.put("/projects/{project_id}/prompts/{prompt_id}")
+def update_prompt(project_id: str, prompt_id: str, body: Json = Body(...), user: User = Depends(current_user)) -> Any:
+    return changed(user, project_id, lambda db, project: projects.update_prompt(db, project, prompt_id, body))
+
+
+@app.patch("/projects/{project_id}/prompts/{prompt_id}")
+def archive_prompt(project_id: str, prompt_id: str, body: Json = Body(...), user: User = Depends(current_user)) -> Any:
+    return changed(user, project_id, lambda db, project: projects.update_prompts(db, project, {"ids": [prompt_id], "archived": bool(body.get("archived"))})[0])
+
+
+@app.post("/projects/{project_id}/topics")
+def add_topic(project_id: str, body: Json = Body(...), user: User = Depends(current_user)) -> Any:
+    return changed(user, project_id, lambda db, project: projects.add_topic(db, project, body))
+
+
+@app.patch("/projects/{project_id}/topics/{topic}")
+def rename_topic(project_id: str, topic: str, body: Json = Body(...), user: User = Depends(current_user)) -> Any:
+    return changed(user, project_id, lambda db, project: projects.rename_topic(db, project, topic, body))
+
+
+@app.delete("/projects/{project_id}/topics/{topic}", status_code=204)
+def delete_topic(project_id: str, topic: str, user: User = Depends(current_user)) -> None:
+    changed(user, project_id, lambda db, project: projects.delete_topic(db, project, topic))
+
+
+@app.post("/projects/{project_id}/tags")
+def add_tags(project_id: str, body: Json = Body(...), user: User = Depends(current_user)) -> Any:
+    return changed(user, project_id, lambda db, project: projects.add_tags(db, project, body))
+
+
+@app.patch("/projects/{project_id}/tags/{tag}")
+def rename_tag(project_id: str, tag: str, body: Json = Body(...), user: User = Depends(current_user)) -> Any:
+    return changed(user, project_id, lambda db, project: projects.rename_tag(db, project, tag, body))
+
+
+@app.delete("/projects/{project_id}/tags/{tag}", status_code=204)
+def delete_tag(project_id: str, tag: str, user: User = Depends(current_user)) -> None:
+    changed(user, project_id, lambda db, project: projects.delete_tag(db, project, tag))
+
+
+@app.patch("/projects/{project_id}/actions")
+def update_actions(project_id: str, body: Json = Body(...), user: User = Depends(current_user)) -> Any:
+    return changed(user, project_id, lambda db, project: fixes.update_many(db, project, body))
+
+
+@app.post("/projects/{project_id}/actions")
+def add_content_action(project_id: str, body: Json = Body(...), user: User = Depends(current_user)) -> Any:
+    return changed(user, project_id, lambda db, project: fixes.add_content(db, project, body))
+
+
+@app.patch("/projects/{project_id}/actions/{action_id}")
+def update_action(project_id: str, action_id: str, body: Json = Body(...), user: User = Depends(current_user)) -> Any:
+    return changed(user, project_id, lambda db, project: fixes.update(db, project, action_id, body))
+
+
+@app.get("/projects/{project_id}/facts")
+def get_facts(project_id: str, user: User = Depends(current_user)) -> Any:
+    return in_project(lambda db: list(projects.own(db, user, project_id).facts or []))
+
+
+@app.put("/projects/{project_id}/facts")
+def set_facts(project_id: str, body: Json = Body(...), user: User = Depends(current_user)) -> Any:
+    return changed(user, project_id, lambda db, project: projects.set_facts(db, project, body))
+
+
+@app.get("/projects/{project_id}/report-settings")
+def get_report_settings(project_id: str, user: User = Depends(current_user)) -> Any:
+    return in_project(lambda db: projects.report_settings(projects.own(db, user, project_id)))
+
+
+@app.patch("/projects/{project_id}/report-settings")
+def set_report_settings(project_id: str, body: Json = Body(...), user: User = Depends(current_user)) -> Any:
+    return changed(user, project_id, lambda db, project: projects.set_report_settings(db, project, body))
+
+
+@app.post("/projects/{project_id}/plan-requests", status_code=204)
+def request_plan(project_id: str, body: Json = Body(...), user: User = Depends(current_user)) -> None:
+    """Billing doesn't exist: the request is written to the log, and we change the plan by hand."""
+    in_project(lambda db: print(f"PLAN REQUEST: project {projects.own(db, user, project_id).id}, account {user.id}: {body.get('plan')} ({body.get('cycle') or 'same cycle'})"))
+
+
+@app.get("/members")
+def get_members(user: User = Depends(current_user)) -> Any:
+    def work(db: Any) -> Any:
+        ids = list(db.scalars(select(Project.id).where(Project.user_id == user.id)))
+        return [{"id": user.id, "name": user.name, "phone": None, "telegramUsername": None, "role": "owner", "status": "active", "projectIds": ids}]
+
+    return in_project(work)
+
+
+@app.get("/runs/{run_id}/progress")
+def run_progress(run_id: str, user: User = Depends(current_user)) -> Any:
+    def work(db: Any) -> Dict[str, Any]:
+        run = db.get(Run, run_id)
+        if run is None:
+            raise projects.ProjectError(404, "not_found")
+        projects.own(db, user, run.project_id)
+        return {"id": run.id, "projectId": run.project_id, "status": run.status, "answered": run.answered, "total": run.total}
+
+    return in_project(work)
 
 
 @app.get("/health")

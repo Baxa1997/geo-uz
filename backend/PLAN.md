@@ -228,6 +228,36 @@ That is roughly one to two US cents per answer, and it has to cover the answer w
   it). Still to build for the step after: saving a first run as a project (brand, competitors and questions
   from its result), which the setup wizard then confirms.
 
+- **15 Nov 2026. Fixes and wrong facts** (stage 4 of the root `PLAN.md`; built, waiting for the user's look
+  and a live check). `app/fixes.py`: the cited pages read, the actions by rule with stable keys, their
+  statuses, "Add a page", proof, wrong facts and briefs by a model inside a live check (`backend/README.md`,
+  "Fixes"). New for the contract: `Report.factsChecked` (false: an empty list of wrong facts means "not
+  checked"). What a run found about a site now also holds who each read page names. Differences from the data
+  model: no `pages`, `page_mentions` or `listings` tables (kept on the run), `wrong_facts` and `actions` as
+  planned. Tried without a paid request: the rules, statuses, proof after a replayed check, a wrong fact put
+  in by hand, and Harakatlar in the browser.
+- **15 Nov 2026. The report's delivery** (stage 3 of the root `PLAN.md`; built, waiting for the user's look).
+  The report, a past run's report and the actions are read without login by the project's id; the PDF is the
+  report's page printed by a headless Chrome (`GET /projects/{id}/reports/{runId}/pdf`); after a weekly check
+  the summary, the link and the PDF are emailed to the address in the report settings (`app/delivery.py`). New
+  variable: `CHROME_PATH`; `FRONTEND_ORIGIN` now has to be the site's public address. On a real project the
+  frontend says "not checked yet" wherever it used to say that no wrong fact was found.
+- **15 Nov 2026. The pages' buttons and the weekly check** (stage 2 of the root `PLAN.md`; built, waiting for
+  the user's look and for a first live check). The writes for questions, topics, tags, competitors, the
+  profile, facts and report settings, and `app/weekly.py` (`backend/README.md`). Open question 5 (editing a
+  question): for now an edited question keeps its answers. Topics and tags without a question, hidden
+  untracked brands, facts and report settings are lists on the project's row, not tables. `create_tables` now
+  adds a column a model gained to a table that exists. New variables: `RUN_SAMPLES`, `WEEKLY_RUNS`. Tried
+  without a paid request: every endpoint by script, adding a question in the browser, and a replayed second
+  check (the charts get their second point). Samples and assistants per plan wait for the prices decision.
+- **15 Nov 2026. Projects: a first run saved as a project, and its report** (stage 1 of the root `PLAN.md`;
+  built, waiting for the user's look). `POST /projects` with `firstRunId`, the reads the dashboard's pages
+  make, and the report counted from `answers`, `mentions` and `citations` (`backend/README.md`, "Projects").
+  The frontend's slice is `projects` in `NEXT_PUBLIC_LIVE`. Differences from the data model above, for now:
+  topics and tags are read from the questions (no `topics` table), what a run found about the cited sites
+  (kind, listed or not) is kept on the run, and scores are counted on request (no `scores` table). A first run
+  now keeps every business an answer names (`raw.answers[].order`), so a project has its untracked brands; a
+  run saved before that has only the names as written. Not deployed to the server yet.
 - **14 Nov 2026. The frontend's login is wired to this service.** The login page asks for an email and the code;
   `NEXT_PUBLIC_LIVE=auth` in the frontend sends `sendCode`, `verifyCode`, `getMe`, `logout` and `updateMe` here
   while every other call stays on mocks, and the mocks ask `GET /auth/me` whom a session belongs to. New here:

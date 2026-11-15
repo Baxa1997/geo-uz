@@ -73,6 +73,7 @@ export default async function PromptsPage({ params, searchParams }: Props) {
         filename={`${brand.domain}-questions-${report.method.collectedAt.slice(0, 10)}`}
         nextRunAt={report.nextRunAt}
         wrongFacts={report.wrongFacts}
+        factsChecked={report.factsChecked !== false}
         wrongFactsHref={withFilters(`/projects/${report.project.id}/wrong-facts`, filters)}
         discoveryHref={withFilters(`/projects/${report.project.id}/prompts/discovery`, filters)}
         city={report.project.city}
