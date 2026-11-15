@@ -3,9 +3,11 @@
     read the site      its pages as text, its robots.txt and markup          -> the four site checks
     profile            who the business is, and the questions its customers ask (Uzbek and Russian)
     ask                each question once to each assistant, several at a time
+    ask about it       the brand questions: what each assistant says of the business itself, by name
     read the answers   which businesses each names, in order, in what tone, and which it recommends
     one name each      the spellings of one business brought together
     count              the Snapshot the frontend draws (`frontend/src/shared/types/api.ts`)
+    what it says       each brand answer as short statements, each checked against the website
     conclude           a few sentences on what the counts mean and what to do first, in the three languages
 
 Counting is plain code. A model writes the profile, reads the answers and words the conclusion from the
@@ -166,11 +168,63 @@ NAMES_RULES = (
 )
 
 
+# --- the brand questions -------------------------------------------------------------------------------
+
+# Asked beside the customers' questions, by the business's name: what an assistant says of the business
+# itself. Their answers are never counted in the scores: a question that names the business names it.
+BRAND_QUESTIONS = {
+    "ru": "Что известно о «{name}»{place}? Чем занимается, какие цены, где находится и какие о нём отзывы?",
+    "uz": "{name}{place} haqida nima maʼlum? Nima bilan shugʻullanadi, narxlari qanday, qayerda joylashgan va u haqda qanday fikrlar bor?",
+}
+
+BRAND_RULES = """An AI assistant was asked about one business by its name. You are given the business as its own website describes it, and the assistant's answer. Say what the assistant states about the business, for its owner, who is not technical.
+
+- known: \"knows\" when the answer describes this business; \"confuses\" when it describes another business with a similar name, or mixes the two; \"unknown\" when it says it finds nothing, or says nothing specific.
+- statements: up to six things the answer states about the business that matter to a customer, the most important first, each one short sentence. None when known is \"unknown\". For each:
+  - topic: what (what it is and offers), prices, place (address, branches, district), contacts (phone, hours, site), reputation (reviews, ratings, opinions), other.
+  - text: the statement in three languages: uz (Uzbek in Latin script, with oʻ and gʻ), ru, en. Names, prices and addresses exactly as the answer gives them.
+  - check, against the website's text only: \"confirmed\" when the website says the same; \"contradicted\" when the website says otherwise (a different price, address, phone, year, service); \"unverified\" when the website says nothing about it. Opinions and reviews are \"unverified\". When unsure, \"unverified\".
+  - correct: for \"contradicted\" only, what the website says, one short sentence in the same three languages; otherwise three empty strings.
+Add nothing the answer does not say."""
+
+TEXTS = obj(uz=STR, ru=STR, en=STR)
+BRAND_SCHEMA = obj(
+    known={"type": "string", "enum": ["knows", "confuses", "unknown"]},
+    statements=arr(obj(topic={"type": "string", "enum": ["what", "prices", "place", "contacts", "reputation", "other"]}, text=TEXTS, check={"type": "string", "enum": ["confirmed", "contradicted", "unverified"]}, correct=TEXTS)),
+)
+
+
+def brand_languages(engine: str, asked: List[str]) -> List[str]:
+    """The brand questions an assistant gets: both languages, and ChatGPT one when Gemini is asked too
+    (the same economy as `questions_for`)."""
+    return ["ru"] if engine == "chatgpt" and "gemini" in asked else list(BRAND_QUESTIONS)
+
+
+def brand_question(language: str, name: str, city: str) -> str:
+    return BRAND_QUESTIONS[language].format(name=name, place=f" ({city})" if city else "")
+
+
+def brand_view(who: Dict[str, Any], site: str, answer: Dict[str, Any]) -> Tuple[Optional[Dict[str, Any]], float]:
+    """One brand answer as statements checked against the website. None when the model failed."""
+    about = f"Business: {who['name']} ({who['category']}, {who['city'] or who['country']})\n\nIts website:\n{site[:15_000]}\n\nQuestion: {answer['asked']}\n\nThe assistant's answer:\n{answer['text'][:8000]}"
+    try:
+        read, usd = engines.write(BRAND_RULES, about, "brand_view", BRAND_SCHEMA)
+    except engines.EngineError as error:
+        print(f"first run: brand answer not read: {error}")
+        return None, 0.0
+    statements = [
+        {"topic": statement["topic"], "text": statement["text"], "check": statement["check"], "correct": statement["correct"] if statement["check"] == "contradicted" and statement["correct"]["en"].strip() else None}
+        for statement in read["statements"][:6]
+        if all(statement["text"][language].strip() for language in ("uz", "ru", "en"))
+    ]
+    return {"known": read["known"], "statements": [] if read["known"] == "unknown" else statements}, usd
+
+
 # --- the conclusion ------------------------------------------------------------------------------------
 
 CONCLUSION_RULES = """You write the conclusion of a first check of how AI assistants answer customers' questions about one kind of business. You are given what was counted. The reader owns the business and is not technical.
 
-Write three sentences, at most 70 words together: where the business stands against the others; the main reason the counts show (the questions it is missing from, the sites the assistants cite that don't list it, or a problem on its website); the one thing to do first. Use only the numbers and names given, as counts of answers (\"3 of 10 answers\"), never percentages. A site that is another business's own website is not a place to get listed: for a listing, name only catalogues, rating and news sites. Plain words: no \"visibility\", \"share of voice\", \"GEO\", \"LLM\". Don't promise a result.
+Write three sentences, at most 70 words together: where the business stands against the others; the main reason the counts show (the questions it is missing from, the sites the assistants cite that don't list it, a problem on its website, or an assistant that doesn't know the business by name or states something its website contradicts); the one thing to do first. Use only the numbers and names given, as counts of answers (\"3 of 10 answers\"), never percentages. A site that is another business's own website is not a place to get listed: for a listing, name only catalogues, rating and news sites. Plain words: no \"visibility\", \"share of voice\", \"GEO\", \"LLM\". Don't promise a result.
 
 Give the same conclusion in three languages: `uz` (Uzbek in Latin script, with oʻ and gʻ), `ru` (Russian) and `en` (English). Keep the businesses' and sites' names as given."""
 
@@ -234,8 +288,12 @@ def run(domain: str, category: Optional[str], city: Optional[str], progress: Pro
     jobs = [(q, engine) for engine in asked for q in questions_for(engine, asked, len(who["questions"]))]
     answers: List[Dict[str, Any]] = []
     progress("asking", 0, len(jobs))
+    about_it: List[Dict[str, Any]] = []
     with ThreadPoolExecutor(max_workers=5) as pool:
         futures = {pool.submit(engines.ask, engine, who["questions"][q]["text"], *place): (q, engine) for q, engine in jobs}
+        # The brand questions go with them and are kept apart: not counted in the progress or in any score
+        named_asks = [(engine, language, brand_question(language, who["name"], who["cityEn"] if language == "uz" else who["city"])) for engine in asked for language in brand_languages(engine, asked)]
+        named_futures = [(pool.submit(engines.ask, engine, text, *place), engine, language, text) for engine, language, text in named_asks]
         for done, future in enumerate(as_completed(futures), start=1):
             q, engine = futures[future]
             try:
@@ -247,10 +305,24 @@ def run(domain: str, category: Optional[str], city: Optional[str], progress: Pro
                 answers.append({"question": q, **answer})
                 cost += answer["usd"] or 0.0
             progress("asking", done, len(jobs))
+        for future, engine, language, text in named_futures:
+            try:
+                answer = future.result()
+            except engines.EngineError as error:
+                print(f"first run {domain}: {engine} failed on the brand question ({language}): {error}")
+                continue
+            if answer["text"].strip():
+                about_it.append({"language": language, "asked": text, **answer})
+                cost += answer["usd"] or 0.0
     if not answers:
         raise FirstRunError("no_answers")
 
     progress("reading_answers", len(answers), len(jobs))
+    # The brand answers are read while the others are: each is one slow call, and nothing else waits on them
+    site_text = "\n\n".join(f"[{page['url']}]\n{page['text']}" for page in pages)
+    view_pool = ThreadPoolExecutor(max_workers=4)
+    view_futures = [view_pool.submit(brand_view, who, site_text, answer) for answer in about_it]
+    view_pool.shutdown(wait=False)
     with ThreadPoolExecutor(max_workers=6) as pool:
         for answer, (read, usd) in zip(answers, pool.map(lambda answer: engines.read(READ_RULES, f"Question: {who['questions'][answer['question']]['text']}\n\nAnswer:\n{answer['text']}", "answer_reading", READ_SCHEMA), answers)):
             answer["businesses"] = read["businesses"]
@@ -344,6 +416,23 @@ def run(domain: str, category: Optional[str], city: Optional[str], progress: Pro
             }
         )
 
+    # What each assistant says of the business itself, checked against its website
+    viewed = [future.result() for future in view_futures]
+    brand_views: List[Dict[str, Any]] = []
+    for answer, (view, usd) in zip(about_it, viewed):
+        cost += usd
+        if view:
+            brand_views.append(
+                {
+                    "engine": answer["engine"],
+                    "name": engines.ENGINE_NAMES[answer["engine"]],
+                    "language": answer["language"],
+                    "question": answer["asked"],
+                    **view,
+                    "citations": [{"url": citation["url"], "domain": web.domain_of(citation["url"]), "title": citation.get("title")} for citation in answer["citations"][:8]],
+                }
+            )
+
     recommended = {name: sum(1 for answer in answers for listed in answer["order"] if listed["name"] == name and listed["recommended"]) for name in tracked}
     progress("reading_answers", len(jobs), len(jobs))
     concluded, usd = conclusion(
@@ -361,6 +450,10 @@ def run(domain: str, category: Optional[str], city: Optional[str], progress: Pro
             ],
             "sitesTheAssistantsCite": [{"site": source["domain"], "kind": source["type"], "answersCitingIt": source["count"], "listsTheBusiness": source["brandListed"]} for source in sources[:8]],
             "problemsOnItsWebsite": [check["check"] for check in checks if not check["passed"]],
+            "askedAboutTheBusinessByName": [
+                {"assistant": view["name"], "result": view["known"], "statementsTheWebsiteContradicts": [statement["text"]["en"] for statement in view["statements"] if statement["check"] == "contradicted"]}
+                for view in brand_views
+            ],
         }
     )
     cost += usd
@@ -385,11 +478,13 @@ def run(domain: str, category: Optional[str], city: Optional[str], progress: Pro
         "recommended": {ids[name]: recommended[name] for name in tracked},
         # Worded by a model from the counts above, in the interface's three languages; None when it failed
         "conclusion": concluded,
+        # What each assistant says when asked about the business by name: statements checked against the website
+        "brandView": brand_views,
         "answers": len(answers),
         "prompts": by_question,
         "topSources": sources,
         "siteChecks": checks,
     }
     # `order`: every business an answer names, one name each, in order; a project keeps those it doesn't track too
-    raw = {"profile": who, "answers": [{key: answer[key] for key in ("question", "engine", "model", "text", "citations", "searches", "businesses", "order")} for answer in answers]}
+    raw = {"profile": who, "brandAnswers": [{key: answer[key] for key in ("engine", "model", "language", "asked", "text", "citations", "searches")} for answer in about_it], "answers": [{key: answer[key] for key in ("question", "engine", "model", "text", "citations", "searches", "businesses", "order")} for answer in answers]}
     return snapshot, raw, round(cost, 4)
