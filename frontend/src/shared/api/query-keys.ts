@@ -5,4 +5,6 @@ export const queryKeys = {
   topics: (projectId: string) => ["projects", projectId, "topics"] as const,
   snapshot: (domain: string) => ["snapshot", domain] as const,
   runProgress: (runId: string) => ["runs", runId, "progress"] as const,
+  firstRun: (runId: string) => ["first-runs", runId] as const,
+  firstRunResult: (runId: string) => ["first-runs", runId, "result"] as const,
 };

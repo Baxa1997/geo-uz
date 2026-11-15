@@ -2,12 +2,12 @@
 
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@/i18n/navigation";
-import { api } from "@/shared/api/client";
+import { api, FIRST_RUN_LIVE } from "@/shared/api/client";
 import { queryKeys } from "@/shared/api/query-keys";
 import { afterLoginPath } from "../helpers/login-target";
 import type { LoginTarget } from "../types";
 
-/** After the session cookie is set: onboarding on first login, otherwise the page the user came for. */
+/** After the session cookie is set: the first run or onboarding on first login, otherwise the page the user came for. */
 export function useFinishLogin(target: LoginTarget) {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -17,6 +17,8 @@ export function useFinishLogin(target: LoginTarget) {
     queryClient.clear();
     const projects = await api.getProjects();
     queryClient.setQueryData(queryKeys.projects(), projects);
+    // With the backend's first run live, an account that has never run one starts there: its website first
+    if (FIRST_RUN_LIVE && !target.next && (await api.getFirstRuns()).length === 0) return router.replace("/onboarding/first-run");
     router.replace(afterLoginPath(projects.length > 0, target));
   };
 }

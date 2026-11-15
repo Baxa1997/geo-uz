@@ -3734,5 +3734,103 @@
       "methodManual": "Usul: {engine}, veb-qidiruv bilan, {date}.",
       "cta": "Biz bu rejani bajarib, oʻlchovni takrorlashimiz mumkin."
     }
+  },
+  "FirstRun": {
+    "metaTitle": "Birinchi tekshiruv",
+    "kicker": "1-qadam · Saytingiz",
+    "title": "Qaysi biznesni tekshiramiz?",
+    "text": "Sayt manzilini kiriting. Uni oʻqiymiz, mijozlaringiz beradigan savollarni tuzamiz va AI yordamchilarga beramiz.",
+    "website": "Sayt manzili",
+    "websiteHint": "https:// siz — masalan, kompaniyangiz.uz",
+    "websitePlaceholder": "kompaniyangiz.uz",
+    "websiteInvalid": "Toʻgʻri sayt manzilini kiriting, masalan: kompaniyangiz.uz",
+    "start": "Tekshiruvni boshlash",
+    "starting": "Boshlanmoqda…",
+    "startFailed": "Tekshiruvni boshlab boʻlmadi. Qayta urinib koʻring.",
+    "limit": "Bugungi tekshiruvlar tugadi. Ertaga urinib koʻring.",
+    "asks": "Soʻraymiz:",
+    "points": {
+      "p1": {
+        "title": "Saytingizni oʻqiymiz",
+        "text": "Kimsiz, nima taklif qilasiz va qaysi shaharda."
+      },
+      "p2": {
+        "title": "10 ta savol beramiz",
+        "text": "Mijozlar beradigan savollar, oʻzbek va rus tillarida. Hech birida nomingiz yoʻq."
+      },
+      "p3": {
+        "title": "Kim tilga olinganini sanaymiz",
+        "text": "Siz va yoningizda tilga olingan bizneslar hamda javoblar kimni tavsiya qilgani."
+      }
+    },
+    "runningTitle": "AI mijozlaringizga nima deyishini tekshiryapmiz",
+    "runningText": "Bu bir yarim daqiqacha davom etadi. Sahifani yopmasangiz ham boʻladi: natija shu yerda chiqadi.",
+    "steps": {
+      "reading_site": {
+        "title": "Saytingizni oʻqiyapmiz",
+        "text": "Nomingiz, sohangiz, shahringiz va xizmatlaringiz hamda AI yordamchilar saytni oʻqiy oladimi."
+      },
+      "asking": {
+        "title": "Yordamchilardan soʻrayapmiz",
+        "text": "Har bir savol har bir yordamchiga veb-qidiruv bilan, shahringizdagi mijoz soʻragandek beriladi."
+      },
+      "reading_answers": {
+        "title": "Kim tilga olinganini sanayapmiz",
+        "text": "Har bir javobda qaysi bizneslar, qaysi tartibda tilga olingan va kim tavsiya qilingan."
+      }
+    },
+    "answered": "{total} tadan {answered} tasi",
+    "note": "Sahifani yopsangiz ham tekshiruv davom etadi. Natijani koʻrish uchun shu manzilga qayting.",
+    "loadFailed": "Holatni yangilab boʻlmadi, qayta urinmoqdamiz…",
+    "failedTitle": "{site} tekshiruvi tugamadi",
+    "failedText": "Biz tomonda xatolik yuz berdi. Qayta boshlang; ikki marta oʻxshamasa, bizga yozing.",
+    "failedSite": "Bu saytni ochib boʻlmadi. Manzilni tekshirib, qayta urinib koʻring.",
+    "tryAgain": "Qayta urinish",
+    "resultKicker": "Birinchi statistika",
+    "resultTitle": "{brand}: AI bugun sizni qanday koʻradi",
+    "replayed": "Ishlab chiqish rejimi: bu saqlangan tekshiruv ({site}) raqamlari, yordamchilarga soʻrov yubormasdan qayta koʻrsatildi.",
+    "verdictAbsent": "{total} ta javobning hech birida tilga olinmadingiz. Eng koʻp tilga olingani — {leader}: {leaderNamed} tasida.",
+    "verdictNobody": "{total} ta javobning hech birida na siz, na yoningizdagi bizneslar tilga olindi.",
+    "verdictBehind": "{total} ta javobdan {named} tasida tilga olindingiz, {recommended} tasida tavsiya qilindingiz. {leader} esa {leaderNamed} tasida tilga olindi.",
+    "verdictLeads": "{total} ta javobdan {named} tasida tilga olindingiz, {recommended} tasida tavsiya qilindingiz: yoningizdagi har qanday biznesdan koʻproq.",
+    "figures": {
+      "named": {
+        "label": "Tilga olindi",
+        "hint": "Biznesingiz tilga olingan javoblar. Foizda emas, javoblar sonida sanaymiz: birinchi tekshiruvda ular kam.",
+        "of": "{total} ta javobdan"
+      },
+      "recommended": {
+        "label": "Tavsiya qilindi",
+        "hint": "Mijozga sizni tanlash sababi bilan maslahat berilgan javoblar. Roʻyxatda tilga olinish hali tavsiya emas.",
+        "of": "{total} ta javobdan"
+      },
+      "place": {
+        "label": "Oʻrningiz",
+        "hint": "Har biri tilga olingan javoblar soni boʻyicha shu bizneslar orasidagi oʻrningiz. Bir xil tilga olinganlar bir oʻrinni boʻlishadi.",
+        "of": "{total} ta biznes orasida"
+      }
+    },
+    "brandsTitle": "Siz va yoningizda tilga olingan bizneslar",
+    "brandsText": "{total} ta javob boʻyicha, eng koʻp tilga olingani birinchi. Bu — javoblarning oʻzi eng koʻp tilga olgan bizneslar.",
+    "columns": {
+      "brand": "Biznes",
+      "named": "Tilga olindi",
+      "namedHint": "Biznes nechta javobda tilga olingan. Chiziq barcha javoblarga nisbatan chizilgan.",
+      "recommended": "Tavsiya qilindi",
+      "recommendedHint": "Nechta javobda yordamchi uni tanlashni maslahat bergan.",
+      "position": "Javobdagi oʻrni",
+      "positionHint": "Javob sanab oʻtgan bizneslar orasida uni oʻrtacha nechanchi boʻlib tilga oladi. 1 — birinchi; qancha kichik boʻlsa, shuncha yaxshi."
+    },
+    "you": "siz",
+    "ofTotal": "{count} / {total}",
+    "enginesTitle": "Yordamchilar boʻyicha",
+    "enginesText": "Bir xil savollar, har bir yordamchi alohida. Ular koʻpincha turlicha javob beradi.",
+    "engineNamed": "{total} tadan {count} tasida tilga oldi",
+    "missedTitle": "Tilga olinmagan savollaringiz: {count} ta",
+    "missedText": "Javob sizning oʻrningizga kimni tilga olgani.",
+    "nextTitle": "Bu bir martalik nazar edi. Keyingisi — har hafta kuzatish.",
+    "nextText": "Biznes profilingiz, raqobatchilaringiz va savollaringizni tasdiqlang.",
+    "next": "Sozlashga oʻtish",
+    "again": "Boshqa saytni tekshirish"
   }
 }

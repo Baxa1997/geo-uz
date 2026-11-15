@@ -3734,5 +3734,103 @@
       "methodManual": "Method: {engine} with web search, {date}.",
       "cta": "We can carry out this plan and measure again."
     }
+  },
+  "FirstRun": {
+    "metaTitle": "Your first check",
+    "kicker": "Step 1 · Your website",
+    "title": "Which business should we look up?",
+    "text": "Enter your website. We read it, write the questions your customers ask, and put them to the AI assistants.",
+    "website": "Website address",
+    "websiteHint": "Without https:// — for example, yourcompany.uz",
+    "websitePlaceholder": "yourcompany.uz",
+    "websiteInvalid": "Enter a valid website address, e.g. yourcompany.uz",
+    "start": "Start the check",
+    "starting": "Starting…",
+    "startFailed": "Couldn’t start the check. Try again.",
+    "limit": "You have used today’s checks. Try again tomorrow.",
+    "asks": "We ask:",
+    "points": {
+      "p1": {
+        "title": "We read your website",
+        "text": "Who you are, what you offer and in which city."
+      },
+      "p2": {
+        "title": "We ask 10 questions",
+        "text": "The ones customers ask, in Uzbek and Russian. None of them names you."
+      },
+      "p3": {
+        "title": "We count who is named",
+        "text": "You and the businesses named beside you, and whom the answers recommend."
+      }
+    },
+    "runningTitle": "Checking how AI answers your customers",
+    "runningText": "This takes about a minute and a half. You can leave the page open: the result appears here.",
+    "steps": {
+      "reading_site": {
+        "title": "Reading your website",
+        "text": "Your name, field, city and services, and whether AI assistants can read the site."
+      },
+      "asking": {
+        "title": "Asking the assistants",
+        "text": "Each question goes to each assistant with web search on, as a customer in your city would ask it."
+      },
+      "reading_answers": {
+        "title": "Counting who was named",
+        "text": "Which businesses each answer names, in what order, and whom it recommends."
+      }
+    },
+    "answered": "{answered} of {total}",
+    "note": "The check keeps running if you close the page. Come back to this address to see it.",
+    "loadFailed": "Couldn’t refresh the status, retrying…",
+    "failedTitle": "The check for {site} didn’t finish",
+    "failedText": "Something went wrong on our side. Start it again; if it fails twice, write to us.",
+    "failedSite": "We couldn’t open this website. Check the address and try again.",
+    "tryAgain": "Try again",
+    "resultKicker": "First statistics",
+    "resultTitle": "How AI sees {brand} today",
+    "replayed": "Development mode: these are the numbers of a saved check ({site}), shown again without asking the assistants.",
+    "verdictAbsent": "None of the {total} answers named you. The most named was {leader}: in {leaderNamed}.",
+    "verdictNobody": "None of the {total} answers named you or the businesses beside you.",
+    "verdictBehind": "You were named in {named} of {total} answers and recommended in {recommended}. {leader} was named in {leaderNamed}.",
+    "verdictLeads": "You were named in {named} of {total} answers and recommended in {recommended}: more often than any business beside you.",
+    "figures": {
+      "named": {
+        "label": "Named",
+        "hint": "The answers that mention your business at all. Counted in answers, not percent: a first check has few of them.",
+        "of": "of {total} answers"
+      },
+      "recommended": {
+        "label": "Recommended",
+        "hint": "The answers that advise the customer to choose you, with a reason. Being named in a list is not yet a recommendation.",
+        "of": "of {total} answers"
+      },
+      "place": {
+        "label": "Your place",
+        "hint": "Where you stand among these businesses by the number of answers naming each. Businesses named equally often share a place.",
+        "of": "among {total} businesses"
+      }
+    },
+    "brandsTitle": "You and the businesses named beside you",
+    "brandsText": "Over {total} answers, the most named first. The businesses are the ones the answers themselves named most.",
+    "columns": {
+      "brand": "Business",
+      "named": "Named",
+      "namedHint": "In how many of the answers the business is mentioned. The bar is drawn against all answers.",
+      "recommended": "Recommended",
+      "recommendedHint": "In how many answers the assistant advises choosing it.",
+      "position": "Place in the answer",
+      "positionHint": "On average, in which place the answer names it among all businesses it lists. 1 is first; smaller is better."
+    },
+    "you": "you",
+    "ofTotal": "{count} / {total}",
+    "enginesTitle": "By assistant",
+    "enginesText": "The same questions, each assistant apart. They often answer differently.",
+    "engineNamed": "named you in {count} of {total}",
+    "missedTitle": "{count, plural, one {# question} other {# questions}} where you weren’t named",
+    "missedText": "Whom the answer named in your place.",
+    "nextTitle": "This was one look. Tracking it every week is next.",
+    "nextText": "Confirm your business profile, your competitors and your questions.",
+    "next": "Continue to setup",
+    "again": "Check another website"
   }
 }

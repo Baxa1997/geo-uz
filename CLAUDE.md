@@ -60,6 +60,9 @@ Read this section first in a new session: it says what exists, how to run it, an
 2. The Uzbek metric names became Tilga olinish, Oʻrni, Baho. Merged and pushed with 1.
 3. Every icon was replaced: our own for the sidebar, metrics and action goals, Phosphor for the rest. Merged and
    pushed with 1.
+5. (15 Nov) The first-run page: after login, a website, the run's progress, the first statistics. Merged and pushed
+   (`first-run-page`) when the user said "commit, push", with the setup's link to the run, the server's
+   deployment notes and the browser's calls routed through the frontend.
 4. The login page was moved to email and wired to the backend. Merged and pushed (`email-login`), when the user
    said "commit, push".
 
@@ -78,9 +81,8 @@ Read this section first in a new session: it says what exists, how to run it, an
 **Go on from here, in this order:**
 
 1. Done (14 Nov, see "Done"): the login page asks for an email and a code against the backend. Google later.
-2. Next. Before it, the backend gets a development setting that replays a saved first run in the place of
-   asking the assistants, so the page is built and tried without a paid request (proposed to the user, 14 Nov;
-   not yet answered). A page after login that takes a website, starts `POST /first-runs`, shows its progress (`GET /first-runs/{id}`:
+2. Built on 15 Nov (see "Done"), on a replayed run; still owed: one live run on ChatGPT and Gemini once the
+   keys are in and the user allows paid requests. It was: a page after login that takes a website, starts `POST /first-runs`, shows its progress (`GET /first-runs/{id}`:
    `status`, `answered`, `total`) and then the first statistics (`GET /first-runs/{id}/result`, the `Snapshot`
    shape plus `engines`, `recommended`). The free check's parts (`features/marketing`: CheckRunner,
    SnapshotPreview, SiteAudit) are the closest thing built.
@@ -99,7 +101,13 @@ Read this section first in a new session: it says what exists, how to run it, an
 - A Gemini API key: the Gemini client (`backend/app/engines.py`) is written from Google's documentation and has
   never run, so its cost and answers are unmeasured.
 - A Supabase project (URL, anon key, database connection string): Supabase's login is written and has never run.
-- The Contabo server's address and access, when it is time to deploy.
+- The frontend on Vercel (the user, 15 Nov: "geo right now will be in Vercel, then it will be in its domain, I
+  don't know yet"; the subdomain is for the API only). The backend answers at `https://geo-api.shopsready.com`.
+  The browser calls it through the frontend (`/api/backend`, a rewrite), so the login works from any domain.
+  The user imports the repository in Vercel (root `frontend`) with `NEXT_PUBLIC_API_URL`,
+  `NEXT_PUBLIC_USE_MOCKS=true`, `NEXT_PUBLIC_LIVE=auth,first-run`; the Vercel connector in this session is not
+  authorized. And a new root password: the user pasted the old
+  one in chat (15 Nov); an SSH key is installed, so the password is no longer needed.
 - Three answers pasted from the ChatGPT app, to compare the app with the API.
 - Contacts for the pilot report's last page.
 
@@ -124,7 +132,8 @@ that is committed.
 - A pilot report: http://localhost:3000/ru/pilots/<slug> (the first client's two files are in `frontend/pilots/`).
   To make one: `cd backend/pilot`, `set -a; . ./.env; set +a`, `python3 pilot.py briefs/<brief>.json`.
 - Backend: `cd backend`, `. .venv/bin/activate`, `uvicorn app.main:app --reload --port 8000`; `GET /health` says
-  which assistants have a key. A login code is printed to the server's log.
+  which assistants have a key and whether first runs are replayed (`FIRST_RUN_REPLAY=true` in `backend/.env`:
+  no paid request; remove the line for a live run). A login code is printed to the server's log.
 - To check a pilot report as a PDF: Chrome headless, `--print-to-pdf` against the dev server.
 
 ## How we work
@@ -144,7 +153,36 @@ that is committed.
    time: a branch for the work, a commit, a merge into `main`, and a push of both. Before any commit, check
    that no key and no client's name is in it.
 
-## Done (as of 14 November 2026)
+## Done (as of 15 November 2026)
+
+- **The backend is on the Contabo server (15 Nov), reachable only from the server itself.** The user gave the
+  server and chose, when asked: deploy now beside the other projects, log in by an SSH key. The server already
+  runs two other projects of the user's (nginx on 80/443, a Docker container); nothing of theirs was changed.
+  GEO has its own folder, user, service and local port (`backend/README.md`, "On the server"). Deployed from
+  the working folder of the branch `first-run-page`, not from `main`. Login was tried on the server; no key is
+  there, so no first run can be made. Not done: an nginx site and HTTPS (waiting for a subdomain), Supabase,
+  the keys. The server's address and access are kept out of the repository (it is public).
+
+- **The first-run page (15 Nov), on the branch `first-run-page`; merged and pushed the same day, when the user
+  said "commit, push".** The user asked "what is next"
+  three times after the proposal, so it was built with the proposal's default: no paid request.
+  `/onboarding/first-run` (`features/projects`: FirstRunFlow, FirstRunForm, FirstRunProgress, FirstRunResultView):
+  the website; then the run's three stages with the answers counted as the backend reports them, asked for
+  every second (`?run=` keeps the run in the address); then the first statistics, numbers first: one sentence,
+  three figures (named, recommended, place), every business side by side, each assistant apart when two were
+  asked, the questions without the client, the site checks, and "Continue to setup". Counts of answers, never
+  percentages ("3 / 10"): a first run has ten. After login an account that has never run one lands there.
+  `NEXT_PUBLIC_LIVE=auth,first-run` sends its calls to the backend; the mocks have a version too. Backend:
+  `FIRST_RUN_REPLAY=true` (in `backend/.env`, this computer only) replays the latest saved run at a watchable
+  pace and asks nobody, marking the result `replayed`, which the page says in a banner; `GET /first-runs` lists
+  the account's runs. Tried in a browser in Uzbek on desktop: form, progress, result. Not tried: Russian and
+  English, phone width, a failed run, a live run. "Continue to setup" opens the old wizard, which doesn't yet
+  take the first run's data: that is the next step (saving a first run as a project). `SiteAudit` moved to
+  `shared/components`. Then, the same day ("what you recommend"): "Continue to setup" opens the wizard on its
+  second step with everything filled in from the run (`draftsFromFirstRun`: the profile, the businesses named
+  beside the client as competitors, the ten questions with their topics; `?firstRun=`); the field and the city
+  show as the run wrote them. Tried in a browser through to the last step, not submitted. The project the
+  wizard then creates is still a mock one: real projects in the backend are the next step.
 
 - **Login by email, wired to the backend (14 Nov), on the branch `email-login`; merged and pushed the same day,
   when the user said "commit, push".** The first page
@@ -480,7 +518,7 @@ that is committed.
   then `hisobotlar-correction` (the report as an official status document with a condition score, Hisobotlar
   opening on the latest condition), then `report-detail-width` (the report fills the panel's width), then
   `settings-and-overview` (Sozlamalar in Peec's layout, the Overview tightened, Savollar and a question's page in
-  Peec's design, brands' logos), then `plan-billing-correction` (Tarif's plans four in a row, as Peec's); on 14 Nov `pilot-report`, `pilot-first-run`, `models-and-site`, `backend-first-slice`, then `restyle` (the look of our own, the Uzbek metric names, the icons), then `email-login` (the login by email, wired to the backend). Each time the user chose "commit, push" when asked (for Harakatlar: "push everything"). Each page gets its
+  Peec's design, brands' logos), then `plan-billing-correction` (Tarif's plans four in a row, as Peec's); on 14 Nov `pilot-report`, `pilot-first-run`, `models-and-site`, `backend-first-slice`, then `restyle` (the look of our own, the Uzbek metric names, the icons), then `email-login` (the login by email, wired to the backend); on 15 Nov `first-run-page` (the first run's page, the setup filled in from it, the backend on the server, API calls through the frontend). Each time the user chose "commit, push" when asked (for Harakatlar: "push everything"). Each page gets its
   own branch, merged when the user says so.
 
 ## To do, in order

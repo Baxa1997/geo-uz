@@ -222,6 +222,12 @@ That is roughly one to two US cents per answer, and it has to cover the answer w
 
 ## Change log
 
+- **15 Nov 2026. The first-run page is wired.** New here: `GET /first-runs` (the account's runs, newest first;
+  the frontend sends a new account to its first run when the list is empty) and `FIRST_RUN_REPLAY` (development:
+  the latest saved run again, no assistant asked, `replayed: true` in the result; the day's limit is off with
+  it). Still to build for the step after: saving a first run as a project (brand, competitors and questions
+  from its result), which the setup wizard then confirms.
+
 - **14 Nov 2026. The frontend's login is wired to this service.** The login page asks for an email and the code;
   `NEXT_PUBLIC_LIVE=auth` in the frontend sends `sendCode`, `verifyCode`, `getMe`, `logout` and `updateMe` here
   while every other call stays on mocks, and the mocks ask `GET /auth/me` whom a session belongs to. New here:

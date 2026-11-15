@@ -21,6 +21,9 @@ import type {
   DiscoverPromptsRequest,
   DemoRequest,
   DismissBrandRequest,
+  FirstRun,
+  FirstRunRequest,
+  FirstRunResult,
   ImportKeywordsRequest,
   Project,
   Prompt,
@@ -54,15 +57,24 @@ import type {
 
 export const USE_MOCKS = process.env.NEXT_PUBLIC_USE_MOCKS === "true";
 
+/** The backend's address, for calls made on the Next.js server. */
 export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 /**
+ * The browser reaches the backend through this site (a rewrite in next.config.ts), never directly: the
+ * session cookie is then this site's own, whichever domain the site is served from.
+ */
+const BROWSER_API = "/api/backend";
+
+/**
  * The parts of the API the backend already serves while the rest are still mocks, as a list in
- * NEXT_PUBLIC_LIVE ("auth"). The backend is built a slice at a time, and a page is wired when its slice
+ * NEXT_PUBLIC_LIVE ("auth,first-run"). The backend is built a slice at a time, and a page is wired when its slice
  * exists. With "auth" live, login and the session are the backend's, and the mocks ask it who the visitor is.
  */
 const LIVE = new Set((process.env.NEXT_PUBLIC_LIVE ?? "").split(",").map((part) => part.trim()).filter(Boolean));
 export const AUTH_LIVE = !USE_MOCKS || LIVE.has("auth");
+/** A first run is the backend's (it needs the backend's login, so "auth" too). */
+export const FIRST_RUN_LIVE = !USE_MOCKS || (LIVE.has("first-run") && LIVE.has("auth"));
 
 export interface ApiClient {
   sendCode(body: SendCodeRequest): Promise<SendCodeResponse>;
@@ -124,6 +136,13 @@ export interface ApiClient {
   suggestCompetitors(body: SuggestCompetitorsRequest): Promise<CompetitorSuggestion[]>;
   suggestPrompts(body: SuggestPromptsRequest): Promise<PromptSuggestion[]>;
   getRunProgress(id: string): Promise<RunProgress>;
+  /** Starts a new account's first run and returns at once; the same website again within a day returns the run it has. 422 for a bad address, 429 at the day's limit. */
+  startFirstRun(body: FirstRunRequest): Promise<FirstRun>;
+  /** The account's first runs, newest first. */
+  getFirstRuns(): Promise<FirstRun[]>;
+  getFirstRun(id: string): Promise<FirstRun>;
+  /** The first statistics; 409 until the run is done. */
+  getFirstRunResult(id: string): Promise<FirstRunResult>;
   createDemoRequest(body: DemoRequest): Promise<void>;
   sendSupportMessage(body: SupportMessage): Promise<void>;
   /** Sozlamalar: the user's own name. */
@@ -174,7 +193,7 @@ async function sessionHeaders(): Promise<Record<string, string>> {
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(`${API_URL}${path}`, {
+  const response = await fetch(`${typeof window === "undefined" ? API_URL : BROWSER_API}${path}`, {
     ...init,
     credentials: "include",
     headers: {
@@ -244,6 +263,10 @@ const httpApi: ApiClient = {
   suggestCompetitors: (body) => send("POST", "/onboarding/suggest-competitors", body),
   suggestPrompts: (body) => send("POST", "/onboarding/suggest-prompts", body),
   getRunProgress: (runId) => request(`/runs/${id(runId)}/progress`),
+  startFirstRun: (body) => send("POST", "/first-runs", body),
+  getFirstRuns: () => request("/first-runs"),
+  getFirstRun: (runId) => request(`/first-runs/${id(runId)}`),
+  getFirstRunResult: (runId) => request(`/first-runs/${id(runId)}/result`),
   createDemoRequest: (body) => send("POST", "/demo-requests", body),
   sendSupportMessage: (body) => send("POST", "/support-messages", body),
   updateMe: (body) => send("PATCH", "/auth/me", body),
@@ -324,6 +347,10 @@ const mockBridge = (): ApiClient => ({
       suggestCompetitors: (body) => mocks().then((m) => unwrap(m.suggestCompetitors(body))),
       suggestPrompts: (body) => mocks().then((m) => unwrap(m.suggestPrompts(body))),
       getRunProgress: (runId) => mocks().then((m) => unwrap(m.getRunProgress(runId))),
+      startFirstRun: (body) => mocks().then((m) => unwrap(m.startFirstRun(body))),
+      getFirstRuns: () => mocks().then((m) => unwrap(m.getFirstRuns())),
+      getFirstRun: (runId) => mocks().then((m) => unwrap(m.getFirstRun(runId))),
+      getFirstRunResult: (runId) => mocks().then((m) => unwrap(m.getFirstRunResult(runId))),
       createDemoRequest: (body) => mocks().then((m) => unwrap(m.createDemoRequest(body))),
       sendSupportMessage: (body) => mocks().then((m) => unwrap(m.sendSupportMessage(body))),
       updateMe: (body) => mocks().then((m) => unwrap(m.updateMe(body))),
@@ -351,4 +378,14 @@ const liveAuth: Partial<ApiClient> = {
   updateMe: httpApi.updateMe,
 };
 
-export const api: ApiClient = USE_MOCKS ? { ...mockBridge(), ...(AUTH_LIVE ? liveAuth : {}) } : httpApi;
+/** The calls of the first-run slice. */
+const liveFirstRun: Partial<ApiClient> = {
+  startFirstRun: httpApi.startFirstRun,
+  getFirstRuns: httpApi.getFirstRuns,
+  getFirstRun: httpApi.getFirstRun,
+  getFirstRunResult: httpApi.getFirstRunResult,
+};
+
+export const api: ApiClient = USE_MOCKS
+  ? { ...mockBridge(), ...(AUTH_LIVE ? liveAuth : {}), ...(FIRST_RUN_LIVE ? liveFirstRun : {}) }
+  : httpApi;

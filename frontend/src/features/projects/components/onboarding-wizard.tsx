@@ -13,11 +13,12 @@ import { api } from "@/shared/api/client";
 import { queryKeys } from "@/shared/api/query-keys";
 import { normalizeDomain } from "@/shared/helpers/domain";
 import { cn } from "@/shared/helpers/utils";
-import type { CreateProjectRequest, SuggestCompetitorsRequest, SuggestPromptsRequest } from "@/shared/types/api";
+import type { CreateProjectRequest, FirstRunResult, SuggestCompetitorsRequest, SuggestPromptsRequest } from "@/shared/types/api";
 import { ALL_TOPICS, MAX_COMPETITORS, ONBOARDING_STEPS } from "../constants";
 import { isFilled } from "../helpers/brand-draft";
 import {
   competitorChoice,
+  draftsFromFirstRun,
   onboardingRequest,
   questionDrafts,
   siteDraft,
@@ -52,6 +53,7 @@ const attempt = <T, I>(mutation: UseMutationResult<T, Error, I>, input: I) =>
 export function OnboardingWizard({
   initialWebsite,
   fromCheck,
+  firstRun = null,
   who,
   firstName,
   year,
@@ -59,6 +61,8 @@ export function OnboardingWizard({
   initialWebsite: string;
   /** The free check's site, when the user came from it. */
   fromCheck: string | null;
+  /** The account's first run, when the user comes from its statistics: the wizard opens on the profile, filled in from it. */
+  firstRun?: FirstRunResult | null;
   /** Who is logged in, as shown at the top: name, phone or Telegram username. */
   who: string | null;
   /** For the greeting on the first step. */
@@ -71,11 +75,13 @@ export function OnboardingWizard({
   const id = useId();
   const formRef = useRef<HTMLFormElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
-  const [index, setIndex] = useState(0);
-  const [website, setWebsite] = useState(initialWebsite);
-  const [site, setSite] = useState<SiteDraft | null>(null);
-  const [choice, setChoice] = useState<Fetched<CompetitorChoice> | null>(null);
-  const [suggested, setSuggested] = useState<Fetched<{ questions: QuestionDraft[]; topics: TopicDraft[] }> | null>(null);
+  // From a first run the website is known and read already: start on the profile, with every later step filled in
+  const [fromRun] = useState(() => (firstRun ? draftsFromFirstRun(firstRun) : null));
+  const [index, setIndex] = useState(fromRun ? 1 : 0);
+  const [website, setWebsite] = useState(fromRun?.site.domain ?? initialWebsite);
+  const [site, setSite] = useState<SiteDraft | null>(fromRun?.site ?? null);
+  const [choice, setChoice] = useState<Fetched<CompetitorChoice> | null>(fromRun?.choice ?? null);
+  const [suggested, setSuggested] = useState<Fetched<{ questions: QuestionDraft[]; topics: TopicDraft[] }> | null>(fromRun?.suggested ?? null);
   const [shown, setShown] = useState(ALL_TOPICS);
   const [errors, setErrors] = useState<OnboardingErrors>({});
 

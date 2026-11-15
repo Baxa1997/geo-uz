@@ -1,6 +1,10 @@
 import { NativeSelect, NativeSelectOption } from "@/shared/components/ui/native-select";
 
-/** Native select over translated codes (category, city). 16px text on phones so iOS doesn't zoom. */
+/**
+ * Native select over translated codes (category, city). A value that is no code (a first run reads the
+ * field and the city from the website, in its own words) is offered first, as written.
+ * 16px text on phones so iOS doesn't zoom.
+ */
 export function CodeSelect({
   id,
   options,
@@ -19,6 +23,7 @@ export function CodeSelect({
       onChange={(e) => onChange(e.target.value)}
       className="w-full [&_select]:h-10 [&_select]:text-base md:[&_select]:text-sm"
     >
+      {value && !(value in options) && <NativeSelectOption value={value}>{value}</NativeSelectOption>}
       {Object.entries(options).map(([code, label]) => (
         <NativeSelectOption key={code} value={code}>
           {label}
