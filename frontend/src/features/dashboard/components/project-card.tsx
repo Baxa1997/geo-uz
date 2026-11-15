@@ -3,7 +3,7 @@ import { useLocale, useMessages, useTranslations } from "next-intl";
 import { Trend } from "@/shared/components/scores/trend";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/shared/components/ui/card";
 import { Link } from "@/i18n/navigation";
-import { labelFor } from "@/shared/helpers/labels";
+import { labelFor, placeLabel } from "@/shared/helpers/labels";
 import { formatPercent } from "@/shared/helpers/numbers";
 import { scoreOf, topCompetitor } from "@/shared/helpers/scores";
 import type { Project, Report } from "@/shared/types/api";
@@ -34,7 +34,7 @@ export function ProjectCard({
           </Link>
         </CardTitle>
         <CardDescription>
-          {labelFor(messages.Categories, project.category)} · {labelFor(messages.Cities, project.city)}
+          {labelFor(messages.Categories, project.category)} · {placeLabel(messages.Cities, locale, project)}
         </CardDescription>
       </CardHeader>
       <CardContent>

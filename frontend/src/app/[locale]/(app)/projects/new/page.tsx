@@ -1,1 +1,1 @@
-export { default, generateMetadata } from "@/features/projects/pages/new-project-page";
+export { default } from "@/features/projects/pages/new-project-page";

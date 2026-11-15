@@ -56,7 +56,12 @@ class Settings:
     # project set, Vertex is used and GEMINI_API_KEY is not.
     google_cloud_project: Optional[str] = field(default_factory=lambda: os.environ.get("GOOGLE_CLOUD_PROJECT"))
     google_cloud_location: str = field(default_factory=lambda: os.environ.get("GOOGLE_CLOUD_LOCATION", "global"))
-    read_model: str = field(default_factory=lambda: os.environ.get("READ_MODEL", "gpt-6.1-terra"))
+    # The models that work for us, not the ones measured. READ_MODEL reads who an answer names, gathers a
+    # business's spellings and checks facts; WRITE_MODEL writes a website's profile and questions, the first
+    # check's conclusion and the briefs. Gemini's on Vertex when a Google Cloud project is set (the user's
+    # decision, 15 Nov 2026), else OpenAI's. Reading is many calls at once, so it has the steadier model.
+    read_model: str = field(default_factory=lambda: os.environ.get("READ_MODEL") or ("gemini-3.6-flash" if os.environ.get("GOOGLE_CLOUD_PROJECT") else "gpt-6.1-terra"))
+    write_model: str = field(default_factory=lambda: os.environ.get("WRITE_MODEL") or ("gemini-4-hydrogen" if os.environ.get("GOOGLE_CLOUD_PROJECT") else "gpt-6.1-terra"))
     # The first run a new account gets: questions, each asked once to every assistant
     first_run_questions: int = field(default_factory=lambda: int(os.environ.get("FIRST_RUN_QUESTIONS", "10")))
     # Of those, how many ChatGPT is asked when Gemini is asked too (the user's decision, 15 Nov 2026: Gemini
@@ -92,6 +97,11 @@ class Settings:
     @property
     def login(self) -> str:
         return "email" if self.own_email else "supabase" if self.supabase_login else "development"
+
+    @property
+    def can_read(self) -> bool:
+        """A model that reads and writes for us can be reached."""
+        return bool(self.openai_key or self.google_cloud_project)
 
     @property
     def engines(self) -> List[str]:

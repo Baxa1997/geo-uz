@@ -34,21 +34,18 @@ from .config import settings
 from .db import Answer, Brand, Citation, Mention, Project, Prompt, Run, SessionLocal, create_tables, now
 from .engines import web
 from .firstrun import NAMES_RULES, READ_RULES, READ_SCHEMA, STR, arr, obj
-from .projects import CHECK_DAYS, brands_of, prompts_of
+from .projects import CHECK_DAYS, DEFAULT_COUNTRY, brands_of, prompts_of
 
 ASK_TRIES = 3
-KAZAKH_CITIES = ("алматы", "almaty", "астана", "astana", "шымкент", "shymkent")
+def _place(country: str, city: str) -> Tuple[str, str, str]:
+    """Where the search tool is told the customer is: the country, the city (may be empty), the time zone."""
+    return (country, city, firstrun.TIMEZONES.get(country, ""))
 
 
-def _place(city: str) -> Tuple[str, str, str]:
-    """Where the search tool is told the customer is: the country, the city, the time zone."""
-    return ("KZ", city, "Asia/Almaty") if city.casefold() in KAZAKH_CITIES else ("UZ", city or "Tashkent", "Asia/Tashkent")
-
-
-def _ask(engine: str, prompt: Prompt) -> Optional[Dict[str, Any]]:
+def _ask(engine: str, prompt: Prompt, country: str) -> Optional[Dict[str, Any]]:
     for attempt in range(ASK_TRIES):
         try:
-            answer = engines.ask(engine, prompt.text, *_place(prompt.location))
+            answer = engines.ask(engine, prompt.text, *_place(country, prompt.location))
             if answer["text"].strip():
                 return answer
         except engines.EngineError as error:
@@ -130,7 +127,8 @@ def _collect(db: Any, project: Project, brands: List[Brand], run: Run, jobs: Lis
     client = next(brand for brand in brands if brand.own)
     answers: List[Dict[str, Any]] = []
     with ThreadPoolExecutor(max_workers=5) as pool:
-        futures = {pool.submit(_ask, engine, prompt): (prompt, engine, sample) for prompt, engine, sample in jobs}
+        country = project.country or DEFAULT_COUNTRY
+        futures = {pool.submit(_ask, engine, prompt, country): (prompt, engine, sample) for prompt, engine, sample in jobs}
         for done, future in enumerate(as_completed(futures), start=1):
             prompt, engine, sample = futures[future]
             answer = future.result()

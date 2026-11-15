@@ -72,7 +72,8 @@ def ask(model: str, question: str, country: str, city: str, timezone: str, conte
     `context` is the search tool's `search_context_size` (low, medium, high): how much of the pages it reads,
     which is most of an answer's cost. None leaves the tool's default (medium).
     """
-    tool: Dict[str, Any] = {"type": "web_search", "user_location": {"type": "approximate", "country": country, "city": city, "timezone": timezone}}
+    # A business may serve a whole country: an empty city or time zone is left out
+    tool: Dict[str, Any] = {"type": "web_search", "user_location": {"type": "approximate", **{key: value for key, value in (("country", country), ("city", city), ("timezone", timezone)) if value}}}
     if context:
         tool["search_context_size"] = context
     return respond(

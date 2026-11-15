@@ -90,8 +90,20 @@ keeps its first check and is not checked again. We switch a plan on by hand, `py
 and Thursdays with 50 questions and the facts check, **Enterprise** (`agency`, by agreement) for several
 projects. `python -m app.weekly` run every day picks the projects due that day. Gemini is reached through
 Vertex AI when `GOOGLE_CLOUD_PROJECT` is set (a credentials file, a plain POST, Google Search grounding; the
-cited pages come as Google's redirect links and are followed to their real addresses). **Gemini has never run
-from this service**: the request's shape is the one the user's other project on the server uses.
+cited pages come as Google's redirect links and are followed to their real addresses). Gemini first answered
+from this service on 15 Nov 2026: two first checks of ten questions on the server, about $0.52 each.
+
+**The models that work for us (15 Nov 2026).** With `GOOGLE_CLOUD_PROJECT` set, Gemini on Vertex reads and
+writes, not OpenAI: `READ_MODEL` (default `gemini-3.6-flash`) reads who each answer names, gathers the
+spellings of one business and checks facts; `WRITE_MODEL` (default `gemini-4-hydrogen`) writes the website's
+profile and questions, the first check's conclusion and the briefs. Measured on a saved run's ten answers:
+Gemini 4 Hydrogen, Gemini 4 Argon and Gemini 3.6 Flash each read them as `gpt-6.1-terra` had (Hydrogen
+differed on one answer's recommendations), but both Gemini 4 models sometimes held a call for 70 to 130
+seconds, and 3.6 Flash never did: so reading, which is many calls at once, is on Flash. A reading call has 30
+seconds and a writing call 60; after that `gemini-3.6-flash` does it, then `gpt-6.1-terra` when an OpenAI key
+exists. An answer with Google Search has 75 seconds, then is asked again (ten answers once took 348 seconds
+without that limit, and 54 with it). The first check's result carries `conclusion` (`uz`, `ru`, `en`): three
+sentences worded from the counts, or null when the model failed.
 
 **Projects** (`app/projects.py`, 15 Nov 2026; read only). Tables: `projects`, `brands` (the client's own and
 the competitors, in a fixed order), `prompts`, `runs`, `answers`, `mentions` (every business an answer names;
@@ -109,9 +121,9 @@ checks every project, `--project <id>` one. It asks each tracked question to eve
 `RUN_SAMPLES` times (default 1), five at a time, a failed one twice more; reads the answers as a first run does;
 gathers the spellings of each business with the tracked brands' names among them; keeps what earlier checks
 found about each cited site and reads the five most cited new ones. With `FIRST_RUN_REPLAY=true` it asks
-nobody and saves the project's latest check again as a new one: that is how it was tried. On the server it is
-to be started by a timer on Mondays at 01:00 UTC, with `WEEKLY_RUNS=true` so the report names the next check;
-the timer is not installed.
+nobody and saves the project's latest check again as a new one: that is how it was tried. On the server the
+timer `geo-weekly` starts it every day at 01:00 UTC (installed 15 Nov; it checks only paid projects due that
+day, and none is paid yet), with `WEEKLY_RUNS=true` so the report names the next check.
 
 **Fixes** (`app/fixes.py`, 15 Nov 2026). After a project is made and after every check, the most cited pages
 on sites a business can be listed on are opened (plain HTTP, up to 15, no model) and it is kept which tracked
@@ -161,8 +173,7 @@ repository.
   Supabase is the database only: the login email is this service's own (`SMTP_*` in the `.env`, a Gmail
   account; `/health` says `"login": "email"`), because Supabase's emails kept the default sign-in link whatever
   its saved templates said. A code reached a real inbox on 15 Nov.
-- Its `.env` holds no assistant's key yet, so `/health` lists no assistant and a first run fails with `no_engines`; login
-  works, with the code in the service's log (`journalctl -u geo-backend`).
+- Its `.env` holds the OpenAI key and the Google credentials (15 Nov), so `/health` lists `chatgpt` and `gemini`.
 - To update: copy `app/` and `requirements.txt` (rsync), `pip install -r requirements.txt` in its `.venv`,
   `systemctl restart geo-backend`.
 
@@ -170,8 +181,8 @@ repository.
 
 - The frontend's login calls this service (since 14 Nov, with `NEXT_PUBLIC_LIVE=auth` in `frontend/.env.local`);
   and so does the first-run page (`auth,first-run`, since 15 Nov); every other page still runs on mocks.
-- Gemini is written from Google's documentation and has never been run: no key yet.
+- Gemini through a key (the Interactions API) has never run; through Vertex it has (15 Nov).
 - Supabase's login is written and has never been run: no project yet. Google login is not written.
-- A live weekly check and its timer on the server; a browser on the server for the PDF; the report in
+- A live weekly check (the timer is installed); a browser on the server for the PDF; the report in
   Telegram; suggested questions; facts read from the website; and everything else in `PLAN.md`.
 - A first run is done in a thread of the web process: fine for a start, a queue when there is traffic.

@@ -1,8 +1,5 @@
 import type { BrandDraft } from "../types";
 
-/** The new-project form compares a brand with up to 3 competitors. */
-export const COMPETITOR_SLOTS = 3;
-
 /** Onboarding lets users pick up to 5 of the suggested competitors; the first 3 start ticked. */
 export const MAX_COMPETITORS = 5;
 export const PRESELECTED_COMPETITORS = 3;

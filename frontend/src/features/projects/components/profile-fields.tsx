@@ -7,7 +7,9 @@ import { Textarea } from "@/shared/components/ui/textarea";
 import { INPUT_CLASS, MAX_ALIASES, MAX_DESCRIPTION_LENGTH, MAX_SERVICES } from "../constants";
 import type { OnboardingErrors, SiteDraft } from "../types";
 import { ChipInput } from "@/shared/components/chip-input";
-import { CodeSelect } from "./code-select";
+import { DEFAULT_COUNTRY } from "@/shared/constants/countries";
+import { CountrySelect } from "./country-select";
+import { SuggestInput } from "./suggest-input";
 
 /** Onboarding step 2: the brand profile the backend read from the website, each field with what it's for. */
 export function ProfileFields({
@@ -57,14 +59,17 @@ export function ProfileFields({
         <FieldError>{errors.description && t(errors.description)}</FieldError>
       </Field>
 
-      <Field>
+      <Field data-invalid={Boolean(errors.category)}>
         <FieldLabel htmlFor={`${id}-category`}>{t("category")}</FieldLabel>
-        <FieldDescription>{t("categoryHint")}</FieldDescription>
-        <CodeSelect
+        <FieldDescription id={`${id}-category-hint`}>{t("categoryHint")}</FieldDescription>
+        <SuggestInput
           id={`${id}-category`}
           options={messages.Categories}
           value={site.category}
           onChange={(category) => onChange({ category })}
+          placeholder={t("categoryPlaceholder")}
+          invalid={Boolean(errors.category)}
+          describedBy={`${id}-category-hint`}
         />
         <FieldError>{errors.category && t(errors.category)}</FieldError>
       </Field>
@@ -84,15 +89,25 @@ export function ProfileFields({
       )}
 
       <Field>
-        <FieldLabel htmlFor={`${id}-city`}>{t("city")}</FieldLabel>
-        <FieldDescription>{t("cityHint")}</FieldDescription>
-        <CodeSelect
+        <FieldLabel htmlFor={`${id}-country`}>{t("country")}</FieldLabel>
+        <FieldDescription>{t("countryHint")}</FieldDescription>
+        <CountrySelect id={`${id}-country`} value={site.country} onChange={(country) => onChange({ country })} />
+      </Field>
+
+      <Field>
+        <FieldLabel htmlFor={`${id}-city`}>
+          {t("city")} <span className="font-normal text-muted-foreground">({t("optional")})</span>
+        </FieldLabel>
+        <FieldDescription id={`${id}-city-hint`}>{t("cityHint")}</FieldDescription>
+        {/* Our own list of cities is Uzbekistan's; elsewhere the city is typed */}
+        <SuggestInput
           id={`${id}-city`}
-          options={messages.Cities}
+          options={site.country === DEFAULT_COUNTRY ? messages.Cities : {}}
           value={site.city}
           onChange={(city) => onChange({ city })}
+          placeholder={t("cityPlaceholder")}
+          describedBy={`${id}-city-hint`}
         />
-        <FieldError>{errors.city && t(errors.city)}</FieldError>
       </Field>
 
       <ChipInput

@@ -6,8 +6,10 @@
     read the answers   which businesses each names, in order, in what tone, and which it recommends
     one name each      the spellings of one business brought together
     count              the Snapshot the frontend draws (`frontend/src/shared/types/api.ts`)
+    conclude           a few sentences on what the counts mean and what to do first, in the three languages
 
-Counting is plain code. A model writes the profile and reads the answers; it never produces a number.
+Counting is plain code. A model writes the profile, reads the answers and words the conclusion from the
+counts it is given; it never produces a number.
 """
 
 from __future__ import annotations
@@ -109,15 +111,18 @@ def site_checks(pages: List[Dict[str, str]], html: Optional[str], robots: Option
 
 # --- the profile and the questions ---------------------------------------------------------------------
 
+# The time zone told to the search tool with the country; left out for the others
+TIMEZONES = {"UZ": "Asia/Tashkent", "KZ": "Asia/Almaty", "KG": "Asia/Bishkek", "TJ": "Asia/Dushanbe", "TM": "Asia/Ashgabat"}
+
 PROFILE_RULES = """You read a business's website and prepare a first check of how AI assistants answer its customers.
 
 From the text, give:
 - name: the business's name as customers write it. aliases: its other spellings on the site and in common use (Latin and Cyrillic, short forms); never a generic word, and never an abbreviation of three letters or fewer.
 - category: what kind of business it is, two to four words in Russian (\"частная школа\", \"стоматологическая клиника\").
-- city: the city it mainly serves, in Russian, and cityEn, the same in English. country: the two-letter country code.
+- country: the two-letter code of the country it mainly serves. city: the city it mainly serves, in Russian, and cityEn, the same in English; both empty when it serves a whole country or several, or works online.
 - description: one sentence in Russian on what it offers.
 - services: up to six of its main services, in Russian.
-- questions: exactly {count} questions a customer in that city would ask an AI assistant when choosing such a business, before knowing any business's name. Half in Russian (language \"ru\"), half in Uzbek in Latin script (language \"uz\"). Cover: the best in the city, how to choose, prices, the business's main services or specialities, and its district if the site names one. Each with a `topic` of one or two words in Russian. Natural, short, the way people type. Never name this business or any other in a question."""
+- questions: exactly {count} questions a customer there (in that city, or in that country when no city is given) would ask an AI assistant when choosing such a business, before knowing any business's name. Half in Russian (language \"ru\"), half in Uzbek in Latin script (language \"uz\"). Cover: the best in the city or country, how to choose, prices, the business's main services or specialities, and its district if the site names one. Each with a `topic` of one or two words in Russian. Natural, short, the way people type. Never name this business or any other in a question."""
 
 
 def profile(domain: str, pages: List[Dict[str, str]], category: Optional[str], city: Optional[str], count: int) -> Tuple[Dict[str, Any], float]:
@@ -134,7 +139,7 @@ def profile(domain: str, pages: List[Dict[str, str]], category: Optional[str], c
         services=arr(STR),
         questions=arr(obj(text=STR, language={"type": "string", "enum": ["ru", "uz"]}, topic=STR)),
     )
-    found, usd = engines.read(PROFILE_RULES.replace("{count}", str(count)) + given, f"Website: {domain}\n\n{text}", "site_profile", schema)
+    found, usd = engines.write(PROFILE_RULES.replace("{count}", str(count)) + given, f"Website: {domain}\n\n{text}", "site_profile", schema)
     spellings = [found["name"]] + found["aliases"]
     # A question that names the business would measure nothing
     found["questions"] = [question for question in found["questions"] if not web.names(question["text"], spellings)][:count]
@@ -159,6 +164,27 @@ NAMES_RULES = (
     "(abbreviations, Latin and Cyrillic, with or without words like School or Clinic). Never merge two different businesses: when unsure, keep "
     "them apart. Give each group as `name` the short name people use, without the city or a slogan. List every given spelling exactly once."
 )
+
+
+# --- the conclusion ------------------------------------------------------------------------------------
+
+CONCLUSION_RULES = """You write the conclusion of a first check of how AI assistants answer customers' questions about one kind of business. You are given what was counted. The reader owns the business and is not technical.
+
+Write three sentences, at most 70 words together: where the business stands against the others; the main reason the counts show (the questions it is missing from, the sites the assistants cite that don't list it, or a problem on its website); the one thing to do first. Use only the numbers and names given, as counts of answers (\"3 of 10 answers\"), never percentages. A site that is another business's own website is not a place to get listed: for a listing, name only catalogues, rating and news sites. Plain words: no \"visibility\", \"share of voice\", \"GEO\", \"LLM\". Don't promise a result.
+
+Give the same conclusion in three languages: `uz` (Uzbek in Latin script, with oʻ and gʻ), `ru` (Russian) and `en` (English). Keep the businesses' and sites' names as given."""
+
+CONCLUSION_SCHEMA = obj(uz=STR, ru=STR, en=STR)
+
+
+def conclusion(facts: Dict[str, Any]) -> Tuple[Optional[Dict[str, str]], float]:
+    """The conclusion in the three languages, or None when the model failed: the page then shows the counts alone."""
+    try:
+        written, usd = engines.write(CONCLUSION_RULES, json.dumps(facts, ensure_ascii=False), "first_conclusion", CONCLUSION_SCHEMA)
+    except engines.EngineError as error:
+        print(f"first run: no conclusion: {error}")
+        return None, 0.0
+    return ({language: " ".join(written[language].split()) for language in ("uz", "ru", "en")} if all(written.get(language, "").strip() for language in ("uz", "ru", "en")) else None), usd
 
 
 # --- the run -------------------------------------------------------------------------------------------
@@ -201,7 +227,8 @@ def run(domain: str, category: Optional[str], city: Optional[str], progress: Pro
     who, usd = profile(domain, pages, category, city, settings.first_run_questions)
     cost += usd
     spellings = [who["name"]] + who["aliases"]
-    place = (who["country"].upper()[:2] or "UZ", who["cityEn"] or who["city"], "Asia/Almaty" if who["country"].upper().startswith("KZ") else "Asia/Tashkent")
+    country = who["country"].strip().upper()[:2] or "UZ"
+    place = (country, who["cityEn"] or who["city"], TIMEZONES.get(country, ""))
 
     # Every question to every assistant, a few at a time; one that fails is left out and the run goes on
     jobs = [(q, engine) for engine in asked for q in questions_for(engine, asked, len(who["questions"]))]
@@ -317,10 +344,32 @@ def run(domain: str, category: Optional[str], city: Optional[str], progress: Pro
             }
         )
 
+    recommended = {name: sum(1 for answer in answers for listed in answer["order"] if listed["name"] == name and listed["recommended"]) for name in tracked}
+    progress("reading_answers", len(jobs), len(jobs))
+    concluded, usd = conclusion(
+        {
+            "business": client,
+            "kind": who["category"],
+            "place": who["city"] or country,
+            "answers": len(answers),
+            "assistants": [engines.ENGINE_NAMES[engine] for engine in asked],
+            "businesses": [{"name": name, "isTheBusiness": name == client, "answersNamingIt": named[name], "answersRecommendingIt": recommended[name]} for name in tracked],
+            "questionsWithoutTheBusiness": [
+                {"question": who["questions"][q]["text"], "named": sorted({listed["name"] for answer in answers if answer["question"] == q for listed in answer["order"]})[:5]}
+                for q in range(len(who["questions"]))
+                if any(answer["question"] == q for answer in answers) and not any(listed["name"] == client for answer in answers if answer["question"] == q for listed in answer["order"])
+            ],
+            "sitesTheAssistantsCite": [{"site": source["domain"], "kind": source["type"], "answersCitingIt": source["count"], "listsTheBusiness": source["brandListed"]} for source in sources[:8]],
+            "problemsOnItsWebsite": [check["check"] for check in checks if not check["passed"]],
+        }
+    )
+    cost += usd
+
     snapshot = {
         "domain": own,
         "category": who["category"],
         "city": who["city"],
+        "country": country,
         "description": who["description"],
         "services": who["services"],
         "method": {"engine": " + ".join(engines.ENGINE_NAMES[engine] for engine in asked), "model": ", ".join(sorted({answer["model"] for answer in answers})), "webSearch": True, "samples": 1, "collectedAt": collected},
@@ -333,7 +382,9 @@ def run(domain: str, category: Optional[str], city: Optional[str], progress: Pro
             for engine in asked
             for theirs in [[answer for answer in answers if answer["engine"] == engine]]
         ],
-        "recommended": {ids[name]: sum(1 for answer in answers for listed in answer["order"] if listed["name"] == name and listed["recommended"]) for name in tracked},
+        "recommended": {ids[name]: recommended[name] for name in tracked},
+        # Worded by a model from the counts above, in the interface's three languages; None when it failed
+        "conclusion": concluded,
         "answers": len(answers),
         "prompts": by_question,
         "topSources": sources,

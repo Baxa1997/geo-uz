@@ -10,8 +10,8 @@ import { PlusIcon as Plus } from "@phosphor-icons/react/dist/ssr/Plus";
 import { MagnifyingGlassIcon as Search } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass";
 import { GearSixIcon as Settings } from "@phosphor-icons/react/dist/ssr/GearSix";
 import { UsersIcon as Users } from "@phosphor-icons/react/dist/ssr/Users";
-import { useMessages, useTranslations } from "next-intl";
-import { labelFor } from "@/shared/helpers/labels";
+import { useLocale, useMessages, useTranslations } from "next-intl";
+import { labelFor, placeLabel } from "@/shared/helpers/labels";
 import { cn } from "@/shared/helpers/utils";
 import { ALL_TOPICS, type OnboardingStep } from "../constants";
 import { questionsInTopics } from "../helpers/onboarding";
@@ -70,11 +70,12 @@ export function WizardPreview({
   const t = useTranslations("Onboarding.preview");
   const sidebar = useTranslations("Sidebar");
   const messages = useMessages();
+  const locale = useLocale();
   const place = PLACE[step];
   const name = site?.name.trim() || website.trim() || t("yourBrand");
   const initial = name.charAt(0).toUpperCase();
   const subline = site
-    ? `${labelFor(messages.Categories, site.category)} · ${labelFor(messages.Cities, site.city)}`
+    ? `${labelFor(messages.Categories, site.category)} · ${placeLabel(messages.Cities, locale, site)}`
     : website.trim() || t("site");
 
   return (

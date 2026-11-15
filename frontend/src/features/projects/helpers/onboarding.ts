@@ -1,7 +1,8 @@
 import { isValidDomain, normalizeDomain } from "@/shared/helpers/domain";
 import type { CompetitorSuggestion, CreateProjectRequest, FirstRunResult, PromptSuggestion, SiteAnalysis } from "@/shared/types/api";
+import { DEFAULT_COUNTRY } from "@/shared/constants/countries";
 import { MAX_COMPETITORS, OWN_QUESTION_TOPIC, PRESELECTED_COMPETITORS } from "../constants";
-import type { CompetitorChoice, OnboardingErrors, QuestionDraft, SiteDraft, TopicDraft } from "../types";
+import type { BrandDraft, CompetitorChoice, OnboardingErrorKey, OnboardingErrors, QuestionDraft, SiteDraft, TopicDraft } from "../types";
 import { isFilled, toNewBrand } from "./brand-draft";
 
 export const siteDraft = (analysis: SiteAnalysis): SiteDraft => ({
@@ -10,6 +11,7 @@ export const siteDraft = (analysis: SiteAnalysis): SiteDraft => ({
   aliases: analysis.aliases,
   description: analysis.description,
   category: analysis.category,
+  country: analysis.country || DEFAULT_COUNTRY,
   city: analysis.city,
   services: analysis.services,
 });
@@ -26,6 +28,7 @@ export function draftsFromFirstRun(run: FirstRunResult) {
     aliases: run.brand.aliases,
     description: run.description,
     category: run.category,
+    country: run.country || DEFAULT_COUNTRY,
     city: run.city,
     services: run.services,
   };
@@ -34,9 +37,9 @@ export function draftsFromFirstRun(run: FirstRunResult) {
     site,
     choice: {
       ...competitorChoice(run.competitors.map(({ name, aliases, domain }) => ({ name, aliases, domain }))),
-      inputs: JSON.stringify([site.domain, site.category, site.city]),
+      inputs: JSON.stringify([site.domain, site.category, site.country, site.city]),
     },
-    suggested: { questions, topics: topicDrafts(questions), inputs: JSON.stringify([site.category, site.city, site.services]) },
+    suggested: { questions, topics: topicDrafts(questions), inputs: JSON.stringify([site.category, site.country, site.city, site.services]) },
   };
 }
 
@@ -44,7 +47,7 @@ export function draftsFromFirstRun(run: FirstRunResult) {
 export const competitorChoice = (suggestions: CompetitorSuggestion[]): CompetitorChoice => ({
   suggestions,
   selected: suggestions.map((_, index) => index < PRESELECTED_COMPETITORS),
-  manual: null,
+  manual: [],
 });
 
 /** Every suggested question starts ticked. */
@@ -67,9 +70,8 @@ export function questionsInTopics(questions: QuestionDraft[], topics: TopicDraft
   return questions.filter((question) => ticked.has(question.topic) || question.topic === OWN_QUESTION_TOPIC);
 }
 
-/** Ticked suggestions plus the manual one, if anything was typed into it. */
-export const chosenCount = ({ selected, manual }: CompetitorChoice) =>
-  selected.filter(Boolean).length + (manual && isFilled(manual) ? 1 : 0);
+/** Ticked suggestions plus the ones typed in by hand (a row left empty doesn't count). */
+export const chosenCount = ({ selected, manual }: CompetitorChoice) => selected.filter(Boolean).length + manual.filter(isFilled).length;
 
 export function validateWebsite(website: string): OnboardingErrors {
   const domain = normalizeDomain(website);
@@ -77,33 +79,43 @@ export function validateWebsite(website: string): OnboardingErrors {
   return isValidDomain(domain) ? {} : { website: "websiteInvalid" };
 }
 
-/** Every field of the profile is needed (the user's rule, 15 Nov): the questions and the fixes are written from it. Other spellings stay optional. */
+/**
+ * The profile's fields are needed (the user's rule, 15 Nov): the questions and the fixes are written from
+ * them. Other spellings and the city stay optional: a business may serve its whole country.
+ */
 export function validateSite(site: SiteDraft): OnboardingErrors {
   const errors: OnboardingErrors = {};
   if (!site.name.trim()) errors.name = "nameRequired";
   if (!site.description.trim()) errors.description = "descriptionRequired";
   if (!site.category.trim()) errors.category = "categoryRequired";
   if (site.services.length === 0) errors.services = "servicesRequired";
-  if (!site.city.trim()) errors.city = "cityRequired";
   return errors;
 }
 
-/** 1 to 5 competitors; the manual one needs a name, a valid website if any, and mustn't repeat a suggestion. */
+/** What is wrong with a competitor typed in by hand: it needs a name, a valid website if any, and mustn't repeat another. */
+export function manualProblems(choice: CompetitorChoice, index: number): { name?: OnboardingErrorKey; domain?: OnboardingErrorKey } {
+  const draft: BrandDraft = choice.manual[index];
+  if (!isFilled(draft)) return {};
+  const name = draft.name.trim().toLowerCase();
+  const domain = normalizeDomain(draft.domain);
+  const repeats =
+    choice.suggestions.some((s) => s.name.toLowerCase() === name || (domain && s.domain === domain)) ||
+    choice.manual.some((other, i) => i < index && other.name.trim().toLowerCase() === name);
+  return {
+    ...(!name ? { name: "manualNameRequired" as const } : repeats ? { name: "manualDuplicate" as const } : {}),
+    ...(domain && !isValidDomain(domain) ? { domain: "manualDomainInvalid" as const } : {}),
+  };
+}
+
+/** Competitors are optional (the user's rule, 15 Nov): none to 5, and each typed in by hand has to be sound. */
 export function validateChoice(choice: CompetitorChoice): OnboardingErrors {
   const errors: OnboardingErrors = {};
-  const count = chosenCount(choice);
-  if (count === 0) errors.competitors = "competitorRequired";
-  if (count > MAX_COMPETITORS) errors.competitors = "competitorsMax";
-
-  const { manual } = choice;
-  if (!manual || !isFilled(manual)) return errors;
-  const name = manual.name.trim().toLowerCase();
-  const domain = normalizeDomain(manual.domain);
-  if (!name) errors.manualName = "manualNameRequired";
-  else if (choice.suggestions.some((s) => s.name.toLowerCase() === name || (domain && s.domain === domain))) {
-    errors.manualName = "manualDuplicate";
+  if (chosenCount(choice) > MAX_COMPETITORS) errors.competitors = "competitorsMax";
+  for (const index of choice.manual.keys()) {
+    const { name, domain } = manualProblems(choice, index);
+    if (name) errors.manualName ??= name;
+    if (domain) errors.manualDomain ??= domain;
   }
-  if (domain && !isValidDomain(domain)) errors.manualDomain = "manualDomainInvalid";
   return errors;
 }
 
@@ -123,12 +135,13 @@ export const onboardingRequest = (
   aliases: site.aliases,
   domain: site.domain,
   category: site.category,
-  city: site.city,
+  country: site.country,
+  city: site.city.trim(),
   description: site.description.trim(),
   services: site.services,
   competitors: [
     ...choice.suggestions.filter((_, index) => choice.selected[index]),
-    ...(choice.manual && isFilled(choice.manual) ? [toNewBrand(choice.manual)] : []),
+    ...choice.manual.filter(isFilled).map(toNewBrand),
   ],
   prompts: questionsInTopics(questions, topics)
     .filter((question) => question.selected)

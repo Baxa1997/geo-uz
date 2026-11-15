@@ -248,14 +248,14 @@ def _brief(project: Project, client: Brand, topic: str, questions: List[str], pa
     """A model writes the brief. None when no model may be asked, or it failed."""
     from .config import settings
 
-    if settings.first_run_replay or not settings.openai_key:
+    if settings.first_run_replay or not settings.can_read:
         return None
     language = (project.report_settings or {}).get("language", "uz")
     content = f"Language: {language}\nBusiness: {client.name} ({project.category}, {project.city})\nWhat it offers: {', '.join(project.services or [])}\nTopic: {topic}\nQuestions customers ask, where assistants name competitors and not this business:\n" + "\n".join(f"- {question}" for question in questions)
     if page:
         content += f"\n\nThe page as it is now, to rework:\n{page[:8000]}"
     try:
-        return engines.read(BRIEF_RULES, content, "content_brief", BRIEF_SCHEMA)[0]
+        return engines.write(BRIEF_RULES, content, "content_brief", BRIEF_SCHEMA)[0]
     except engines.EngineError as error:
         print(f"fixes: no brief for {topic}: {error}")
         return None

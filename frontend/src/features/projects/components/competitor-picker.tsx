@@ -7,10 +7,10 @@ import { Button } from "@/shared/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";
 import { EMPTY_BRAND, INPUT_CLASS, MAX_COMPETITORS } from "../constants";
-import { chosenCount } from "../helpers/onboarding";
+import { chosenCount, manualProblems } from "../helpers/onboarding";
 import type { BrandDraft, CompetitorChoice, OnboardingErrors } from "../types";
 
-/** Onboarding step 3: suggested competitors as ticked rows (up to 5), plus one typed in by hand. */
+/** Onboarding step 3: suggested competitors as ticked rows, plus any typed in by hand; up to 5 in all, and none is fine. */
 export function CompetitorPicker({
   id,
   choice,
@@ -26,11 +26,14 @@ export function CompetitorPicker({
   const count = chosenCount(choice);
   const full = count >= MAX_COMPETITORS;
   const { manual } = choice;
-  const setManual = (patch: Partial<BrandDraft>) => manual && onChange({ ...choice, manual: { ...manual, ...patch } });
+  // Shown once "Next" found something wrong, until the next edit
+  const checked = Boolean(errors.manualName || errors.manualDomain);
+  const setManual = (index: number, patch: Partial<BrandDraft>) =>
+    onChange({ ...choice, manual: manual.map((draft, i) => (i === index ? { ...draft, ...patch } : draft)) });
 
-  function openManual() {
-    onChange({ ...choice, manual: EMPTY_BRAND });
-    requestAnimationFrame(() => document.getElementById(`${id}-manual-name`)?.focus());
+  function addManual() {
+    onChange({ ...choice, manual: [...manual, EMPTY_BRAND] });
+    requestAnimationFrame(() => document.getElementById(`${id}-manual-${manual.length}-name`)?.focus());
   }
 
   return (
@@ -81,58 +84,63 @@ export function CompetitorPicker({
         })}
       </ul>
 
-      {manual ? (
-        <div role="group" aria-labelledby={`${id}-manual-title`} className="flex flex-col gap-3 rounded-xl border border-dashed p-3">
-          <div className="flex items-center justify-between gap-3">
-            <p id={`${id}-manual-title`} className="text-sm font-medium">
-              {t("manualTitle")}
-            </p>
-            <Button type="button" variant="ghost" size="sm" onClick={() => onChange({ ...choice, manual: null })}>
-              <X aria-hidden data-icon="inline-start" />
-              {t("removeManual")}
-            </Button>
+      {choice.suggestions.length === 0 && manual.length === 0 && <p className="text-sm text-pretty text-muted-foreground">{t("competitorsNone")}</p>}
+
+      {manual.map((draft, index) => {
+        const problems = checked ? manualProblems(choice, index) : {};
+        return (
+          <div key={index} role="group" aria-labelledby={`${id}-manual-${index}-title`} className="flex flex-col gap-3 rounded-xl border border-dashed p-3">
+            <div className="flex items-center justify-between gap-3">
+              <p id={`${id}-manual-${index}-title`} className="text-sm font-medium">
+                {t("manualTitle")}
+              </p>
+              <Button type="button" variant="ghost" size="sm" onClick={() => onChange({ ...choice, manual: manual.filter((_, i) => i !== index) })}>
+                <X aria-hidden data-icon="inline-start" />
+                {t("removeManual")}
+              </Button>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Field data-invalid={Boolean(problems.name)}>
+                <FieldLabel htmlFor={`${id}-manual-${index}-name`}>{t("manualName")}</FieldLabel>
+                <Input
+                  id={`${id}-manual-${index}-name`}
+                  value={draft.name}
+                  onChange={(e) => setManual(index, { name: e.target.value })}
+                  className={INPUT_CLASS}
+                  aria-invalid={Boolean(problems.name)}
+                />
+                <FieldError>{problems.name && t(problems.name)}</FieldError>
+              </Field>
+              <Field data-invalid={Boolean(problems.domain)}>
+                <FieldLabel htmlFor={`${id}-manual-${index}-domain`}>{t("manualDomain")}</FieldLabel>
+                <Input
+                  id={`${id}-manual-${index}-domain`}
+                  value={draft.domain}
+                  onChange={(e) => setManual(index, { domain: e.target.value })}
+                  placeholder={t("websitePlaceholder")}
+                  inputMode="url"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  className={INPUT_CLASS}
+                  aria-invalid={Boolean(problems.domain)}
+                />
+                <FieldError>{problems.domain && t(problems.domain)}</FieldError>
+              </Field>
+            </div>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <Field data-invalid={Boolean(errors.manualName)}>
-              <FieldLabel htmlFor={`${id}-manual-name`}>{t("manualName")}</FieldLabel>
-              <Input
-                id={`${id}-manual-name`}
-                value={manual.name}
-                onChange={(e) => setManual({ name: e.target.value })}
-                className={INPUT_CLASS}
-                aria-invalid={Boolean(errors.manualName)}
-              />
-              <FieldError>{errors.manualName && t(errors.manualName)}</FieldError>
-            </Field>
-            <Field data-invalid={Boolean(errors.manualDomain)}>
-              <FieldLabel htmlFor={`${id}-manual-domain`}>{t("manualDomain")}</FieldLabel>
-              <Input
-                id={`${id}-manual-domain`}
-                value={manual.domain}
-                onChange={(e) => setManual({ domain: e.target.value })}
-                placeholder={t("websitePlaceholder")}
-                inputMode="url"
-                autoCapitalize="none"
-                autoCorrect="off"
-                spellCheck={false}
-                className={INPUT_CLASS}
-                aria-invalid={Boolean(errors.manualDomain)}
-              />
-              <FieldError>{errors.manualDomain && t(errors.manualDomain)}</FieldError>
-            </Field>
-          </div>
-        </div>
-      ) : (
-        <button
-          type="button"
-          onClick={openManual}
-          disabled={full}
-          className="flex items-center gap-2 rounded-xl border border-dashed px-3 py-2.5 text-left text-sm text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          <Plus aria-hidden className="size-4" />
-          {t("addManually")}
-        </button>
-      )}
+        );
+      })}
+
+      <button
+        type="button"
+        onClick={addManual}
+        disabled={full}
+        className="flex items-center gap-2 rounded-xl border border-dashed px-3 py-2.5 text-left text-sm text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        <Plus aria-hidden className="size-4" />
+        {t("addManually")}
+      </button>
     </>
   );
 }

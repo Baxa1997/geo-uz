@@ -2,7 +2,7 @@ import { useLocale, useMessages, useTimeZone, useTranslations } from "next-intl"
 import { engineOf, TIME_ZONE } from "@/shared/constants";
 import { CONDITION_AREAS, FAIR_FROM, GOOD_FROM, WRONG_FACT_PENALTY } from "@/shared/helpers/condition";
 import { formatLongDate } from "@/shared/helpers/dates";
-import { labelFor } from "@/shared/helpers/labels";
+import { placeLabel } from "@/shared/helpers/labels";
 import { totalAnswers } from "@/shared/helpers/scores";
 import type { Report } from "@/shared/types/api";
 import { BlockTitle, ReportCard } from "./report-parts";
@@ -43,7 +43,7 @@ export function Method({ report }: { report: Report }) {
     <Rows
       rows={[
         { key: "assistant", label: t("assistant"), value: t("assistantValue", { engine: engines(engineOf(method.engine)), model: method.model }) },
-        { key: "location", label: t("location"), value: t("locationValue", { city: labelFor(messages.Cities, project.city) }) },
+        { key: "location", label: t("location"), value: t("locationValue", { city: placeLabel(messages.Cities, locale, project) }) },
         { key: "questions", label: t("questions"), value: t("questionsValue", { count: report.prompts.length, uz: inLanguage("uz"), ru: inLanguage("ru") }) },
         { key: "samples", label: t("samples"), value: t("samplesValue", { samples: method.samples }) },
         {

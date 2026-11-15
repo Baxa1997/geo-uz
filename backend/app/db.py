@@ -84,6 +84,8 @@ class Project(Base):
     user_id: Mapped[str] = mapped_column(ForeignKey("users.id"), index=True)
     category: Mapped[str] = mapped_column(String(200), default="")
     city: Mapped[str] = mapped_column(String(200), default="")
+    # Two-letter country code; empty on projects made before countries: Uzbekistan
+    country: Mapped[Optional[str]] = mapped_column(String(2), nullable=True)
     description: Mapped[str] = mapped_column(Text, default="")
     services: Mapped[Any] = mapped_column(JSON, default=list)
     customers: Mapped[Any] = mapped_column(JSON, default=list)

@@ -4,7 +4,7 @@ import { CheckIcon as Check } from "@phosphor-icons/react/dist/ssr/Check";
 import { CaretUpDownIcon as ChevronsUpDown } from "@phosphor-icons/react/dist/ssr/CaretUpDown";
 import { SquaresFourIcon as LayoutGrid } from "@phosphor-icons/react/dist/ssr/SquaresFour";
 import { PlusIcon as Plus } from "@phosphor-icons/react/dist/ssr/Plus";
-import { useMessages, useTranslations } from "next-intl";
+import { useLocale, useMessages, useTranslations } from "next-intl";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,7 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
 import { Link } from "@/i18n/navigation";
-import { labelFor } from "@/shared/helpers/labels";
+import { labelFor, placeLabel } from "@/shared/helpers/labels";
 import { cn } from "@/shared/helpers/utils";
 import type { Project } from "@/shared/types/api";
 
@@ -35,6 +35,7 @@ export function ProjectSwitcher({
 }) {
   const t = useTranslations("Sidebar");
   const messages = useMessages();
+  const locale = useLocale();
   const name = current?.brand.name ?? t("selectProject");
 
   return (
@@ -58,7 +59,7 @@ export function ProjectSwitcher({
               <span className="truncate text-sm font-semibold">{name}</span>
               {current && (
                 <span className="truncate text-xs text-muted-foreground">
-                  {labelFor(messages.Categories, current.category)} · {labelFor(messages.Cities, current.city)}
+                  {labelFor(messages.Categories, current.category)} · {placeLabel(messages.Cities, locale, current)}
                 </span>
               )}
             </span>
@@ -86,7 +87,7 @@ export function ProjectSwitcher({
           <LayoutGrid aria-hidden />
           {t("allProjects")}
         </DropdownMenuLinkItem>
-        <DropdownMenuLinkItem closeOnClick onClick={onNavigate} render={<Link href="/projects/new" />}>
+        <DropdownMenuLinkItem closeOnClick onClick={onNavigate} render={<Link href="/onboarding/first-run" />}>
           <Plus aria-hidden />
           {t("newProject")}
         </DropdownMenuLinkItem>
