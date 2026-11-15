@@ -50,7 +50,7 @@ class Settings:
     gemini_key: Optional[str] = field(default_factory=lambda: os.environ.get("GEMINI_API_KEY"))
     # The models that answer customers' questions, and the one that reads the answers
     chatgpt_model: str = field(default_factory=lambda: os.environ.get("CHATGPT_MODEL", "gpt-6.1-terra"))
-    gemini_model: str = field(default_factory=lambda: os.environ.get("GEMINI_MODEL", "gemini-3.5-flash"))
+    gemini_model: str = field(default_factory=lambda: os.environ.get("GEMINI_MODEL", "gemini-3.8-flash"))
     # Gemini through Vertex AI (Google Cloud): the project, its location ("global" for Gemini 3 models) and a
     # credentials file named by GOOGLE_APPLICATION_CREDENTIALS, which Google's own library reads. With a
     # project set, Vertex is used and GEMINI_API_KEY is not.
@@ -60,7 +60,7 @@ class Settings:
     # business's spellings and checks facts; WRITE_MODEL writes a website's profile and questions, the first
     # check's conclusion and the briefs. Gemini's on Vertex when a Google Cloud project is set (the user's
     # decision, 15 Nov 2026), else OpenAI's. Reading is many calls at once, so it has the steadier model.
-    read_model: str = field(default_factory=lambda: os.environ.get("READ_MODEL") or ("gemini-3.6-flash" if os.environ.get("GOOGLE_CLOUD_PROJECT") else "gpt-6.1-terra"))
+    read_model: str = field(default_factory=lambda: os.environ.get("READ_MODEL") or ("gemini-3.8-flash" if os.environ.get("GOOGLE_CLOUD_PROJECT") else "gpt-6.1-terra"))
     write_model: str = field(default_factory=lambda: os.environ.get("WRITE_MODEL") or ("gemini-4-hydrogen" if os.environ.get("GOOGLE_CLOUD_PROJECT") else "gpt-6.1-terra"))
     # The first run a new account gets: questions, each asked once to every assistant
     first_run_questions: int = field(default_factory=lambda: int(os.environ.get("FIRST_RUN_QUESTIONS", "10")))

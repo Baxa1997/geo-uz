@@ -94,16 +94,20 @@ cited pages come as Google's redirect links and are followed to their real addre
 from this service on 15 Nov 2026: two first checks of ten questions on the server, about $0.52 each.
 
 **The models that work for us (15 Nov 2026).** With `GOOGLE_CLOUD_PROJECT` set, Gemini on Vertex reads and
-writes, not OpenAI: `READ_MODEL` (default `gemini-3.6-flash`) reads who each answer names, gathers the
+writes, not OpenAI: `READ_MODEL` (default `gemini-3.8-flash`) reads who each answer names, gathers the
 spellings of one business and checks facts; `WRITE_MODEL` (default `gemini-4-hydrogen`) writes the website's
 profile and questions, the first check's conclusion and the briefs. Measured on a saved run's ten answers:
 Gemini 4 Hydrogen, Gemini 4 Argon and Gemini 3.6 Flash each read them as `gpt-6.1-terra` had (Hydrogen
 differed on one answer's recommendations), but both Gemini 4 models sometimes held a call for 70 to 130
 seconds, and 3.6 Flash never did: so reading, which is many calls at once, is on Flash. A reading call has 30
-seconds and a writing call 60; after that `gemini-3.6-flash` does it, then `gpt-6.1-terra` when an OpenAI key
+seconds and a writing call 60; after that `gemini-3.8-flash` does it, then `gpt-6.1-terra` when an OpenAI key
 exists. An answer with Google Search has 75 seconds, then is asked again (ten answers once took 348 seconds
 without that limit, and 54 with it). The first check's result carries `conclusion` (`uz`, `ru`, `en`): three
-sentences worded from the counts, or null when the model failed.
+sentences worded from the counts, or null when the model failed. Later the same day the user chose
+`gemini-3.8-flash` for the Flash roles: it answers the customers' questions (`GEMINI_MODEL`), reads and stands
+in. It read the same ten answers as `gpt-6.1-terra` had, in 13 seconds. Google Search is on for every
+question asked, but Gemini decides itself whether to search: one answer in five came without a search, so such
+an answer is asked once more. The reading and writing models have no search: they work on text they are given.
 
 **Projects** (`app/projects.py`, 15 Nov 2026; read only). Tables: `projects`, `brands` (the client's own and
 the competitors, in a fixed order), `prompts`, `runs`, `answers`, `mentions` (every business an answer names;
