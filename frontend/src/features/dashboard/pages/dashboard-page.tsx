@@ -32,7 +32,7 @@ export default async function DashboardPage({ params }: PageProps<"/[locale]/das
   );
 
   const newProject = (
-    <Link href="/projects/new" className={buttonVariants()}>
+    <Link href="/onboarding/first-run" className={buttonVariants()}>
       <Plus aria-hidden data-icon="inline-start" />
       {t("newProject")}
     </Link>

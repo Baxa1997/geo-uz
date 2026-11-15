@@ -8,20 +8,6 @@ export interface BrandDraft {
   domain: string;
 }
 
-/** The brand setup as typed, before it becomes a CreateProjectRequest. */
-export interface ProjectDraft {
-  brand: BrandDraft;
-  category: string;
-  city: string;
-  competitors: BrandDraft[];
-}
-
-/** Message keys (namespace NewProject) of field errors. */
-export type DraftErrorKey = "nameRequired" | "domainInvalid" | "competitorRequired" | "competitorName";
-
-/** Field errors by field: "name", "domain", "competitors", "competitor-0-name", … */
-export type DraftErrors = Record<string, DraftErrorKey>;
-
 /** The brand profile (onboarding step 2): what the backend read from the website, as edited. */
 export interface SiteDraft {
   /** The analyzed domain; changing the address asks for a new analysis. */
@@ -30,6 +16,9 @@ export interface SiteDraft {
   aliases: string[];
   description: string;
   category: string;
+  /** Two-letter country code. */
+  country: string;
+  /** "" when the business serves the whole country. */
   city: string;
   services: string[];
 }
@@ -41,12 +30,12 @@ export interface TopicDraft {
   custom: boolean;
 }
 
-/** Onboarding step 2: the suggested competitors with their ticks, and one typed in by hand. */
+/** Onboarding step 3: the suggested competitors with their ticks, and the ones typed in by hand. None is fine. */
 export interface CompetitorChoice {
   suggestions: CompetitorSuggestion[];
   selected: boolean[];
-  /** Null until "Add manually" is pressed. */
-  manual: BrandDraft | null;
+  /** One per press of "Add manually". */
+  manual: BrandDraft[];
 }
 
 /** A question in the onboarding list; unticked ones are not saved. */
@@ -63,8 +52,6 @@ export type OnboardingErrorKey =
   | "descriptionRequired"
   | "categoryRequired"
   | "servicesRequired"
-  | "cityRequired"
-  | "competitorRequired"
   | "competitorsMax"
   | "manualNameRequired"
   | "manualDomainInvalid"
@@ -73,5 +60,5 @@ export type OnboardingErrorKey =
   | "questionsRequired";
 
 export type OnboardingErrors = Partial<
-  Record<"website" | "name" | "description" | "category" | "services" | "city" | "competitors" | "manualName" | "manualDomain" | "topics" | "questions", OnboardingErrorKey>
+  Record<"website" | "name" | "description" | "category" | "services" | "competitors" | "manualName" | "manualDomain" | "topics" | "questions", OnboardingErrorKey>
 >;

@@ -86,8 +86,8 @@ Every project is checked again each Monday, and a question added on Tuesday is a
 - Check: start a run by hand for one project; the second point appears on its charts.
 - **State (15 Nov): built, waiting for the user's look and a first live check.** The buttons work on a real
   project and the plan's limits on questions, competitors and facts hold. The check is written and was tried
-  only as a replay (no assistant asked). Still owed: a live check (keys, permission to spend), the timer on
-  the server, questions per plan and samples (the prices decision), suggested questions.
+  only as a replay (no assistant asked). The timer is on the server since 15 Nov (it checks only paid
+  projects; none is paid). Still owed: a live check (permission to spend), questions per plan and samples (the prices decision), suggested questions.
 
 ### Stage 3. The report
 
@@ -168,5 +168,8 @@ The "what to do" half: the part that keeps a small business paying.
   of it; one answer per question, the cheap option, hides none.
 - **The API is not the ChatGPT app.** A client may see different answers in the app. Every report says how
   the answers were collected; a side-by-side measurement is still owed.
-- **Gemini has never run.** Its cost, its answers and its client code are unmeasured.
+- **Gemini ran for the first time on 15 Nov 2026** (two first checks of ten questions, Gemini alone, on the server): about
+  $0.52 and two and a half minutes each, its tokens not yet priced in. Since then Gemini also reads the answers and
+  writes the profile, the questions and the conclusion (`backend/README.md`). ChatGPT and Gemini together in
+  one first check, from the site, is still untried.
 - **Sample data on Vercel** resets between requests, so until stage 1 the deployed dashboard is for looking only.

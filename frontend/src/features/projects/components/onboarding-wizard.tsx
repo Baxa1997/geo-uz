@@ -136,8 +136,9 @@ export function OnboardingWizard({
   async function nextFromProfile() {
     if (!site || failed(validateSite(site))) return;
     const body = { domain: site.domain, name: site.name.trim(), category: site.category, city: site.city };
-    const inputs = JSON.stringify([body.domain, body.category, body.city]);
-    if (choice?.inputs !== inputs) {
+    const inputs = JSON.stringify([body.domain, body.category, site.country, body.city]);
+    // From a first run the competitors are the businesses its answers named: an edit here asks for no others
+    if (!fromRun && choice?.inputs !== inputs) {
       const suggestions = await attempt(findCompetitors, body);
       if (!suggestions) return;
       setChoice({ ...competitorChoice(suggestions), inputs });
@@ -148,8 +149,9 @@ export function OnboardingWizard({
   async function nextFromCompetitors() {
     if (!site || !choice || failed(validateChoice(choice))) return;
     const body = { name: site.name.trim(), category: site.category, city: site.city, services: site.services };
-    const inputs = JSON.stringify([body.category, body.city, body.services]);
-    if (suggested?.inputs !== inputs) {
+    const inputs = JSON.stringify([body.category, site.country, body.city, body.services]);
+    // And the questions are the ones it asked
+    if (!fromRun && suggested?.inputs !== inputs) {
       const suggestions = await attempt(findQuestions, body);
       if (!suggestions) return;
       const questions = questionDrafts(suggestions);
@@ -194,7 +196,7 @@ export function OnboardingWizard({
   const chosen = choice
     ? [
         ...choice.suggestions.filter((_, i) => choice.selected[i]),
-        ...(choice.manual && isFilled(choice.manual) ? [choice.manual] : []),
+        ...choice.manual.filter(isFilled),
       ]
     : [];
 

@@ -21,7 +21,7 @@ import { Link } from "@/i18n/navigation";
 import { engineOf, TIME_ZONE, type EngineKey } from "@/shared/constants";
 import { formatLongDate } from "@/shared/helpers/dates";
 import { shortUrl } from "@/shared/helpers/domain";
-import { labelFor } from "@/shared/helpers/labels";
+import { labelFor, placeLabel } from "@/shared/helpers/labels";
 import { cn } from "@/shared/helpers/utils";
 import type { Brand, Project, Prompt } from "@/shared/types/api";
 import type { AnswerRow } from "@/shared/types/scores";
@@ -148,6 +148,7 @@ function Conversation({
   const t = useTranslations("AnswersPage.dialog");
   const engines = useTranslations("Engines");
   const messages = useMessages();
+  const locale = useLocale();
   const { result, answer } = row;
   const brands: Brand[] = [project.brand, ...project.competitors];
 
@@ -163,7 +164,7 @@ function Conversation({
         </Dialog.Title>
         <Hint text={t("hints.city")} side="bottom" className="min-w-0 items-center gap-1.5 text-sm font-medium">
           <MapPin aria-hidden className="size-4 shrink-0 text-muted-foreground" />
-          <span className="truncate">{labelFor(messages.Cities, project.city)}</span>
+          <span className="truncate">{placeLabel(messages.Cities, locale, project)}</span>
         </Hint>
         <Hint text={t("hints.language")} side="bottom" className="shrink-0 text-xs font-semibold text-muted-foreground uppercase">
           {result.prompt.language}

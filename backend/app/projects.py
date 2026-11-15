@@ -37,6 +37,7 @@ PLAN_LIMITS = {
 CHECK_DAYS = {"start": [0], "business": [0, 3], "agency": [0, 3]}
 # A new project has Standard's limits and is not paid: its free first check is all it gets until it is
 DEFAULT_PLAN = "start"
+DEFAULT_COUNTRY = "UZ"
 TONE = {"positive": 100, "neutral": 50, "negative": 0}
 WRONG_FACT_PENALTY = 10
 
@@ -73,6 +74,12 @@ def prompts_of(db: Db, project_id: str) -> List[Prompt]:
     return list(db.scalars(select(Prompt).where(Prompt.project_id == project_id).order_by(Prompt.position)))
 
 
+def _country(value: Any) -> str:
+    """A two-letter country code, or "" when it is none."""
+    code = value.strip().upper() if isinstance(value, str) else ""
+    return code if len(code) == 2 and code.isalpha() else ""
+
+
 def project_json(db: Db, project: Project) -> Dict[str, Any]:
     brands = brands_of(db, project.id)
     languages = sorted({prompt.language for prompt in prompts_of(db, project.id) if prompt.archived_at is None}, reverse=True)
@@ -82,6 +89,7 @@ def project_json(db: Db, project: Project) -> Dict[str, Any]:
         "competitors": [brand_json(brand) for brand in brands if not brand.own],
         "category": project.category,
         "city": project.city,
+        "country": project.country or DEFAULT_COUNTRY,
         "languages": languages or ["uz", "ru"],
         "description": project.description,
         "services": project.services or [],
@@ -159,6 +167,7 @@ def create(db: Db, user: User, body: Dict[str, Any]) -> Tuple[Project, Optional[
         user_id=user.id,
         category=_clean(body.get("category")),
         city=city,
+        country=_country(body.get("country")) or _country((result or {}).get("country")) or DEFAULT_COUNTRY,
         description=_clean(body.get("description")),
         services=[_clean(service) for service in body.get("services") or [] if _clean(service)],
         customers=[],
@@ -713,6 +722,8 @@ def update_project(db: Db, project: Project, body: Dict[str, Any]) -> None:
     for field in ("description", "category", "city"):
         if isinstance(body.get(field), str):
             setattr(project, field, _clean(body[field])[:1000 if field == "description" else 200])
+    if _country(body.get("country")):
+        project.country = _country(body.get("country"))
     for field in ("services", "customers", "identity"):
         if isinstance(body.get(field), list):
             setattr(project, field, _names(body[field]))

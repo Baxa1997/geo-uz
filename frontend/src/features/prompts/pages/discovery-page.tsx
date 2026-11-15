@@ -10,7 +10,7 @@ import { Link } from "@/i18n/navigation";
 import { setPageLocale } from "@/i18n/page-locale";
 import { api } from "@/shared/api/client";
 import { orNotFound } from "@/shared/api/errors";
-import { labelFor } from "@/shared/helpers/labels";
+import { placeLabel } from "@/shared/helpers/labels";
 import { parseReportFilters, withFilters } from "@/shared/helpers/report-filters";
 import { DiscoveryForm } from "../components/discovery-form";
 
@@ -83,7 +83,7 @@ export default async function DiscoveryPage({ params, searchParams }: Props) {
           services={project.services}
           customers={project.customers}
           languages={project.languages}
-          city={labelFor(messages.Cities, project.city)}
+          city={placeLabel(messages.Cities, locale, project)}
           suggestedHref={suggested}
         />
       </div>

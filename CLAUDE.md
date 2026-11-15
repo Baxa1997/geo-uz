@@ -178,6 +178,35 @@ that is committed.
 
 ## Done (as of 15 November 2026)
 
+- **Built, waiting for the user's look: Gemini reads and writes, and the first check has a conclusion (15 Nov),
+  on the branch `setup-any-business`; merged, pushed and deployed to the server the same day, when the user said
+  "push and deploy everything".** The user asked for Gemini 4 Hydrogen "or better model" for the first
+  check's own work (competitors, questions, the website, the first data), to "check whether it fits", and for
+  the questions and a conclusion from the better-fitting Gemini model. Measured on the server (the user's
+  words allowed these Gemini requests; about $1.50 in all): Hydrogen, Argon and 3.6 Flash read ten saved
+  answers as OpenAI's model had, but the Gemini 4 models sometimes hold a call for 70 to 130 seconds. So
+  reading is on `gemini-3.6-flash` (`READ_MODEL`) and writing (profile, questions, conclusion, briefs) on
+  `gemini-4-hydrogen` (`WRITE_MODEL`, new), each with a time limit and a stand-in (`backend/README.md`). Gemini
+  answered customers' questions from GEO for the first time: a first check on Gemini alone took 153 seconds
+  and cost $0.53. The result page shows the conclusion ("Xulosa") under the numbers. Not tried: the
+  conclusion on the page with a live run from the site, and ChatGPT with Gemini in one check.
+
+- **Built, waiting for the user's look: the setup fits any business (15 Nov), on the branch
+  `setup-any-business`; merged and pushed the same day ("push and deploy everything").** The user tried a new account with a chatbot company and found the
+  old "new project" form: six fields of business, six Uzbek cities, a competitor required. Their correction:
+  the field must fit any business; every country, chosen as a country, with the city optional; competitors
+  optional, more addable. Built: "new project" (`/projects/new`, the dashboard's and the switcher's buttons)
+  now starts the first check, and the old form is deleted; in the setup the field is typed freely with our
+  list offered under it, the country is picked from all countries (names written out in the three languages,
+  `shared/constants/country-names.ts`: browsers have no Uzbek ones), the city is optional, and competitors
+  can be none or several typed in by hand. A project has a `country` (the first check reads it from the
+  website; Uzbekistan where none), which is told to the assistants with the city when there is one; where a
+  project has no city the pages show its country. From a first run the setup keeps the run's own competitors
+  and questions when the profile is edited (it asked the sample data again). Tried in a browser in Uzbek
+  through to a saved project with a free field, another country, no city and no competitor. Not done:
+  Sozlamalar › Profil still picks a city from the list and the map of Uzbekistan and has no country; the
+  questions are still written in Uzbek and Russian whatever the country. No paid request, no new variable.
+
 - **Built, waiting for the user's look: prices, free then paid, Gemini through Vertex, a full profile at
   setup (15 Nov), on the branch `plans-and-gemini`; merged and pushed the same day, when the user said "push
   everything".** The user: the first check on Gemini (as

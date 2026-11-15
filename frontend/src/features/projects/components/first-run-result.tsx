@@ -10,7 +10,7 @@ import { NamedBrandChips } from "@/shared/components/scores/named-brand-chips";
 import { SiteAudit } from "@/shared/components/site-audit";
 import { Button, buttonVariants } from "@/shared/components/ui/button";
 import { Link } from "@/i18n/navigation";
-import { labelFor } from "@/shared/helpers/labels";
+import { labelFor, placeLabel } from "@/shared/helpers/labels";
 import { answersNaming, namedBrands } from "@/shared/helpers/scores";
 import { cn } from "@/shared/helpers/utils";
 import type { FirstRunResult } from "@/shared/types/api";
@@ -19,7 +19,7 @@ import { brandCounts, placeOf } from "../helpers/first-run";
 
 /**
  * The first statistics, numbers first: one sentence on where the business stands, three figures, every
- * business side by side, each assistant apart when two were asked, the questions without the client,
+ * business side by side, each assistant apart when two were asked, the conclusion, the questions without the client,
  * what on the website stands in the way, then the way on to the setup.
  */
 export function FirstRunResultView({ result, runId, onAgain }: { result: FirstRunResult; runId: string; onAgain: () => void }) {
@@ -52,6 +52,8 @@ export function FirstRunResultView({ result, runId, onAgain }: { result: FirstRu
         ? t("verdictBehind", { named: you.named, total, recommended: you.recommended, leader: leader.brand.name, leaderNamed: leader.named })
         : t("verdictLeads", { named: you.named, total, recommended: you.recommended });
 
+  const conclusion = result.conclusion?.[locale as "uz" | "ru" | "en"];
+
   const figures = [
     { key: "named", value: you.named, of: total },
     { key: "recommended", value: you.recommended, of: total },
@@ -66,7 +68,7 @@ export function FirstRunResultView({ result, runId, onAgain }: { result: FirstRu
           {t("resultTitle", { brand: result.brand.name })}
         </h1>
         <p className="text-sm text-muted-foreground">
-          {result.domain} · {labelFor(messages.Categories, result.category)} · {labelFor(messages.Cities, result.city)}
+          {result.domain} · {labelFor(messages.Categories, result.category)} · {placeLabel(messages.Cities, locale, result)}
         </p>
         <MethodLabel method={result.method} />
       </div>
@@ -154,6 +156,15 @@ export function FirstRunResultView({ result, runId, onAgain }: { result: FirstRu
               );
             })}
           </ul>
+        </div>
+      )}
+
+      {conclusion && (
+        <div className="flex flex-col gap-1.5 rounded-xl border bg-background p-4 sm:px-5">
+          <h2 className="font-semibold">
+            <Hint text={t("conclusionHint")}>{t("conclusionTitle")}</Hint>
+          </h2>
+          <p className="text-[0.95rem]/7 text-pretty">{conclusion}</p>
         </div>
       )}
 

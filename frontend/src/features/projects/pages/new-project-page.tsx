@@ -1,26 +1,11 @@
-import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
-import { Page } from "@/shared/components/page";
-import { ProjectForm } from "../components/project-form";
+import { redirect } from "@/i18n/navigation";
 import { setPageLocale } from "@/i18n/page-locale";
 
-export async function generateMetadata({ params }: PageProps<"/[locale]/projects/new">): Promise<Metadata> {
-  const locale = setPageLocale((await params).locale);
-  const t = await getTranslations({ locale, namespace: "NewProject" });
-  return { title: t("title") };
-}
-
+/**
+ * A new project starts the way a first one does (the user's correction, 15 Nov: the old form here offered six
+ * fields of business and six cities): the website, the first check on it, then the setup filled in from it.
+ */
 export default async function NewProjectPage({ params }: PageProps<"/[locale]/projects/new">) {
   const locale = setPageLocale((await params).locale);
-  const t = await getTranslations({ locale, namespace: "NewProject" });
-
-  return (
-    <Page title={t("title")}>
-      {/* A form reads best at a comfortable width, not across the whole panel */}
-      <div className="flex max-w-3xl flex-col gap-4 sm:gap-5">
-        <p className="text-sm text-pretty text-muted-foreground">{t("description")}</p>
-        <ProjectForm />
-      </div>
-    </Page>
-  );
+  redirect({ href: "/onboarding/first-run", locale });
 }

@@ -42,7 +42,10 @@ export interface Project {
   brand: Brand;
   competitors: Brand[];
   category: string;
+  /** "" when the business serves its whole country. */
   city: string;
+  /** Two-letter country code; left out by sample data, which is Uzbekistan's. */
+  country?: string;
   languages: PromptLanguage[];
   /** The brand profile from onboarding: a sentence or two on the business ("" if none). */
   description: string;
@@ -235,6 +238,7 @@ export interface UpdateProjectRequest {
   description?: string;
   category?: string;
   city?: string;
+  country?: string;
   services?: string[];
   customers?: string[];
   identity?: string[];
@@ -457,7 +461,10 @@ export interface CreateProjectRequest {
   aliases: string[];
   domain: string;
   category: string;
+  /** "" when the business serves its whole country. */
   city: string;
+  /** Two-letter country code; Uzbekistan when left out. */
+  country?: string;
   competitors: NewBrand[];
   /** Optional first question set, e.g. the questions of the free check. */
   prompts?: CreatePromptRequest[];
@@ -679,6 +686,8 @@ export interface FirstRun {
 
 /** The first statistics: the free check's `Snapshot` and what a first run adds to it. */
 export interface FirstRunResult extends Snapshot {
+  /** The country the website mainly serves, as a two-letter code. */
+  country?: string;
   /** A sentence or two on the business, read from its website; "" if none. */
   description: string;
   services: string[];
@@ -686,6 +695,8 @@ export interface FirstRunResult extends Snapshot {
   engines: { engine: string; name: string; answers: number; scores: BrandScore[] }[];
   /** Brand id → the answers that recommend it. */
   recommended: Record<string, number>;
+  /** What the counts mean and what to do first, worded by a model from them, per interface language. */
+  conclusion?: Record<"uz" | "ru" | "en", string> | null;
   /** All answers collected. */
   answers: number;
   /** Development only: a saved run shown again, so the numbers are not this website's. */
@@ -707,6 +718,8 @@ export interface SiteAnalysis {
   aliases: string[];
   category: string;
   city: string;
+  /** Two-letter country code; Uzbekistan when left out. */
+  country?: string;
   /** A sentence or two on what the business does, written from its website. */
   description: string;
   /** What it offers, as named on the website, most important first. */

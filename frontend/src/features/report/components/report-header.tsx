@@ -3,7 +3,7 @@ import { LocaleSwitcher } from "@/shared/components/locale-switcher";
 import { Logo } from "@/shared/components/logo";
 import { engineOf, TIME_ZONE } from "@/shared/constants";
 import { formatLongDate, formatShortDate } from "@/shared/helpers/dates";
-import { labelFor } from "@/shared/helpers/labels";
+import { labelFor, placeLabel } from "@/shared/helpers/labels";
 import { totalAnswers } from "@/shared/helpers/scores";
 import type { Report } from "@/shared/types/api";
 import { ReportTools } from "./report-tools";
@@ -79,7 +79,7 @@ export function ReportLetterhead({ report }: { report: Report }) {
         <h1 className="text-xl font-bold tracking-[0.06em] text-balance uppercase sm:text-[1.625rem] sm:leading-tight">{t("kicker")}</h1>
         <p className="text-lg font-semibold text-balance">{project.brand.name}</p>
         <p className="text-sm text-pretty text-muted-foreground">
-          {labelFor(messages.Categories, project.category)} · {labelFor(messages.Cities, project.city)} · {project.brand.domain}
+          {labelFor(messages.Categories, project.category)} · {placeLabel(messages.Cities, locale, project)} · {project.brand.domain}
         </p>
       </div>
 
