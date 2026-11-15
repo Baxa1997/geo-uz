@@ -38,6 +38,14 @@ class Settings:
     # Supabase's email login; without them the backend makes and checks the codes itself (development)
     supabase_url: Optional[str] = field(default_factory=lambda: os.environ.get("SUPABASE_URL"))
     supabase_anon_key: Optional[str] = field(default_factory=lambda: os.environ.get("SUPABASE_ANON_KEY"))
+    # Our own login emails: with these set, this service makes the six-digit code and sends it itself
+    # (Gmail: smtp.gmail.com, 465, the address, an app password). Supabase's own emails are then not used:
+    # its dashboard kept sending the default sign-in link whatever the saved template said (15 Nov 2026).
+    smtp_host: Optional[str] = field(default_factory=lambda: os.environ.get("SMTP_HOST"))
+    smtp_port: int = field(default_factory=lambda: int(os.environ.get("SMTP_PORT", "465")))
+    smtp_user: Optional[str] = field(default_factory=lambda: os.environ.get("SMTP_USER"))
+    smtp_password: Optional[str] = field(default_factory=lambda: os.environ.get("SMTP_PASSWORD"))
+    smtp_from: Optional[str] = field(default_factory=lambda: os.environ.get("SMTP_FROM"))
     openai_key: Optional[str] = field(default_factory=lambda: os.environ.get("OPENAI_API_KEY"))
     gemini_key: Optional[str] = field(default_factory=lambda: os.environ.get("GEMINI_API_KEY"))
     # The models that answer customers' questions, and the one that reads the answers
@@ -56,8 +64,18 @@ class Settings:
     secure_cookies: bool = field(default_factory=lambda: os.environ.get("SECURE_COOKIES", "false") == "true")
 
     @property
+    def own_email(self) -> bool:
+        """This service sends the login code itself."""
+        return bool(self.smtp_host)
+
+    @property
     def supabase_login(self) -> bool:
-        return bool(self.supabase_url and self.supabase_anon_key)
+        """Supabase sends and checks the code: only when this service doesn't send its own emails."""
+        return bool(self.supabase_url and self.supabase_anon_key) and not self.own_email
+
+    @property
+    def login(self) -> str:
+        return "email" if self.own_email else "supabase" if self.supabase_login else "development"
 
     @property
     def engines(self) -> List[str]:

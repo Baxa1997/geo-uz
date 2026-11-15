@@ -29,6 +29,11 @@ Keys go into `backend/.env` (never committed; `pilot/.env` is read too):
 ```
 OPENAI_API_KEY=...
 GEMINI_API_KEY=...              # optional: without it only ChatGPT is asked
+# The login email, sent by this service (Gmail: an app password, not the account's password):
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=465
+SMTP_USER=<the address>
+SMTP_PASSWORD=<app password>
 # On the server:
 DATABASE_URL=postgresql+psycopg://...   # Supabase's connection string
 SUPABASE_URL=https://<project>.supabase.co
@@ -41,7 +46,7 @@ SECURE_COOKIES=true
 
 | Endpoint | What it does |
 | --- | --- |
-| `POST /auth/code` `{email}` | Sends a six-digit code (Supabase's email; in development the server's log) |
+| `POST /auth/code` `{email}` | Sends a six-digit code: by this service's own email when `SMTP_HOST` is set, else by Supabase's, else (development) into the server's log |
 | `POST /auth/code/verify` `{email, code}` | Logs in, makes the account on the first login, sets the cookie |
 | `GET /auth/me`, `PATCH /auth/me` `{name}`, `POST /auth/logout` | The account; its name; logging out |
 | `POST /first-runs` `{domain, category?, city?}` | Starts a new account's first run and returns at once (202) |
@@ -79,7 +84,14 @@ repository.
 - The frontend's browser code reaches it through the frontend itself (`/api/backend`, a rewrite in
   `frontend/next.config.ts`), so the session cookie works whatever domain the frontend has, and
   `FRONTEND_ORIGIN` (CORS) matters only for a direct call.
-- Its `.env` holds no key yet, so `/health` lists no assistant and a first run fails with `no_engines`; login
+- Since 15 Nov its `.env` points at the user's Supabase project: the database (direct connection, which works
+  from this server) and the email login (`/health` says `"login": "supabase"`). Supabase serves a public
+  table through its own API to anyone with the project's public key, so `create_tables` locks every table
+  (row level security on, no rights for `anon` and `authenticated`); checked from outside: refused.
+  Supabase is the database only: the login email is this service's own (`SMTP_*` in the `.env`, a Gmail
+  account; `/health` says `"login": "email"`), because Supabase's emails kept the default sign-in link whatever
+  its saved templates said. A code reached a real inbox on 15 Nov.
+- Its `.env` holds no assistant's key yet, so `/health` lists no assistant and a first run fails with `no_engines`; login
   works, with the code in the service's log (`journalctl -u geo-backend`).
 - To update: copy `app/` and `requirements.txt` (rsync), `pip install -r requirements.txt` in its `.venv`,
   `systemctl restart geo-backend`.

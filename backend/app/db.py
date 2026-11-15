@@ -10,7 +10,7 @@ import datetime
 import uuid
 from typing import Any, Optional
 
-from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, Text, create_engine
+from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, Text, create_engine, text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
 
 from .config import settings
@@ -84,3 +84,13 @@ SessionLocal = sessionmaker(engine, expire_on_commit=False)
 
 def create_tables() -> None:
     Base.metadata.create_all(engine)
+    if engine.dialect.name == "postgresql":
+        # Supabase serves every table of the public schema through its own API to anyone holding the
+        # project's public key, unless the table is locked. Only this service may read ours (it connects
+        # as the database's owner, which the lock doesn't bind): lock each one, every start, new ones too.
+        with engine.begin() as db:
+            roles = {row[0] for row in db.execute(text("select rolname from pg_roles where rolname in ('anon', 'authenticated')"))}
+            for table in Base.metadata.tables:
+                db.execute(text(f'alter table public."{table}" enable row level security'))
+                for role in roles:
+                    db.execute(text(f'revoke all on public."{table}" from {role}'))

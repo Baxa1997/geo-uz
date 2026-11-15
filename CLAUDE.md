@@ -100,7 +100,19 @@ Read this section first in a new session: it says what exists, how to run it, an
   for the free check (both run ahead of the product; raised three times, not answered).
 - A Gemini API key: the Gemini client (`backend/app/engines.py`) is written from Google's documentation and has
   never run, so its cost and answers are unmeasured.
-- A Supabase project (URL, anon key, database connection string): Supabase's login is written and has never run.
+- New passwords, since all were pasted in chat on 15 Nov: the server's root password, the Supabase database
+  password (the same one) and the Gmail app password; each goes into `backend/.env.server` (ignored by git), not
+  into chat. Also a login tried from the Vercel site, whose addresses are behind Vercel's own login.
+- (Done, 15 Nov.) The login email is sent by the backend. On 15 Nov Supabase's custom SMTP worked but its emails kept the default sign-in link
+  through six tests, whatever the saved templates said; the user chose "switch to backend": `app/mail.py` sends
+  the code itself when `SMTP_HOST` is set (tried against a local test mail server), and Supabase keeps only the
+  database. The user gave a Gmail app password; the server sent a code to the user's inbox and it arrived
+  ("code came"). Merged and pushed (`own-login-email`) when the user said "commit and push". Entering the code
+  on the site has not been tried yet.
+- Supabase (15 Nov: the user gave the project; the server's backend now uses its database and its email login,
+  tables locked against Supabase's public API). Still theirs: the email templates with `{{ .Token }}`, a first
+  login with a real email, and new passwords: the database password is the same as the server's old root
+  password, and both were pasted in chat.
 - The frontend on Vercel (the user, 15 Nov: "geo right now will be in Vercel, then it will be in its domain, I
   don't know yet"; the subdomain is for the API only). The backend answers at `https://geo-api.shopsready.com`.
   The browser calls it through the frontend (`/api/backend`, a rewrite), so the login works from any domain.
@@ -518,7 +530,7 @@ that is committed.
   then `hisobotlar-correction` (the report as an official status document with a condition score, Hisobotlar
   opening on the latest condition), then `report-detail-width` (the report fills the panel's width), then
   `settings-and-overview` (Sozlamalar in Peec's layout, the Overview tightened, Savollar and a question's page in
-  Peec's design, brands' logos), then `plan-billing-correction` (Tarif's plans four in a row, as Peec's); on 14 Nov `pilot-report`, `pilot-first-run`, `models-and-site`, `backend-first-slice`, then `restyle` (the look of our own, the Uzbek metric names, the icons), then `email-login` (the login by email, wired to the backend); on 15 Nov `first-run-page` (the first run's page, the setup filled in from it, the backend on the server, API calls through the frontend). Each time the user chose "commit, push" when asked (for Harakatlar: "push everything"). Each page gets its
+  Peec's design, brands' logos), then `plan-billing-correction` (Tarif's plans four in a row, as Peec's); on 14 Nov `pilot-report`, `pilot-first-run`, `models-and-site`, `backend-first-slice`, then `restyle` (the look of our own, the Uzbek metric names, the icons), then `email-login` (the login by email, wired to the backend); on 15 Nov `own-login-email` (the backend sends the login code itself; Supabase's tables locked) after `first-run-page` (the first run's page, the setup filled in from it, the backend on the server, API calls through the frontend). Each time the user chose "commit, push" when asked (for Harakatlar: "push everything"). Each page gets its
   own branch, merged when the user says so.
 
 ## To do, in order
