@@ -14,6 +14,7 @@ import json
 import re
 import secrets
 import threading
+import time
 import urllib.error
 import urllib.request
 from typing import Any, Dict, Optional
@@ -192,6 +193,25 @@ def run_json(run: FirstRun) -> Dict[str, Any]:
     return {"id": run.id, "domain": run.domain, "status": run.status, "answered": run.answered, "total": run.total, "error": run.error}
 
 
+def replay(run_id: str, progress: Any) -> Dict[str, Any]:
+    """Development (`FIRST_RUN_REPLAY`): the latest saved run again, at a watchable pace, asking nobody."""
+    with SessionLocal() as db:
+        saved = db.scalar(select(FirstRun).where(FirstRun.status == "done", FirstRun.id != run_id).order_by(FirstRun.created_at.desc()))
+        if saved is None or not saved.result:
+            raise firstrun.FirstRunError("no_saved_run")
+        result = dict(saved.result)
+    total = int(result.get("answers") or 0) or sum(len(item["answers"]) for item in result.get("prompts", []))
+    progress("reading_site", 0, total)
+    time.sleep(2)
+    for answered in range(1, total + 1):
+        time.sleep(0.6)
+        progress("asking", answered, total)
+    progress("reading_answers", total, total)
+    time.sleep(2)
+    # `replayed` tells the page to say that these are a saved run's numbers, not this website's
+    return {"status": "done", "result": {**result, "id": run_id, "replayed": True}, "cost_usd": 0.0}
+
+
 def work(run_id: str, domain: str, category: Optional[str], city: Optional[str]) -> None:
     """Does a first run outside the request that started it, writing its progress as it goes."""
 
@@ -203,8 +223,11 @@ def work(run_id: str, domain: str, category: Optional[str], city: Optional[str])
                 db.commit()
 
     try:
-        snapshot, raw, cost = firstrun.run(domain, category, city, progress)
-        outcome: Dict[str, Any] = {"status": "done", "result": {"id": run_id, **snapshot}, "raw": raw, "cost_usd": cost}
+        if settings.first_run_replay:
+            outcome: Dict[str, Any] = replay(run_id, progress)
+        else:
+            snapshot, raw, cost = firstrun.run(domain, category, city, progress)
+            outcome = {"status": "done", "result": {"id": run_id, **snapshot}, "raw": raw, "cost_usd": cost}
     except firstrun.FirstRunError as error:
         outcome = {"status": "failed", "error": error.code}
     except Exception as error:  # a run must never stay "asking" for ever
@@ -232,7 +255,7 @@ def start_first_run(body: FirstRunRequest, user: User = Depends(current_user)) -
         again = db.scalar(select(FirstRun).where(FirstRun.user_id == user.id, FirstRun.domain == domain, FirstRun.created_at > day, FirstRun.status != "failed").order_by(FirstRun.created_at.desc()))
         if again:
             return run_json(again)
-        if (db.scalar(select(func.count()).select_from(FirstRun).where(FirstRun.user_id == user.id, FirstRun.created_at > day)) or 0) >= settings.first_runs_a_day:
+        if not settings.first_run_replay and (db.scalar(select(func.count()).select_from(FirstRun).where(FirstRun.user_id == user.id, FirstRun.created_at > day)) or 0) >= settings.first_runs_a_day:
             raise HTTPException(429, "first_run_limit")
         run = FirstRun(user_id=user.id, domain=domain)
         db.add(run)
@@ -240,6 +263,13 @@ def start_first_run(body: FirstRunRequest, user: User = Depends(current_user)) -
         started = run_json(run)
     threading.Thread(target=work, args=(started["id"], domain, body.category, body.city), daemon=True).start()
     return started
+
+
+@app.get("/first-runs")
+def first_runs(user: User = Depends(current_user)) -> Any:
+    """The account's first runs, newest first: after login the frontend goes on from the latest."""
+    with SessionLocal() as db:
+        return [run_json(run) for run in db.scalars(select(FirstRun).where(FirstRun.user_id == user.id).order_by(FirstRun.created_at.desc()).limit(20))]
 
 
 def own_run(run_id: str, user: User) -> FirstRun:
@@ -265,4 +295,4 @@ def first_run_result(run_id: str, user: User = Depends(current_user)) -> Any:
 
 @app.get("/health")
 def health() -> Dict[str, Any]:
-    return {"ok": True, "engines": settings.engines, "login": "supabase" if settings.supabase_login else "development"}
+    return {"ok": True, "engines": settings.engines, "replay": settings.first_run_replay, "login": "supabase" if settings.supabase_login else "development"}

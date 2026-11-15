@@ -1,10 +1,5 @@
 import { isValidDomain, normalizeDomain } from "@/shared/helpers/domain";
-import type {
-  CompetitorSuggestion,
-  CreateProjectRequest,
-  PromptSuggestion,
-  SiteAnalysis,
-} from "@/shared/types/api";
+import type { CompetitorSuggestion, CreateProjectRequest, FirstRunResult, PromptSuggestion, SiteAnalysis } from "@/shared/types/api";
 import { MAX_COMPETITORS, OWN_QUESTION_TOPIC, PRESELECTED_COMPETITORS } from "../constants";
 import type { CompetitorChoice, OnboardingErrors, QuestionDraft, SiteDraft, TopicDraft } from "../types";
 import { isFilled, toNewBrand } from "./brand-draft";
@@ -18,6 +13,32 @@ export const siteDraft = (analysis: SiteAnalysis): SiteDraft => ({
   city: analysis.city,
   services: analysis.services,
 });
+
+/**
+ * The wizard's first answers from a first run, so nothing is asked twice: the profile read from the website,
+ * the businesses the answers named beside the client as competitors, and the questions that were asked.
+ * `inputs` are what the wizard compares before asking the backend again (see OnboardingWizard).
+ */
+export function draftsFromFirstRun(run: FirstRunResult) {
+  const site: SiteDraft = {
+    domain: run.domain,
+    name: run.brand.name,
+    aliases: run.brand.aliases,
+    description: run.description,
+    category: run.category,
+    city: run.city,
+    services: run.services,
+  };
+  const questions = questionDrafts(run.prompts.map(({ prompt }) => ({ text: prompt.text, language: prompt.language, topic: prompt.topic })));
+  return {
+    site,
+    choice: {
+      ...competitorChoice(run.competitors.map(({ name, aliases, domain }) => ({ name, aliases, domain }))),
+      inputs: JSON.stringify([site.domain, site.category, site.city]),
+    },
+    suggested: { questions, topics: topicDrafts(questions), inputs: JSON.stringify([site.category, site.city, site.services]) },
+  };
+}
 
 /** The most relevant suggestions start ticked. */
 export const competitorChoice = (suggestions: CompetitorSuggestion[]): CompetitorChoice => ({

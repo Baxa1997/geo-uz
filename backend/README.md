@@ -45,6 +45,7 @@ SECURE_COOKIES=true
 | `POST /auth/code/verify` `{email, code}` | Logs in, makes the account on the first login, sets the cookie |
 | `GET /auth/me`, `PATCH /auth/me` `{name}`, `POST /auth/logout` | The account; its name; logging out |
 | `POST /first-runs` `{domain, category?, city?}` | Starts a new account's first run and returns at once (202) |
+| `GET /first-runs` | The account's first runs, newest first |
 | `GET /first-runs/{id}` | Its progress: `status`, `answered`, `total` |
 | `GET /first-runs/{id}/result` | The first statistics, in the frontend's `Snapshot` shape and a little more |
 | `GET /health` | Which assistants have a key, and which login is on |
@@ -60,10 +61,33 @@ Beside the `Snapshot` of the contract the result carries `engines` (the scores p
 (how often each business is recommended), `answers`, `description` and `services`; each answer says which
 `engine` gave it and each mention whether it is `recommended`.
 
+**Without paying** (`FIRST_RUN_REPLAY=true` in `backend/.env`): a first run replays the latest saved one over
+about ten seconds and asks no assistant; its result carries `replayed: true`. For building pages. Never on the
+server.
+
+## On the server (since 15 Nov 2026)
+
+The service runs on the Contabo server beside the user's other projects, which it must not touch: its own
+folder `/opt/geo-backend` (`app/`, `pilot/llm.py` and `pilot/web.py`, `.venv`, `.env`, the database file
+`local.db`), its own user `geo`, and the systemd service `geo-backend` on `127.0.0.1:8200`. Port 8000 is not
+used: another project's nginx site points at it. The server's address and access are not written in this
+repository.
+
+- Its address is `https://geo-api.shopsready.com` (since 15 Nov): an nginx site of its own
+  (`/etc/nginx/sites-available/geo-api.shopsready.com`) passes it to the service, with a Let's Encrypt
+  certificate that certbot renews; HTTP redirects to HTTPS. `SECURE_COOKIES=true` in its `.env`.
+- The frontend's browser code reaches it through the frontend itself (`/api/backend`, a rewrite in
+  `frontend/next.config.ts`), so the session cookie works whatever domain the frontend has, and
+  `FRONTEND_ORIGIN` (CORS) matters only for a direct call.
+- Its `.env` holds no key yet, so `/health` lists no assistant and a first run fails with `no_engines`; login
+  works, with the code in the service's log (`journalctl -u geo-backend`).
+- To update: copy `app/` and `requirements.txt` (rsync), `pip install -r requirements.txt` in its `.venv`,
+  `systemctl restart geo-backend`.
+
 ## Not built yet
 
 - The frontend's login calls this service (since 14 Nov, with `NEXT_PUBLIC_LIVE=auth` in `frontend/.env.local`);
-  every other page still runs on mocks, and nothing calls `/first-runs`.
+  and so does the first-run page (`auth,first-run`, since 15 Nov); every other page still runs on mocks.
 - Gemini is written from Google's documentation and has never been run: no key yet.
 - Supabase's login is written and has never been run: no project yet. Google login is not written.
 - Projects, questions, weekly runs and everything else in `PLAN.md`.

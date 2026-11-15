@@ -5,6 +5,7 @@ import { useMessages, useTranslations } from "next-intl";
 import { useEffect, useRef } from "react";
 import { HeadlineScore } from "@/shared/components/scores/headline-score";
 import { MethodLabel } from "@/shared/components/scores/method-label";
+import { SiteAudit } from "@/shared/components/site-audit";
 import { NamedBrandChips } from "@/shared/components/scores/named-brand-chips";
 import { buttonVariants } from "@/shared/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/components/ui/card";
@@ -14,7 +15,6 @@ import { answersNaming, missingSources, namedBrands } from "@/shared/helpers/sco
 import { cn } from "@/shared/helpers/utils";
 import type { Snapshot } from "@/shared/types/api";
 import { PREVIEW_MAX_DOMAINS, PREVIEW_MAX_MISSED } from "../constants";
-import { SiteAudit } from "./site-audit";
 
 /**
  * The free result: you vs the top competitor, who was named instead of you, what on the website keeps

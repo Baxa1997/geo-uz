@@ -118,6 +118,8 @@ export interface Mention {
   /** 1 = first clinic named in the answer. */
   position: number;
   tone: Tone;
+  /** Whether the answer recommends the brand, not only names it. Sent by a first run; absent elsewhere. */
+  recommended?: boolean;
 }
 
 export interface Citation {
@@ -138,6 +140,8 @@ export interface Answer {
    * Empty when it answered without searching.
    */
   searches: string[];
+  /** The assistant that gave the answer ("chatgpt", "gemini"). Sent by a first run; absent elsewhere. */
+  engine?: string;
 }
 
 export interface PromptResult {
@@ -636,6 +640,40 @@ export interface Snapshot {
   topSources: Source[];
   /** What the backend found on the website; null when it couldn't be read. */
   siteChecks: SiteCheckResult[] | null;
+}
+
+/** A new account's first run: a website in, the assistants asked, the first statistics out. */
+export type FirstRunStatus = "queued" | "reading_site" | "asking" | "reading_answers" | "done" | "failed";
+
+export interface FirstRunRequest {
+  domain: string;
+}
+
+export interface FirstRun {
+  id: string;
+  /** Normalized, e.g. "oqtabassum.uz". */
+  domain: string;
+  status: FirstRunStatus;
+  /** Answers collected so far, of `total` (questions × assistants; 0 until the questions are written). */
+  answered: number;
+  total: number;
+  /** Why it failed, as a code ("site_unreadable", "no_engines", "internal"); null otherwise. */
+  error: string | null;
+}
+
+/** The first statistics: the free check's `Snapshot` and what a first run adds to it. */
+export interface FirstRunResult extends Snapshot {
+  /** A sentence or two on the business, read from its website; "" if none. */
+  description: string;
+  services: string[];
+  /** The same scores for each assistant asked, over its own answers. */
+  engines: { engine: string; name: string; answers: number; scores: BrandScore[] }[];
+  /** Brand id → the answers that recommend it. */
+  recommended: Record<string, number>;
+  /** All answers collected. */
+  answers: number;
+  /** Development only: a saved run shown again, so the numbers are not this website's. */
+  replayed?: boolean;
 }
 
 // Onboarding: the backend reads the website, then suggests competitors and questions.

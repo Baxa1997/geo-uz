@@ -9,6 +9,8 @@ import type {
   Action,
   Brand,
   DemoRequest,
+  FirstRun,
+  FirstRunResult,
   Member,
   Plan,
   Project,
@@ -65,6 +67,8 @@ interface MockState {
   /** Project id → its latest run. */
   runs: Map<string, StoredRun>;
   snapshots: Map<string, Snapshot>;
+  /** First run id → whose it is, when it started and what it will show. */
+  firstRuns: Map<string, { userId: string; startedAt: number; result: FirstRunResult }>;
   /** Project id → action id → what the client changed on it. */
   actionStates: Map<string, Map<string, ActionState>>;
   /** Project id → the actions the client made with "Add content". */
@@ -94,7 +98,7 @@ interface MockState {
 
 // Kept on globalThis so hot reloads and separate route bundles share one copy.
 // Bump the version when MockState changes: a hot reload then starts fresh instead of reading old data.
-const STATE_KEY = "__geoMockState_v21";
+const STATE_KEY = "__geoMockState_v22";
 const globalForMocks = globalThis as typeof globalThis & { [STATE_KEY]?: MockState };
 const state: MockState = (globalForMocks[STATE_KEY] ??= {
   accounts: [{ user: DEMO_USER }],
@@ -104,6 +108,7 @@ const state: MockState = (globalForMocks[STATE_KEY] ??= {
   prompts: new Map([[PROJECT.id, [...PROMPTS, ARCHIVED_PROMPT]]]),
   runs: new Map([[PROJECT.id, { id: "run_seeded", projectId: PROJECT.id, run: SEEDED_RUN, startedAt: 0 }]]),
   snapshots: new Map(),
+  firstRuns: new Map(),
   actionStates: new Map(),
   addedActions: new Map(),
   topics: new Map(),
@@ -388,6 +393,16 @@ function nextWeeklyRun(now: number): string {
 function finishedRun(projectId: string): MockRun {
   const stored = state.runs.get(projectId);
   return stored && progressOf(stored).status === "done" ? stored.run : NO_RUN;
+}
+
+/** A mock first run's progress, from the time since it started. */
+function firstRunOf(id: string): FirstRun {
+  const run = state.firstRuns.get(id);
+  if (!run) throw new ApiError(404, `First run ${id} not found`);
+  const total = run.result.answers;
+  const asked = Math.floor((Date.now() - run.startedAt - RUN_QUEUED_MS) / (RUN_MS_PER_ANSWER * 3));
+  const status = asked < 0 ? "reading_site" : asked < total ? "asking" : Date.now() - run.startedAt < RUN_QUEUED_MS + total * RUN_MS_PER_ANSWER * 3 + RUN_ANALYZING_MS ? "reading_answers" : "done";
+  return { id, domain: run.result.domain, status, answered: Math.max(0, Math.min(asked, total)), total, error: null };
 }
 
 export const mockApi: ApiClient = {
@@ -780,6 +795,41 @@ export const mockApi: ApiClient = {
     const snapshot = buildSnapshot(body, newId("snp"));
     state.snapshots.set(snapshot.id, snapshot);
     return respond(snapshot, 1200);
+  },
+
+  // A first run in the mocks: the free check's sample numbers, arriving over a few seconds
+  startFirstRun: async ({ domain }) => {
+    const user = await currentUser();
+    const normalized = normalizeDomain(domain);
+    if (!isValidDomain(normalized)) throw new ApiError(422, "bad_domain");
+    const id = newId("frn");
+    const snapshot = buildSnapshot({ domain: normalized }, id);
+    const answers = snapshot.prompts.reduce((sum, result) => sum + result.answers.length, 0);
+    state.firstRuns.set(id, {
+      userId: user.id,
+      startedAt: Date.now(),
+      result: { ...snapshot, description: "", services: [], answers, recommended: {}, engines: [{ engine: "chatgpt", name: "ChatGPT", answers, scores: snapshot.scores }] },
+    });
+    return respond(firstRunOf(id));
+  },
+
+  getFirstRuns: async () => {
+    const user = await currentUser();
+    return respond([...state.firstRuns].filter(([, run]) => run.userId === user.id).map(([id]) => firstRunOf(id)).reverse());
+  },
+
+  getFirstRun: async (id) => {
+    const user = await currentUser();
+    if (state.firstRuns.get(id)?.userId !== user.id) throw new ApiError(404, `First run ${id} not found`);
+    return respond(firstRunOf(id));
+  },
+
+  getFirstRunResult: async (id) => {
+    const user = await currentUser();
+    const run = state.firstRuns.get(id);
+    if (run?.userId !== user.id) throw new ApiError(404, `First run ${id} not found`);
+    if (firstRunOf(id).status !== "done") throw new ApiError(409, "Not done yet");
+    return respond(run.result);
   },
 
   getSnapshot: async (id) => {

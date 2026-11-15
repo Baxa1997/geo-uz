@@ -15,8 +15,9 @@ setting (`NEXT_PUBLIC_USE_MOCKS`). The backend has begun in `backend/app/` (`bac
 sent to an email, and a new account's first run. The login is wired (14 Nov); no other page calls the backend.
 
 **A slice at a time.** `NEXT_PUBLIC_LIVE` (in `.env.local`) lists the parts of the API the backend serves while
-the rest are mocks; `shared/api/client.ts` builds `api` from the mocks with those calls replaced. So far "auth":
-`sendCode`, `verifyCode`, `getMe`, `logout`, `updateMe`. With it on, the session cookie is the backend's; the
+the rest are mocks; `shared/api/client.ts` builds `api` from the mocks with those calls replaced. So far "auth"
+(`sendCode`, `verifyCode`, `getMe`, `logout`, `updateMe`) and "first-run" (`startFirstRun`, `getFirstRuns`,
+`getFirstRun`, `getFirstRunResult`; the page is `/onboarding/first-run`, see `features/projects`). With it on, the session cookie is the backend's; the
 mocks ask the backend once who a token belongs to (`mocks/api.ts`, `backendUser`) and let every such account
 see the sample project. Empty, the login is a mock again (demo@geo.uz, any six digits). What the backend's
 slices change in the contract below:
@@ -24,8 +25,9 @@ slices change in the contract below:
 - Login is by email, not phone (done): `POST /auth/code` and `/auth/code/verify` take `email`; `User` has `email`,
   and `phone` and `telegramUsername` come back null. `PATCH /auth/me` takes `name`. Telegram login and SMS are
   not built, and the login page no longer offers them.
-- A new account's first look is `POST /first-runs` (202, returns at once) with `GET /first-runs/{id}` for its
-  progress and `GET /first-runs/{id}/result` for a `Snapshot` that also carries `engines` (scores per assistant),
+- A new account's first look (wired, 15 Nov; types `FirstRun`, `FirstRunResult`) is `POST /first-runs` (202,
+  returns at once; `GET /first-runs` lists the account's) with `GET /first-runs/{id}` for its
+  progress (`status`: queued, reading_site, asking, reading_answers, done, failed) and `GET /first-runs/{id}/result` for a `Snapshot` that also carries `engines` (scores per assistant),
   `recommended` (per brand id), `answers`, `description` and `services`; an answer says its `engine`, a mention
   whether it is `recommended`. `POST /snapshot` is not built.
 - Two assistants, ChatGPT and Gemini, not one.
@@ -426,8 +428,11 @@ frontend/src/
 - Private pages call `requireUser()` (shared/api/session.ts); proxy.ts only checks that the cookie exists.
 
 ## API contract (backend will implement this)
-Auth: the backend sets an httpOnly session cookie `geo_session` on login. The browser sends it with
-`credentials: "include"`; server-rendered pages forward it (shared/api/client.ts).
+Auth: the backend sets an httpOnly session cookie `geo_session` on login. **The browser never calls the backend
+directly** (since 15 Nov): it calls `/api/backend/…` on this site, which `next.config.ts` rewrites to the backend
+(`NEXT_PUBLIC_API_URL`), so the cookie belongs to the site the user is on, whatever its domain (a Vercel address
+now, the product's own later; a cookie from another site's API is not sent back by browsers). Server-rendered
+pages call the backend themselves and forward the cookie (shared/api/client.ts).
 - `POST /auth/code` → { resendIn } (body: email; sends a 6-digit code to it. On this computer the code is printed
   in the backend's log)
 - `POST /auth/code/verify` → User (body: email, code; creates the account on first login; 401 for a wrong or

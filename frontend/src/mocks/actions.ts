@@ -20,6 +20,7 @@ import type {
   DiscoverPromptsRequest,
   DemoRequest,
   DismissBrandRequest,
+  FirstRunRequest,
   ImportKeywordsRequest,
   ReportFilters,
   ReportPeriod,
@@ -276,4 +277,20 @@ export async function removeMember(memberId: string) {
 
 export async function requestPlan(projectId: string, body: PlanRequest) {
   return run((m) => m.requestPlan(projectId, body));
+}
+
+export async function startFirstRun(body: FirstRunRequest) {
+  return run((m) => m.startFirstRun(body));
+}
+
+export async function getFirstRuns() {
+  return run((m) => m.getFirstRuns());
+}
+
+export async function getFirstRun(id: string) {
+  return run((m) => m.getFirstRun(id));
+}
+
+export async function getFirstRunResult(id: string) {
+  return run((m) => m.getFirstRunResult(id));
 }

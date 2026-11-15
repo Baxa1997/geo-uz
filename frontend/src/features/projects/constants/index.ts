@@ -36,3 +36,9 @@ export const INPUT_CLASS = "h-10";
 
 /** How often the progress screen asks how the first run is going. */
 export const RUN_POLL_MS = 1000;
+
+/** A first run's stages in order, as the backend names them; texts in messages/FirstRun.steps. */
+export const FIRST_RUN_STEPS = ["reading_site", "asking", "reading_answers"] as const;
+
+/** How many questions without the client the first statistics list. */
+export const FIRST_RUN_MISSED = 5;

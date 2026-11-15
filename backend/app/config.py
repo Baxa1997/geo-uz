@@ -48,6 +48,9 @@ class Settings:
     first_run_questions: int = field(default_factory=lambda: int(os.environ.get("FIRST_RUN_QUESTIONS", "10")))
     # A first run costs real money: how many one account may start in a day
     first_runs_a_day: int = field(default_factory=lambda: int(os.environ.get("FIRST_RUNS_A_DAY", "3")))
+    # Development: a first run replays the latest saved one in the place of asking the assistants, so the
+    # pages can be built and tried without a paid request. Never set on the server.
+    first_run_replay: bool = field(default_factory=lambda: os.environ.get("FIRST_RUN_REPLAY", "false") == "true")
     session_days: int = 30
     # Cookies go over HTTPS only on the server
     secure_cookies: bool = field(default_factory=lambda: os.environ.get("SECURE_COOKIES", "false") == "true")
