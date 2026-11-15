@@ -16,10 +16,11 @@ import { cn } from "@/shared/helpers/utils";
 import type { FirstRunResult } from "@/shared/types/api";
 import { FIRST_RUN_MISSED } from "../constants";
 import { brandCounts, placeOf } from "../helpers/first-run";
+import { FirstRunBrandView } from "./first-run-brand-view";
 
 /**
  * The first statistics, numbers first: one sentence on where the business stands, three figures, every
- * business side by side, each assistant apart when two were asked, the conclusion, the questions without the client,
+ * business side by side, each assistant apart when two were asked, the conclusion, what the assistants say of the business by name, the questions without the client,
  * what on the website stands in the way, then the way on to the setup.
  */
 export function FirstRunResultView({ result, runId, onAgain }: { result: FirstRunResult; runId: string; onAgain: () => void }) {
@@ -167,6 +168,8 @@ export function FirstRunResultView({ result, runId, onAgain }: { result: FirstRu
           <p className="text-[0.95rem]/7 text-pretty">{conclusion}</p>
         </div>
       )}
+
+      {result.brandView && result.brandView.length > 0 && <FirstRunBrandView views={result.brandView} brand={result.brand.name} />}
 
       {missed.length > 0 && (
         <div className="rounded-xl border bg-background">

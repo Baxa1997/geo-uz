@@ -112,6 +112,16 @@ told where the customer is (the city and the country's code, as a system instruc
 nothing, and answered about Tashkent whatever the project's city), and ChatGPT's search is mandatory
 (`tool_choice: required`), so no answer comes from memory alone.
 
+**The brand questions (15 Nov 2026).** Beside the customers' questions a first check asks each assistant about
+the business by its name, in Russian and in Uzbek (ChatGPT in Russian only when Gemini is asked too): what it
+does, its prices, where it is, what people say. These answers are never counted in the scores. The writing
+model turns each into up to six short statements in the three languages, by topic, and checks each against
+the website's text: `confirmed`, `contradicted` (with what the website says) or `unverified`; and says whether
+the assistant `knows` the business, `confuses` it with another, or finds nothing (`unknown`). The result
+carries them as `brandView`, the conclusion is told of them, and the raw answers are kept as `brandAnswers`.
+A first check on Gemini alone with them: 256 seconds and $0.56 before the brand answers were read alongside
+the others. Not built: the same in a project's weekly check, feeding Notoʻgʻri faktlar.
+
 **Projects** (`app/projects.py`, 15 Nov 2026; read only). Tables: `projects`, `brands` (the client's own and
 the competitors, in a fixed order), `prompts`, `runs`, `answers`, `mentions` (every business an answer names;
 without a brand id when the project doesn't track it: the "new competitor" list) and `citations`. Saving a

@@ -684,6 +684,27 @@ export interface FirstRun {
   error: string | null;
 }
 
+type ThreeLanguages = Record<"uz" | "ru" | "en", string>;
+
+/** One assistant's answer to a question that names the business, as statements checked against its website. */
+export interface BrandView {
+  engine: string;
+  name: string;
+  language: "uz" | "ru";
+  question: string;
+  /** Describes this business; describes another with a similar name; or finds nothing. */
+  known: "knows" | "confuses" | "unknown";
+  statements: {
+    topic: "what" | "prices" | "place" | "contacts" | "reputation" | "other";
+    text: ThreeLanguages;
+    /** Against the website's text: says the same, says otherwise, or says nothing about it. */
+    check: "confirmed" | "contradicted" | "unverified";
+    /** What the website says, for a contradicted statement. */
+    correct: ThreeLanguages | null;
+  }[];
+  citations: Citation[];
+}
+
 /** The first statistics: the free check's `Snapshot` and what a first run adds to it. */
 export interface FirstRunResult extends Snapshot {
   /** The country the website mainly serves, as a two-letter code. */
@@ -697,6 +718,8 @@ export interface FirstRunResult extends Snapshot {
   recommended: Record<string, number>;
   /** What the counts mean and what to do first, worded by a model from them, per interface language. */
   conclusion?: Record<"uz" | "ru" | "en", string> | null;
+  /** What each assistant says when asked about the business by name; absent on runs made before 15 Nov 2026. */
+  brandView?: BrandView[];
   /** All answers collected. */
   answers: number;
   /** Development only: a saved run shown again, so the numbers are not this website's. */

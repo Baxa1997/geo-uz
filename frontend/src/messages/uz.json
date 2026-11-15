@@ -3779,6 +3779,31 @@
     "tryAgain": "Qayta urinish",
     "resultKicker": "Birinchi statistika",
     "resultTitle": "{brand}: AI bugun sizni qanday koʻradi",
+    "brandView": {
+      "title": "AI {brand} haqida nima deydi",
+      "text": "Har bir yordamchidan biznesingiz haqida nomi bilan soʻradik. Quyida uning aytganlari, har biri saytingizdagi maʼlumot bilan solishtirilgan. Bu javoblar yuqoridagi sonlarga qoʻshilmagan.",
+      "knows": "{count} ta gap aytdi{wrong, plural, =0 {} other {, shundan # tasi saytingizga zid}}",
+      "confuses": "Sizni boshqa biznes bilan adashtiryapti",
+      "unknown": "Biznesingiz haqida aniq hech narsa bilmaydi",
+      "asked": "Savol: {question}",
+      "correct": "Saytingizda: {text}",
+      "topics": {
+        "what": "Faoliyat",
+        "prices": "Narxlar",
+        "place": "Manzil",
+        "contacts": "Aloqa",
+        "reputation": "Fikrlar",
+        "other": "Boshqa"
+      },
+      "checks": {
+        "confirmed": "Saytingizda ham shunday",
+        "contradicted": "Saytingizga zid",
+        "unverified": "Saytingizda bu haqda yoʻq",
+        "confirmedHint": "Saytingizda ham shu maʼlumot yozilgan.",
+        "contradictedHint": "Saytingizda boshqacha yozilgan: yordamchi mijozga notoʻgʻri maʼlumot beryapti.",
+        "unverifiedHint": "Saytingizda bu haqda hech narsa yoʻq, shuning uchun tekshirib boʻlmadi. Yordamchi buni boshqa saytlardan olgan."
+      }
+    },
     "conclusionTitle": "Xulosa",
     "conclusionHint": "Yuqoridagi sonlar nimani anglatishi va birinchi navbatda nima qilish kerakligi. Matnni sunʼiy intellekt shu sonlar asosida yozgan.",
     "replayed": "Ishlab chiqish rejimi: bu saqlangan tekshiruv ({site}) raqamlari, yordamchilarga soʻrov yubormasdan qayta koʻrsatildi.",

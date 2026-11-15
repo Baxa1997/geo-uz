@@ -3779,6 +3779,31 @@
     "tryAgain": "Try again",
     "resultKicker": "First statistics",
     "resultTitle": "How AI sees {brand} today",
+    "brandView": {
+      "title": "What AI says about {brand}",
+      "text": "We asked each assistant about your business by name. Below are its statements, each compared with your website. These answers are not part of the numbers above.",
+      "knows": "{count, plural, one {# statement} other {# statements}}{wrong, plural, =0 {} other {, # against your website}}",
+      "confuses": "Confuses you with another business",
+      "unknown": "Knows nothing specific about your business",
+      "asked": "Question: {question}",
+      "correct": "On your website: {text}",
+      "topics": {
+        "what": "What it does",
+        "prices": "Prices",
+        "place": "Address",
+        "contacts": "Contacts",
+        "reputation": "Reviews",
+        "other": "Other"
+      },
+      "checks": {
+        "confirmed": "Same as your website",
+        "contradicted": "Against your website",
+        "unverified": "Not on your website",
+        "confirmedHint": "Your website says the same.",
+        "contradictedHint": "Your website says otherwise: the assistant gives customers wrong information.",
+        "unverifiedHint": "Your website says nothing about this, so it could not be checked. The assistant took it from other sites."
+      }
+    },
     "conclusionTitle": "Conclusion",
     "conclusionHint": "What the counts above mean and what to do first. Written by AI from those counts.",
     "replayed": "Development mode: these are the numbers of a saved check ({site}), shown again without asking the assistants.",

@@ -178,6 +178,16 @@ that is committed.
 
 ## Done (as of 15 November 2026)
 
+- **Built, waiting for the user's look: the brand questions in the first check (15 Nov), on the branch
+  `brand-questions`; merged, pushed and deployed the same day, when the user said "yes, start brand questions,
+  then push and deploy".** The user asked whether our checks show how an AI really knows a brand; they did
+  not: no question named the business. A first check now asks each assistant about the business by name and
+  shows, under the conclusion, "AI <brand> haqida nima deydi": whether the assistant knows it, and its
+  statements, each marked against the website (the same, against it with what the website says, not on the
+  website). Not counted in any score. Tried on the server on Gemini alone (`backend/README.md`); the page's
+  block passed the type check and the linter and was not looked at in a browser. Not built: the same in the
+  weekly check, feeding Notoʻgʻri faktlar. No new variable.
+
 - **Built, waiting for the user's look: Gemini reads and writes, and the first check has a conclusion (15 Nov),
   on the branch `setup-any-business`; merged, pushed and deployed to the server the same day, when the user said
   "push and deploy everything".** The user asked for Gemini 4 Hydrogen "or better model" for the first
