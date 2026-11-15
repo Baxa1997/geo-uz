@@ -191,7 +191,10 @@ that is committed.
   and cost $0.53. The result page shows the conclusion ("Xulosa") under the numbers. Not tried: the
   conclusion on the page with a live run from the site, and ChatGPT with Gemini in one check. Then ("use the
   flash 3.8 latest"): `gemini-3.8-flash` answers the questions, reads the answers and stands in; an answer
-  that came without a Google search is asked once more. Merged, pushed and deployed (`gemini-38-flash`).
+  that came without a Google search is asked once more. Merged, pushed and deployed (`gemini-38-flash`). Then
+  ("yes, do 1 and 2, then push and deploy"): Gemini is told the customer's city and country, and ChatGPT's
+  search is mandatory (`location-and-forced-search`, merged, pushed, deployed). Asked by the user and not
+  built: Google's AI answers in Search as a third assistant, which needs a provider that reads the real page.
 
 - **Built, waiting for the user's look: the setup fits any business (15 Nov), on the branch
   `setup-any-business`; merged and pushed the same day ("push and deploy everything").** The user tried a new account with a chatbot company and found the

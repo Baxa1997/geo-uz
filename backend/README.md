@@ -107,7 +107,10 @@ sentences worded from the counts, or null when the model failed. Later the same 
 `gemini-3.8-flash` for the Flash roles: it answers the customers' questions (`GEMINI_MODEL`), reads and stands
 in. It read the same ten answers as `gpt-6.1-terra` had, in 13 seconds. Google Search is on for every
 question asked, but Gemini decides itself whether to search: one answer in five came without a search, so such
-an answer is asked once more. The reading and writing models have no search: they work on text they are given.
+an answer is asked once more. The reading and writing models have no search: they work on text they are given. Also that day: Gemini is
+told where the customer is (the city and the country's code, as a system instruction; it had been told
+nothing, and answered about Tashkent whatever the project's city), and ChatGPT's search is mandatory
+(`tool_choice: required`), so no answer comes from memory alone.
 
 **Projects** (`app/projects.py`, 15 Nov 2026; read only). Tables: `projects`, `brands` (the client's own and
 the competitors, in a fixed order), `prompts`, `runs`, `answers`, `mentions` (every business an answer names;
