@@ -228,6 +228,14 @@ That is roughly one to two US cents per answer, and it has to cover the answer w
   it). Still to build for the step after: saving a first run as a project (brand, competitors and questions
   from its result), which the setup wizard then confirms.
 
+- **15 Nov 2026. Prices, free then paid, Gemini through Vertex (the user's decisions).** Standard $39.99 a
+  month checked weekly, Pro $89.99, Enterprise by agreement for several projects; the first check free, every
+  later one only on a paid plan; the first check on Gemini (ten questions) and ChatGPT (five). The user
+  proposed Pro "every 2 or 3 days" and asked to be corrected: at about $0.04–0.05 an answer, 75 questions on
+  two assistants every other day costs $55–80 of the $89.99, so Pro is built as twice a week with 50
+  questions (about $35). Standard on two assistants costs about $9. These replace the soʻm prices and the
+  "Cost per plan" section above. Built: `projects.paid`, `billing.status`, `app/admin.py`, checks by plan,
+  Vertex in `app/engines.py`. All competitors limits are 5. Not confirmed by the user yet: the Pro correction.
 - **15 Nov 2026. Fixes and wrong facts** (stage 4 of the root `PLAN.md`; built, waiting for the user's look
   and a live check). `app/fixes.py`: the cited pages read, the actions by rule with stable keys, their
   statuses, "Add a page", proof, wrong facts and briefs by a model inside a live check (`backend/README.md`,

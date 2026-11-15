@@ -178,6 +178,19 @@ that is committed.
 
 ## Done (as of 15 November 2026)
 
+- **Built, waiting for the user's look: prices, free then paid, Gemini through Vertex, a full profile at
+  setup (15 Nov), on the branch `plans-and-gemini`; merged and pushed the same day, when the user said "push
+  everything".** The user: the first check on Gemini (as
+  their IELTS project on the server reaches it, through Vertex) and ChatGPT with fewer questions; the first
+  check free and every next one only on a paid account; Standard $39.99 weekly, Pro $89.99 "every 2 or 3
+  days", Enterprise by contact for several projects; "if I'm going wrong, correct"; every piece of
+  information filled in at setup. Built as the table in `PLAN.md` ("Prices and the free first check"), with
+  one correction the user has not answered: Pro twice a week with 50 questions. The pages show dollars and
+  the names Standard, Pro, Enterprise; a trial project says so on the Overview and on Tarif; the setup's
+  profile step requires the name, description, field, services and city. Gemini has never run from GEO: the
+  server has no Google credentials for it (the IELTS project's were read to copy the method, not copied).
+  Tried in a browser in Uzbek: the Overview's notice, Tarif, the landing page's prices. No paid request.
+
 - **Built, waiting for the user's look (not yet "done"): fixes and wrong facts, stage 4 of `PLAN.md` (15 Nov),
   on the branch `real-projects`, not committed.** The user said "yes, start stage 4" (whether "yes" also
   confirmed stages 1–3 was asked and not answered: they stay "waiting"). `backend/app/fixes.py`: the most

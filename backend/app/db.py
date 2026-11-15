@@ -89,6 +89,9 @@ class Project(Base):
     customers: Mapped[Any] = mapped_column(JSON, default=list)
     identity: Mapped[Any] = mapped_column(JSON, default=list)
     plan: Mapped[str] = mapped_column(String(20), default="start")
+    # Whether the plan is paid for. Not yet: the account's free first check is all it has, and no further
+    # check is made (the user's decision, 15 Nov 2026). We switch it on by hand: `python -m app.admin`.
+    paid: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True)
     # The four checks of the client's website, as the first run found them
     site_checks: Mapped[Optional[Any]] = mapped_column(JSON, nullable=True)
     first_run_id: Mapped[Optional[str]] = mapped_column(String(32), nullable=True)

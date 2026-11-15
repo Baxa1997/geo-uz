@@ -7,7 +7,7 @@ import { PlusIcon as Plus } from "@phosphor-icons/react/dist/ssr/Plus";
 import { useLocale, useTimeZone, useTranslations } from "next-intl";
 import { EngineIcon } from "@/shared/components/engine-icon";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/components/ui/dropdown-menu";
-import { ENGINES, PLAN_PRICES, TIME_ZONE } from "@/shared/constants";
+import { ENGINES, formatPrice, PLAN_PRICES, TIME_ZONE } from "@/shared/constants";
 import { formatLongDate } from "@/shared/helpers/dates";
 import type { Project } from "@/shared/types/api";
 
@@ -23,7 +23,8 @@ export function PlanOverview({ project }: { project: Project }) {
   const engines = useTranslations("Engines");
   const locale = useLocale();
   const timeZone = useTimeZone() ?? TIME_ZONE;
-  const money = new Intl.NumberFormat(locale === "uz" ? "ru" : locale).format(PLAN_PRICES[project.plan]);
+  const price = PLAN_PRICES[project.plan];
+  const trial = project.billing.status === "trial";
   const live = ENGINES.filter((engine) => engine.live);
   const soon = ENGINES.filter((engine) => !engine.live);
 
@@ -50,7 +51,7 @@ export function PlanOverview({ project }: { project: Project }) {
             </p>
             <p className="flex flex-wrap items-baseline gap-x-2.5">
               <span className="text-[1.375rem] leading-7 font-semibold tracking-tight">{plans(project.plan)}</span>
-              <span className="text-[0.9375rem] text-muted-foreground">{t("pricePlain", { amount: money })}</span>
+              <span className="text-[0.9375rem] text-muted-foreground">{trial ? t("trial") : price === null ? t("byAgreement") : t("pricePlain", { amount: formatPrice(price) })}</span>
             </p>
             <dl className="flex flex-wrap gap-x-10 gap-y-4">
               {facts.map(({ key, icon: Icon, value }) => (

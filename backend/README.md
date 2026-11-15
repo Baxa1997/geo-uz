@@ -81,6 +81,18 @@ Beside the `Snapshot` of the contract the result carries `engines` (the scores p
 (how often each business is recommended), `answers`, `description` and `services`; each answer says which
 `engine` gave it and each mention whether it is `recommended`.
 
+**Plans, and free then paid (the user's decision, 15 Nov 2026).** A new account's first check is free: ten
+questions to Gemini and five of them to ChatGPT too (`FIRST_RUN_CHATGPT_QUESTIONS`; an assistant asked alone
+gets all ten). The project saved from it is a trial (`billing.status` "trial", `projects.paid` empty): it
+keeps its first check and is not checked again. We switch a plan on by hand, `python -m app.admin plan
+<project id> start|business|agency` (`list` shows the projects), and from then the timer checks it:
+**Standard** (`start`, $39.99 a month) on Mondays with 25 questions, **Pro** (`business`, $89.99) on Mondays
+and Thursdays with 50 questions and the facts check, **Enterprise** (`agency`, by agreement) for several
+projects. `python -m app.weekly` run every day picks the projects due that day. Gemini is reached through
+Vertex AI when `GOOGLE_CLOUD_PROJECT` is set (a credentials file, a plain POST, Google Search grounding; the
+cited pages come as Google's redirect links and are followed to their real addresses). **Gemini has never run
+from this service**: the request's shape is the one the user's other project on the server uses.
+
 **Projects** (`app/projects.py`, 15 Nov 2026; read only). Tables: `projects`, `brands` (the client's own and
 the competitors, in a fixed order), `prompts`, `runs`, `answers`, `mentions` (every business an answer names;
 without a brand id when the project doesn't track it: the "new competitor" list) and `citations`. Saving a

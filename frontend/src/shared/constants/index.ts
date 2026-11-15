@@ -40,19 +40,25 @@ export type EngineKey = (typeof ENGINES)[number]["key"];
 /** The engine a report names (`method.engine`); ChatGPT for a name this version doesn't know. */
 export const engineOf = (name: string): EngineKey => ENGINES.find((engine) => engine.key === name)?.key ?? "chatgpt";
 
-/** The plans in their order, each with its monthly price in soums. Names in messages/Plans. */
+/**
+ * The plans in their order, each with its monthly price in US dollars (the user's decision, 15 Nov 2026):
+ * "start" is Standard, "business" is Pro, "agency" is Enterprise, for several projects and priced by
+ * agreement (null). Names in messages/Plans. Managed GEO (Pro with the fixes done by our team) is by agreement too.
+ */
 export const PLANS: Plan[] = ["start", "business", "agency"];
-export const PLAN_PRICES: Record<Plan, number> = { start: 199_000, business: 490_000, agency: 1_490_000 };
-/** Managed GEO: the Business plan with the fixes done by our team, from this a month. */
-export const MANAGED_PRICE_FROM = 3_000_000;
+export const PLAN_PRICES: Record<Plan, number | null> = { start: 39.99, business: 89.99, agency: null };
+/** How often a paid plan's questions are asked: Standard on Mondays, Pro and Enterprise on Mondays and Thursdays. */
+export const PLAN_CHECKS_A_WEEK: Record<Plan, number> = { start: 1, business: 2, agency: 2 };
+/** A price as shown: "$39.99"; whole dollars without cents. */
+export const formatPrice = (amount: number) => `$${Number.isInteger(amount) ? amount : amount.toFixed(2)}`;
 
 /**
  * What each plan allows a project: questions tracked at once, competitors, brand facts to check against.
  * Start has no wrong-fact checks (the landing page's plan table), so no facts either.
  */
 export const PLAN_LIMITS: Record<Plan, ProjectLimits> = {
-  start: { prompts: 25, competitors: 3, facts: 0 },
-  business: { prompts: 75, competitors: 5, facts: 20 },
+  start: { prompts: 25, competitors: 5, facts: 0 },
+  business: { prompts: 50, competitors: 5, facts: 20 },
   agency: { prompts: 300, competitors: 5, facts: 50 },
 };
 

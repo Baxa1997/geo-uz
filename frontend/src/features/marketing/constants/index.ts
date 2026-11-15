@@ -10,7 +10,7 @@ import { ScanIcon as ScanSearch } from "@phosphor-icons/react/dist/ssr/Scan";
 import { PaperPlaneTiltIcon as Send } from "@phosphor-icons/react/dist/ssr/PaperPlaneTilt";
 import { SparkleIcon as Sparkles } from "@phosphor-icons/react/dist/ssr/Sparkle";
 import { WrenchIcon as Wrench } from "@phosphor-icons/react/dist/ssr/Wrench";
-import { MANAGED_PRICE_FROM, PLAN_PRICES } from "@/shared/constants";
+import { PLAN_PRICES } from "@/shared/constants";
 import type { DemoSector } from "@/shared/types/api";
 import { IconActions, IconMentions, IconPlace, IconRating, IconReports } from "@/shared/components/own-icons";
 import type { AppIcon } from "@/shared/types/icon";
@@ -113,7 +113,8 @@ export const LOCAL: { key: "languages" | "sources" | "facts" | "telegram" | "pri
 /** Monthly plans, in soums; the free check is the sales tool. Names and features in messages/Landing.pricing. */
 export const PRICING: {
   key: PlanKey;
-  price: number;
+  /** US dollars a month; null: by agreement. */
+  price: number | null;
   /** Shown after the price; the free check has none. */
   period?: "month";
   recommended?: boolean;
@@ -123,13 +124,11 @@ export const PRICING: {
   { key: "free", price: 0, target: SECTION.check },
   { key: "start", price: PLAN_PRICES.start, period: "month", target: SECTION.demo },
   { key: "business", price: PLAN_PRICES.business, period: "month", recommended: true, target: SECTION.demo },
-  { key: "agency", price: PLAN_PRICES.agency, period: "month", target: SECTION.demo },
+  { key: "agency", price: PLAN_PRICES.agency, target: SECTION.demo },
 ];
 
 export type PlanKey = "free" | "start" | "business" | "agency";
 
-/** "Managed GEO": the Business plan plus us applying the fixes; price per month from (shared/constants). */
-export { MANAGED_PRICE_FROM };
 
 export const PRICING_FEATURES = ["f1", "f2", "f3", "f4"] as const;
 
@@ -137,7 +136,7 @@ export const PRICING_FEATURES = ["f1", "f2", "f3", "f4"] as const;
  * A cell of the plan comparison: yes/no, a number, "soon" (planned, not built yet),
  * or the key of a text in messages/Landing.pricing.compare.values.
  */
-export type PlanCell = boolean | number | "soon" | { value: "chatgpt" | "once" | "weekly" | "uzRu" | "unlimited" | "top3" | "telegram" };
+export type PlanCell = boolean | number | "soon" | { value: "chatgpt" | "once" | "weekly" | "twiceWeekly" | "uzRu" | "unlimited" | "top3" | "telegram" };
 
 const text = (value: Extract<PlanCell, object>["value"]): PlanCell => ({ value });
 
@@ -158,12 +157,12 @@ export const PLAN_TABLE: {
     group: "coverage",
     rows: [
       { key: "engines", cells: [text("chatgpt"), text("chatgpt"), text("chatgpt"), text("chatgpt")] },
-      { key: "prompts", cells: [10, 25, 75, 300] },
-      { key: "frequency", cells: [text("once"), text("weekly"), text("weekly"), text("weekly")] },
-      // prompts × 3 samples × 4 weeks
-      { key: "answers", cells: [30, 300, 900, 3600] },
+      { key: "prompts", cells: [10, 25, 50, 300] },
+      { key: "frequency", cells: [text("once"), text("weekly"), text("twiceWeekly"), text("twiceWeekly")] },
+      // On ChatGPT alone: prompts × checks a month (4 weekly, 8 twice a week); the free check asks 15
+      { key: "answers", cells: [15, 100, 400, 2400] },
       { key: "brands", cells: [1, 1, 1, 5] },
-      { key: "competitors", cells: [3, 3, 5, 5] },
+      { key: "competitors", cells: [5, 5, 5, 5] },
       { key: "languages", cells: [text("uzRu"), text("uzRu"), text("uzRu"), text("uzRu")] },
       { key: "users", cells: [false, text("unlimited"), text("unlimited"), text("unlimited")] },
     ],

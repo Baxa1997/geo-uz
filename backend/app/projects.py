@@ -26,13 +26,17 @@ from .db import Answer, Brand, Citation, FirstRun, Mention, Project, Prompt, Run
 from .engines import web
 
 # What each plan allows (`frontend/src/shared/constants`, PLAN_LIMITS)
+# The plans as the user set them on 15 Nov 2026: "start" is Standard ($39.99 a month, checked weekly),
+# "business" is Pro ($89.99, checked twice a week), "agency" is Enterprise (several projects, by agreement).
 PLAN_LIMITS = {
-    "start": {"prompts": 25, "competitors": 3, "facts": 0},
-    "business": {"prompts": 75, "competitors": 5, "facts": 20},
+    "start": {"prompts": 25, "competitors": 5, "facts": 0},
+    "business": {"prompts": 50, "competitors": 5, "facts": 20},
     "agency": {"prompts": 300, "competitors": 5, "facts": 50},
 }
-# Until plans are sold a new project is on Biznes, as the sample project is: the setup offers five competitors
-DEFAULT_PLAN = "business"
+# The weekdays a paid project is checked on (Monday is 0), at 01:00 UTC, 06:00 in Tashkent
+CHECK_DAYS = {"start": [0], "business": [0, 3], "agency": [0, 3]}
+# A new project has Standard's limits and is not paid: its free first check is all it gets until it is
+DEFAULT_PLAN = "start"
 TONE = {"positive": 100, "neutral": 50, "negative": 0}
 WRONG_FACT_PENALTY = 10
 
@@ -86,7 +90,8 @@ def project_json(db: Db, project: Project) -> Dict[str, Any]:
         "plan": project.plan,
         "limits": PLAN_LIMITS[project.plan],
         # Billing doesn't exist yet: nothing renews
-        "billing": {"cycle": "month", "renewsAt": None},
+        # "trial": the free first check only; "active": paid, checked on its plan's days
+        "billing": {"cycle": "month", "renewsAt": None, "status": "active" if project.paid else "trial"},
     }
 
 
@@ -464,16 +469,15 @@ def report(db: Db, project: Project, language: Optional[str] = None, topic: Opti
         # A condition is the whole project's
         "conditionHistory": [] if prompt_id is not None else [check.condition(brands, len(wrong) if check is latest else 0) for check in checks],
         "untrackedBrands": latest.untracked(brands, project.dismissed or []) if latest else [],
-        "nextRunAt": next_weekly_run() if settings.weekly_runs and prompts and run_id is None else None,
+        "nextRunAt": next_check(project.plan) if settings.weekly_runs and project.paid and prompts and run_id is None else None,
     }
 
 
-def next_weekly_run() -> str:
-    """Weekly checks start on Monday at 06:00 in Tashkent (01:00 UTC): the first one after now."""
+def next_check(plan: str) -> str:
+    """The plan's first check day after now, at 06:00 in Tashkent (01:00 UTC)."""
     moment = now().replace(hour=1, minute=0, second=0, microsecond=0)
-    moment += datetime.timedelta(days=(7 - moment.weekday()) % 7)
-    if moment <= now():
-        moment += datetime.timedelta(days=7)
+    while moment <= now() or moment.weekday() not in CHECK_DAYS.get(plan, [0]):
+        moment += datetime.timedelta(days=1)
     return iso(moment)
 
 

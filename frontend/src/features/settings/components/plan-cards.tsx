@@ -7,14 +7,14 @@ import { LockIcon as Lock } from "@phosphor-icons/react/dist/ssr/Lock";
 import { MinusIcon as Minus } from "@phosphor-icons/react/dist/ssr/Minus";
 import { ArrowsClockwiseIcon as RefreshCw } from "@phosphor-icons/react/dist/ssr/ArrowsClockwise";
 import { UsersIcon as Users } from "@phosphor-icons/react/dist/ssr/Users";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { EngineIcon } from "@/shared/components/engine-icon";
 import { ConfirmModal } from "@/shared/components/modal";
 import { Segmented, SegmentedButton } from "@/shared/components/segmented";
 import { Button } from "@/shared/components/ui/button";
 import { api } from "@/shared/api/client";
-import { ENGINES, MANAGED_PRICE_FROM, PLAN_BRANDS, PLAN_LIMITS, PLAN_PRICES, PLANS, YEARLY_MONTHS_PAID } from "@/shared/constants";
+import { ENGINES, formatPrice, PLAN_BRANDS, PLAN_CHECKS_A_WEEK, PLAN_LIMITS, PLAN_PRICES, PLANS, YEARLY_MONTHS_PAID } from "@/shared/constants";
 import { cn } from "@/shared/helpers/utils";
 import type { BillingCycle, Plan } from "@/shared/types/api";
 import type { AppIcon } from "@/shared/types/icon";
@@ -46,21 +46,21 @@ const LIMITS: { key: "prompts" | "brands" | "competitors"; icon: AppIcon }[] = [
  * asks (ChatGPT with web search; Gemini and Yandex "soon", locked) and what it includes, ✓ or a dash.
  * Billing isn't built: a switch or a cancel sends us a request after a "sure?", and the page says so.
  */
-export function PlanCards({ projectId, current, cycle: initialCycle }: { projectId: string; current: Plan; cycle: BillingCycle }) {
+export function PlanCards({ projectId, current, cycle: initialCycle }: { projectId: string; /** The plan paid for; null while the project has only its free first check. */ current: Plan | null; cycle: BillingCycle }) {
   const t = useTranslations("Settings.plan");
   const plans = useTranslations("Plans");
   const engines = useTranslations("Engines");
-  const locale = useLocale();
   const [cycle, setCycle] = useState(initialCycle);
   const [asking, setAsking] = useState<Ask | null>(null);
   const request = useMutation({
     mutationFn: (plan: Ask) => api.requestPlan(projectId, { plan, cycle }),
     onSuccess: () => setAsking(null),
   });
-  const money = (amount: number) => new Intl.NumberFormat(locale === "uz" ? "ru" : locale).format(amount);
+  /** A plan's price a month in dollars; null for the ones priced by agreement (Enterprise, Managed GEO). */
+  const priceOf = (choice: Choice) => (choice === "managed" ? null : PLAN_PRICES[choice]);
   const name = (choice: Choice) => (choice === "managed" ? t("managed") : plans(choice));
-  // A year paid ahead, shown a month, rounded to a thousand soums
-  const monthly = (price: number) => (cycle === "year" ? Math.round((price * YEARLY_MONTHS_PAID) / 12 / 1000) * 1000 : price);
+  // A year paid ahead, shown a month, to the cent
+  const monthly = (price: number) => (cycle === "year" ? Math.round(((price * YEARLY_MONTHS_PAID) / 12) * 100) / 100 : price);
   const live = ENGINES.filter((engine) => engine.live);
   const soon = ENGINES.filter((engine) => !engine.live);
   const cards: Choice[] = [...PLANS, "managed"];
@@ -94,20 +94,21 @@ export function PlanCards({ projectId, current, cycle: initialCycle }: { project
           {cards.map((choice) => {
             const isCurrent = choice === current;
             const limits = choice === "managed" ? PLAN_LIMITS.business : PLAN_LIMITS[choice];
+            const price = priceOf(choice);
             const values = { ...limits, brands: choice === "managed" ? PLAN_BRANDS.business : PLAN_BRANDS[choice] };
             return (
               <li key={choice} className={cn("flex flex-col rounded-2xl bg-card p-5 ring-1 ring-foreground/10", isCurrent && "ring-2 ring-you")}>
                 <p className="text-[1.0625rem] text-muted-foreground">{name(choice)}</p>
                 <p className="mt-1 flex min-h-8 flex-wrap items-baseline gap-x-1.5 text-sm text-muted-foreground">
-                  {t.rich(choice === "managed" ? "priceFrom" : "price", {
-                    amount: money(choice === "managed" ? MANAGED_PRICE_FROM : monthly(PLAN_PRICES[choice])),
+                  {t.rich(price === null ? "priceByAgreement" : "price", {
+                    amount: price === null ? "" : formatPrice(monthly(price)),
                     b: (chunks) => <span className="text-[1.375rem] leading-8 font-semibold tracking-tight text-foreground tabular-nums">{chunks}</span>,
                   })}
                 </p>
                 {/* Paid for a year: what the year costs, under every price (Managed GEO keeps the line empty, so the cards stay level) */}
                 {cycle === "year" && (
                   <p className="min-h-5 text-sm text-pretty text-muted-foreground">
-                    {choice !== "managed" && t("yearTotal", { amount: money(PLAN_PRICES[choice] * YEARLY_MONTHS_PAID), free: 12 - YEARLY_MONTHS_PAID })}
+                    {price !== null && t("yearTotal", { amount: formatPrice(Math.round(price * YEARLY_MONTHS_PAID * 100) / 100), free: 12 - YEARLY_MONTHS_PAID })}
                   </p>
                 )}
 
@@ -135,7 +136,7 @@ export function PlanCards({ projectId, current, cycle: initialCycle }: { project
                 <div className="mt-5 flex flex-col gap-3 border-t pt-5">
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-sm tracking-wide text-muted-foreground uppercase">{t("assistants")}</span>
-                    <span className="rounded-md border bg-muted/60 px-2 py-0.5 text-sm">{t("weekly")}</span>
+                    <span className="rounded-md border bg-muted/60 px-2 py-0.5 text-sm">{t(PLAN_CHECKS_A_WEEK[choice === "managed" ? "business" : choice] > 1 ? "twiceWeekly" : "weekly")}</span>
                   </div>
                   <div className="flex items-center justify-between gap-2">
                     <span className="rounded-full bg-you-soft/60 px-2.5 py-0.5 text-sm text-you">{t("webSearch")}</span>
@@ -187,7 +188,7 @@ export function PlanCards({ projectId, current, cycle: initialCycle }: { project
       <ConfirmModal
         open={asking !== null}
         onOpenChange={(open) => !open && setAsking(null)}
-        title={asking === "cancel" ? t("cancelTitle", { plan: plans(current) }) : t("askTitle", { plan: asking ? name(asking) : "" })}
+        title={asking === "cancel" ? t("cancelTitle", { plan: current ? plans(current) : "" }) : t("askTitle", { plan: asking ? name(asking) : "" })}
         description={request.isError ? t("failed") : asking === "cancel" ? t("cancelText") : t("askText", { cycle: t(`cycles.${cycle}`) })}
         confirm={asking === "cancel" ? t("cancelConfirm") : t("askConfirm")}
         cancel={t("back")}

@@ -41,14 +41,18 @@ All three are public (built into the site), none is a secret.
 | `SMTP_FROM` | no | The sender's address when it differs from `SMTP_USER` | `SMTP_USER` | no |
 | `OPENAI_API_KEY` | yes | Asks ChatGPT and reads the answers. Without it ChatGPT is not asked | none | **no** |
 | `GEMINI_API_KEY` | yes | Asks Gemini. Without it Gemini is not asked | none | **no** |
+| `GOOGLE_CLOUD_PROJECT` | no | Gemini through Vertex AI: the Google Cloud project. With it set, Vertex is used and `GEMINI_API_KEY` is not | none | **no: needed for Gemini** |
+| `GOOGLE_CLOUD_LOCATION` | no | The Vertex location; Gemini 3 models answer only at `global` | `global` | no (the default) |
+| `GOOGLE_APPLICATION_CREDENTIALS` | yes (the file it names) | The path of the Google credentials file Vertex is reached with. Read by Google's own library | none | **no: needed for Gemini** |
 | `CHATGPT_MODEL` | no | The model that answers the questions | `gpt-6.1-terra` | no |
-| `GEMINI_MODEL` | no | Gemini's model | `gemini-4-hydrogen` | no |
+| `GEMINI_MODEL` | no | Gemini's model | `gemini-3.5-flash` (since 15 Nov: the model the user's other project already uses on Vertex) | no |
 | `READ_MODEL` | no | The model that reads who an answer names | `gpt-6.1-terra` | no |
 | `FIRST_RUN_QUESTIONS` | no | Questions in a new account's first run | `10` | no |
+| `FIRST_RUN_CHATGPT_QUESTIONS` | no | Of a first check's questions, how many ChatGPT is asked when Gemini is asked too (Gemini gets all) | `5` | no (the default) |
 | `FIRST_RUNS_A_DAY` | no | First runs one account may start in a day (each costs money) | `3` | no |
 | `FIRST_RUN_REPLAY` | no | Development: a first run replays a saved one and asks nobody. Never on the server | `false` | no (on this computer: `true`) |
 | `RUN_SAMPLES` | no | A weekly check: how many times each tracked question is asked to each assistant. Every extra one multiplies the check's cost; waits for the prices decision | `1` | no (the default) |
-| `WEEKLY_RUNS` | no | `true` where the server's timer starts the weekly checks: the report then says when the next check is | `false` | no: set it when the timer is installed |
+| `WEEKLY_RUNS` | no | `true` where the server's timer starts the checks (every day at 01:00 UTC; Standard is due on Mondays, Pro and Enterprise on Mondays and Thursdays): the report then says when the next check is | `false` | no: set it when the timer is installed |
 | `CHROME_PATH` | no | The browser that prints a report as a PDF (Chrome or Chromium). Left out, the usual places are tried | found by itself | no: no browser is installed on the server yet |
 | `FRONTEND_ORIGIN` | no | The site's public address. Since 15 Nov it is the address in a report's link and email, and the page the server prints as a PDF, so it must open without Vercel's own login. Also the site allowed to call the backend directly (CORS) | `http://localhost:3000` | default: **to be set to the site's public address before reports are sent** |
 | `SECURE_COOKIES` | no | `true`: the login cookie only over HTTPS | `false` | `true` |

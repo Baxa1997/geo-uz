@@ -61,6 +61,11 @@ export interface Project {
 export interface ProjectBilling {
   cycle: BillingCycle;
   renewsAt: string | null;
+  /**
+   * "trial": the account's free first check is all the project has; nothing more is checked until a plan is
+   * paid. "active": paid, checked on its plan's days. Absent means active.
+   */
+  status?: "trial" | "active";
 }
 
 export type BillingCycle = "month" | "year";

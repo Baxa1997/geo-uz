@@ -1,7 +1,9 @@
 """The weekly check: every tracked question of a project asked again, and the answers read.
 
-    python -m app.weekly                    every project (the server's timer: Mondays, 01:00 UTC)
-    python -m app.weekly --project <id>     one project, by hand
+    python -m app.weekly                    the paid projects due today (the server's timer, every day at 01:00
+                                            UTC): Standard on Mondays, Pro and Enterprise on Mondays and Thursdays
+    python -m app.weekly --all              every paid project, whatever the day
+    python -m app.weekly --project <id>     one project, by hand, paid or not
 
     ask                each tracked question to every assistant with a key, `RUN_SAMPLES` times, a few at a
                        time; a question that fails is asked again twice, then left out
@@ -32,7 +34,7 @@ from .config import settings
 from .db import Answer, Brand, Citation, Mention, Project, Prompt, Run, SessionLocal, create_tables, now
 from .engines import web
 from .firstrun import NAMES_RULES, READ_RULES, READ_SCHEMA, STR, arr, obj
-from .projects import brands_of, prompts_of
+from .projects import CHECK_DAYS, brands_of, prompts_of
 
 ASK_TRIES = 3
 KAZAKH_CITIES = ("алматы", "almaty", "астана", "astana", "шымкент", "shymkent")
@@ -196,11 +198,14 @@ def _collect(db: Any, project: Project, brands: List[Brand], run: Run, jobs: Lis
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="The weekly check")
-    parser.add_argument("--project", help="one project's id; every project when left out")
+    parser.add_argument("--project", help="one project's id, paid or not")
+    parser.add_argument("--all", action="store_true", help="every paid project, whatever the day")
     chosen = parser.parse_args()
     create_tables()
+    today = now().weekday()
     with SessionLocal() as db:
-        ids = [chosen.project] if chosen.project else list(db.scalars(select(Project.id).order_by(Project.created_at)))
+        paid = list(db.scalars(select(Project).where(Project.paid.is_(True)).order_by(Project.created_at)))
+        ids = [chosen.project] if chosen.project else [project.id for project in paid if chosen.all or today in CHECK_DAYS.get(project.plan, [0])]
     for project_id in ids:
         started = time.time()
         run_id = check(project_id)

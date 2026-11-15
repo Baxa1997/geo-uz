@@ -2,6 +2,7 @@ import { CheckIcon as Check } from "@phosphor-icons/react/dist/ssr/Check";
 import { MinusIcon as Minus } from "@phosphor-icons/react/dist/ssr/Minus";
 import { useFormatter, useTranslations } from "next-intl";
 import { PLAN_TABLE, PRICING, type PlanCell } from "../../constants";
+import { formatPrice } from "@/shared/constants";
 
 /** Every plan against every feature, grouped the way the product works: coverage, discover, measure, act, report. */
 export function PlanTable() {
@@ -46,7 +47,7 @@ export function PlanTable() {
                 <th key={key} scope="col" className="p-4 text-center font-medium">
                   {t(`tiers.${key}.name`)}
                   <span className="block text-xs font-normal whitespace-nowrap text-muted-foreground">
-                    {t("price", { amount: price })} {period && t(period)}
+                    {price === null ? t("byAgreement") : t("price", { amount: formatPrice(price) })} {period && t(period)}
                   </span>
                 </th>
               ))}

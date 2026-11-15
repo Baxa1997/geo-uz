@@ -1745,9 +1745,9 @@
     }
   },
   "Plans": {
-    "start": "Start",
-    "business": "Biznes",
-    "agency": "Agentlik"
+    "start": "Standart",
+    "business": "Pro",
+    "agency": "Enterprise"
   },
   "NewProject": {
     "title": "Yangi loyiha",
@@ -2006,8 +2006,8 @@
           "text": "Haftalik natija oʻzingiz har kuni ishlatadigan ilovada."
         },
         "price": {
-          "title": "Soʻmda va hamyonbop",
-          "text": "Oyiga 199 000 soʻmdan. Haftalik tekshiruv narxni past ushlab turadi."
+          "title": "Aniq narxlar",
+          "text": "Oyiga 39,99 dollardan. Birinchi tekshiruv bepul."
         },
         "managed": {
           "title": "Biz bajarib beramiz",
@@ -2020,51 +2020,51 @@
       "title": "Oddiy va ochiq narxlar",
       "sub": "Bepul tekshiruvdan boshlang, keyin kerakli tarifni tanlang.",
       "recommended": "Tavsiya qilamiz",
-      "price": "{amount, number} soʻm",
+      "price": "{amount}",
       "month": "/ oy",
       "perMonth": "oyiga",
       "includes": "Tarifga kiradi:",
       "managedTitle": "Tuzatishlarni biz bajaraylikmi?",
-      "managed": "Managed GEO — oyiga {amount, number} soʻmdan: Biznes tarifi va tuzatishlar jamoamizdan.",
+      "managed": "Managed GEO — narxi kelishiladi: Pro tarifi va tuzatishlar jamoamizdan.",
       "managedCta": "Bogʻlanish",
       "users": "Har bir tarifda foydalanuvchilar soni cheklanmagan.",
-      "note": "Savol — mijoz ChatGPT’ga beradigan bitta soʻrov, masalan: “Toshkentdagi eng yaxshi stomatologiya qaysi?” Har savolni 3 marta beramiz, chunki ChatGPT har safar biroz boshqacha javob beradi.",
+      "note": "Savol — mijoz AI yordamchiga yuboradigan bitta soʻrov, masalan: “Toshkentdagi eng yaxshi stomatologiya qaysi?” Har tekshiruvda savollar qaytadan beriladi, chunki AI har safar biroz boshqacha javob beradi.",
       "tiers": {
         "free": {
           "name": "Bepul tekshiruv",
           "for": "Natijani koʻrish uchun",
           "cta": "Bepul tekshirish",
           "f1": "10 ta savol, bir marta",
-          "f2": "Siz va 3 ta raqobatchi",
+          "f2": "Siz va 5 ta raqobatchi",
           "f3": "Natija 2 daqiqada",
           "f4": "Roʻyxatdan oʻtish shart emas"
         },
         "start": {
-          "name": "Start",
+          "name": "Standart",
           "for": "Kichik biznes uchun",
           "cta": "Boshlash",
-          "f1": "25 ta savol, har hafta",
-          "f2": "ChatGPT va 3 ta raqobatchi",
+          "f1": "Har hafta 25 ta savol",
+          "f2": "5 ta raqobatchi",
           "f3": "Haftalik hisobot Telegram’da",
           "f4": "Dinamika va manbalar tahlili"
         },
         "business": {
-          "name": "Biznes",
+          "name": "Pro",
           "for": "Oʻsishni istaganlar uchun",
-          "cta": "Biznesni ulash",
-          "f1": "75 ta savol, har hafta",
+          "cta": "Pro tarifini ulash",
+          "f1": "50 ta savol, haftasiga 2 marta",
           "f2": "5 ta raqobatchi",
           "f3": "Notoʻgʻri faktlar",
           "f4": "Tavsiya etilgan harakatlar; sayt auditi tez orada"
         },
         "agency": {
-          "name": "Agentlik",
-          "for": "Bir nechta mijoz va brend",
+          "name": "Enterprise",
+          "for": "Bir nechta loyiha va brend",
           "cta": "Bogʻlanish",
           "f1": "300 ta savol, 5 tagacha brend",
           "f2": "Har brend uchun alohida hisobot",
           "f3": "Oʻz logotipingiz bilan hisobotlar",
-          "f4": "Biznes tarifining barcha imkoniyatlari"
+          "f4": "Pro tarifining barcha imkoniyatlari"
         }
       },
       "compare": {
@@ -2114,9 +2114,11 @@
           "uzRu": "Oʻzbek, rus",
           "unlimited": "Cheklanmagan",
           "top3": "Asosiy 3 tasi",
-          "telegram": "Telegram"
+          "telegram": "Telegram",
+          "twiceWeekly": "Haftasiga 2 marta"
         }
-      }
+      },
+      "byAgreement": "Kelishuv asosida"
     },
     "faq": {
       "title": "Koʻp beriladigan savollar.",
@@ -2332,7 +2334,7 @@
       "overLimit": "Tarif {max} ta faktga ruxsat beradi.",
       "tooLong": "Fakt koʻpi bilan {max} ta belgi boʻladi.",
       "failed": "Saqlab boʻlmadi. Qayta urinib koʻring.",
-      "notInPlan": "{plan} tarifida notoʻgʻri faktlar tekshirilmaydi, shuning uchun brend faktlari ham yoʻq. Ular Biznes tarifidan boshlanadi: <link>tariflarni koʻring</link>."
+      "notInPlan": "{plan} tarifida notoʻgʻri faktlar tekshirilmaydi, shuning uchun brend faktlari ham yoʻq. Ular Pro tarifidan boshlanadi: <link>tariflarni koʻring</link>."
     },
     "brands": {
       "title": "Kuzatilayotgan brendlar",
@@ -2483,7 +2485,7 @@
       "plansText": "Biznesingizning har bir bosqichi uchun. Kerakli narsani topa olmasangiz, Telegram’da yozing.",
       "yourPlan": "Tarifingiz",
       "current": "Joriy",
-      "pricePlain": "{amount} soʻm / oy",
+      "pricePlain": "{amount} / oy",
       "facts": {
         "cycle": "Toʻlov davri",
         "renews": "Keyingi toʻlov"
@@ -2503,9 +2505,8 @@
         "month": "Oylik",
         "year": "Yillik"
       },
-      "price": "<b>{amount}</b> soʻm / oy",
-      "priceFrom": "<b>{amount}+</b> soʻm / oy",
-      "yearTotal": "Yiliga {amount} soʻm: {free} oy bepul",
+      "price": "<b>{amount}</b> / oy",
+      "yearTotal": "Yiliga {amount}: {free} oy bepul",
       "managed": "Managed GEO",
       "limits": {
         "prompts": "Kuzatiladigan savollar",
@@ -2550,7 +2551,11 @@
         "title": "Hisob-fakturalar",
         "text": "Har bir toʻlovning hisob-fakturasi, yuklab olish uchun."
       },
-      "soon": "tez orada"
+      "soon": "tez orada",
+      "priceByAgreement": "<b>Kelishuv asosida</b>",
+      "trial": "Bepul birinchi tekshiruv",
+      "byAgreement": "Kelishuv asosida",
+      "twiceWeekly": "Haftasiga 2 marta"
     }
   },
   "Check": {
@@ -2747,7 +2752,11 @@
       "addTopic": "Mavzu qoʻshish",
       "search": "Savollarni qidirish",
       "question": "Savol"
-    }
+    },
+    "descriptionRequired": "Biznesingiz haqida 1–2 gap yozing.",
+    "categoryRequired": "Sohani tanlang.",
+    "servicesRequired": "Kamida bitta xizmat qoʻshing.",
+    "cityRequired": "Shaharni tanlang."
   },
   "RunProgress": {
     "metaTitle": "Tekshiruv",
@@ -3495,7 +3504,7 @@
       "agency": {
         "title": "Agentlik nomi",
         "text": "Hisobotda bizning nomimiz oʻrniga agentligingiz nomi turadi.",
-        "locked": "Agentlik tarifida hisobotga oʻz agentligingiz nomini qoʻyish mumkin.",
+        "locked": "Enterprise tarifida hisobotga oʻz agentligingiz nomini qoʻyish mumkin.",
         "placeholder": "Agentlik nomi"
       },
       "banner": {
@@ -3837,5 +3846,10 @@
     "nextText": "Biznes profilingiz, raqobatchilaringiz va savollaringizni tasdiqlang.",
     "next": "Sozlashga oʻtish",
     "again": "Boshqa saytni tekshirish"
+  },
+  "Trial": {
+    "title": "Bepul birinchi tekshiruvingiz tayyor",
+    "text": "Bu raqamlar bitta tekshiruvdan. Har hafta qayta tekshirish, oʻzgarishni koʻrish va hisobot olish uchun tarif tanlang.",
+    "cta": "Tariflarni koʻrish"
   }
 }
