@@ -1,4 +1,4 @@
-import type { CompetitorSuggestion, CreatePromptRequest } from "@/shared/types/api";
+import type { BrandQuestion, CompetitorSuggestion, CreatePromptRequest } from "@/shared/types/api";
 
 /** A brand as typed into the form, before it becomes a NewBrand. */
 export interface BrandDraft {
@@ -40,6 +40,12 @@ export interface CompetitorChoice {
 
 /** A question in the onboarding list; unticked ones are not saved. */
 export interface QuestionDraft extends CreatePromptRequest {
+  key: string;
+  selected: boolean;
+}
+
+/** A brand question in the setup: a generated one or the client's own; unticked ones are not saved. */
+export interface BrandQuestionDraft extends BrandQuestion {
   key: string;
   selected: boolean;
 }

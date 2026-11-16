@@ -96,6 +96,8 @@ class Project(Base):
     paid: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True)
     # The four checks of the client's website, as the first run found them
     site_checks: Mapped[Optional[Any]] = mapped_column(JSON, nullable=True)
+    # The questions that name the business, asked beside the customers' ones: [{"text", "language"}]
+    brand_questions: Mapped[Optional[Any]] = mapped_column(JSON, nullable=True)
     first_run_id: Mapped[Optional[str]] = mapped_column(String(32), nullable=True)
     # Topics and tags that no question carries yet, the untracked brands the client hid, the brand's facts,
     # and where the report goes: small lists the pages edit as a whole
@@ -156,6 +158,8 @@ class Run(Base):
     # Whether this run's answers were checked against the client's facts: an empty list of wrong facts
     # means "none found" only then
     facts_checked: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True)
+    # What each assistant said of the business when asked by name, as `firstrun.brand_view` gives it
+    brand_view: Mapped[Optional[Any]] = mapped_column(JSON, nullable=True)
     collected_at: Mapped[datetime.datetime] = mapped_column(DateTime, default=now, index=True)
 
 

@@ -178,6 +178,17 @@ that is committed.
 
 ## Done (as of 15 November 2026)
 
+- **Built, waiting for the user's look: brand questions in the setup (15 Nov), on the branch
+  `brand-questions-in-setup`; merged, pushed and deployed on 16 Nov, when the user said "yes, commit, push and
+  deploy".** The user: "project setup, everything brand questions must be
+  generated, brand prompts must be generated, but it must given option to add for the user manually". The
+  customers' questions and competitors were already generated with a way to add by hand. New: the first check
+  writes four brand questions for the business; the setup's last step shows them with the two general ones
+  under the customers' questions, all ticked, with a field for one's own (six at most); the project keeps them
+  and every weekly check asks them (`backend/README.md`). Tried offline with stand-in answers, the generation
+  once for real, the type check and the linter; not looked at in a browser. Not built: showing a project's
+  brand answers in the dashboard, editing the list in Sozlamalar. No new variable.
+
 - **Built, waiting for the user's look: the brand questions in the first check (15 Nov), on the branch
   `brand-questions`; merged, pushed and deployed the same day, when the user said "yes, start brand questions,
   then push and deploy".** The user asked whether our checks show how an AI really knows a brand; they did

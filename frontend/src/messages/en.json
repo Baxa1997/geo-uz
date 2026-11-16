@@ -2651,6 +2651,18 @@
     "manualDuplicate": "This competitor is already on the list.",
     "loadingCompetitors": "Finding competitors…",
     "competitorsFailed": "We couldn’t find competitors. Please try again.",
+    "brandQuestions": {
+      "title": "Questions about {brand}",
+      "text": "These questions name your business: they show what each assistant says about you, and the answers are compared with your website. They are not part of the numbers above. Keep the ones we wrote, drop any, or add your own.",
+      "none": "No questions yet. Add your own below.",
+      "add": "Add your own question",
+      "placeholder": "For example: how much does {brand} cost?",
+      "language": "Question language",
+      "addButton": "Add",
+      "short": "The question is too short.",
+      "duplicate": "This question is already in the list.",
+      "max": "No more than {max} questions. Remove one first."
+    },
     "historyNote": "Tracking starts today: there’s no data for the weeks before. The first results arrive in a few minutes, and the trend after next Monday’s check.",
     "questionsRequired": "Choose at least one question.",
     "questionsMax": "You can add up to {max} questions.",

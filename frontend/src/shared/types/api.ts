@@ -46,6 +46,8 @@ export interface Project {
   city: string;
   /** Two-letter country code; left out by sample data, which is Uzbekistan's. */
   country?: string;
+  /** The questions that name the business, asked at every check; absent in sample data. */
+  brandQuestions?: BrandQuestion[];
   languages: PromptLanguage[];
   /** The brand profile from onboarding: a sentence or two on the business ("" if none). */
   description: string;
@@ -415,6 +417,8 @@ export interface Report {
    * "none found". Absent means checked.
    */
   factsChecked?: boolean;
+  /** What each assistant said of the business by name at this check; absent in sample data. */
+  brandView?: BrandView[];
   /** Past runs, oldest first, ending with this one (a single point after the first run). */
   history: HistoryPoint[];
   /** The cited sites over the same runs, oldest first, ending with this one (whose counts are `topSources`). */
@@ -468,6 +472,8 @@ export interface CreateProjectRequest {
   competitors: NewBrand[];
   /** Optional first question set, e.g. the questions of the free check. */
   prompts?: CreatePromptRequest[];
+  /** The questions that names the business, as left in the setup. Left out: the general two. []: none. */
+  brandQuestions?: BrandQuestion[];
   /** Brand profile from onboarding; the new-project form leaves them out. */
   description?: string;
   services?: string[];
@@ -686,6 +692,12 @@ export interface FirstRun {
 
 type ThreeLanguages = Record<"uz" | "ru" | "en", string>;
 
+/** A question that names the business, asked beside the customers' questions and kept out of the scores. */
+export interface BrandQuestion {
+  text: string;
+  language: PromptLanguage;
+}
+
 /** One assistant's answer to a question that names the business, as statements checked against its website. */
 export interface BrandView {
   engine: string;
@@ -720,6 +732,8 @@ export interface FirstRunResult extends Snapshot {
   conclusion?: Record<"uz" | "ru" | "en", string> | null;
   /** What each assistant says when asked about the business by name; absent on runs made before 15 Nov 2026. */
   brandView?: BrandView[];
+  /** The brand questions offered in the setup: the general ones (`asked` in this check), then ones written for this business. */
+  brandQuestions?: (BrandQuestion & { asked: boolean })[];
   /** All answers collected. */
   answers: number;
   /** Development only: a saved run shown again, so the numbers are not this website's. */

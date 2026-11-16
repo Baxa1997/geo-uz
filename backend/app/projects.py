@@ -95,6 +95,7 @@ def project_json(db: Db, project: Project) -> Dict[str, Any]:
         "services": project.services or [],
         "customers": project.customers or [],
         "identity": project.identity or [],
+        "brandQuestions": project.brand_questions or [],
         "plan": project.plan,
         "limits": PLAN_LIMITS[project.plan],
         # Billing doesn't exist yet: nothing renews
@@ -143,6 +144,20 @@ def _same(a: str, b: str) -> bool:
     return _clean(a).casefold() == _clean(b).casefold()
 
 
+def _brand_questions(given: Any, name: str, city: str, result: Optional[Dict[str, Any]] = None) -> List[Dict[str, str]]:
+    """The questions that name the business, as the client left them in the setup. Not sent at all (None):
+    the ones the first run asked, or the two general ones. An empty list is the client's choice: none."""
+    if given is None:
+        asked = [question for question in (result or {}).get("brandQuestions") or [] if question.get("asked")]
+        given = asked or [{"text": firstrun.brand_question(language, name, city), "language": language} for language in firstrun.BRAND_QUESTIONS]
+    kept: List[Dict[str, str]] = []
+    for question in given if isinstance(given, list) else []:
+        text = _clean(question.get("text") if isinstance(question, dict) else "")[:300]
+        if len(text) >= 5 and all(not _same(text, other["text"]) for other in kept):
+            kept.append({"text": text, "language": "ru" if question.get("language") == "ru" else "uz"})
+    return kept[: firstrun.BRAND_QUESTION_LIMIT]
+
+
 def create(db: Db, user: User, body: Dict[str, Any]) -> Tuple[Project, Optional[str]]:
     """A new project. With `firstRunId`, the first run's answers come with it as the project's first check."""
     name = _clean(body.get("name"))
@@ -174,6 +189,7 @@ def create(db: Db, user: User, body: Dict[str, Any]) -> Tuple[Project, Optional[
         identity=[],
         plan=DEFAULT_PLAN,
         site_checks=result.get("siteChecks") if result else None,
+        brand_questions=_brand_questions(body.get("brandQuestions"), name, city, result),
         first_run_id=body.get("firstRunId"),
     )
     db.add(project)
@@ -232,6 +248,8 @@ def _save_first_run(db: Db, project: Project, client: Brand, competitors: List[B
         method={key: method.get(key) for key in ("engine", "model", "webSearch", "samples")},
         sources={source["domain"]: {"type": source["type"], "brandListed": bool(source["brandListed"])} for source in result.get("topSources", [])},
         collected_at=collected,
+        # Of the first run's brand answers, those to questions the client kept
+        brand_view=[view for view in result.get("brandView") or [] if any(_same(view.get("question", ""), question["text"]) for question in project.brand_questions or [])],
     )
     db.add(run)
     db.flush()
@@ -466,6 +484,8 @@ def report(db: Db, project: Project, language: Optional[str] = None, topic: Opti
         "wrongFacts": wrong,
         # False: nobody checked this run's answers against the client's facts, so an empty list is not "none found"
         "factsChecked": bool(latest and latest.run.facts_checked),
+        # What each assistant said of the business by name at this check; [] when no brand question was asked
+        "brandView": (latest.run.brand_view if latest else None) or [],
         "history": [{"runId": check.run.id, "collectedAt": iso(check.run.collected_at), "scores": check.scores(brands)} for check in checks],
         "sourceHistory": [
             {

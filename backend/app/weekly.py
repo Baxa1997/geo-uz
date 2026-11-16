@@ -70,7 +70,7 @@ def _replay(db: Any, project: Project, run: Run) -> int:
         saved += 1
         db.add_all(Mention(answer_id=answer.id, brand_id=mention.brand_id, name=mention.name, position=mention.position, tone=mention.tone, recommended=mention.recommended) for mention in db.scalars(select(Mention).where(Mention.answer_id == old.id)))
         db.add_all(Citation(answer_id=answer.id, url=citation.url, domain=citation.domain, title=citation.title) for citation in db.scalars(select(Citation).where(Citation.answer_id == old.id)))
-    run.method, run.sources = last.method, last.sources
+    run.method, run.sources, run.brand_view = last.method, last.sources, last.brand_view
     return saved
 
 
@@ -120,6 +120,34 @@ def check(project_id: str) -> Optional[str]:
         delivered = delivery.deliver(project_id, run_id) if run.status == "done" else "no_report"
         print(f"weekly: project {project_id}: report {delivered}")
         return run_id
+
+
+def _brand_view(project: Project, client: Brand, run: Run) -> float:
+    """The project's brand questions, each asked to every assistant, as statements checked against the website
+    as it is today. A part that fails is left out: the check itself stands. Returns the cost in US dollars."""
+    questions = project.brand_questions or []
+    if not questions:
+        run.brand_view = []
+        return 0.0
+    country = project.country or DEFAULT_COUNTRY
+    about_it: List[Dict[str, Any]] = []
+    cost = 0.0
+    with ThreadPoolExecutor(max_workers=5) as pool:
+        futures = [(pool.submit(engines.ask, engine, question["text"], *_place(country, project.city)), engine, question) for question in questions for engine in settings.engines]
+        for future, engine, question in futures:
+            try:
+                answer = future.result()
+            except engines.EngineError as error:
+                print(f"weekly: {engine} failed on a brand question of project {project.id}: {error}")
+                continue
+            if answer["text"].strip():
+                about_it.append({"language": question["language"], "asked": question["text"], **answer})
+                cost += answer["usd"] or 0.0
+    pages = web.read_site(client.domain, "ru") if about_it else []
+    who = {"name": client.name, "category": project.category, "city": project.city, "country": country}
+    views, usd = firstrun.brand_views_of(who, "\n\n".join(f"[{page['url']}]\n{page['text']}" for page in pages), about_it)
+    run.brand_view = views
+    return cost + usd
 
 
 def _collect(db: Any, project: Project, brands: List[Brand], run: Run, jobs: List[Tuple[Prompt, str, int]]) -> float:
@@ -190,6 +218,7 @@ def _collect(db: Any, project: Project, brands: List[Brand], run: Run, jobs: Lis
     sources = {domain: known.get(domain) or {"type": firstrun._kind(domain, client.domain, rivals), "brandListed": False} for domain in cited}
     run.sources = sources
     cost += fixes.check_facts(db, project, run, answers)
+    cost += _brand_view(project, client, run)
     run.method = {**run.method, "model": ", ".join(sorted({answer["model"] for answer in answers}))}
     return cost
 
