@@ -3,10 +3,17 @@ import { useLocale, useMessages, useTranslations } from "next-intl";
 import { Trend } from "@/shared/components/scores/trend";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/shared/components/ui/card";
 import { Link } from "@/i18n/navigation";
+import { conditionStatus, type ConditionStatus } from "@/shared/helpers/condition";
 import { labelFor, placeLabel } from "@/shared/helpers/labels";
 import { formatPercent } from "@/shared/helpers/numbers";
 import { scoreOf, topCompetitor } from "@/shared/helpers/scores";
+import { cn } from "@/shared/helpers/utils";
 import type { Project, Report } from "@/shared/types/api";
+import { ProjectActions } from "./project-actions";
+
+/** The number's color says how it reads, on the report's own scale (good from 70, fair from 40); its word stands beside it. */
+const STATUS_TEXT: Record<ConditionStatus, string> = { good: "text-positive", fair: "text-progress", weak: "text-negative" };
+const STATUS_DOT: Record<ConditionStatus, string> = { good: "bg-positive", fair: "bg-progress", weak: "bg-negative" };
 
 /** Dashboard tile: the brand's visibility, or a note that nothing was measured yet. */
 export function ProjectCard({
@@ -23,25 +30,38 @@ export function ProjectCard({
   const locale = useLocale();
   const you = report && report.prompts.length > 0 ? scoreOf(report.scores, project.brand.id) : undefined;
   const rival = you && report ? topCompetitor(project.competitors, report.scores) : undefined;
+  // The condition score (the report's headline, out of 100) where the report has one
+  const condition = you ? report?.conditionHistory.at(-1)?.score : undefined;
 
   return (
     <Card className="relative transition-colors hover:bg-muted/30">
       <CardHeader>
-        <CardTitle>
-          {/* The whole card links to the overview; the report link sits above it */}
-          <Link href={`/projects/${project.id}`} className="after:absolute after:inset-0">
-            {project.brand.name}
-          </Link>
-        </CardTitle>
+        <div className="flex items-start justify-between gap-2">
+          <CardTitle className="min-w-0">
+            {/* The whole card links to the overview; the buttons and the report link sit above it */}
+            <Link href={`/projects/${project.id}`} className="after:absolute after:inset-0">
+              {project.brand.name}
+            </Link>
+          </CardTitle>
+          <ProjectActions projectId={project.id} name={project.brand.name} />
+        </div>
         <CardDescription>
           {labelFor(messages.Categories, project.category)} · {placeLabel(messages.Cities, locale, project)}
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex-1">
         {you ? (
           <div className="flex flex-col gap-1">
             <p className="text-xs text-muted-foreground">{t("visibility")}</p>
-            <p className="text-3xl font-semibold tracking-tight">{formatPercent(you.visibility, locale)}</p>
+            <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <span className={cn("text-3xl font-semibold tracking-tight", STATUS_TEXT[conditionStatus(you.visibility * 100)])}>{formatPercent(you.visibility, locale)}</span>
+              {condition !== undefined && (
+                <span className="inline-flex items-center gap-1.5 text-xs font-medium">
+                  <span aria-hidden className={cn("size-2 rounded-full", STATUS_DOT[conditionStatus(condition)])} />
+                  <span className={STATUS_TEXT[conditionStatus(condition)]}>{t("condition", { score: condition, status: t(`status.${conditionStatus(condition)}`) })}</span>
+                </span>
+              )}
+            </p>
             {/* A first run has no week before it to compare with */}
             {report && report.history.length > 1 && <Trend trend={you.trend} />}
             {rival && (

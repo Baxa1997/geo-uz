@@ -99,7 +99,7 @@
       "actions": "Action plan",
       "method": "Method and scope",
       "glossary": "Definitions",
-      "appendix": "Appendix. Every question"
+      "appendix": "All questions and answers"
     },
     "summary": {
       "highlights": "This week’s highlights",
@@ -143,21 +143,38 @@
       "you": "you"
     },
     "topics": {
-      "lead": "Your visibility in each topic over the strongest competitor’s there, as two bars. Topics where you trail most come first.",
+      "lead": "Which of your customers' needs AI talks about with your name in the answer, and which with competitors only.",
+      "whatTitle": "What is a topic?",
+      "what": "A topic is a group of customer questions about one need: prices, how to choose, or one particular service.",
+      "why": "What it tells you: a topic where AI doesn't name you is where a customer with that question goes to a competitor. That is the topic to write a page about, or add information on, on your website.",
+      "totals": {
+        "strong": "topics where you are ahead",
+        "even": "topics where you are level with a competitor",
+        "lost": "topics where you are absent or behind"
+      },
       "topic": "Topic",
       "questions": "Questions",
-      "you": "You",
-      "gap": "Result",
-      "ahead": "ahead by {points}",
-      "behind": "behind by {points}",
-      "level": "level",
+      "youNamed": "Answers naming you",
+      "rival": "Most named competitor",
+      "standing": "Standing",
+      "ofAnswers": "{named} / {answers}",
+      "noRival": "Nobody named",
+      "standings": {
+        "absent": "Absent",
+        "behind": "Behind",
+        "level": "Level",
+        "ahead": "Ahead",
+        "nobody": "Nobody"
+      },
+      "advice": {
+        "absent": "AI never named you here, and it named {rival}. This topic needs a page.",
+        "behind": "{rival} is named more often than you. Strengthen your page on this topic.",
+        "level": "You are named as often as {rival}.",
+        "ahead": "You lead this topic: keep what you have.",
+        "nobody": "AI named no tracked brand here: a chance to be the first."
+      },
       "languageTitle": "By question language",
-      "language": "Language",
-      "missingTitle": "Questions where only competitors are named",
-      "missingMore": "and {count} more",
-      "missingNone": "None: wherever a tracked brand is named, you are named too.",
-      "named": "Named: {brands}",
-      "compared": "You and the strongest competitor"
+      "language": "Language"
     },
     "sources": {
       "lead": "The sites AI cites most. Being on them is the quickest way into its answers.",
@@ -182,17 +199,26 @@
       "top": "The most cited sites"
     },
     "accuracy": {
-      "lead": "How AI speaks of you, and whether what it says is true. A wrong price or address costs customers.",
-      "none": "No wrong facts were found in this check.",
-      "notChecked": "The answers haven’t been checked against your facts yet.",
+      "lead": "Two questions: in what tone AI speaks of you, and whether what it says is true. A wrong price or address costs customers.",
+      "toneTitle": "A. The tone AI speaks of you in",
+      "toneHow": "Every answer that names you is rated positive (100), neutral (50) or negative (0). The score is their average: from 67 it reads positive, up to 33 negative.",
+      "toneNone": "AI didn't name you in this check, so the tone can't be measured.",
+      "toneOf": "In this check's answers you are named {count, plural, one {# time} other {# times}}:",
+      "truthTitle": "B. Whether what AI says is true",
+      "truthHow": "We ask the AI assistants about “{brand}” by name and compare each statement with what your website says.",
+      "checks": {
+        "confirmed": "statements match your website",
+        "contradicted": "statements contradict your website",
+        "unverified": "statements aren't on your website: can't be checked"
+      },
+      "factsTitle": "Wrong facts",
+      "none": "No wrong fact was found in this check.",
+      "notChecked": "In this check what AI said has not been compared with your website yet.",
       "says": "AI says",
-      "correct": "Correct",
+      "correct": "In fact (your website)",
+      "where": "Where it was said",
       "question": "Question",
-      "since": "First seen",
-      "toneTitle": "Tone",
-      "toneNone": "AI didn’t name you in this check, so there is no tone to measure.",
-      "toneOf": "Out of 100, over the {count, plural, one {# mention} other {# mentions}} of you in this check’s answers:",
-      "factsTitle": "Wrong facts"
+      "since": "First seen"
     },
     "actions": {
       "lead": "What to do, the most effective first. Each action follows from the sections above and improves one area of your condition.",
@@ -255,7 +281,9 @@
       "status": "How a score reads: good from {good}, fair from {fair}, weak under {fair}."
     },
     "appendix": {
-      "lead": "Every question of this check with the brands its answers name. Open a question to read the answers."
+      "lead": "Every question of the topics above: in how many answers you are named, and who is named beside you. Open a question to read its answers.",
+      "printNote": "On paper each answer is shown by its beginning. The full answers are at the report's link.",
+      "answerOf": "{engine} · answer {n}"
     },
     "changes": {
       "lead": "The events behind the numbers: your place among the brands, the sites AI relies on, new wrong facts and the work done this week. The numbers themselves are in the section before.",
@@ -1169,13 +1197,13 @@
     "all": "All",
     "missing": "You’re missing",
     "youNamed": "You were named in {count} of {total} answers",
-    "nobody": "No tracked clinic named",
+    "nobody": "No tracked brand named",
     "toneLegend": "Tone"
   },
   "Answer": {
     "sample": "Answer {n}",
     "named": "Named, in order",
-    "none": "No tracked clinic named in this answer.",
+    "none": "No tracked brand named in this answer.",
     "sources": "Sources"
   },
   "App": {
@@ -1206,7 +1234,22 @@
     "promptCount": "{count, plural, one {# question} other {# questions}}",
     "rival": "{name}: {score}",
     "visibility": "AI visibility",
-    "openReport": "Report"
+    "openReport": "Report",
+    "edit": "Edit",
+    "editLabel": "Edit {name}",
+    "delete": "Delete",
+    "deleteLabel": "Delete {name}",
+    "deleteTitle": "Delete the project “{name}”?",
+    "deleteText": "The project is removed for good, with all its checks, answers, questions and reports. This can't be undone.",
+    "deleteFailed": "Couldn't delete it. Try again.",
+    "deleteConfirm": "Delete",
+    "cancel": "Cancel",
+    "condition": "Condition: {score}/100 · {status}",
+    "status": {
+      "good": "Good",
+      "fair": "Fair",
+      "weak": "Weak"
+    }
   },
   "Overview": {
     "noDataTitle": "No measurements yet",
@@ -1341,7 +1384,7 @@
     "add": "Add question",
     "edit": "Edit",
     "empty": "No questions yet",
-    "emptyHint": "Write what your customers ask AI, e.g. “What’s the best dental clinic in Tashkent?”",
+    "emptyHint": "Write what your customers ask AI, e.g. “Which is the best in Tashkent?”",
     "columns": {
       "question": "Question",
       "topic": "Topic",
@@ -1612,7 +1655,7 @@
     "addTitle": "Add questions",
     "editTitle": "Edit question",
     "text": "Question",
-    "textPlaceholder": "Toshkentdagi eng yaxshi stomatologiya qaysi?\nToshkentda implant narxi qancha?",
+    "textPlaceholder": "One question a line, as a customer would ask AI",
     "language": "Question language",
     "topic": "Topic",
     "save": "Save",
@@ -1634,7 +1677,7 @@
     "add": "Add",
     "addMany": "Add {count, plural, one {# question} other {# questions}}",
     "counter": "{count, plural, one {# question} other {# questions}} · {room} left in the plan",
-    "editPlaceholder": "Toshkentdagi eng yaxshi stomatologiya qaysi?",
+    "editPlaceholder": "A question, as a customer would ask AI",
     "newTopicOption": "+ New topic…",
     "newTopic": "The new topic’s name",
     "newTopicPlaceholder": "e.g. Prices",
@@ -2688,7 +2731,7 @@
     "questionsMax": "You can add up to {max} questions.",
     "noQuestions": "No questions yet. Add the questions your customers ask ChatGPT.",
     "addQuestion": "Add your own question",
-    "questionPlaceholder": "e.g. Which clinic in Tashkent is the best?",
+    "questionPlaceholder": "A question your customer asks AI",
     "language": "Language",
     "add": "Add",
     "questionShort": "The question is too short.",
@@ -2765,7 +2808,8 @@
     "countryHint": "The country your customers are in. Questions are asked as a customer from this country.",
     "optional": "optional",
     "cityPlaceholder": "For example: Tashkent",
-    "competitorsNone": "If you don't know your competitors, skip this step. Later we show the businesses the answers name, and you add them with one click."
+    "competitorsNone": "If you don't know your competitors, skip this step. Later we show the businesses the answers name, and you add them with one click.",
+    "domainTaken": "A project already exists for this website. One website is tracked in one project only."
   },
   "RunProgress": {
     "metaTitle": "Check",
@@ -3090,7 +3134,7 @@
     "customersHint": "Who it’s for: parents, people in pain or students, for example.",
     "context": "Anything else",
     "contextHint": "We keep to it when writing the questions: which services to stress, for example.",
-    "contextPlaceholder": "e.g. stress implants, leave out children’s dentistry",
+    "contextPlaceholder": "e.g. which service to stress and which to leave out",
     "marketsTitle": "Languages",
     "marketsText": "The questions are about {city}. Which languages should they be asked in?",
     "languages": "Question languages",
@@ -3858,7 +3902,10 @@
     "nextTitle": "This was one look. Tracking it every week is next.",
     "nextText": "Confirm your business profile, your competitors and your questions.",
     "next": "Continue to setup",
-    "again": "Check another website"
+    "again": "Check another website",
+    "country": "Country",
+    "countryHint": "Which country are your customers in? We ask the AI assistants as a customer there.",
+    "domainTaken": "A project already exists for this website. One website is tracked in one project only."
   },
   "Trial": {
     "title": "Your free first check is ready",

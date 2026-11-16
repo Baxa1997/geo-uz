@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
  */
 export default async function FirstRunPage({ params, searchParams }: Props) {
   setPageLocale((await params).locale);
-  const [user, { run: runId }] = await Promise.all([requireUser(), searchParams]);
+  const [user, { run: runId, site }] = await Promise.all([requireUser(), searchParams]);
   // A run that is gone, or someone else's, just means the form again
   const run = typeof runId === "string" ? await orNull(api.getFirstRun(runId)) : null;
 
@@ -30,7 +30,7 @@ export default async function FirstRunPage({ params, searchParams }: Props) {
     <>
       <OnboardingHeader who={accountLabel(user)} />
       <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-4 py-10 sm:py-14">
-        <FirstRunFlow key={run?.id ?? "new"} initial={run} />
+        <FirstRunFlow key={run?.id ?? "new"} initial={run} site={typeof site === "string" ? site : ""} />
       </main>
     </>
   );
