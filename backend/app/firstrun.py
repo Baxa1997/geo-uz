@@ -124,7 +124,8 @@ From the text, give:
 - country: the two-letter code of the country it mainly serves. city: the city it mainly serves, in Russian, and cityEn, the same in English; both empty when it serves a whole country or several, or works online.
 - description: one sentence in Russian on what it offers.
 - services: up to six of its main services, in Russian.
-- questions: exactly {count} questions a customer there (in that city, or in that country when no city is given) would ask an AI assistant when choosing such a business, before knowing any business's name. Half in Russian (language \"ru\"), half in Uzbek in Latin script (language \"uz\"). Cover: the best in the city or country, how to choose, prices, the business's main services or specialities, and its district if the site names one. Each with a `topic` of one or two words in Russian. Natural, short, the way people type. Never name this business or any other in a question."""
+- questions: exactly {count} questions a customer there (in that city, or in that country when no city is given) would ask an AI assistant when choosing such a business, before knowing any business's name. Half in Russian (language \"ru\"), half in Uzbek in Latin script (language \"uz\"). Cover: the best in the city or country, how to choose, prices, the business's main services or specialities, and its district if the site names one. Each with a `topic` of one or two words in Russian. Natural, short, the way people type. Never name this business or any other in a question.
+- brandQuestions: exactly four questions a customer who has already heard of this business would ask an AI assistant about it by its name: two in Russian, two in Uzbek in Latin script. Each names the business as customers write it, and each asks about one thing: its prices, whether it is good and what people say, one of its main services, how to reach or find it. Natural and short."""
 
 
 def profile(domain: str, pages: List[Dict[str, str]], category: Optional[str], city: Optional[str], count: int) -> Tuple[Dict[str, Any], float]:
@@ -140,6 +141,7 @@ def profile(domain: str, pages: List[Dict[str, str]], category: Optional[str], c
         description=STR,
         services=arr(STR),
         questions=arr(obj(text=STR, language={"type": "string", "enum": ["ru", "uz"]}, topic=STR)),
+        brandQuestions=arr(obj(text=STR, language={"type": "string", "enum": ["ru", "uz"]})),
     )
     found, usd = engines.write(PROFILE_RULES.replace("{count}", str(count)) + given, f"Website: {domain}\n\n{text}", "site_profile", schema)
     spellings = [found["name"]] + found["aliases"]
@@ -147,6 +149,8 @@ def profile(domain: str, pages: List[Dict[str, str]], category: Optional[str], c
     found["questions"] = [question for question in found["questions"] if not web.names(question["text"], spellings)][:count]
     if not found["questions"]:
         raise FirstRunError("no_questions")
+    # And a brand question that doesn't name it would be one more customer's question
+    found["brandQuestions"] = [question for question in found.get("brandQuestions") or [] if web.names(question["text"], spellings)][:4]
     return found, usd
 
 
@@ -202,6 +206,32 @@ def brand_languages(engine: str, asked: List[str]) -> List[str]:
 
 def brand_question(language: str, name: str, city: str) -> str:
     return BRAND_QUESTIONS[language].format(name=name, place=f" ({city})" if city else "")
+
+
+# How many brand questions a project keeps: each is asked to every assistant at every check
+BRAND_QUESTION_LIMIT = 6
+
+
+def brand_views_of(who: Dict[str, Any], site: str, about_it: List[Dict[str, Any]]) -> Tuple[List[Dict[str, Any]], float]:
+    """The brand answers (each with `engine`, `language`, `asked`, `text`, `citations`) as the `brandView` list."""
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        viewed = list(pool.map(lambda answer: brand_view(who, site, answer), about_it))
+    return _views(about_it, viewed), sum(usd for _, usd in viewed)
+
+
+def _views(about_it: List[Dict[str, Any]], viewed: List[Tuple[Optional[Dict[str, Any]], float]]) -> List[Dict[str, Any]]:
+    return [
+        {
+            "engine": answer["engine"],
+            "name": engines.ENGINE_NAMES[answer["engine"]],
+            "language": answer["language"],
+            "question": answer["asked"],
+            **view,
+            "citations": [{"url": citation["url"], "domain": web.domain_of(citation["url"]), "title": citation.get("title")} for citation in answer["citations"][:8]],
+        }
+        for answer, (view, _) in zip(about_it, viewed)
+        if view
+    ]
 
 
 def brand_view(who: Dict[str, Any], site: str, answer: Dict[str, Any]) -> Tuple[Optional[Dict[str, Any]], float]:
@@ -292,7 +322,8 @@ def run(domain: str, category: Optional[str], city: Optional[str], progress: Pro
     with ThreadPoolExecutor(max_workers=5) as pool:
         futures = {pool.submit(engines.ask, engine, who["questions"][q]["text"], *place): (q, engine) for q, engine in jobs}
         # The brand questions go with them and are kept apart: not counted in the progress or in any score
-        named_asks = [(engine, language, brand_question(language, who["name"], who["cityEn"] if language == "uz" else who["city"])) for engine in asked for language in brand_languages(engine, asked)]
+        general = {language: brand_question(language, who["name"], who["cityEn"] if language == "uz" else who["city"]) for language in BRAND_QUESTIONS}
+        named_asks = [(engine, language, general[language]) for engine in asked for language in brand_languages(engine, asked)]
         named_futures = [(pool.submit(engines.ask, engine, text, *place), engine, language, text) for engine, language, text in named_asks]
         for done, future in enumerate(as_completed(futures), start=1):
             q, engine = futures[future]
@@ -418,20 +449,8 @@ def run(domain: str, category: Optional[str], city: Optional[str], progress: Pro
 
     # What each assistant says of the business itself, checked against its website
     viewed = [future.result() for future in view_futures]
-    brand_views: List[Dict[str, Any]] = []
-    for answer, (view, usd) in zip(about_it, viewed):
-        cost += usd
-        if view:
-            brand_views.append(
-                {
-                    "engine": answer["engine"],
-                    "name": engines.ENGINE_NAMES[answer["engine"]],
-                    "language": answer["language"],
-                    "question": answer["asked"],
-                    **view,
-                    "citations": [{"url": citation["url"], "domain": web.domain_of(citation["url"]), "title": citation.get("title")} for citation in answer["citations"][:8]],
-                }
-            )
+    brand_views = _views(about_it, viewed)
+    cost += sum(usd for _, usd in viewed)
 
     recommended = {name: sum(1 for answer in answers for listed in answer["order"] if listed["name"] == name and listed["recommended"]) for name in tracked}
     progress("reading_answers", len(jobs), len(jobs))
@@ -480,6 +499,10 @@ def run(domain: str, category: Optional[str], city: Optional[str], progress: Pro
         "conclusion": concluded,
         # What each assistant says when asked about the business by name: statements checked against the website
         "brandView": brand_views,
+        # The brand questions for the setup: the general ones (asked in this check where `asked`), then the
+        # ones written for this business, which the client may keep, drop or add to
+        "brandQuestions": [{"text": text, "language": language, "asked": any(answer["asked"] == text for answer in about_it)} for language, text in general.items()]
+        + [{"text": question["text"], "language": question["language"], "asked": False} for question in who["brandQuestions"]],
         "answers": len(answers),
         "prompts": by_question,
         "topSources": sources,

@@ -19,6 +19,7 @@ import { isFilled } from "../helpers/brand-draft";
 import {
   competitorChoice,
   draftsFromFirstRun,
+  generalBrandQuestions,
   onboardingRequest,
   questionDrafts,
   siteDraft,
@@ -29,7 +30,8 @@ import {
   validateTopics,
   validateWebsite,
 } from "../helpers/onboarding";
-import type { CompetitorChoice, OnboardingErrors, QuestionDraft, SiteDraft, TopicDraft } from "../types";
+import type { BrandQuestionDraft, CompetitorChoice, OnboardingErrors, QuestionDraft, SiteDraft, TopicDraft } from "../types";
+import { BrandQuestionPicker } from "./brand-question-picker";
 import { CompetitorPicker } from "./competitor-picker";
 import { ProfileFields } from "./profile-fields";
 import { QuestionPicker } from "./question-picker";
@@ -82,6 +84,8 @@ export function OnboardingWizard({
   const [site, setSite] = useState<SiteDraft | null>(fromRun?.site ?? null);
   const [choice, setChoice] = useState<Fetched<CompetitorChoice> | null>(fromRun?.choice ?? null);
   const [suggested, setSuggested] = useState<Fetched<{ questions: QuestionDraft[]; topics: TopicDraft[] }> | null>(fromRun?.suggested ?? null);
+  // The brand questions: a first run's generated ones; without a run, the two general ones once the name is known
+  const [brandQuestions, setBrandQuestions] = useState<BrandQuestionDraft[] | null>(fromRun?.brandQuestions ?? null);
   const [shown, setShown] = useState(ALL_TOPICS);
   const [errors, setErrors] = useState<OnboardingErrors>({});
 
@@ -165,6 +169,7 @@ export function OnboardingWizard({
     if (!suggested || failed(validateTopics(suggested.topics))) return;
     // The topic last on screen may have been unticked since
     if (!suggested.topics.some((topic) => topic.selected && topic.topic === shown)) setShown(ALL_TOPICS);
+    if (!brandQuestions && site) setBrandQuestions(generalBrandQuestions(site.name, site.city));
     goTo(4);
   }
 
@@ -176,7 +181,7 @@ export function OnboardingWizard({
     if (step === "competitors") return void nextFromCompetitors();
     if (step === "topics") return nextFromTopics();
     if (!site || !choice || !suggested || failed(validateQuestions(suggested.questions, suggested.topics))) return;
-    create.mutate({ ...onboardingRequest(site, choice, suggested.topics, suggested.questions), ...(firstRun ? { firstRunId: firstRun.id } : {}) });
+    create.mutate({ ...onboardingRequest(site, choice, suggested.topics, suggested.questions, brandQuestions), ...(firstRun ? { firstRunId: firstRun.id } : {}) });
   }
 
   const pending = analyze.isPending
@@ -286,6 +291,7 @@ export function OnboardingWizard({
                     setErrors({});
                   }}
                 />
+                {brandQuestions && site && <BrandQuestionPicker questions={brandQuestions} brand={site.name.trim()} onChange={setBrandQuestions} />}
                 {/* Said before the start: no tool can show the weeks before tracking began */}
                 <p className="flex items-start gap-2 rounded-lg bg-muted px-3 py-2.5 text-sm text-pretty">
                   <CalendarClock aria-hidden className="mt-0.5 size-4 shrink-0 text-muted-foreground" />

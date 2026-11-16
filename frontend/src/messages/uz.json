@@ -2651,6 +2651,18 @@
     "manualDuplicate": "Bu raqobatchi roʻyxatda bor.",
     "loadingCompetitors": "Raqobatchilar qidirilmoqda…",
     "competitorsFailed": "Raqobatchilarni topib boʻlmadi. Qayta urinib koʻring.",
+    "brandQuestions": {
+      "title": "{brand} haqidagi savollar",
+      "text": "Bu savollarda biznesingiz nomi bor: har bir yordamchi siz haqingizda nima deyishini koʻrsatadi va javoblari saytingiz bilan solishtiriladi. Ular yuqoridagi sonlarga qoʻshilmaydi. Biz yozganlarini qoldiring, olib tashlang yoki oʻzingiznikini qoʻshing.",
+      "none": "Hozircha savol yoʻq. Pastda oʻzingiznikini qoʻshing.",
+      "add": "Oʻz savolingizni qoʻshing",
+      "placeholder": "Masalan: {brand} narxlari qancha?",
+      "language": "Savol tili",
+      "addButton": "Qoʻshish",
+      "short": "Savol juda qisqa.",
+      "duplicate": "Bu savol roʻyxatda bor.",
+      "max": "Koʻpi bilan {max} ta savol. Avval birini olib tashlang."
+    },
     "historyNote": "Kuzatuv bugundan boshlanadi: oʻtgan haftalar uchun maʼlumot boʻlmaydi. Birinchi natijalar bir necha daqiqada chiqadi, dinamika esa keyingi dushanbadagi tekshiruvdan keyin koʻrinadi.",
     "questionsRequired": "Kamida bitta savolni tanlang.",
     "questionsMax": "Koʻpi bilan {max} ta savol qoʻshish mumkin.",

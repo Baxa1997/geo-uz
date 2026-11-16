@@ -1,8 +1,8 @@
 import { isValidDomain, normalizeDomain } from "@/shared/helpers/domain";
-import type { CompetitorSuggestion, CreateProjectRequest, FirstRunResult, PromptSuggestion, SiteAnalysis } from "@/shared/types/api";
+import type { BrandQuestion, CompetitorSuggestion, CreateProjectRequest, FirstRunResult, PromptSuggestion, SiteAnalysis } from "@/shared/types/api";
 import { DEFAULT_COUNTRY } from "@/shared/constants/countries";
-import { MAX_COMPETITORS, OWN_QUESTION_TOPIC, PRESELECTED_COMPETITORS } from "../constants";
-import type { BrandDraft, CompetitorChoice, OnboardingErrorKey, OnboardingErrors, QuestionDraft, SiteDraft, TopicDraft } from "../types";
+import { BRAND_QUESTION_TEMPLATES, MAX_BRAND_QUESTIONS, MAX_COMPETITORS, OWN_QUESTION_TOPIC, PRESELECTED_COMPETITORS } from "../constants";
+import type { BrandDraft, BrandQuestionDraft, CompetitorChoice, OnboardingErrorKey, OnboardingErrors, QuestionDraft, SiteDraft, TopicDraft } from "../types";
 import { isFilled, toNewBrand } from "./brand-draft";
 
 export const siteDraft = (analysis: SiteAnalysis): SiteDraft => ({
@@ -35,6 +35,8 @@ export function draftsFromFirstRun(run: FirstRunResult) {
   const questions = questionDrafts(run.prompts.map(({ prompt }) => ({ text: prompt.text, language: prompt.language, topic: prompt.topic })));
   return {
     site,
+    // Every generated brand question starts ticked, the general ones first
+    brandQuestions: run.brandQuestions ? brandQuestionDrafts(run.brandQuestions) : null,
     choice: {
       ...competitorChoice(run.competitors.map(({ name, aliases, domain }) => ({ name, aliases, domain }))),
       inputs: JSON.stringify([site.domain, site.category, site.country, site.city]),
@@ -42,6 +44,18 @@ export function draftsFromFirstRun(run: FirstRunResult) {
     suggested: { questions, topics: topicDrafts(questions), inputs: JSON.stringify([site.category, site.country, site.city, site.services]) },
   };
 }
+
+export const brandQuestionDrafts = (questions: BrandQuestion[]): BrandQuestionDraft[] =>
+  questions.slice(0, MAX_BRAND_QUESTIONS).map(({ text, language }, index) => ({ key: `generated-${index}`, text, language, selected: true }));
+
+/** Without a first run: the two general brand questions, written with the business's name and city. */
+export const generalBrandQuestions = (name: string, city: string): BrandQuestionDraft[] =>
+  brandQuestionDrafts(
+    (["ru", "uz"] as const).map((language) => ({
+      language,
+      text: BRAND_QUESTION_TEMPLATES[language].replace("{name}", name.trim()).replace("{place}", city.trim() ? ` (${city.trim()})` : ""),
+    })),
+  );
 
 /** The most relevant suggestions start ticked. */
 export const competitorChoice = (suggestions: CompetitorSuggestion[]): CompetitorChoice => ({
@@ -130,7 +144,9 @@ export const onboardingRequest = (
   choice: CompetitorChoice,
   topics: TopicDraft[],
   questions: QuestionDraft[],
+  brandQuestions: BrandQuestionDraft[] | null = null,
 ): CreateProjectRequest => ({
+  ...(brandQuestions ? { brandQuestions: brandQuestions.filter((question) => question.selected).map(({ text, language }) => ({ text, language })) } : {}),
   name: site.name.trim(),
   aliases: site.aliases,
   domain: site.domain,

@@ -120,7 +120,18 @@ the website's text: `confirmed`, `contradicted` (with what the website says) or 
 the assistant `knows` the business, `confuses` it with another, or finds nothing (`unknown`). The result
 carries them as `brandView`, the conclusion is told of them, and the raw answers are kept as `brandAnswers`.
 A first check on Gemini alone with them: 256 seconds and $0.56 before the brand answers were read alongside
-the others. Not built: the same in a project's weekly check, feeding Notoʻgʻri faktlar.
+the others.
+
+**Brand questions in the setup and in every check (15 Nov 2026).** The profile step also writes four brand
+questions for the business (two Russian, two Uzbek: prices, opinions, a main service, how to find it), and
+the result offers them as `brandQuestions` after the two general ones (`asked` marks those this check asked).
+In the setup the client keeps, drops or adds to them, six at most; `POST /projects` takes `brandQuestions`
+(left out: the general two; an empty list: none) and the project keeps them (`projects.brand_questions`,
+`Project.brandQuestions`). The first check's brand answers to kept questions are saved on its run, and a
+weekly check asks every brand question to every assistant, reads the website again and saves the statements
+(`runs.brand_view`, `Report.brandView`). Tried offline with stand-in answers, and the profile step once for
+real. Not built: a page in the dashboard that shows `Report.brandView`, editing the list in Sozlamalar, and
+feeding Notoʻgʻri faktlar from it.
 
 **Projects** (`app/projects.py`, 15 Nov 2026; read only). Tables: `projects`, `brands` (the client's own and
 the competitors, in a fixed order), `prompts`, `runs`, `answers`, `mentions` (every business an answer names;
