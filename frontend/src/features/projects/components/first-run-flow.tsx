@@ -7,6 +7,7 @@ import { Button } from "@/shared/components/ui/button";
 import { useRouter } from "@/i18n/navigation";
 import { api } from "@/shared/api/client";
 import { queryKeys } from "@/shared/api/query-keys";
+import { cn } from "@/shared/helpers/utils";
 import type { FirstRun } from "@/shared/types/api";
 import { RUN_POLL_MS } from "../constants";
 import { FirstRunProgress } from "./first-run-progress";
@@ -51,7 +52,7 @@ function FirstRunStarted({ initial, ...frame }: Frame & { initial: FirstRun }) {
 
   if (result.data) {
     return (
-      <Centered who={frame.who}>
+      <Centered who={frame.who} wide>
         <FirstRunResultView result={result.data} runId={run.id} onAgain={again} />
       </Centered>
     );
@@ -73,19 +74,15 @@ function FirstRunStarted({ initial, ...frame }: Frame & { initial: FirstRun }) {
     );
   }
 
-  return (
-    <Centered who={frame.who}>
-      <FirstRunProgress run={run} stale={isError} />
-    </Centered>
-  );
+  return <FirstRunProgress run={run} stale={isError} who={frame.who} />;
 }
 
 /** The check and its statistics: one column in the middle, under the header. */
-function Centered({ who, children }: { who: string | null; children: ReactNode }) {
+function Centered({ who, wide = false, children }: { who: string | null; /** The statistics: a table and its tabs want more room. */ wide?: boolean; children: ReactNode }) {
   return (
     <>
       <OnboardingHeader who={who} />
-      <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-4 py-10 sm:py-14">{children}</main>
+      <main className={cn("mx-auto flex w-full flex-1 flex-col px-4 py-10 sm:py-14", wide ? "max-w-4xl" : "max-w-3xl")}>{children}</main>
     </>
   );
 }

@@ -185,6 +185,21 @@ that is committed.
 
 ## Done (as of 16 November 2026)
 
+- **Built, waiting for the user's look: the first check's screens laid out as the user's pictures (16 Nov),
+  on the branch `setup-like-screens`; merged, pushed and deployed the same day, when the user said "commit,
+  push and deploy".** The user sent the same pictures again:
+  "why you have not made our first setup as attached images". The honest answer: the first time only their
+  order was taken (confirm, then check) and our old two-column wizard was kept. Now each screen follows
+  its picture, in our navy and words (`frontend/CLAUDE.md`, "The first check's screens"): the navy panel
+  with our name at the left and the step at the right; step 1 with the company's name, website, country
+  and the questions' language; step 2 short, the rest folded; the competitor rows; the questions as
+  numbered cards with a pencil and a bin; the check on a navy screen with the assistants on a ring; the
+  statistics under a headline with four tabs. The backend takes the company's name with the website
+  (`POST /first-runs` `name`). Looked at in a browser in Uzbek on desktop, the questions step at phone
+  width, in replay mode. Not tried: a real check through these screens, Russian and English, the tabs at
+  phone width. Not built: results that fill in while the check runs (the pictures' "still collecting").
+  No new variable.
+
 - **Tried, waiting for the user's look: the first real weekly check (16 Nov); its corrections on the
   branch `first-weekly-check`; merged, pushed and deployed the same day, when the user said "commit, push and
   deploy".** After "what is next" the user chose "first paid weekly

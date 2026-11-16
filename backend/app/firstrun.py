@@ -157,9 +157,9 @@ From the text, give:
 COMPETITOR_LIMIT = 5
 
 
-def profile(domain: str, pages: List[Dict[str, str]], category: Optional[str], city: Optional[str], count: int, country: Optional[str] = None) -> Tuple[Dict[str, Any], float]:
+def profile(domain: str, pages: List[Dict[str, str]], category: Optional[str], city: Optional[str], count: int, country: Optional[str] = None, name: Optional[str] = None) -> Tuple[Dict[str, Any], float]:
     text = "\n\n".join(f"[{page['url']}]\n{page['text']}" for page in pages)[:40_000]
-    given = "".join(f"\nThe owner says the {name} is: {value}. Use it." for name, value in (("category", category), ("city", city), ("country it serves (two-letter code)", country)) if value)
+    given = "".join(f"\nThe owner says the {name} is: {value}. Use it." for name, value in (("business's name, as customers write it,", name), ("category", category), ("city", city), ("country it serves (two-letter code)", country)) if value)
     schema = obj(
         name=STR,
         aliases=arr(STR),
@@ -425,7 +425,7 @@ def search_competitors(who: Dict[str, Any], domain: str, country: str) -> Tuple[
     return rivals, (answer["usd"] or 0.0) + usd
 
 
-def prepare(domain: str, category: Optional[str], city: Optional[str], country: Optional[str] = None) -> Tuple[Dict[str, Any], float]:
+def prepare(domain: str, category: Optional[str], city: Optional[str], country: Optional[str] = None, name: Optional[str] = None) -> Tuple[Dict[str, Any], float]:
     """The first half of a first check, before anybody is asked: the website read, and from it the profile,
     the competitors and the questions, for the owner to correct. Returns the draft the check is then made
     from (`check`) and what writing it cost."""
@@ -435,7 +435,7 @@ def prepare(domain: str, category: Optional[str], city: Optional[str], country: 
         raise FirstRunError("site_unreadable", domain)
     root = f"https://{web.domain_of(pages[0]['url'])}"
     checks = site_checks(pages, _raw(pages[0]["url"]), _raw(f"{root}/robots.txt"))
-    who, usd = profile(domain, pages, category, city, settings.first_run_questions, country)
+    who, usd = profile(domain, pages, category, city, settings.first_run_questions, country, name)
     # The owner's own word on the country wins over what the website suggests
     country = country or who["country"].strip().upper()[:2] or "UZ"
     languages = languages_for(country)

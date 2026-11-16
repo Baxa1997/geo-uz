@@ -4,8 +4,9 @@ import { ArrowRightIcon as ArrowRight } from "@phosphor-icons/react/dist/ssr/Arr
 import { InfoIcon as Info } from "@phosphor-icons/react/dist/ssr/Info";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocale, useMessages, useTranslations } from "next-intl";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BrandViewCard } from "@/shared/components/brand-view";
+import { EngineIcon } from "@/shared/components/engine-icon";
 import { Hint } from "@/shared/components/hint";
 import { MethodLabel } from "@/shared/components/scores/method-label";
 import { NamedBrandChips } from "@/shared/components/scores/named-brand-chips";
@@ -14,6 +15,8 @@ import { Button } from "@/shared/components/ui/button";
 import { useRouter } from "@/i18n/navigation";
 import { api, ApiError } from "@/shared/api/client";
 import { queryKeys } from "@/shared/api/query-keys";
+import { engineOf } from "@/shared/constants";
+import { shortUrl } from "@/shared/helpers/domain";
 import { labelFor, placeLabel } from "@/shared/helpers/labels";
 import { answersNaming, namedBrands } from "@/shared/helpers/scores";
 import { cn } from "@/shared/helpers/utils";
@@ -21,6 +24,9 @@ import type { FirstRunResult } from "@/shared/types/api";
 import { FIRST_RUN_MISSED } from "../constants";
 import { brandCounts, placeOf } from "../helpers/first-run";
 import { projectFromFirstRun } from "../helpers/onboarding";
+
+/** The first statistics' tabs, as the user's picture: the businesses, the cited pages, the cited sites, the answers. */
+const TABS = ["brands", "pages", "sites", "answers"] as const;
 
 /**
  * The first statistics, numbers first: one sentence on where the business stands, three figures, every
@@ -69,6 +75,9 @@ export function FirstRunResultView({ result, runId, onAgain }: { result: FirstRu
         : t("verdictLeads", { named: you.named, total, recommended: you.recommended });
 
   const conclusion = result.conclusion?.[locale as "uz" | "ru" | "en"];
+  const [tab, setTab] = useState<(typeof TABS)[number]>("brands");
+  // Every cited page, the most cited first
+  const pages = result.topSources.flatMap((source) => source.pages).sort((a, b) => b.count - a.count).slice(0, 20);
 
   const figures = [
     { key: "named", value: you.named, of: total },
@@ -78,11 +87,23 @@ export function FirstRunResultView({ result, runId, onAgain }: { result: FirstRu
 
   return (
     <section className="flex flex-col gap-5">
-      <div className="flex flex-col gap-2">
-        <p className="font-mono text-xs font-medium tracking-[0.14em] text-muted-foreground uppercase">{t("resultKicker")}</p>
-        <h1 ref={headingRef} tabIndex={-1} className="text-3xl font-bold tracking-[-0.03em] text-balance outline-none">
-          {t("resultTitle", { brand: result.brand.name })}
+      <div className="flex flex-col items-center gap-5 pt-4 pb-2 text-center sm:pt-8">
+        <p className="inline-flex items-center gap-2 rounded-full border border-brand/30 bg-background py-1.5 pr-2 pl-4 text-sm">
+          {t("heroKicker", { count: result.engines.length })}
+          <span className="flex items-center gap-1 rounded-full bg-muted px-2 py-1">
+            {result.engines.map((engine) => (
+              <EngineIcon key={engine.engine} engine={engineOf(engine.engine)} />
+            ))}
+          </span>
+        </p>
+        <h1 ref={headingRef} tabIndex={-1} className="text-4xl font-bold tracking-[-0.04em] text-balance outline-none sm:text-6xl">
+          {t("heroTitle")} <span className="text-brand">{result.brand.name}</span>
         </h1>
+        <p className="text-lg text-pretty text-muted-foreground">{t("heroText", { questions: result.prompts.length, answers: total })}</p>
+        <Button size="lg" disabled={saving} onClick={() => save.mutate()} className="h-12 px-6 text-base">
+          {saving ? t("saving") : t("heroButton")}
+          <ArrowRight aria-hidden data-icon="inline-end" />
+        </Button>
         <p className="text-sm text-muted-foreground">
           {result.domain} · {labelFor(messages.Categories, result.category)} · {placeLabel(messages.Cities, locale, result)}
         </p>
@@ -113,6 +134,26 @@ export function FirstRunResultView({ result, runId, onAgain }: { result: FirstRu
       </dl>
 
       <div className="overflow-hidden rounded-xl border bg-background">
+        <div role="tablist" aria-label={t("tabsLabel")} className="grid grid-cols-2 border-b sm:grid-cols-4">
+          {TABS.map((key) => (
+            <button
+              key={key}
+              type="button"
+              role="tab"
+              aria-selected={tab === key}
+              onClick={() => setTab(key)}
+              className={cn(
+                "border-b-2 px-3 py-3.5 text-[0.9375rem] transition-colors outline-none focus-visible:bg-muted",
+                tab === key ? "border-foreground font-semibold" : "border-transparent text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {t(`tabs.${key}`)}
+            </button>
+          ))}
+        </div>
+        {tab === "brands" && (
+          <>
+
         <div className="flex flex-col gap-1 border-b p-4 sm:px-5">
           <h2 className="font-semibold">{t("brandsTitle")}</h2>
           <p className="text-sm text-pretty text-muted-foreground">{t("brandsText", { total })}</p>
@@ -153,6 +194,57 @@ export function FirstRunResultView({ result, runId, onAgain }: { result: FirstRu
             </tbody>
           </table>
         </div>
+          </>
+        )}
+        {tab === "pages" && (
+          <ul className="divide-y">
+            {pages.length === 0 && <li className="px-4 py-6 text-sm text-muted-foreground sm:px-5">{t("tabsEmpty")}</li>}
+            {pages.map((page) => (
+              <li key={page.url} className="flex items-center justify-between gap-4 px-4 py-3 text-sm sm:px-5">
+                <span className="flex min-w-0 flex-col">
+                  <span className="truncate font-medium">{page.title || shortUrl(page.url)}</span>
+                  <a href={page.url} target="_blank" rel="noreferrer nofollow" className="truncate text-xs text-muted-foreground hover:underline">
+                    {shortUrl(page.url)}
+                  </a>
+                </span>
+                <span className="shrink-0 tabular-nums">{t("citedIn", { count: page.count })}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+        {tab === "sites" && (
+          <ul className="divide-y">
+            {result.topSources.length === 0 && <li className="px-4 py-6 text-sm text-muted-foreground sm:px-5">{t("tabsEmpty")}</li>}
+            {result.topSources.map((source) => (
+              <li key={source.domain} className="flex items-center justify-between gap-4 px-4 py-3 text-sm sm:px-5">
+                <span className="flex min-w-0 flex-col">
+                  <span className="truncate font-medium">{source.domain}</span>
+                  <span className={cn("text-xs", source.brandListed ? "text-positive" : "text-muted-foreground")}>{t(source.type === "own" ? "siteOwn" : source.type === "competitor" ? "siteRival" : source.brandListed ? "siteListed" : "siteMissing")}</span>
+                </span>
+                <span className="shrink-0 tabular-nums">{t("citedIn", { count: source.count })}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+        {tab === "answers" && (
+          <ul className="divide-y">
+            {result.prompts.flatMap((item) =>
+              item.answers.map((answer) => (
+                <li key={`${item.prompt.id}-${answer.engine}-${answer.sample}`} className="flex flex-col gap-1.5 px-4 py-3.5 sm:px-5">
+                  <p className="flex items-start justify-between gap-3 text-sm font-medium text-pretty">
+                    {item.prompt.text}
+                    <span className="shrink-0 rounded-full border px-2 py-0.5 text-xs font-normal text-muted-foreground">{result.engines.find((engine) => engine.engine === answer.engine)?.name ?? answer.engine}</span>
+                  </p>
+                  {/* The beginning as plain words: the answers come with Markdown's marks */}
+                  <p className="line-clamp-3 text-sm text-pretty text-muted-foreground">{answer.text.slice(0, 600).replace(/[*#|`]+|-{2,}/g, " ").replace(/\s+/g, " ")}</p>
+                  <p className={cn("text-xs font-medium", answer.mentions.some((mention) => mention.brandId === result.brand.id) ? "text-positive" : "text-muted-foreground")}>
+                    {t(answer.mentions.some((mention) => mention.brandId === result.brand.id) ? "answerNamed" : "answerNotNamed")}
+                  </p>
+                </li>
+              )),
+            )}
+          </ul>
+        )}
       </div>
 
       {result.engines.length > 1 && (

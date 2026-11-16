@@ -4029,17 +4029,71 @@
       },
       "questions": {
         "title": "Kuzatiladigan savollar",
-        "text": "Mijozlar AI’dan shunday soʻraydi. Mosini qoldiring, keraksizidan belgini olib tashlang yoki oʻzingiznikini qoʻshing. Birinchi tekshiruvda {max} tagacha savol beriladi."
+        "text": "Mijozlar AI’dan shunday soʻraydi. Mosini qoldiring, keraksizini oʻchiring yoki tahrirlang, oʻzingiznikini qoʻshing. Birinchi tekshiruvda {max} tagacha savol beriladi."
       },
       "startCheck": "Tekshiruvni boshlash",
       "starting": "Boshlanmoqda…",
       "confirmFailed": "Tekshiruvni boshlab boʻlmadi. Qayta urinib koʻring.",
       "limit": "Bugungi tekshiruvlar tugadi. Ertaga urinib koʻring.",
       "replayed": "Ishlab chiqish rejimi: bu siz yozgan sayt emas, saqlangan tekshiruv ({site}) maʼlumotlari. Hech bir yordamchidan soʻralmaydi.",
-      "freeUsed": "Bepul tekshiruvingiz ishlatilgan. Yana bir sayt uchun tarif kerak: loyihangizdagi Sozlamalar › Tarif sahifasidan soʻrov yuboring."
+      "freeUsed": "Bepul tekshiruvingiz ishlatilgan. Yana bir sayt uchun tarif kerak: loyihangizdagi Sozlamalar › Tarif sahifasidan soʻrov yuboring.",
+      "company": "Kompaniya nomi",
+      "companyPlaceholder": "Mijozlar sizni qanday ataydi",
+      "optional": "ixtiyoriy",
+      "language": "Savollar tili",
+      "languages": {
+        "uz": "Oʻzbekcha",
+        "ru": "Ruscha",
+        "en": "Inglizcha"
+      },
+      "whatYouDo": "Nima qilasiz",
+      "sector": "Soha va yoʻnalish",
+      "more": "Qoʻshimcha maʼlumotlar",
+      "moreNote": "xizmatlar ({services}), shahar, nomning boshqa yozilishlari",
+      "brandTitle": "{brand} haqidagi savollar",
+      "brandText": "Bu savollarda nomingiz bor: har bir yordamchi siz haqingizda nima deyishini koʻrsatadi va javoblari saytingiz bilan solishtiriladi. Ular yuqoridagi sonlarga qoʻshilmaydi.",
+      "list": {
+        "add": "Savol qoʻshish",
+        "edit": "{number}-savolni tahrirlash",
+        "remove": "{number}-savolni oʻchirish",
+        "save": "Saqlash",
+        "cancel": "Bekor qilish",
+        "short": "Savol juda qisqa.",
+        "duplicate": "Bu savol roʻyxatda bor.",
+        "placeholder": "Mijozingiz AI’dan soʻraydigan savol",
+        "brandPlaceholder": "Masalan: {brand} narxlari qancha?"
+      },
+      "panel": {
+        "tagline": "AI yordamchilar mijozlaringizga siz haqingizda nima deyishini koʻring"
+      }
     },
     "saving": "Saqlanmoqda…",
-    "saveFailed": "Loyihani saqlab boʻlmadi. Qayta urinib koʻring."
+    "saveFailed": "Loyihani saqlab boʻlmadi. Qayta urinib koʻring.",
+    "asking": {
+      "text": "{engines} hozir savollaringizga javob beryapti.",
+      "sending": "Savollaringiz yordamchilarga yuborilmoqda",
+      "collecting": "Javoblar va ular tayangan manbalar yigʻilmoqda",
+      "checking": "Qaysi javobda tilga olinganingiz tekshirilmoqda"
+    },
+    "heroKicker": "Brendingizni {count} ta AI yordamchi bilan tahlil qildik",
+    "heroTitle": "AI’dagi koʻrinishingiz:",
+    "heroText": "{questions} ta savolingiz boʻyicha birinchi haqiqiy natijalar: {answers} ta javob.",
+    "heroButton": "Toʻliq tahlilni koʻrish",
+    "tabsLabel": "Natijalar",
+    "tabs": {
+      "brands": "Raqobatchilar",
+      "pages": "Sahifalar",
+      "sites": "Saytlar",
+      "answers": "Javoblar"
+    },
+    "tabsEmpty": "Javoblarda hech bir manba koʻrsatilmagan.",
+    "citedIn": "{count} ta javobda",
+    "siteOwn": "Sizning saytingiz",
+    "siteRival": "Raqobatchi sayti",
+    "siteListed": "Siz bu saytda borsiz",
+    "siteMissing": "Siz bu saytda yoʻqsiz",
+    "answerNamed": "Sizni tilga oldi",
+    "answerNotNamed": "Sizni tilga olmadi"
   },
   "Trial": {
     "title": "Bepul birinchi tekshiruvingiz tayyor",

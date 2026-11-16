@@ -4029,17 +4029,71 @@
       },
       "questions": {
         "title": "Your questions to track",
-        "text": "This is how customers ask AI. Keep the ones that fit, untick the others or add your own. The first check asks up to {max} questions."
+        "text": "This is how customers ask AI. Keep the ones that fit, edit or delete the others, and add your own. The first check asks up to {max} questions."
       },
       "startCheck": "Start the check",
       "starting": "Starting…",
       "confirmFailed": "Couldn't start the check. Try again.",
       "limit": "No checks left for today. Try again tomorrow.",
       "replayed": "Development mode: this is not the website you typed but a saved check's data ({site}). No assistant is asked.",
-      "freeUsed": "Your free check has been used. Another website needs a plan: send a request from your project's Settings › Plan page."
+      "freeUsed": "Your free check has been used. Another website needs a plan: send a request from your project's Settings › Plan page.",
+      "company": "Company name",
+      "companyPlaceholder": "What customers call you",
+      "optional": "optional",
+      "language": "Question language",
+      "languages": {
+        "uz": "Uzbek",
+        "ru": "Russian",
+        "en": "English"
+      },
+      "whatYouDo": "What you do",
+      "sector": "Sector and niche",
+      "more": "More details",
+      "moreNote": "services ({services}), city, other spellings of the name",
+      "brandTitle": "Questions about {brand}",
+      "brandText": "These questions name you: they show what each assistant says about you, and the answers are checked against your website. They are not counted in the numbers above.",
+      "list": {
+        "add": "Add a question",
+        "edit": "Edit question {number}",
+        "remove": "Delete question {number}",
+        "save": "Save",
+        "cancel": "Cancel",
+        "short": "The question is too short.",
+        "duplicate": "This question is already in the list.",
+        "placeholder": "A question your customer asks AI",
+        "brandPlaceholder": "For example: how much does {brand} cost?"
+      },
+      "panel": {
+        "tagline": "See what AI assistants tell your customers about you"
+      }
     },
     "saving": "Saving…",
-    "saveFailed": "Couldn't save the project. Try again."
+    "saveFailed": "Couldn't save the project. Try again.",
+    "asking": {
+      "text": "{engines} are answering your questions right now.",
+      "sending": "Sending your questions to the assistants",
+      "collecting": "Collecting the answers and the sources they cite",
+      "checking": "Checking which answers name you"
+    },
+    "heroKicker": "We analysed your brand with {count} AI assistants",
+    "heroTitle": "Your AI visibility for",
+    "heroText": "First real results on your {questions} questions: {answers} answers.",
+    "heroButton": "See my full analysis",
+    "tabsLabel": "Results",
+    "tabs": {
+      "brands": "Competitors",
+      "pages": "Pages",
+      "sites": "Sites",
+      "answers": "Answers"
+    },
+    "tabsEmpty": "The answers cited no source.",
+    "citedIn": "in {count} answers",
+    "siteOwn": "Your website",
+    "siteRival": "A competitor's site",
+    "siteListed": "You are on this site",
+    "siteMissing": "You are not on this site",
+    "answerNamed": "Named you",
+    "answerNotNamed": "Did not name you"
   },
   "Trial": {
     "title": "Your free first check is ready",
