@@ -1,5 +1,3 @@
-"use client";
-
 import { CheckCircleIcon as CheckCircle } from "@phosphor-icons/react/dist/ssr/CheckCircle";
 import { MinusCircleIcon as MinusCircle } from "@phosphor-icons/react/dist/ssr/MinusCircle";
 import { WarningCircleIcon as WarningCircle } from "@phosphor-icons/react/dist/ssr/WarningCircle";
@@ -19,7 +17,7 @@ const MARKS = {
  * each marked against the website (says the same, says otherwise, says nothing about it). On the first
  * check's result and on a project's Overview; `action` is a link beside its title.
  */
-export function BrandViewCard({ views, brand, action, className }: { views: BrandView[]; brand: string; action?: React.ReactNode; className?: string }) {
+export function BrandViewCard({ views, brand, action, text, className }: { views: BrandView[]; brand: string; action?: React.ReactNode; /** In the place of the line under the title (the landing page's sample). */ text?: string; className?: string }) {
   const t = useTranslations("BrandView");
   const locale = useLocale() as "uz" | "ru" | "en";
 
@@ -28,7 +26,7 @@ export function BrandViewCard({ views, brand, action, className }: { views: Bran
       <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2 border-b p-4 sm:px-5">
         <div className="flex min-w-0 flex-1 basis-64 flex-col gap-1">
           <h2 className="font-semibold">{t("title", { brand })}</h2>
-          <p className="text-sm text-pretty text-muted-foreground">{t("text")}</p>
+          <p className="text-sm text-pretty text-muted-foreground">{text ?? t("text")}</p>
         </div>
         {action}
       </div>

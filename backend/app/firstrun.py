@@ -1,7 +1,8 @@
 """A new account's first run: a website in, every assistant asked, the first statistics out.
 
     read the site      its pages as text, its robots.txt and markup          -> the four site checks
-    profile            who the business is, and the questions its customers ask (Uzbek and Russian)
+    profile            who the business is, its competitors, and the questions its customers ask
+    -- the owner corrects all of it (`prepare` ends here, `check` goes on from what they confirmed) --
     ask                each question once to each assistant, several at a time
     ask about it       the brand questions: what each assistant says of the business itself, by name
     read the answers   which businesses each names, in order, in what tone, and which it recommends
@@ -70,7 +71,7 @@ def normalize(domain: str) -> str:
 def _raw(url: str) -> Optional[str]:
     try:
         request = urllib.request.Request(url, headers={"User-Agent": web.USER_AGENT})
-        with urllib.request.urlopen(request, timeout=15) as reply:
+        with web.opener.open(request, timeout=15) as reply:
             return reply.read(600_000).decode(reply.headers.get_content_charset() or "utf-8", "replace")
     except (urllib.error.URLError, TimeoutError, ValueError, OSError):
         return None
@@ -144,9 +145,14 @@ From the text, give:
 - description: one sentence on what it offers.
 - services: up to six of its main services.
 - questions: exactly {count} questions a customer there (in that city, or in that country when no city is given) would ask an AI assistant when choosing such a business, before knowing any business's name, in the languages set below. Cover: the best in the city or country, how to choose, prices, the business's main services or specialities, and its district if the site names one. Each with a `topic` of one or two words. Natural, short, the way people type. Never name this business or any other in a question.
+- competitors: up to five businesses a customer there would compare this one with: real ones you are sure exist and work for the same customers in the same country (or city), the best known first. `domain` is the competitor's own website without "https://", or empty when you are not sure of it. None rather than an invented one. Never this business itself.
 - brandQuestions: exactly four questions a customer who has already heard of this business would ask an AI assistant about it by its name, in the languages set below (two and two where there are two languages). Each names the business as customers write it, and each asks about one thing: its prices, whether it is good and what people say, one of its main services, how to reach or find it. Natural and short.
 
 """ + LANGUAGE_RULES
+
+
+# How many competitors a first check follows: the ones the owner confirmed, then the ones the answers name most
+COMPETITOR_LIMIT = 5
 
 
 def profile(domain: str, pages: List[Dict[str, str]], category: Optional[str], city: Optional[str], count: int, country: Optional[str] = None) -> Tuple[Dict[str, Any], float]:
@@ -162,6 +168,7 @@ def profile(domain: str, pages: List[Dict[str, str]], category: Optional[str], c
         description=STR,
         services=arr(STR),
         questions=arr(obj(text=STR, language={"type": "string", "enum": list(QUESTION_LANGUAGES)}, topic=STR)),
+        competitors=arr(obj(name=STR, domain=STR)),
         brandQuestions=arr(obj(text=STR, language={"type": "string", "enum": list(QUESTION_LANGUAGES)})),
     )
     found, usd = engines.write(PROFILE_RULES.replace("{count}", str(count)) + given, f"Website: {domain}\n\n{text}", "site_profile", schema)
@@ -172,6 +179,14 @@ def profile(domain: str, pages: List[Dict[str, str]], category: Optional[str], c
         raise FirstRunError("no_questions")
     # And a brand question that doesn't name it would be one more customer's question
     found["brandQuestions"] = [question for question in found.get("brandQuestions") or [] if web.names(question["text"], spellings)][:4]
+    # A suggested competitor: a name that isn't the business's own, once, with a website only when it reads as one
+    rivals: List[Dict[str, str]] = []
+    for rival in found.get("competitors") or []:
+        name = " ".join(str(rival.get("name") or "").split())
+        site = web.domain_of(str(rival.get("domain") or "").strip())
+        if name and not web.names(name, spellings) and all(name.lower() != listed["name"].lower() for listed in rivals):
+            rivals.append({"name": name, "domain": site if re.fullmatch(r"[a-z0-9-]+(\.[a-z0-9-]+)+", site) and site != domain else ""})
+    found["competitors"] = rivals[:COMPETITOR_LIMIT]
     return found, usd
 
 
@@ -318,14 +333,10 @@ def questions_for(engine: str, asked: List[str], count: int) -> List[int]:
     return sorted({round(index * count / limit) for index in range(limit)}) if limit > 0 else []
 
 
-def run(domain: str, category: Optional[str], city: Optional[str], progress: Progress, engine_names: Optional[List[str]] = None, country: Optional[str] = None) -> Tuple[Dict[str, Any], Dict[str, Any], float]:
-    """The whole first run. Returns the Snapshot, the raw answers and the cost in US dollars."""
-    asked = engine_names or settings.engines
-    if not asked:
-        raise FirstRunError("no_engines", "No assistant has a key")
-    cost = 0.0
-
-    progress("reading_site", 0, 0)
+def prepare(domain: str, category: Optional[str], city: Optional[str], country: Optional[str] = None) -> Tuple[Dict[str, Any], float]:
+    """The first half of a first check, before anybody is asked: the website read, and from it the profile,
+    the competitors and the questions, for the owner to correct. Returns the draft the check is then made
+    from (`check`) and what writing it cost."""
     # The site's version to read: English for a country whose questions are English, when the owner named it
     pages = web.read_site(domain, "en" if country and languages_for(country) == ["en"] else "ru")
     if not pages:
@@ -333,15 +344,84 @@ def run(domain: str, category: Optional[str], city: Optional[str], progress: Pro
     root = f"https://{web.domain_of(pages[0]['url'])}"
     checks = site_checks(pages, _raw(pages[0]["url"]), _raw(f"{root}/robots.txt"))
     who, usd = profile(domain, pages, category, city, settings.first_run_questions, country)
-    cost += usd
-    spellings = [who["name"]] + who["aliases"]
     # The owner's own word on the country wins over what the website suggests
     country = country or who["country"].strip().upper()[:2] or "UZ"
-    place = (country, who["cityEn"] or who["city"], TIMEZONES.get(country, ""))
     languages = languages_for(country)
     # The rules name the languages; a question that came in another one is left out
     who["questions"] = [question for question in who["questions"] if question["language"] in languages] or who["questions"]
     who["brandQuestions"] = [question for question in who["brandQuestions"] if question["language"] in languages]
+    general = [{"text": brand_question(language, who["name"], who["city"] if language == "ru" else who["cityEn"]), "language": language} for language in languages]
+    return {
+        "who": who,
+        "country": country,
+        "own": web.domain_of(pages[0]["url"]),
+        "checks": checks,
+        "siteText": "\n\n".join(f"[{page['url']}]\n{page['text']}" for page in pages)[:40_000],
+        # The general brand questions first, then the ones written for this business
+        "brandQuestions": general + [{"text": question["text"], "language": question["language"]} for question in who["brandQuestions"]],
+    }, usd
+
+
+def confirmed_of(draft: Dict[str, Any]) -> Dict[str, Any]:
+    """The draft as it stands, for a check nobody corrected."""
+    who = draft["who"]
+    return {
+        "name": who["name"],
+        "aliases": who["aliases"],
+        "category": who["category"],
+        "city": who["city"],
+        "country": draft["country"],
+        "description": who["description"],
+        "services": who["services"],
+        "competitors": [{"name": rival["name"], "aliases": [], "domain": rival["domain"]} for rival in who.get("competitors") or []],
+        "prompts": who["questions"],
+        "brandQuestions": draft["brandQuestions"],
+    }
+
+
+def run(domain: str, category: Optional[str], city: Optional[str], progress: Progress, engine_names: Optional[List[str]] = None, country: Optional[str] = None) -> Tuple[Dict[str, Any], Dict[str, Any], float]:
+    """A whole first check with nothing corrected: the website read, then everybody asked."""
+    progress("reading_site", 0, 0)
+    draft, usd = prepare(domain, category, city, country)
+    snapshot, raw, cost = check(draft, confirmed_of(draft), progress, engine_names)
+    return snapshot, raw, round(cost + usd, 4)
+
+
+def check(draft: Dict[str, Any], confirmed: Dict[str, Any], progress: Progress, engine_names: Optional[List[str]] = None) -> Tuple[Dict[str, Any], Dict[str, Any], float]:
+    """The second half: the questions the owner confirmed asked to every assistant, and the answers counted.
+    `confirmed` is the draft as the owner left it (`confirmed_of` gives its shape). Returns the Snapshot, the
+    raw answers and the cost in US dollars."""
+    asked = engine_names or settings.engines
+    if not asked:
+        raise FirstRunError("no_engines", "No assistant has a key")
+    cost = 0.0
+    read = draft["who"]
+    city = confirmed["city"]
+    who = {
+        **read,
+        "name": confirmed["name"],
+        "aliases": confirmed["aliases"],
+        "category": confirmed["category"],
+        "city": city,
+        # The city in English is the website's reading; a city the owner typed is told as typed
+        "cityEn": read["cityEn"] if city == read["city"] else city,
+        "description": confirmed["description"],
+        "services": confirmed["services"],
+        "questions": confirmed["prompts"][: settings.first_run_questions],
+    }
+    if not who["questions"]:
+        raise FirstRunError("no_questions")
+    domain = draft["own"]
+    checks = draft["checks"]
+    spellings = [who["name"]] + who["aliases"]
+    country = confirmed["country"] or draft["country"]
+    place = (country, who["cityEn"] or who["city"], TIMEZONES.get(country, ""))
+    languages = languages_for(country)
+    chosen = [rival for rival in confirmed["competitors"] if not web.names(rival["name"], spellings)][:COMPETITOR_LIMIT]
+    # Of the brand questions the owner kept, the first in each language is asked now; all are kept for the weekly checks
+    first_named: Dict[str, str] = {}
+    for question in confirmed["brandQuestions"]:
+        first_named.setdefault(question["language"], question["text"])
 
     # Every question to every assistant, a few at a time; one that fails is left out and the run goes on
     jobs = [(q, engine) for engine in asked for q in questions_for(engine, asked, len(who["questions"]))]
@@ -351,8 +431,7 @@ def run(domain: str, category: Optional[str], city: Optional[str], progress: Pro
     with ThreadPoolExecutor(max_workers=5) as pool:
         futures = {pool.submit(engines.ask, engine, who["questions"][q]["text"], *place): (q, engine) for q, engine in jobs}
         # The brand questions go with them and are kept apart: not counted in the progress or in any score
-        general = {language: brand_question(language, who["name"], who["city"] if language == "ru" else who["cityEn"]) for language in languages}
-        named_asks = [(engine, language, general[language]) for engine in asked for language in brand_languages(engine, asked, languages)]
+        named_asks = [(engine, language, first_named[language]) for engine in asked for language in brand_languages(engine, asked, [language for language in languages if language in first_named] or list(first_named))] if first_named else []
         named_futures = [(pool.submit(engines.ask, engine, text, *place), engine, language, text) for engine, language, text in named_asks]
         for done, future in enumerate(as_completed(futures), start=1):
             q, engine = futures[future]
@@ -379,7 +458,7 @@ def run(domain: str, category: Optional[str], city: Optional[str], progress: Pro
 
     progress("reading_answers", len(answers), len(jobs))
     # The brand answers are read while the others are: each is one slow call, and nothing else waits on them
-    site_text = "\n\n".join(f"[{page['url']}]\n{page['text']}" for page in pages)
+    site_text = draft["siteText"]
     view_pool = ThreadPoolExecutor(max_workers=4)
     view_futures = [view_pool.submit(brand_view, who, site_text, answer) for answer in about_it]
     view_pool.shutdown(wait=False)
@@ -388,12 +467,17 @@ def run(domain: str, category: Optional[str], city: Optional[str], progress: Pro
             answer["businesses"] = read["businesses"]
             cost += usd
 
-    seen = sorted({business["name"].strip() for answer in answers for business in answer["businesses"] if business["name"].strip()})
+    seen = sorted({business["name"].strip() for answer in answers for business in answer["businesses"] if business["name"].strip()} | {rival["name"] for rival in chosen})
     mapping: Dict[str, str] = {}
     if seen:
         groups, usd = engines.read(NAMES_RULES, json.dumps({"category": who["category"], "city": who["city"], "names": seen}, ensure_ascii=False), "name_groups", obj(groups=arr(obj(name=STR, spellings=arr(STR)))))
         cost += usd
         mapping = {spelling: group["name"] for group in groups["groups"] for spelling in group["spellings"]}
+        # A business the owner confirmed keeps the name they gave it, whatever the answers call it
+        for rival in chosen:
+            group = mapping.get(rival["name"])
+            if group and group != rival["name"]:
+                mapping = {spelling: rival["name"] if name == group else name for spelling, name in mapping.items()}
 
     client = who["name"]
 
@@ -413,7 +497,10 @@ def run(domain: str, category: Optional[str], city: Optional[str], progress: Pro
         answer["order"] = order
 
     named = Counter(listed["name"] for answer in answers for listed in answer["order"])
-    rivals = [name for name, _ in named.most_common() if name != client][:5]
+    # The competitors the owner confirmed, named or not, then the businesses the answers name most
+    rivals = [rival["name"] for rival in chosen]
+    rivals += [name for name, _ in named.most_common() if name != client and name not in rivals][: COMPETITOR_LIMIT - len(rivals)]
+    given = {rival["name"]: rival for rival in chosen}
     tracked = [client] + rivals
     ids = {name: f"b{index}" for index, name in enumerate(tracked)}
     mentions = sum(named[name] for name in tracked) or 1
@@ -438,9 +525,10 @@ def run(domain: str, category: Optional[str], city: Optional[str], progress: Pro
             site["answers"].add(index)
             site["pages"][citation["url"]] += 1
             site["titles"].setdefault(citation["url"], citation.get("title"))
-    own = web.domain_of(pages[0]["url"])
+    own = domain
+    rival_sites = {rival["domain"] for rival in chosen if rival["domain"]}
     ranked = sorted(sites, key=lambda site: (-len(sites[site]["answers"]), site))[:12]
-    kinds = {site: _kind(site, own, rivals) for site in ranked}
+    kinds = {site: "competitor" if site in rival_sites else _kind(site, own, rivals) for site in ranked}
     to_read = [site for site in ranked if kinds[site] not in ("own", "competitor")][:5]
     with ThreadPoolExecutor(max_workers=5) as pool:
         fetched = dict(zip(to_read, pool.map(lambda site: web.fetch(sites[site]["pages"].most_common(1)[0][0]), to_read)))
@@ -515,7 +603,7 @@ def run(domain: str, category: Optional[str], city: Optional[str], progress: Pro
         "services": who["services"],
         "method": {"engine": " + ".join(engines.ENGINE_NAMES[engine] for engine in asked), "model": ", ".join(sorted({answer["model"] for answer in answers})), "webSearch": True, "samples": 1, "collectedAt": collected},
         "brand": {"id": ids[client], "name": client, "aliases": who["aliases"], "domain": own, "logo": None},
-        "competitors": [{"id": ids[name], "name": name, "aliases": [], "domain": "", "logo": None} for name in rivals],
+        "competitors": [{"id": ids[name], "name": name, "aliases": given.get(name, {}).get("aliases") or [], "domain": given.get(name, {}).get("domain") or "", "logo": None} for name in rivals],
         "scores": [score(name, answers) for name in tracked],
         # The same numbers per assistant, and how often each business is recommended: new beside the old contract
         "engines": [
@@ -528,10 +616,8 @@ def run(domain: str, category: Optional[str], city: Optional[str], progress: Pro
         "conclusion": concluded,
         # What each assistant says when asked about the business by name: statements checked against the website
         "brandView": brand_views,
-        # The brand questions for the setup: the general ones (asked in this check where `asked`), then the
-        # ones written for this business, which the client may keep, drop or add to
-        "brandQuestions": [{"text": text, "language": language, "asked": any(answer["asked"] == text for answer in about_it)} for language, text in general.items()]
-        + [{"text": question["text"], "language": question["language"], "asked": False} for question in who["brandQuestions"]],
+        # The brand questions the owner kept (asked in this check where `asked`): the weekly checks ask them all
+        "brandQuestions": [{"text": question["text"], "language": question["language"], "asked": any(answer["asked"] == question["text"] for answer in about_it)} for question in confirmed["brandQuestions"]],
         "answers": len(answers),
         "prompts": by_question,
         "topSources": sources,

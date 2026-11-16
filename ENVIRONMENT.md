@@ -29,12 +29,16 @@ All three are public (built into the site), none is a secret.
 
 ## Backend
 
+Since 16 Nov 2026 this computer's `backend/.env` also has `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER` and `SMTP_PASSWORD`,
+copied from the server's `.env`, so a local login emails its code as the server does. Remove them to have codes
+printed to the backend's log again.
+
 | Variable | Secret | What it does | Default | Set on the server (15 Nov 2026) |
 | --- | --- | --- | --- | --- |
 | `DATABASE_URL` | yes | The database. Supabase's Postgres as `postgresql+psycopg://…` | a file, `backend/local.db` | yes |
 | `SUPABASE_URL` | no | The Supabase project. With the key below and no `SMTP_HOST`, Supabase sends and checks login codes | none | yes (unused while `SMTP_HOST` is set) |
 | `SUPABASE_ANON_KEY` | no (public key) | The Supabase project's public key | none | yes (unused while `SMTP_HOST` is set) |
-| `SMTP_HOST` | no | The mail server for the login email. Set: the backend makes the code and sends it itself | none: the code is printed in the log | yes |
+| `SMTP_HOST` | no | The mail server for the login email. Set: the backend makes the code and sends it itself. Since 16 Nov the same account also emails each demo request from the landing page to `SMTP_FROM` (or `SMTP_USER`) | none: the code is printed in the log | yes |
 | `SMTP_PORT` | no | 465 for SSL; another port uses STARTTLS when offered | `465` | yes |
 | `SMTP_USER` | no | The mail account | none | yes |
 | `SMTP_PASSWORD` | yes | The mail account's password (Gmail: an app password) | none | yes |
@@ -51,7 +55,7 @@ All three are public (built into the site), none is a secret.
 | `FIRST_RUN_QUESTIONS` | no | Questions in a new account's first run | `10` | no |
 | `FIRST_RUN_CHATGPT_QUESTIONS` | no | Of a first check's questions, how many ChatGPT is asked when Gemini is asked too (Gemini gets all) | `5` | no (the default) |
 | `FIRST_RUNS_A_DAY` | no | First runs one account may start in a day (each costs money) | `3` | no |
-| `FIRST_RUN_REPLAY` | no | Development: a first run replays a saved one and asks nobody. Never on the server | `false` | no (on this computer: `true`) |
+| `FIRST_RUN_REPLAY` | no | Development: a first run replays a saved one and asks nobody. Never on the server | `false` | no (on this computer: `true`; taken out for one real check on 16 Nov and put back the same day, the user: "replay") |
 | `RUN_SAMPLES` | no | A weekly check: how many times each tracked question is asked to each assistant. Every extra one multiplies the check's cost; waits for the prices decision | `1` | no (the default) |
 | `WEEKLY_RUNS` | no | `true` where the server's timer starts the checks (every day at 01:00 UTC; Standard is due on Mondays, Pro and Enterprise on Mondays and Thursdays): the report then says when the next check is | `false` | set to `true` on 15 Nov, with the timer `geo-weekly` |
 | `CHROME_PATH` | no | The browser that prints a report as a PDF (Chrome or Chromium). Left out, the usual places are tried | found by itself | no: no browser is installed on the server yet |

@@ -140,6 +140,28 @@ export const validateTopics = (topics: TopicDraft[]): OnboardingErrors =>
 export const validateQuestions = (questions: QuestionDraft[], topics: TopicDraft[]): OnboardingErrors =>
   questionsInTopics(questions, topics).some((question) => question.selected) ? {} : { questions: "questionsRequired" };
 
+/** A first check asks a few questions only: at least one ticked, at most `max`. */
+export function validateFirstQuestions(questions: QuestionDraft[], topics: TopicDraft[], max: number): OnboardingErrors {
+  const ticked = questionsInTopics(questions, topics).filter((question) => question.selected).length;
+  return ticked === 0 ? { questions: "questionsRequired" } : ticked > max ? { questions: "questionsFirstMax" } : {};
+}
+
+/** A finished first check as the project it becomes: what was confirmed and asked, and the businesses the answers added. */
+export const projectFromFirstRun = (run: FirstRunResult, firstRunId: string): CreateProjectRequest => ({
+  name: run.brand.name,
+  aliases: run.brand.aliases,
+  domain: run.domain,
+  category: run.category,
+  country: run.country || DEFAULT_COUNTRY,
+  city: run.city,
+  description: run.description,
+  services: run.services,
+  competitors: run.competitors.map(({ name, aliases, domain, logo }) => ({ name, aliases, domain, logo })),
+  prompts: run.prompts.map(({ prompt }) => ({ text: prompt.text, language: prompt.language, topic: prompt.topic })),
+  ...(run.brandQuestions ? { brandQuestions: run.brandQuestions.map(({ text, language }) => ({ text, language })) } : {}),
+  firstRunId,
+});
+
 export const onboardingRequest = (
   site: SiteDraft,
   choice: CompetitorChoice,

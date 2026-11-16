@@ -51,6 +51,17 @@ def domain_of(url: str) -> str:
     return host[4:] if host.startswith("www.") else host
 
 
+class _Redirects(urllib.request.HTTPRedirectHandler):
+    """Python before 3.11 doesn't follow a 308, which is how Vercel sends "example.com" on to "www.example.com":
+    such a site read as unreadable (seen 16 Nov 2026). Followed here like a 307."""
+
+    def http_error_308(self, req, fp, code, msg, headers):  # type: ignore[no-untyped-def]
+        return self.http_error_302(req, fp, 307, msg, headers)
+
+
+opener = urllib.request.build_opener(_Redirects())
+
+
 def fetch(url: str, timeout: int = 20) -> Optional[Tuple[str, List[Tuple[str, str]], str]]:
     """The page's text, its links (address, label) and the address it was finally served from. None when it can't be read."""
     if "//" not in url:
@@ -59,7 +70,7 @@ def fetch(url: str, timeout: int = 20) -> Optional[Tuple[str, List[Tuple[str, st
         return None
     try:
         request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT, "Accept-Language": "ru,uz;q=0.9,en;q=0.8"})
-        with urllib.request.urlopen(request, timeout=timeout) as reply:
+        with opener.open(request, timeout=timeout) as reply:
             if "html" not in reply.headers.get("Content-Type", "html"):
                 return None
             raw = reply.read(MAX_BYTES)

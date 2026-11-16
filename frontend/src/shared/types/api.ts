@@ -691,7 +691,36 @@ export interface Snapshot {
 }
 
 /** A new account's first run: a website in, the assistants asked, the first statistics out. */
-export type FirstRunStatus = "queued" | "reading_site" | "asking" | "reading_answers" | "done" | "failed";
+/**
+ * `ready`: the website is read and the draft waits for the owner (`FirstRunDraft`); nobody is asked until
+ * they confirm it (`confirmFirstRun`).
+ */
+export type FirstRunStatus = "queued" | "reading_site" | "ready" | "asking" | "reading_answers" | "done" | "failed";
+
+/** What a first run read from the website, for the owner to correct before the check: GET /first-runs/{id}/draft. */
+export interface FirstRunDraft {
+  id: string;
+  domain: string;
+  name: string;
+  aliases: string[];
+  category: string;
+  /** Two-letter country code. */
+  country: string;
+  city: string;
+  description: string;
+  services: string[];
+  competitors: CompetitorSuggestion[];
+  questions: PromptSuggestion[];
+  /** The general ones first, then the ones written for this business. */
+  brandQuestions: BrandQuestion[];
+  /** How many customers' questions a first check asks. */
+  maxQuestions: number;
+  /** Development only: a saved check's business, not the website typed. */
+  replayed: boolean;
+}
+
+/** The draft as the owner left it: POST /first-runs/{id}/start. The check asks exactly this. */
+export type FirstRunConfirm = Omit<CreateProjectRequest, "firstRunId">;
 
 export interface FirstRunRequest {
   domain: string;

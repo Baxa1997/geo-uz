@@ -22,6 +22,8 @@ import type {
   DemoRequest,
   DismissBrandRequest,
   FirstRun,
+  FirstRunConfirm,
+  FirstRunDraft,
   FirstRunRequest,
   FirstRunResult,
   ImportKeywordsRequest,
@@ -153,6 +155,10 @@ export interface ApiClient {
   /** The account's first runs, newest first. */
   getFirstRuns(): Promise<FirstRun[]>;
   getFirstRun(id: string): Promise<FirstRun>;
+  /** What the website gave, once the run is `ready`: the profile, competitors and questions to correct. 409 before. */
+  getFirstRunDraft(id: string): Promise<FirstRunDraft>;
+  /** Starts the check on what the owner confirmed. 422 without a name or a question, or with too many; 429 at the day's limit. */
+  confirmFirstRun(id: string, body: FirstRunConfirm): Promise<FirstRun>;
   /** The first statistics; 409 until the run is done. */
   getFirstRunResult(id: string): Promise<FirstRunResult>;
   createDemoRequest(body: DemoRequest): Promise<void>;
@@ -279,6 +285,8 @@ const httpApi: ApiClient = {
   startFirstRun: (body) => send("POST", "/first-runs", body),
   getFirstRuns: () => request("/first-runs"),
   getFirstRun: (runId) => request(`/first-runs/${id(runId)}`),
+  getFirstRunDraft: (runId) => request(`/first-runs/${id(runId)}/draft`),
+  confirmFirstRun: (runId, body) => send("POST", `/first-runs/${id(runId)}/start`, body),
   getFirstRunResult: (runId) => request(`/first-runs/${id(runId)}/result`),
   createDemoRequest: (body) => send("POST", "/demo-requests", body),
   sendSupportMessage: (body) => send("POST", "/support-messages", body),
@@ -364,6 +372,8 @@ const mockBridge = (): ApiClient => ({
       startFirstRun: (body) => mocks().then((m) => unwrap(m.startFirstRun(body))),
       getFirstRuns: () => mocks().then((m) => unwrap(m.getFirstRuns())),
       getFirstRun: (runId) => mocks().then((m) => unwrap(m.getFirstRun(runId))),
+      getFirstRunDraft: (runId) => mocks().then((m) => unwrap(m.getFirstRunDraft(runId))),
+      confirmFirstRun: (runId, body) => mocks().then((m) => unwrap(m.confirmFirstRun(runId, body))),
       getFirstRunResult: (runId) => mocks().then((m) => unwrap(m.getFirstRunResult(runId))),
       createDemoRequest: (body) => mocks().then((m) => unwrap(m.createDemoRequest(body))),
       sendSupportMessage: (body) => mocks().then((m) => unwrap(m.sendSupportMessage(body))),
@@ -392,11 +402,16 @@ const liveAuth: Partial<ApiClient> = {
   updateMe: httpApi.updateMe,
 };
 
+/** The landing page's form: no login, so it is the backend's whenever the backend is (since 16 Nov 2026; it went nowhere before). */
+const liveForms: Partial<ApiClient> = { createDemoRequest: httpApi.createDemoRequest };
+
 /** The calls of the first-run slice. */
 const liveFirstRun: Partial<ApiClient> = {
   startFirstRun: httpApi.startFirstRun,
   getFirstRuns: httpApi.getFirstRuns,
   getFirstRun: httpApi.getFirstRun,
+  getFirstRunDraft: httpApi.getFirstRunDraft,
+  confirmFirstRun: httpApi.confirmFirstRun,
   getFirstRunResult: httpApi.getFirstRunResult,
 };
 
@@ -411,6 +426,8 @@ const NOT_PROJECTS: (keyof ApiClient)[] = [
   "startFirstRun",
   "getFirstRuns",
   "getFirstRun",
+  "getFirstRunDraft",
+  "confirmFirstRun",
   "getFirstRunResult",
   "createSnapshot",
   "getSnapshot",
@@ -425,5 +442,5 @@ const NOT_PROJECTS: (keyof ApiClient)[] = [
 const liveProjects = Object.fromEntries(Object.entries(httpApi).filter(([name]) => !NOT_PROJECTS.includes(name as keyof ApiClient))) as Partial<ApiClient>;
 
 export const api: ApiClient = USE_MOCKS
-  ? { ...mockBridge(), ...(AUTH_LIVE ? liveAuth : {}), ...(FIRST_RUN_LIVE ? liveFirstRun : {}), ...(PROJECTS_LIVE ? liveProjects : {}) }
+  ? { ...mockBridge(), ...(AUTH_LIVE ? { ...liveAuth, ...liveForms } : {}), ...(FIRST_RUN_LIVE ? liveFirstRun : {}), ...(PROJECTS_LIVE ? liveProjects : {}) }
   : httpApi;

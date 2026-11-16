@@ -19,7 +19,8 @@ import threading
 import time
 import urllib.error
 import urllib.request
-from typing import Any, Dict, Optional
+from email.message import EmailMessage
+from typing import Any, Dict, List, Optional
 
 from fastapi import Body, Cookie, Depends, FastAPI, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
@@ -28,7 +29,7 @@ from sqlalchemy import func, select
 
 from . import delivery, firstrun, fixes, mail, projects
 from .config import settings
-from .db import FirstRun, LoginCode, Project, Run, Session, SessionLocal, User, create_tables, now
+from .db import DemoRequest, FirstRun, LoginCode, Project, Run, Session, SessionLocal, User, create_tables, now
 
 SESSION_COOKIE = "geo_session"
 CODE_MINUTES = 10
@@ -205,17 +206,19 @@ def run_json(run: FirstRun) -> Dict[str, Any]:
     return {"id": run.id, "domain": run.domain, "status": run.status, "answered": run.answered, "total": run.total, "error": run.error}
 
 
+def _saved_run(db: Any, run_id: str) -> Optional[FirstRun]:
+    # A run that kept its raw answers first: a project saved from the replay then has all of it
+    return db.scalar(select(FirstRun).where(FirstRun.status == "done", FirstRun.id != run_id).order_by(FirstRun.raw.is_(None), FirstRun.created_at.desc()))
+
+
 def replay(run_id: str, progress: Any) -> Dict[str, Any]:
     """Development (`FIRST_RUN_REPLAY`): the latest saved run again, at a watchable pace, asking nobody."""
     with SessionLocal() as db:
-        # A run that kept its raw answers first: a project saved from the replay then has all of it
-        saved = db.scalar(select(FirstRun).where(FirstRun.status == "done", FirstRun.id != run_id).order_by(FirstRun.raw.is_(None), FirstRun.created_at.desc()))
+        saved = _saved_run(db, run_id)
         if saved is None or not saved.result:
             raise firstrun.FirstRunError("no_saved_run")
         result, raw = dict(saved.result), saved.raw
     total = int(result.get("answers") or 0) or sum(len(item["answers"]) for item in result.get("prompts", []))
-    progress("reading_site", 0, total)
-    time.sleep(2)
     for answered in range(1, total + 1):
         time.sleep(0.6)
         progress("asking", answered, total)
@@ -225,9 +228,42 @@ def replay(run_id: str, progress: Any) -> Dict[str, Any]:
     return {"status": "done", "result": {**result, "id": run_id, "replayed": True}, "raw": raw, "cost_usd": 0.0}
 
 
-def work(run_id: str, domain: str, category: Optional[str], city: Optional[str], country: Optional[str] = None) -> None:
-    """Does a first run outside the request that started it, writing its progress as it goes."""
+def replay_draft(run_id: str) -> Dict[str, Any]:
+    """Development: the saved run's business as the draft, marked `replayed` so every step says whose it is."""
+    with SessionLocal() as db:
+        saved = _saved_run(db, run_id)
+        if saved is None or not saved.result:
+            raise firstrun.FirstRunError("no_saved_run")
+        result, who = saved.result, dict((saved.raw or {}).get("profile") or {})
+    who = {
+        "name": result["brand"]["name"],
+        "aliases": result["brand"].get("aliases") or [],
+        "category": result.get("category") or "",
+        "city": result.get("city") or "",
+        "cityEn": who.get("cityEn") or result.get("city") or "",
+        "country": result.get("country") or "UZ",
+        "description": result.get("description") or "",
+        "services": result.get("services") or [],
+        "questions": [{key: item["prompt"][key] for key in ("text", "language", "topic")} for item in result.get("prompts", [])],
+        "competitors": [{"name": rival["name"], "domain": rival.get("domain") or ""} for rival in result.get("competitors", [])],
+        "brandQuestions": [],
+    }
+    time.sleep(2)
+    return {"who": who, "country": who["country"], "own": result["domain"], "checks": result.get("siteChecks") or [], "siteText": "", "brandQuestions": [{"text": q["text"], "language": q["language"]} for q in result.get("brandQuestions") or []], "replayed": True}
 
+
+def _finish(run_id: str, outcome: Dict[str, Any], over: bool = True) -> None:
+    with SessionLocal() as db:
+        run = db.get(FirstRun, run_id)
+        if run:
+            for key, value in outcome.items():
+                setattr(run, key, value)
+            if over:
+                run.finished_at = now()
+            db.commit()
+
+
+def _progress(run_id: str) -> Any:
     def progress(status: str, answered: int, total: int) -> None:
         with SessionLocal() as db:
             run = db.get(FirstRun, run_id)
@@ -235,29 +271,55 @@ def work(run_id: str, domain: str, category: Optional[str], city: Optional[str],
                 run.status, run.answered, run.total = status, answered, total
                 db.commit()
 
+    return progress
+
+
+def work_prepare(run_id: str, domain: str, category: Optional[str], city: Optional[str], country: Optional[str] = None) -> None:
+    """Reads the website outside the request that started the run, and leaves the draft for the owner: `ready`."""
+    _progress(run_id)("reading_site", 0, 0)
+    try:
+        if settings.first_run_replay:
+            draft, cost = replay_draft(run_id), 0.0
+        else:
+            draft, cost = firstrun.prepare(domain, category, city, country)
+        _finish(run_id, {"status": "ready", "draft": draft, "cost_usd": cost}, over=False)
+    except firstrun.FirstRunError as error:
+        _finish(run_id, {"status": "failed", "error": error.code})
+    except Exception as error:  # a run must never stay "reading" for ever
+        print(f"first run {run_id} failed while reading the site: {error!r}")
+        _finish(run_id, {"status": "failed", "error": "internal"})
+
+
+def work_check(run_id: str, draft: Dict[str, Any], confirmed: Dict[str, Any], spent: float) -> None:
+    """Asks what the owner confirmed, outside the request that started it, writing its progress as it goes."""
+    progress = _progress(run_id)
     try:
         if settings.first_run_replay:
             outcome: Dict[str, Any] = replay(run_id, progress)
         else:
-            snapshot, raw, cost = firstrun.run(domain, category, city, progress, country=country)
-            outcome = {"status": "done", "result": {"id": run_id, **snapshot}, "raw": raw, "cost_usd": cost}
+            snapshot, raw, cost = firstrun.check(draft, confirmed, progress)
+            outcome = {"status": "done", "result": {"id": run_id, **snapshot}, "raw": raw, "cost_usd": round(spent + cost, 4)}
     except firstrun.FirstRunError as error:
         outcome = {"status": "failed", "error": error.code}
     except Exception as error:  # a run must never stay "asking" for ever
         print(f"first run {run_id} failed: {error!r}")
         outcome = {"status": "failed", "error": "internal"}
-    with SessionLocal() as db:
-        run = db.get(FirstRun, run_id)
-        if run:
-            for key, value in outcome.items():
-                setattr(run, key, value)
-            run.finished_at = now()
-            db.commit()
+    _finish(run_id, outcome)
+
+
+# A check that asked the assistants: what the daily limit counts. Reading a website costs a cent, asking half a dollar.
+CHECKED = ("asking", "reading_answers", "done")
+
+
+def _checks_today(db: Any, user: User) -> int:
+    day = now() - datetime.timedelta(days=1)
+    return db.scalar(select(func.count()).select_from(FirstRun).where(FirstRun.user_id == user.id, FirstRun.created_at > day, FirstRun.status.in_(CHECKED))) or 0
 
 
 @app.post("/first-runs", status_code=202)
 def start_first_run(body: FirstRunRequest, user: User = Depends(current_user)) -> Dict[str, Any]:
-    """Starts a first run for a website and returns at once; the frontend then asks for its progress."""
+    """Starts reading a website and returns at once; the frontend then asks for its progress. Nobody is asked
+    yet: the run stops at `ready`, with a draft for the owner to correct (`/draft`, then `/start`)."""
     try:
         domain = firstrun.normalize(body.domain)
     except firstrun.FirstRunError as error:
@@ -271,13 +333,123 @@ def start_first_run(body: FirstRunRequest, user: User = Depends(current_user)) -
         again = db.scalar(select(FirstRun).where(FirstRun.user_id == user.id, FirstRun.domain == domain, FirstRun.created_at > day, FirstRun.status != "failed").order_by(FirstRun.created_at.desc()))
         if again:
             return run_json(again)
-        if not settings.first_run_replay and (db.scalar(select(func.count()).select_from(FirstRun).where(FirstRun.user_id == user.id, FirstRun.created_at > day)) or 0) >= settings.first_runs_a_day:
+        if not settings.first_run_replay and _checks_today(db, user) >= settings.first_runs_a_day:
+            raise HTTPException(429, "first_run_limit")
+        # Reading is cheap, not free: an account may read a few websites more than it may check
+        if (db.scalar(select(func.count()).select_from(FirstRun).where(FirstRun.user_id == user.id, FirstRun.created_at > day)) or 0) >= settings.first_runs_a_day * 5:
             raise HTTPException(429, "first_run_limit")
         run = FirstRun(user_id=user.id, domain=domain)
         db.add(run)
         db.commit()
         started = run_json(run)
-    threading.Thread(target=work, args=(started["id"], domain, body.category, body.city, projects._country(body.country) or None), daemon=True).start()
+    threading.Thread(target=work_prepare, args=(started["id"], domain, body.category, body.city, projects._country(body.country) or None), daemon=True).start()
+    return started
+
+
+def _words(value: Any, limit: int = 300) -> str:
+    return " ".join(str(value or "").split())[:limit]
+
+
+def draft_json(run: FirstRun) -> Dict[str, Any]:
+    """The draft as the setup's steps show it."""
+    draft = run.draft or {}
+    who = draft.get("who") or {}
+    return {
+        "id": run.id,
+        "domain": draft.get("own") or run.domain,
+        "name": who.get("name") or "",
+        "aliases": who.get("aliases") or [],
+        "category": who.get("category") or "",
+        "country": draft.get("country") or "UZ",
+        "city": who.get("city") or "",
+        "description": who.get("description") or "",
+        "services": who.get("services") or [],
+        "competitors": [{"name": rival["name"], "aliases": [], "domain": rival.get("domain") or ""} for rival in who.get("competitors") or []],
+        "questions": who.get("questions") or [],
+        "brandQuestions": draft.get("brandQuestions") or [],
+        # How many customers' questions a first check asks
+        "maxQuestions": settings.first_run_questions,
+        "replayed": bool(draft.get("replayed")),
+    }
+
+
+@app.get("/first-runs/{run_id}/draft")
+def first_run_draft(run_id: str, user: User = Depends(current_user)) -> Dict[str, Any]:
+    run = own_run(run_id, user)
+    if not run.draft:
+        raise HTTPException(409, run.error or run.status)
+    return draft_json(run)
+
+
+class Confirmed(BaseModel):
+    name: str
+    aliases: List[str] = []
+    category: str = ""
+    country: Optional[str] = None
+    city: str = ""
+    description: str = ""
+    services: List[str] = []
+    competitors: List[Dict[str, Any]] = []
+    prompts: List[Dict[str, Any]] = []
+    brandQuestions: List[Dict[str, Any]] = []
+
+
+@app.post("/first-runs/{run_id}/start", status_code=202)
+def confirm_first_run(run_id: str, body: Confirmed, user: User = Depends(current_user)) -> Dict[str, Any]:
+    """The owner has corrected the draft: the check itself starts, on what they confirmed."""
+    run = own_run(run_id, user)
+    if run.status != "ready":
+        # Pressed twice, or the page reloaded: the check that is running or done
+        if run.status in CHECKED:
+            return run_json(run)
+        raise HTTPException(409, run.error or run.status)
+    draft = run.draft or {}
+    language = lambda value: value if value in firstrun.QUESTION_LANGUAGES else "ru"  # noqa: E731
+    name = _words(body.name, 120)
+    prompts: List[Dict[str, str]] = []
+    for given in body.prompts:
+        text = _words(given.get("text"))
+        if len(text) >= 5 and all(text.lower() != kept["text"].lower() for kept in prompts):
+            prompts.append({"text": text, "language": language(given.get("language")), "topic": _words(given.get("topic"), 60) or "other"})
+    if not name:
+        raise HTTPException(422, "name_required")
+    if not prompts:
+        raise HTTPException(422, "no_questions")
+    if len(prompts) > settings.first_run_questions:
+        raise HTTPException(422, "too_many_questions")
+    competitors: List[Dict[str, Any]] = []
+    for given in body.competitors:
+        rival = _words(given.get("name"), 120)
+        if rival and rival.lower() != name.lower() and all(rival.lower() != kept["name"].lower() for kept in competitors):
+            competitors.append({"name": rival, "aliases": [_words(alias, 120) for alias in given.get("aliases") or [] if _words(alias, 120)], "domain": firstrun.web.domain_of(str(given.get("domain") or "").strip()) if given.get("domain") else ""})
+    brand_questions: List[Dict[str, str]] = []
+    for given in body.brandQuestions:
+        text = _words(given.get("text"))
+        if len(text) >= 5 and all(text.lower() != kept["text"].lower() for kept in brand_questions):
+            brand_questions.append({"text": text, "language": language(given.get("language"))})
+    confirmed = {
+        "name": name,
+        "aliases": [_words(alias, 120) for alias in body.aliases if _words(alias, 120)],
+        "category": _words(body.category, 120),
+        "country": projects._country(body.country) or draft.get("country") or "UZ",
+        "city": _words(body.city, 120),
+        "description": _words(body.description, 600),
+        "services": [_words(service, 120) for service in body.services if _words(service, 120)],
+        "competitors": competitors[: firstrun.COMPETITOR_LIMIT],
+        "prompts": prompts,
+        "brandQuestions": brand_questions[: firstrun.BRAND_QUESTION_LIMIT],
+    }
+    with SessionLocal() as db:
+        if not settings.first_run_replay and _checks_today(db, user) >= settings.first_runs_a_day:
+            raise HTTPException(429, "first_run_limit")
+        found = db.get(FirstRun, run_id)
+        # Taken here, in one transaction, so two presses start one check
+        if found is None or found.status != "ready":
+            return run_json(found or run)
+        found.status, found.answered, found.total = "asking", 0, 0
+        db.commit()
+        started = run_json(found)
+    threading.Thread(target=work_check, args=(run_id, draft, confirmed, run.cost_usd or 0.0), daemon=True).start()
     return started
 
 
@@ -561,6 +733,48 @@ def run_progress(run_id: str, user: User = Depends(current_user)) -> Any:
         return {"id": run.id, "projectId": run.project_id, "status": run.status, "answered": run.answered, "total": run.total}
 
     return in_project(work)
+
+
+# --- the landing page's form ------------------------------------------------------------------------
+
+DEMO_SECTORS = ("clinic", "real_estate", "education", "retail", "other")
+
+
+class DemoBody(BaseModel):
+    name: str
+    phone: str
+    sector: str
+
+
+def tell_team(request: Dict[str, str]) -> None:
+    """Emails a new demo request to the team's own inbox (the account that sends the login codes)."""
+    if not settings.own_email:
+        return
+    message = EmailMessage()
+    message["Subject"] = f"GEO: demo — {request['name']}"
+    message.set_content(f"Ism / Имя / Name: {request['name']}\nTelefon / Телефон / Phone: {request['phone']}\nSoha / Сфера / Field: {request['sector']}\n")
+    try:
+        mail.send(settings.smtp_from or settings.smtp_user or "", message)
+    except (OSError, smtplib.SMTPException) as error:
+        print(f"demo request email failed: {error!r}")
+
+
+@app.post("/demo-requests", status_code=204)
+def demo_request(body: DemoBody) -> None:
+    """"Book a demo": kept, written to the log and emailed to the team. No login: the visitor has no account yet."""
+    name = body.name.strip()[:120]
+    phone = re.sub(r"[^\d+]", "", body.phone)
+    if not name or not re.fullmatch(r"\+998\d{9}", phone) or body.sector not in DEMO_SECTORS:
+        raise HTTPException(422, "bad_request")
+    with SessionLocal() as db:
+        # One a phone in ten minutes: a second click, or someone filling the form in a loop
+        recent = db.scalar(select(DemoRequest).where(DemoRequest.phone == phone, DemoRequest.created_at > now() - datetime.timedelta(minutes=10)))
+        if recent:
+            return
+        db.add(DemoRequest(name=name, phone=phone, sector=body.sector))
+        db.commit()
+    print(f"DEMO REQUEST: {name}, {phone}, {body.sector}")
+    threading.Thread(target=tell_team, args=({"name": name, "phone": phone, "sector": body.sector},), daemon=True).start()
 
 
 @app.get("/health")

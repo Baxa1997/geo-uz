@@ -20,6 +20,7 @@ import type {
   DiscoverPromptsRequest,
   DemoRequest,
   DismissBrandRequest,
+  FirstRunConfirm,
   FirstRunRequest,
   ImportKeywordsRequest,
   ReportFilters,
@@ -293,6 +294,14 @@ export async function getFirstRuns() {
 
 export async function getFirstRun(id: string) {
   return run((m) => m.getFirstRun(id));
+}
+
+export async function getFirstRunDraft(id: string) {
+  return run((m) => m.getFirstRunDraft(id));
+}
+
+export async function confirmFirstRun(id: string, body: FirstRunConfirm) {
+  return run((m) => m.confirmFirstRun(id, body));
 }
 
 export async function getFirstRunResult(id: string) {

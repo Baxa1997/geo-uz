@@ -36,7 +36,10 @@ something on the website.
   and in plain words. We never copy its name, logo, colors, wording, customer quotes or logos.
 - **Why ChatGPT only for now:** it brings about 95% of the visits that AI assistants send to websites in
   Uzbekistan (DataReportal Digital 2026). Google's AI answers and Yandex come next; Google has about 74% of
-  search there and Yandex about 22% (StatCounter, 2026).
+  search there and Yandex about 22% (StatCounter, 2026). **Corrected 16 Nov:** the 95% could not be found in
+  DataReportal's report, and StatCounter's October 2026 figures for Uzbekistan say otherwise: among AI chatbots
+  Gemini 58%, ChatGPT 35%; in search Google 76%, Yandex 22%. Since 15 Nov the product asks both assistants; the
+  landing page shows StatCounter's figures with their month.
 - **Plans (soʻm a month):** free check 0 · Start 199,000 · Biznes 490,000 · Agentlik 1,490,000 · Managed GEO
   from 3,000,000. Weekly checks. Details in `frontend/CLAUDE.md`.
 
@@ -99,8 +102,9 @@ Read this section first in a new session: it says what exists, how to run it, an
 **Waiting on the user (ask once, don't block on it):**
 
 - "Next" for the first-run page, and whether a saved run may be replayed in development to build it.
-- Whether the landing page should mark the weekly Telegram report "tez orada" and reword "no sign-up needed"
-  for the free check (both run ahead of the product; raised three times, not answered).
+- (Settled by the landing page's rebuild, 16 Nov, waiting for the user's look.) The weekly Telegram report is
+  marked "tez orada" and "no sign-up needed" is gone: the free check is "sign in with your email, no card".
+- Real contacts for the public pages (an email, a Telegram): the footer's placeholders were removed on 16 Nov.
 - A Gemini API key: the Gemini client (`backend/app/engines.py`) is written from Google's documentation and has
   never run, so its cost and answers are unmeasured.
 - New passwords, since all were pasted in chat on 15 Nov: the server's root password, the Supabase database
@@ -142,13 +146,16 @@ that is committed.
 
 - Frontend: `cd frontend`, `npm run dev`, http://localhost:3000. On this computer `node` is not on the shell's
   path: `export PATH="$HOME/.nvm/versions/node/v22.23.1/bin:$PATH"` first. Login needs the backend running
-  (below): any email, and the code from the backend's log; every account sees the sample project "Oq Tabassum".
+  (below): any email, and the code arrives by email (since 16 Nov this computer's `backend/.env` has the server's
+  `SMTP_*`; without them the code is printed in the backend's log); every account sees the sample project "Oq Tabassum".
   With `NEXT_PUBLIC_LIVE` empty the login is a mock again: demo@geo.uz with any six-digit code.
 - A pilot report: http://localhost:3000/ru/pilots/<slug> (the first client's two files are in `frontend/pilots/`).
   To make one: `cd backend/pilot`, `set -a; . ./.env; set +a`, `python3 pilot.py briefs/<brief>.json`.
 - Backend: `cd backend`, `. .venv/bin/activate`, `uvicorn app.main:app --reload --port 8000`; `GET /health` says
   which assistants have a key and whether first runs are replayed (`FIRST_RUN_REPLAY=true` in `backend/.env`:
-  no paid request; remove the line for a live run). A login code is printed to the server's log.
+  no paid request, and every step of the first check says in a banner that it shows a saved check, not the
+  website typed; remove the line for a live run, about $0.50). A login code is emailed (the `SMTP_*` lines in `backend/.env`), or
+  printed to the server's log when they are removed.
 - To check a pilot report as a PDF: Chrome headless, `--print-to-pdf` against the dev server.
 
 ## How we work
@@ -177,6 +184,42 @@ that is committed.
    that no key and no client's name is in it.
 
 ## Done (as of 16 November 2026)
+
+- **Built, waiting for the user's look: the first check confirms first and checks after (16 Nov), on the
+  branch `landing-redesign` with the landing page's rebuild; merged, pushed and deployed the same day, when the
+  user said "push, replay, and deploy".** The user typed their own site on
+  this computer and got a school: "I don't understand the flow we have, it is not working correctly", with
+  vizibleai.com's setup as "more structured". Two causes. This computer replayed a saved check for any
+  website (`FIRST_RUN_REPLAY=true`): asked, the user chose real checks here too, and after the
+  real try said "replay": the line is back in `backend/.env`, and the steps now say so in a banner. And our order checked first and asked after; asked, the user chose **confirm, then
+  check**. Now `/onboarding/first-run` is four numbered steps: 1 website and country, 2 the business as we
+  read it, 3 competitors (up to five suggested from the website's reading, each to untick, more to add),
+  4 the questions (ten at most) and the brand questions; only then the check, on exactly what was confirmed;
+  then the statistics, whose button saves the project and opens the dashboard, with no setup after
+  (`backend/README.md`, `frontend/CLAUDE.md`). Found on the way: a website that sends "example.com" to
+  "www.example.com" with a 308, as Vercel does, read as unreadable on Python before 3.11; fixed
+  (`pilot/web.py`). Tried on this computer in a browser in Uzbek, desktop and the last step at phone width,
+  with one real check of that site on ChatGPT alone ($0.47, about two minutes), saved as a project and
+  opened; the test project and account's session removed after. Not tried: Russian and English, Gemini with
+  ChatGPT, replay mode's banner, a failed check, on the server. Not built: the suggested competitors are the
+  writing model's own knowledge, not a search, so a wrong one is possible and the step says to check them;
+  editing the profile does not rewrite the questions. No new variable.
+
+- **Built, waiting for the user's look: the landing page rebuilt (16 Nov), on the branch `landing-redesign`;
+  merged and pushed the same day with the first check's new order ("push, replay, and deploy").** The user: "for landing page our is not accurate and not structured correctly", with vizibleai.com
+  as the picture. Its structure, in our look and words (`frontend/CLAUDE.md`, "Landing page"): the website field
+  in the hero; the assistants we ask with StatCounter's figures; how it works; then a section per thing the
+  product shows, each with a real piece of the app on the sample clinic (the numbers, competitors and the cited
+  sites, what AI says about the business against its website, the fixes and the site checks, the report's first
+  page); why us; who it is for; prices; questions; the demo form; the closing band. Every claim was made true:
+  ChatGPT and Gemini (not ChatGPT alone), one answer a question (not three), the free check after an email login
+  (not "no sign-up"), the report by email with Telegram "tez orada", ten questions written from the site (not
+  twenty suggested), no team members or agency logo claimed, the plan table as the product works (the free
+  check is a whole project for one check), no placeholder contacts, no chart the app doesn't have. The demo form
+  now reaches the backend (`POST /demo-requests`: kept, logged, emailed to the team's own inbox); it went nowhere
+  before. Looked at in a browser in Uzbek on desktop and phone width, the Russian and English tops and the
+  product menu; every text scanned in the three languages. Not looked at one by one: the Russian and English
+  sections below the top. No new variable.
 
 - **Built, waiting for the user's look: questions by country (16 Nov), on the branch `questions-by-country`;
   merged, pushed and the backend deployed the same day, when the user said "yes, commit, push and deploy".** The user chose it as the next step. The questions (customers' and brand

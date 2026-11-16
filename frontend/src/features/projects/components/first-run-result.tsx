@@ -2,6 +2,7 @@
 
 import { ArrowRightIcon as ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight";
 import { InfoIcon as Info } from "@phosphor-icons/react/dist/ssr/Info";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocale, useMessages, useTranslations } from "next-intl";
 import { useEffect, useRef } from "react";
 import { BrandViewCard } from "@/shared/components/brand-view";
@@ -9,25 +10,39 @@ import { Hint } from "@/shared/components/hint";
 import { MethodLabel } from "@/shared/components/scores/method-label";
 import { NamedBrandChips } from "@/shared/components/scores/named-brand-chips";
 import { SiteAudit } from "@/shared/components/site-audit";
-import { Button, buttonVariants } from "@/shared/components/ui/button";
-import { Link } from "@/i18n/navigation";
+import { Button } from "@/shared/components/ui/button";
+import { useRouter } from "@/i18n/navigation";
+import { api, ApiError } from "@/shared/api/client";
+import { queryKeys } from "@/shared/api/query-keys";
 import { labelFor, placeLabel } from "@/shared/helpers/labels";
 import { answersNaming, namedBrands } from "@/shared/helpers/scores";
 import { cn } from "@/shared/helpers/utils";
 import type { FirstRunResult } from "@/shared/types/api";
 import { FIRST_RUN_MISSED } from "../constants";
 import { brandCounts, placeOf } from "../helpers/first-run";
+import { projectFromFirstRun } from "../helpers/onboarding";
 
 /**
  * The first statistics, numbers first: one sentence on where the business stands, three figures, every
  * business side by side, each assistant apart when two were asked, the conclusion, what the assistants say of the business by name, the questions without the client,
- * what on the website stands in the way, then the way on to the setup.
+ * what on the website stands in the way, then the way on: the check saved as a project, and its dashboard.
  */
 export function FirstRunResultView({ result, runId, onAgain }: { result: FirstRunResult; runId: string; onAgain: () => void }) {
   const t = useTranslations("FirstRun");
   const messages = useMessages();
   const locale = useLocale();
   const headingRef = useRef<HTMLHeadingElement>(null);
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  // Everything was confirmed before the check, so nothing is asked again: the check becomes the project
+  const save = useMutation({
+    mutationFn: () => api.createProject(projectFromFirstRun(result, runId)),
+    onSuccess: async ({ project }) => {
+      await queryClient.invalidateQueries({ queryKey: queryKeys.projects() });
+      router.replace(`/projects/${project.id}`);
+    },
+  });
+  const saving = save.isPending || save.isSuccess;
   // The progress screen was just replaced: move focus to the result for screen readers
   useEffect(() => headingRef.current?.focus(), []);
 
@@ -199,18 +214,20 @@ export function FirstRunResultView({ result, runId, onAgain }: { result: FirstRu
           <p className="text-sm text-pretty text-brand-foreground/80">{t("nextText")}</p>
         </div>
         <div className="flex flex-col gap-2 sm:flex-row">
-          <Link
-            href={{ pathname: "/onboarding", query: { firstRun: runId } }}
-            className={cn(buttonVariants({ variant: "outline", size: "lg" }), "h-11 border-transparent bg-background px-5 text-brand hover:bg-background/90 hover:text-brand")}
-          >
-            {t("next")}
+          <Button variant="outline" size="lg" disabled={saving} onClick={() => save.mutate()} className="h-11 border-transparent bg-background px-5 text-brand hover:bg-background/90 hover:text-brand">
+            {saving ? t("saving") : t("next")}
             <ArrowRight aria-hidden data-icon="inline-end" />
-          </Link>
-          <Button variant="ghost" size="lg" className="h-11 text-brand-foreground hover:bg-white/10 hover:text-brand-foreground" onClick={onAgain}>
+          </Button>
+          <Button variant="ghost" size="lg" disabled={saving} className="h-11 text-brand-foreground hover:bg-white/10 hover:text-brand-foreground" onClick={onAgain}>
             {t("again")}
           </Button>
         </div>
       </div>
+      {save.isError && (
+        <p role="alert" className="text-sm text-destructive">
+          {t(save.error instanceof ApiError && save.error.status === 409 ? "domainTaken" : "saveFailed")}
+        </p>
+      )}
     </section>
   );
 }

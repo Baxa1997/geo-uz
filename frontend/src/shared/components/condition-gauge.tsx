@@ -1,6 +1,5 @@
-import { conditionStatus, FAIR_FROM, GOOD_FROM } from "@/shared/helpers/condition";
+import { conditionStatus, FAIR_FROM, GOOD_FROM, STATUS_COLOR, STATUS_FILL } from "@/shared/helpers/condition";
 import { cn } from "@/shared/helpers/utils";
-import { STATUS_COLOR, STATUS_FILL } from "../constants";
 
 const WIDTH = 200;
 const HEIGHT = 108;

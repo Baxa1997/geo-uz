@@ -1,4 +1,3 @@
-import type { ConditionStatus } from "@/shared/helpers/condition";
 import type { ActionKind, ConditionArea } from "@/shared/types/api";
 
 /**
@@ -37,6 +36,5 @@ export const ACTION_AREAS: Record<ActionKind, ConditionArea> = { technical: "vis
 /** A section's number, for its title and the contents. */
 export const sectionNumber = (key: ReportSectionKey) => REPORT_SECTIONS.indexOf(key) + 1;
 
-/** A status as a fill (dots, bars) and as a CSS color (a gauge's arc): green, amber, red, always beside its word. */
-export const STATUS_FILL: Record<ConditionStatus, string> = { good: "bg-positive", fair: "bg-progress", weak: "bg-negative" };
-export const STATUS_COLOR: Record<ConditionStatus, string> = { good: "var(--positive)", fair: "var(--progress)", weak: "var(--negative)" };
+// The status colours moved to the shared helpers with the gauge (16 Nov 2026: the landing page draws it too)
+export { STATUS_COLOR, STATUS_FILL } from "@/shared/helpers/condition";
