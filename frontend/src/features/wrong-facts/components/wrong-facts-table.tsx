@@ -28,6 +28,7 @@ export function WrongFactsTable({
 }) {
   const t = useTranslations("WrongFactsPage");
   const locale = useLocale();
+  const language = locale as "uz" | "ru" | "en";
   const timeZone = useTimeZone() ?? TIME_ZONE;
   const promptText = (id: string) => prompts.find((result) => result.prompt.id === id)?.prompt.text;
 
@@ -66,7 +67,11 @@ export function WrongFactsTable({
             </thead>
             <tbody className="divide-y">
               {facts.map((fact) => {
-                const question = promptText(fact.promptId);
+                // One from a brand answer carries its own question and its texts in the three languages
+                const tracked = promptText(fact.promptId);
+                const question = tracked ?? (fact.question ? [fact.engine, fact.question].filter(Boolean).join(": ") : undefined);
+                const claim = fact.texts?.claim[language] ?? fact.claim;
+                const correct = fact.texts?.correct[language] ?? fact.correct;
                 return (
                   <tr key={`${fact.promptId}-${fact.claim}`} className="align-top transition-colors hover:bg-muted/30">
                     <td className="py-3 pl-4">
@@ -74,7 +79,7 @@ export function WrongFactsTable({
                         <CircleX aria-hidden className="mt-0.5 size-4 shrink-0 text-negative" />
                         <span>
                           <span className="sr-only">{t("table.says")}: </span>
-                          {fact.claim}
+                          {claim}
                         </span>
                       </p>
                       {/* Narrow panel: the truth and the question move under the claim */}
@@ -82,30 +87,38 @@ export function WrongFactsTable({
                         <CircleCheck aria-hidden className="mt-0.5 size-4 shrink-0 text-positive" />
                         <span>
                           <span className="sr-only">{t("table.correct")}: </span>
-                          {fact.correct}
+                          {correct}
                         </span>
                       </p>
-                      {question && (
-                        <Link
-                          href={answersHref(fact.promptId)}
-                          className="mt-2 block text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline @4xl:hidden"
-                        >
-                          {t("table.question")}: {question}
-                        </Link>
-                      )}
+                      {question &&
+                        (tracked ? (
+                          <Link
+                            href={answersHref(fact.promptId)}
+                            className="mt-2 block text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline @4xl:hidden"
+                          >
+                            {t("table.question")}: {question}
+                          </Link>
+                        ) : (
+                          <p className="mt-2 text-xs text-pretty text-muted-foreground @4xl:hidden">
+                            {t("table.question")}: {question}
+                          </p>
+                        ))}
                     </td>
                     <td className="hidden px-3 py-3 @2xl:table-cell">
                       <p className="flex items-start gap-2 text-pretty">
                         <CircleCheck aria-hidden className="mt-0.5 size-4 shrink-0 text-positive" />
-                        {fact.correct}
+                        {correct}
                       </p>
                     </td>
                     <td className="hidden px-3 py-3 @4xl:table-cell">
-                      {question && (
-                        <Link href={answersHref(fact.promptId)} className="text-pretty underline-offset-4 hover:underline">
-                          {question}
-                        </Link>
-                      )}
+                      {question &&
+                        (tracked ? (
+                          <Link href={answersHref(fact.promptId)} className="text-pretty underline-offset-4 hover:underline">
+                            {question}
+                          </Link>
+                        ) : (
+                          <p className="text-pretty text-muted-foreground">{question}</p>
+                        ))}
                     </td>
                     <td className="hidden py-3 pr-4 pl-3 text-muted-foreground @lg:table-cell">
                       {formatShortDate(fact.foundAt, locale, timeZone)}

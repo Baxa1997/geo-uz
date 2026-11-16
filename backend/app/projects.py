@@ -449,10 +449,18 @@ def _wrong_facts(db: Db, project: Project, checks: List[_Check], prompt_ids: set
         return []
     when = {run.id: run.collected_at for run in db.scalars(select(Run).where(Run.project_id == project.id))}
     latest = checks[-1].run
+    # One from a brand answer has no question of the project's: its own question and assistant come with it,
+    # and its claim in the three languages
     return [
-        {"claim": fact.claim, "correct": fact.correct, "promptId": fact.prompt_id, "foundAt": iso(when.get(fact.first_run_id, latest.collected_at))}
+        {
+            "claim": fact.claim,
+            "correct": fact.correct,
+            "promptId": fact.prompt_id,
+            "foundAt": iso(when.get(fact.first_run_id, latest.collected_at)),
+            **({"texts": {"claim": fact.details["claim"], "correct": fact.details["correct"]}, "question": fact.details.get("question"), "engine": fact.details.get("engine")} if fact.details else {}),
+        }
         for fact in db.scalars(select(WrongFact).where(WrongFact.project_id == project.id))
-        if fact.last_run_id == latest.id and fact.prompt_id in prompt_ids
+        if fact.last_run_id == latest.id and (fact.prompt_id in prompt_ids or not fact.prompt_id)
     ]
 
 

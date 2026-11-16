@@ -189,7 +189,12 @@ export interface Source {
 export interface WrongFact {
   claim: string;
   correct: string;
+  /** "" when it comes from a brand question: `question` and `engine` then say where it was said. */
   promptId: string;
+  /** From a brand answer: the claim and what the website says, in the interface's three languages. */
+  texts?: { claim: ThreeLanguages; correct: ThreeLanguages };
+  question?: string | null;
+  engine?: string | null;
   /** ISO 8601 timestamp of the run that first found it. */
   foundAt: string;
 }

@@ -184,7 +184,8 @@ class Action(Base):
 
 
 class WrongFact(Base):
-    """Something an assistant states about the client that contradicts one of the client's own facts."""
+    """Something an assistant states about the client that contradicts one of the client's own facts, or,
+    from a brand question, its own website (`prompt_id` is then empty and `details` holds the rest)."""
 
     __tablename__ = "wrong_facts"
     id: Mapped[str] = mapped_column(String(32), primary_key=True, default=new_id)
@@ -194,6 +195,8 @@ class WrongFact(Base):
     prompt_id: Mapped[str] = mapped_column(String(32))
     first_run_id: Mapped[str] = mapped_column(String(32))
     last_run_id: Mapped[str] = mapped_column(String(32))
+    # From a brand answer: {"claim": {uz, ru, en}, "correct": {uz, ru, en}, "question", "engine"}
+    details: Mapped[Optional[Any]] = mapped_column(JSON, nullable=True)
 
 
 class Answer(Base):

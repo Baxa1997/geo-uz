@@ -93,7 +93,7 @@ def suggested(db: Db, project: Project, report: Dict[str, Any]) -> List[Dict[str
     for fact in db.scalars(select(WrongFact).where(WrongFact.project_id == project.id)):
         if any(wrong["claim"] == fact.claim for wrong in report["wrongFacts"]):
             # A wrong price or opening hour costs customers directly
-            found.append({"key": f"fact:{fact.id}", "kind": "fact", "details": {"claim": fact.claim, "correct": fact.correct}, "impact": "high", "promptIds": [fact.prompt_id]})
+            found.append({"key": f"fact:{fact.id}", "kind": "fact", "details": {"claim": fact.claim, "correct": fact.correct}, "impact": "high", "promptIds": [fact.prompt_id] if fact.prompt_id else []})
 
     def lists_businesses(source: Dict[str, Any]) -> bool:
         """News, directories and social pages take listings. Any other site only when a page of it, once read,
@@ -135,8 +135,42 @@ def suggested(db: Db, project: Project, report: Dict[str, Any]) -> List[Dict[str
     return found
 
 
+def brand_facts(db: Db, project: Project) -> None:
+    """The statements of the latest check's brand answers that the website contradicts, kept as wrong facts.
+    No model: the brand answers were read when the check was made. The caller commits."""
+    run = db.scalar(select(Run).where(Run.project_id == project.id, Run.status == "done").order_by(Run.collected_at.desc()))
+    if run is None or not run.brand_view:
+        return
+    language = (project.report_settings or {}).get("language", "uz")
+    language = language if language in ("uz", "ru", "en") else "uz"
+    saved = {fact.claim.casefold(): fact for fact in db.scalars(select(WrongFact).where(WrongFact.project_id == project.id))}
+    for view in run.brand_view:
+        for statement in view.get("statements") or []:
+            if statement.get("check") != "contradicted" or not statement.get("correct"):
+                continue
+            claim = statement["text"][language]
+            fact = saved.get(claim.casefold())
+            if fact:
+                fact.last_run_id = run.id
+            else:
+                saved[claim.casefold()] = fact = WrongFact(
+                    project_id=project.id,
+                    claim=claim,
+                    correct=statement["correct"][language],
+                    prompt_id="",
+                    first_run_id=run.id,
+                    last_run_id=run.id,
+                    details={"claim": statement["text"], "correct": statement["correct"], "question": view.get("question"), "engine": view.get("name")},
+                )
+                db.add(fact)
+    # The answers about the business were compared with its website: "none found" is now a finding
+    run.facts_checked = True
+    db.flush()
+
+
 def sync(db: Db, project: Project) -> None:
     """Brings the project's actions in line with its latest check. The caller commits."""
+    brand_facts(db, project)
     report = projects.report(db, project)
     if not report["history"]:
         return

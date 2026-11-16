@@ -132,7 +132,12 @@ weekly check asks every brand question to every assistant, reads the website aga
 (`runs.brand_view`, `Report.brandView`). Tried offline with stand-in answers, and the profile step once for
 real. Since 16 Nov the Overview shows `Report.brandView` and Sozlamalar › Brend savollari edits the list:
 `PATCH /projects/{id}` takes `brandQuestions` and replaces them as a whole (the same cleaning and limit); they
-are asked from the next check on. Not built: feeding Notoʻgʻri faktlar from the brand answers.
+are asked from the next check on. Also since 16 Nov the brand answers feed Notoʻgʻri faktlar
+(`fixes.brand_facts`, at the start of `fixes.sync`, so after a project is made and after every check): each
+statement of the latest check that the website contradicts is kept as a wrong fact without a question of the
+project's (`prompt_id` empty), in the report's language with its three languages, its brand question and its
+assistant in `details`; the run is then marked as checked for facts, and each such fact gets its action in
+Harakatlar. No model is asked for it. A fact not stated again at the next check leaves the list.
 
 **Projects** (`app/projects.py`, 15 Nov 2026; read only). Tables: `projects`, `brands` (the client's own and
 the competitors, in a fixed order), `prompts`, `runs`, `answers`, `mentions` (every business an answer names;

@@ -58,7 +58,7 @@ export default async function WrongFactsPage({ params, searchParams }: Props) {
             key: "questions",
             label: tFacts("kpi.questions"),
             hint: tFacts("kpi.questionsHint"),
-            value: String(new Set(facts.map((fact) => fact.promptId)).size),
+            value: String(new Set(facts.map((fact) => fact.promptId || fact.question)).size),
           },
           {
             key: "since",

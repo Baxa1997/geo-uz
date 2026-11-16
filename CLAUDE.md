@@ -178,6 +178,15 @@ that is committed.
 
 ## Done (as of 16 November 2026)
 
+- **Built, waiting for the user's look: Notoʻgʻri faktlar fed from the brand answers (16 Nov), on the branch
+  `wrong-facts-from-brand-answers`; merged, pushed and deployed the same day, when the user said "yes".** The user: "do what is next"; this was the piece named as
+  missing after the brand questions. A statement of a brand answer that the website contradicts becomes a
+  wrong fact from the first check on, with no facts typed in: the page lists it with what the website says,
+  the assistant and the brand question, in the interface's language; the Overview's alert counts it; Harakatlar
+  gets its fix. The page's and the alert's texts say "AI" where they said "ChatGPT". Looked at in a browser
+  in Uzbek (desktop and phone width) and Russian with a made-up sample project, removed after. Not tried: with
+  real assistants; English. No new variable.
+
 - **Built, waiting for the user's look: a project's brand answers on the Overview, and Sozlamalar › Brend
   savollari (16 Nov), on the branch `brand-answers-and-settings`; merged, pushed and deployed the same day, when the
   user said "yes" to "commit, push and deploy?".** The user: "yes, build the

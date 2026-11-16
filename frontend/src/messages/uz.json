@@ -1221,7 +1221,7 @@
     "missingDescription": "{total} ta savoldan {count} tasida ChatGPT raqobatchilarni aytdi, sizni emas.",
     "missingNone": "ChatGPT raqobatchilarni aytgan har bir savolda sizni ham tilga oldi.",
     "missingMore": "Yana {count} ta savol — Javoblar sahifasida.",
-    "wrongFacts": "ChatGPT siz haqingizda {count} ta notoʻgʻri fakt aytmoqda",
+    "wrongFacts": "AI siz haqingizda {count} ta notoʻgʻri fakt aytmoqda",
     "wrongFactsAction": "Koʻrib chiqish",
     "export": "CSV yuklab olish",
     "nextRun": "Keyingi haftalik tekshiruv: {date}",
@@ -2960,7 +2960,7 @@
   "WrongFactsPage": {
     "kpi": {
       "count": "Notoʻgʻri faktlar",
-      "countHint": "ChatGPT javoblaridagi siz haqingizda haqiqatga toʻgʻri kelmaydigan daʼvolar.",
+      "countHint": "AI javoblaridagi siz haqingizda haqiqatga toʻgʻri kelmaydigan daʼvolar.",
       "questions": "Taʼsirlangan savollar",
       "questionsHint": "Notoʻgʻri fakt chiqqan savollar soni.",
       "since": "Birinchi topilgan",
@@ -2968,8 +2968,8 @@
     },
     "table": {
       "title": "Siz haqingizdagi notoʻgʻri maʼlumotlar",
-      "hint": "ChatGPT nima deyapti, aslida qanday, qaysi savolda chiqdi va qachon topildi.",
-      "says": "ChatGPT aytadi",
+      "hint": "AI nima deyapti, aslida qanday, qaysi savolda chiqdi va qachon topildi.",
+      "says": "AI aytadi",
       "correct": "Aslida",
       "question": "Savol",
       "found": "Topilgan"
