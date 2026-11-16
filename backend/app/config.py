@@ -69,6 +69,9 @@ class Settings:
     first_run_chatgpt_questions: int = field(default_factory=lambda: int(os.environ.get("FIRST_RUN_CHATGPT_QUESTIONS", "5")))
     # A first run costs real money: how many one account may start in a day
     first_runs_a_day: int = field(default_factory=lambda: int(os.environ.get("FIRST_RUNS_A_DAY", "3")))
+    # Our own accounts (emails, comma-separated): not bound by "one free check an account", so the team can
+    # try the product. Nobody's when left out.
+    team_emails: List[str] = field(default_factory=lambda: [email.strip().lower() for email in os.environ.get("TEAM_EMAILS", "").split(",") if email.strip()])
     # Development: a first run replays the latest saved one in the place of asking the assistants, so the
     # pages can be built and tried without a paid request. Never set on the server.
     first_run_replay: bool = field(default_factory=lambda: os.environ.get("FIRST_RUN_REPLAY", "false") == "true")

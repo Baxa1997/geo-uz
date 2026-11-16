@@ -1653,7 +1653,8 @@
     "factCheckValues": {
       "on": "Ha",
       "off": "Yoʻq"
-    }
+    },
+    "trialNote": "Bu savollar bepul birinchi tekshiruvda berilgan. Qoʻshgan savollaringiz tarif yoqilgach, keyingi tekshiruvda beriladi."
   },
   "PromptForm": {
     "addTitle": "Savol qoʻshish",
@@ -2647,7 +2648,7 @@
         "done": "Tuzatishlarni jamoamiz bajaradi"
       },
       "notIncluded": "kirmaydi",
-      "requested": "{plan} tarifiga soʻrovingiz bizga yetib keldi. Bir ish kuni ichida Telegram yoki telefon orqali bogʻlanamiz.",
+      "requested": "{plan} tarifiga soʻrovingiz bizga yetib keldi. Bir ish kuni ichida hisobingizdagi email orqali bogʻlanamiz.",
       "cancelRequested": "Bekor qilish soʻrovingiz bizga yetib keldi. Telegram’da tasdiqlaymiz; hisobotlar toʻlangan davr oxirigacha kelaveradi.",
       "askTitle": "{plan} tarifiga oʻtilsinmi?",
       "askText": "Toʻlov: {cycle}. Onlayn toʻlov hali tayyor emas: soʻrovingiz bizga keladi, tarifni oʻzgartirib, toʻlov maʼlumotlarini yuboramiz.",
@@ -2891,7 +2892,11 @@
     "competitorsNone": "Raqobatchilarni bilmasangiz, bu qadamni oʻtkazib yuboring. Javoblarda tilga olingan bizneslarni keyin koʻrsatamiz va ularni bir bosishda qoʻshasiz.",
     "domainTaken": "Bu sayt uchun loyiha allaqachon ochilgan. Bir sayt faqat bitta loyihada kuzatiladi.",
     "firstCheckMax": "Birinchi tekshiruvda {max} tagacha",
-    "questionsFirstMax": "Birinchi tekshiruvda koʻpi bilan {max} ta savol beriladi. Ortiqchasidan belgini olib tashlang."
+    "questionsFirstMax": "Birinchi tekshiruvda koʻpi bilan {max} ta savol beriladi. Ortiqchasidan belgini olib tashlang.",
+    "competitorsRows": "Raqobatchilar",
+    "competitorsRowsFull": "Koʻpi bilan {max} ta. Boshqasini qoʻshish uchun bittasini olib tashlang.",
+    "competitorsRowsNote": "Sayt manzili qaysi kompaniya ekanini aniqlaydi: tekshirib, notoʻgʻrisini tuzating.",
+    "removeNamed": "{name}ni olib tashlash"
   },
   "RunProgress": {
     "metaTitle": "Tekshiruv",
@@ -4008,7 +4013,7 @@
       "anotherSite": "Boshqa sayt",
       "reading": {
         "title": "Saytingizni oʻqiyapmiz",
-        "text": "{site} sahifalarini oʻqib, quyidagilarni tayyorlayapmiz. Bir daqiqagacha vaqt oladi; hali hech bir yordamchidan soʻralmadi.",
+        "text": "{site} sahifalarini oʻqib, quyidagilarni tayyorlayapmiz. Bir-ikki daqiqa vaqt oladi: raqobatchilarni veb-qidiruv bilan topamiz. Savollaringiz hali hech bir yordamchiga berilmadi.",
         "profile": "Biznesingiz: nomi, sohasi, xizmatlari",
         "competitors": "Raqobatchilaringiz",
         "questions": "Mijozlar AI’dan soʻraydigan savollar"
@@ -4020,7 +4025,7 @@
       },
       "competitors": {
         "title": "Raqobatchilaringiz",
-        "text": "Biz topganlar. Notoʻgʻrisidan belgini olib tashlang, yetishmayotganini qoʻshing ({max} tagacha). Ular natijada yoningizda turadi; boʻsh joy qolsa, javoblar eng koʻp tilga olgan bizneslar qoʻshiladi."
+        "text": "Veb-qidiruv bilan topganlarimiz, har biri oʻz sayti bilan. Notoʻgʻrisini ✕ bilan olib tashlang yoki tuzating, yetishmayotganini qoʻshing ({max} tagacha). Ular natijada yoningizda turadi; boʻsh joy qolsa, javoblar eng koʻp tilga olgan bizneslar qoʻshiladi."
       },
       "questions": {
         "title": "Kuzatiladigan savollar",
@@ -4030,7 +4035,8 @@
       "starting": "Boshlanmoqda…",
       "confirmFailed": "Tekshiruvni boshlab boʻlmadi. Qayta urinib koʻring.",
       "limit": "Bugungi tekshiruvlar tugadi. Ertaga urinib koʻring.",
-      "replayed": "Ishlab chiqish rejimi: bu siz yozgan sayt emas, saqlangan tekshiruv ({site}) maʼlumotlari. Hech bir yordamchidan soʻralmaydi."
+      "replayed": "Ishlab chiqish rejimi: bu siz yozgan sayt emas, saqlangan tekshiruv ({site}) maʼlumotlari. Hech bir yordamchidan soʻralmaydi.",
+      "freeUsed": "Bepul tekshiruvingiz ishlatilgan. Yana bir sayt uchun tarif kerak: loyihangizdagi Sozlamalar › Tarif sahifasidan soʻrov yuboring."
     },
     "saving": "Saqlanmoqda…",
     "saveFailed": "Loyihani saqlab boʻlmadi. Qayta urinib koʻring."

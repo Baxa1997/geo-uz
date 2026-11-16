@@ -29,7 +29,7 @@ from sqlalchemy import func, select
 
 from . import delivery, firstrun, fixes, mail, projects
 from .config import settings
-from .db import DemoRequest, FirstRun, LoginCode, Project, Run, Session, SessionLocal, User, create_tables, now
+from .db import Brand, DemoRequest, FirstRun, LoginCode, Project, Run, Session, SessionLocal, User, create_tables, now
 
 SESSION_COOKIE = "geo_session"
 CODE_MINUTES = 10
@@ -316,6 +316,18 @@ def _checks_today(db: Any, user: User) -> int:
     return db.scalar(select(func.count()).select_from(FirstRun).where(FirstRun.user_id == user.id, FirstRun.created_at > day, FirstRun.status.in_(CHECKED))) or 0
 
 
+def _free_check_used(db: Any, user: User, but: str = "") -> bool:
+    """One free check an account (the user's rule, 15 Nov 2026: "the first check free, every next one only on
+    a paid account"): true when the account has a project, or a check other than `but` that asked the
+    assistants. An account that pays for Enterprise (several projects) and our own accounts may go on."""
+    if settings.first_run_replay or (user.email or "").lower() in settings.team_emails:
+        return False
+    owned = list(db.scalars(select(Project).where(Project.user_id == user.id)))
+    if any(project.paid and project.plan == "agency" for project in owned):
+        return False
+    return bool(owned) or bool(db.scalar(select(func.count()).select_from(FirstRun).where(FirstRun.user_id == user.id, FirstRun.id != but, FirstRun.status.in_(CHECKED))))
+
+
 @app.post("/first-runs", status_code=202)
 def start_first_run(body: FirstRunRequest, user: User = Depends(current_user)) -> Dict[str, Any]:
     """Starts reading a website and returns at once; the frontend then asks for its progress. Nobody is asked
@@ -333,6 +345,8 @@ def start_first_run(body: FirstRunRequest, user: User = Depends(current_user)) -
         again = db.scalar(select(FirstRun).where(FirstRun.user_id == user.id, FirstRun.domain == domain, FirstRun.created_at > day, FirstRun.status != "failed").order_by(FirstRun.created_at.desc()))
         if again:
             return run_json(again)
+        if _free_check_used(db, user):
+            raise HTTPException(402, "free_check_used")
         if not settings.first_run_replay and _checks_today(db, user) >= settings.first_runs_a_day:
             raise HTTPException(429, "first_run_limit")
         # Reading is cheap, not free: an account may read a few websites more than it may check
@@ -364,7 +378,7 @@ def draft_json(run: FirstRun) -> Dict[str, Any]:
         "city": who.get("city") or "",
         "description": who.get("description") or "",
         "services": who.get("services") or [],
-        "competitors": [{"name": rival["name"], "aliases": [], "domain": rival.get("domain") or ""} for rival in who.get("competitors") or []],
+        "competitors": [{"name": rival["name"], "aliases": [], "domain": rival.get("domain") or "", "logo": rival.get("logo")} for rival in who.get("competitors") or []],
         "questions": who.get("questions") or [],
         "brandQuestions": draft.get("brandQuestions") or [],
         # How many customers' questions a first check asks
@@ -442,6 +456,8 @@ def confirm_first_run(run_id: str, body: Confirmed, user: User = Depends(current
     with SessionLocal() as db:
         if not settings.first_run_replay and _checks_today(db, user) >= settings.first_runs_a_day:
             raise HTTPException(429, "first_run_limit")
+        if _free_check_used(db, user, run_id):
+            raise HTTPException(402, "free_check_used")
         found = db.get(FirstRun, run_id)
         # Taken here, in one transaction, so two presses start one check
         if found is None or found.status != "ready":
@@ -710,8 +726,24 @@ def set_report_settings(project_id: str, body: Json = Body(...), user: User = De
 
 @app.post("/projects/{project_id}/plan-requests", status_code=204)
 def request_plan(project_id: str, body: Json = Body(...), user: User = Depends(current_user)) -> None:
-    """Billing doesn't exist: the request is written to the log, and we change the plan by hand."""
-    in_project(lambda db: print(f"PLAN REQUEST: project {projects.own(db, user, project_id).id}, account {user.id}: {body.get('plan')} ({body.get('cycle') or 'same cycle'})"))
+    """Billing doesn't exist: the request is written to the log and emailed to us, and we change the plan by hand
+    (`python -m app.admin plan <project id> <plan>`)."""
+
+    def work(db: Any) -> None:
+        project = projects.own(db, user, project_id)
+        brand = db.scalar(select(Brand).where(Brand.project_id == project.id, Brand.own.is_(True)))
+        plan, cycle = str(body.get("plan") or "")[:20], str(body.get("cycle") or "same cycle")[:20]
+        print(f"PLAN REQUEST: project {project.id}, account {user.id}: {plan} ({cycle})")
+        if settings.own_email:
+            message = EmailMessage()
+            message["Subject"] = f"GEO: plan request — {plan}"
+            message.set_content(f"Account: {user.email}\nProject: {brand.name if brand else '?'} ({brand.domain if brand else '?'})\nProject id: {project.id}\nNow: {project.plan}, {'paid' if project.paid else 'trial'}\nAsked for: {plan} ({cycle})\n\nTo switch it on: python -m app.admin plan {project.id} <start|business|agency>\n")
+            try:
+                mail.send(settings.smtp_from or settings.smtp_user or "", message)
+            except (OSError, smtplib.SMTPException) as error:
+                print(f"plan request email failed: {error!r}")
+
+    in_project(work)
 
 
 @app.get("/members")

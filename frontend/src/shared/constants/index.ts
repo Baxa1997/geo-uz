@@ -31,7 +31,7 @@ export const ACTION_STEP_COUNT = 3;
  */
 export const ENGINES = [
   { key: "chatgpt", live: true },
-  { key: "gemini", live: false },
+  { key: "gemini", live: true },
   { key: "yandex", live: false },
 ] as const;
 

@@ -64,7 +64,7 @@ def half_up(value: float) -> int:
 
 
 def brand_json(brand: Brand) -> Dict[str, Any]:
-    return {"id": brand.id, "name": brand.name, "aliases": brand.aliases or [], "domain": brand.domain, "logo": None}
+    return {"id": brand.id, "name": brand.name, "aliases": brand.aliases or [], "domain": brand.domain, "logo": brand.logo}
 
 
 def brands_of(db: Db, project_id: str) -> List[Brand]:
@@ -179,6 +179,11 @@ def _brand_questions(given: Any, name: str, city: str, result: Optional[Dict[str
     return kept[: firstrun.BRAND_QUESTION_LIMIT]
 
 
+def _logo(value: Any) -> Optional[str]:
+    """A logo's address as given, when it is a web address of a sane length."""
+    return value if isinstance(value, str) and value.startswith("https://") and len(value) <= 500 else None
+
+
 def create(db: Db, user: User, body: Dict[str, Any]) -> Tuple[Project, Optional[str]]:
     """A new project. With `firstRunId`, the first run's answers come with it as the project's first check."""
     name = _clean(body.get("name"))
@@ -228,7 +233,7 @@ def create(db: Db, user: User, body: Dict[str, Any]) -> Tuple[Project, Optional[
         if len(competitors) >= limits["competitors"]:
             raise ProjectError(409, "competitor_limit")
         competitors.append(
-            Brand(project_id=project.id, name=rival, aliases=[_clean(alias) for alias in given.get("aliases") or [] if _clean(alias)], domain=web.domain_of(given.get("domain") or "") if given.get("domain") else "", position=len(competitors) + 1)
+            Brand(project_id=project.id, name=rival, aliases=[_clean(alias) for alias in given.get("aliases") or [] if _clean(alias)], domain=web.domain_of(given.get("domain") or "") if given.get("domain") else "", logo=_logo(given.get("logo")), position=len(competitors) + 1)
         )
     db.add_all(competitors)
 

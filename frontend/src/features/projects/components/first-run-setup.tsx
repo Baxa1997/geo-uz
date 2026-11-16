@@ -23,9 +23,9 @@ import type { FirstRun, FirstRunConfirm, FirstRunDraft } from "@/shared/types/ap
 import { ALL_TOPICS, FIRST_CHECK_STEPS, MAX_COMPETITORS } from "../constants";
 import { isFilled } from "../helpers/brand-draft";
 import { brandQuestionDrafts, onboardingRequest, questionDrafts, topicDrafts, validateChoice, validateFirstQuestions, validateSite, validateWebsite } from "../helpers/onboarding";
-import type { BrandQuestionDraft, CompetitorChoice, OnboardingErrors, QuestionDraft, SiteDraft, TopicDraft } from "../types";
+import type { BrandDraft, BrandQuestionDraft, CompetitorChoice, OnboardingErrors, QuestionDraft, SiteDraft, TopicDraft } from "../types";
 import { BrandQuestionPicker } from "./brand-question-picker";
-import { CompetitorPicker } from "./competitor-picker";
+import { CompetitorRows } from "./competitor-rows";
 import { ProfileFields } from "./profile-fields";
 import { QuestionPicker } from "./question-picker";
 import { WebsiteField } from "./website-field";
@@ -93,7 +93,7 @@ function WebsiteStep({ site, ...frame }: Frame & { site: string }) {
   });
   const busy = start.isPending || start.isSuccess;
   const status = start.error instanceof ApiError ? start.error.status : null;
-  const failure = status === 422 ? t("websiteInvalid") : status === 409 ? t("domainTaken") : status === 429 ? t("limit") : start.isError ? t("startFailed") : null;
+  const failure = status === 402 ? t("setup.freeUsed") : status === 422 ? t("websiteInvalid") : status === 409 ? t("domainTaken") : status === 429 ? t("limit") : start.isError ? t("startFailed") : null;
 
   function submit() {
     const found = validateWebsite(website);
@@ -155,8 +155,10 @@ function DraftSteps({ run, draft, onAnother, ...frame }: Frame & { run: FirstRun
     city: draft.city,
     services: draft.services,
   }));
-  // Every competitor we found starts ticked: there are five at most, and each is a row to untick
-  const [choice, setChoice] = useState<CompetitorChoice>(() => ({ suggestions: draft.competitors.slice(0, MAX_COMPETITORS), selected: draft.competitors.slice(0, MAX_COMPETITORS).map(() => true), manual: [] }));
+  // Every competitor we found is a row to correct or remove: five at most
+  const [rivals, setRivals] = useState<BrandDraft[]>(() => draft.competitors.slice(0, MAX_COMPETITORS).map(({ name, aliases, domain }) => ({ name, aliases: aliases.join(", "), domain })));
+  const [logos] = useState(() => Object.fromEntries(draft.competitors.flatMap(({ domain, logo }) => (domain && logo ? [[domain, logo]] : []))));
+  const choice: CompetitorChoice = { suggestions: [], selected: [], manual: rivals };
   const [questions, setQuestions] = useState<QuestionDraft[]>(() => questionDrafts(draft.questions));
   const [topics] = useState<TopicDraft[]>(() => topicDrafts(questionDrafts(draft.questions)));
   const [brandQuestions, setBrandQuestions] = useState<BrandQuestionDraft[]>(() => brandQuestionDrafts(draft.brandQuestions));
@@ -185,7 +187,7 @@ function DraftSteps({ run, draft, onAnother, ...frame }: Frame & { run: FirstRun
   }
 
   const status = confirm.error instanceof ApiError ? confirm.error.status : null;
-  const chosen = [...choice.suggestions.filter((_, i) => choice.selected[i]), ...choice.manual.filter(isFilled)];
+  const chosen = rivals.filter(isFilled);
 
   return (
     <Shell
@@ -219,12 +221,13 @@ function DraftSteps({ run, draft, onAnother, ...frame }: Frame & { run: FirstRun
         />
       )}
       {step === "competitors" && (
-        <CompetitorPicker
+        <CompetitorRows
           id={id}
-          choice={choice}
+          rows={rivals}
+          logos={logos}
           errors={errors}
           onChange={(next) => {
-            setChoice(next);
+            setRivals(next);
             setErrors({});
           }}
         />
@@ -249,7 +252,7 @@ function DraftSteps({ run, draft, onAnother, ...frame }: Frame & { run: FirstRun
       )}
       {confirm.isError && (
         <p role="alert" className="text-sm text-destructive">
-          {t(status === 429 ? "limit" : "confirmFailed")}
+          {t(status === 402 ? "freeUsed" : status === 429 ? "limit" : "confirmFailed")}
         </p>
       )}
     </Shell>

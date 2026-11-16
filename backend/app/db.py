@@ -132,6 +132,8 @@ class Brand(Base):
     name: Mapped[str] = mapped_column(String(200))
     aliases: Mapped[Any] = mapped_column(JSON, default=list)
     domain: Mapped[str] = mapped_column(String(255), default="")
+    # The address of the icon its website names, found when the competitor was searched for; none for most brands
+    logo: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     position: Mapped[int] = mapped_column(Integer, default=0)
 
 
