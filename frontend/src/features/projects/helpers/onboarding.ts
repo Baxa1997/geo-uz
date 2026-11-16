@@ -1,7 +1,8 @@
 import { isValidDomain, normalizeDomain } from "@/shared/helpers/domain";
 import type { BrandQuestion, CompetitorSuggestion, CreateProjectRequest, FirstRunResult, PromptSuggestion, SiteAnalysis } from "@/shared/types/api";
 import { DEFAULT_COUNTRY } from "@/shared/constants/countries";
-import { BRAND_QUESTION_TEMPLATES, MAX_BRAND_QUESTIONS, MAX_COMPETITORS, OWN_QUESTION_TOPIC, PRESELECTED_COMPETITORS } from "../constants";
+import { MAX_BRAND_QUESTIONS } from "@/shared/constants";
+import { BRAND_QUESTION_TEMPLATES, MAX_COMPETITORS, OWN_QUESTION_TOPIC, PRESELECTED_COMPETITORS } from "../constants";
 import type { BrandDraft, BrandQuestionDraft, CompetitorChoice, OnboardingErrorKey, OnboardingErrors, QuestionDraft, SiteDraft, TopicDraft } from "../types";
 import { isFilled, toNewBrand } from "./brand-draft";
 

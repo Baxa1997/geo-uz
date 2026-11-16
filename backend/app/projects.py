@@ -747,6 +747,9 @@ def update_project(db: Db, project: Project, body: Dict[str, Any]) -> None:
     for field in ("services", "customers", "identity"):
         if isinstance(body.get(field), list):
             setattr(project, field, _names(body[field]))
+    # The brand questions, replaced as a whole (Sozlamalar › Brend savollari); asked from the next check on
+    if isinstance(body.get("brandQuestions"), list):
+        project.brand_questions = _brand_questions(body["brandQuestions"], "", "")
 
 
 def dismiss_brand(db: Db, project: Project, body: Dict[str, Any]) -> None:

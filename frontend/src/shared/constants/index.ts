@@ -73,3 +73,6 @@ export const YEARLY_MONTHS_PAID = 10;
 
 /** A brand fact is one statement, at most this long. */
 export const FACT_MAX_LENGTH = 300;
+
+/** How many brand questions a project keeps (the backend's `BRAND_QUESTION_LIMIT`): each is one more answer per assistant per check. */
+export const MAX_BRAND_QUESTIONS = 6;

@@ -244,6 +244,8 @@ export interface UpdateProjectRequest {
   services?: string[];
   customers?: string[];
   identity?: string[];
+  /** The questions that name the business, replaced as a whole (Sozlamalar › Brend savollari). */
+  brandQuestions?: BrandQuestion[];
 }
 
 /** A change to a tracked competitor (Sozlamalar › Brendlar): its name, its spellings, its website. */

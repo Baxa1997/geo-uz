@@ -4,6 +4,7 @@ import { ArrowRightIcon as ArrowRight } from "@phosphor-icons/react/dist/ssr/Arr
 import { InfoIcon as Info } from "@phosphor-icons/react/dist/ssr/Info";
 import { useLocale, useMessages, useTranslations } from "next-intl";
 import { useEffect, useRef } from "react";
+import { BrandViewCard } from "@/shared/components/brand-view";
 import { Hint } from "@/shared/components/hint";
 import { MethodLabel } from "@/shared/components/scores/method-label";
 import { NamedBrandChips } from "@/shared/components/scores/named-brand-chips";
@@ -16,7 +17,6 @@ import { cn } from "@/shared/helpers/utils";
 import type { FirstRunResult } from "@/shared/types/api";
 import { FIRST_RUN_MISSED } from "../constants";
 import { brandCounts, placeOf } from "../helpers/first-run";
-import { FirstRunBrandView } from "./first-run-brand-view";
 
 /**
  * The first statistics, numbers first: one sentence on where the business stands, three figures, every
@@ -169,7 +169,7 @@ export function FirstRunResultView({ result, runId, onAgain }: { result: FirstRu
         </div>
       )}
 
-      {result.brandView && result.brandView.length > 0 && <FirstRunBrandView views={result.brandView} brand={result.brand.name} />}
+      {result.brandView && result.brandView.length > 0 && <BrandViewCard views={result.brandView} brand={result.brand.name} />}
 
       {missed.length > 0 && (
         <div className="rounded-xl border bg-background">
