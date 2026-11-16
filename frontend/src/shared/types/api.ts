@@ -725,6 +725,8 @@ export type FirstRunConfirm = Omit<CreateProjectRequest, "firstRunId">;
 
 export interface FirstRunRequest {
   domain: string;
+  /** The company's name as the owner writes it; left out, the backend reads it from the website. */
+  name?: string;
   /** The country the business serves, as a two-letter code; left out, the backend reads it from the website. */
   country?: string;
 }

@@ -196,6 +196,8 @@ def logout(response: Response, geo_session: Optional[str] = Cookie(default=None)
 
 class FirstRunRequest(BaseModel):
     domain: str
+    # The company's name as its owner writes it, when given with the website
+    name: Optional[str] = None
     category: Optional[str] = None
     city: Optional[str] = None
     # The country the business serves, as its two-letter code: asked with the website (the user, 16 Nov 2026)
@@ -274,14 +276,14 @@ def _progress(run_id: str) -> Any:
     return progress
 
 
-def work_prepare(run_id: str, domain: str, category: Optional[str], city: Optional[str], country: Optional[str] = None) -> None:
+def work_prepare(run_id: str, domain: str, category: Optional[str], city: Optional[str], country: Optional[str] = None, name: Optional[str] = None) -> None:
     """Reads the website outside the request that started the run, and leaves the draft for the owner: `ready`."""
     _progress(run_id)("reading_site", 0, 0)
     try:
         if settings.first_run_replay:
             draft, cost = replay_draft(run_id), 0.0
         else:
-            draft, cost = firstrun.prepare(domain, category, city, country)
+            draft, cost = firstrun.prepare(domain, category, city, country, name)
         _finish(run_id, {"status": "ready", "draft": draft, "cost_usd": cost}, over=False)
     except firstrun.FirstRunError as error:
         _finish(run_id, {"status": "failed", "error": error.code})
@@ -356,7 +358,7 @@ def start_first_run(body: FirstRunRequest, user: User = Depends(current_user)) -
         db.add(run)
         db.commit()
         started = run_json(run)
-    threading.Thread(target=work_prepare, args=(started["id"], domain, body.category, body.city, projects._country(body.country) or None), daemon=True).start()
+    threading.Thread(target=work_prepare, args=(started["id"], domain, body.category, body.city, projects._country(body.country) or None, _words(body.name, 120) or None), daemon=True).start()
     return started
 
 

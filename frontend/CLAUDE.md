@@ -48,6 +48,19 @@ slices change in the contract below:
   longer linked to. The steps reuse the wizard's pickers and its preview of the app on the right. Step 3 is
   `CompetitorRows` (the user's picture): a row a competitor with its site's icon, its name and website to
   correct, ✕ to remove, a row to add one. A 402 from the backend is "your free check has been used".
+- **The first check's screens follow the user's pictures (16 Nov: "why you have not made our first setup as
+  attached images").** The order had been taken from them and not the screens. Now, in our navy and our words:
+  the setup is our name on a navy panel at the left (from `lg`) and the step at the right: the title, a
+  sentence, the numbered steps, the fields, Previous at the left and Next at the right; no picture of the app
+  beside it. Step 1 asks the company's name (optional, told to the reading), the website, the country, and
+  shows the questions' language, which follows the country. Step 2 shows the name, "what you do" and the
+  sector, with services, city and other spellings folded under "more details". Step 4 is `QuestionList`:
+  numbered cards with a pencil and a bin and a dashed "Add a question (n/10)", the brand questions the same
+  way, then "Asked on: ChatGPT, Gemini". The check runs on a navy screen (`FirstRunProgress`): our mark in a
+  ring with the assistants on it, three lines with the current one bright, the answers counted. The
+  statistics open with a headline ("Your AI visibility for …"), the button to the full analysis, and four
+  tabs (competitors, pages, sites, answers) over the conclusion and the rest. Not taken from the pictures:
+  their colors and logo, and results that fill in while the check still runs (ours appear when it is done).
 
 ## MVP scope
 1. Brand setup: name, aliases (Latin + Cyrillic spellings), domain, description, category, city, services,
