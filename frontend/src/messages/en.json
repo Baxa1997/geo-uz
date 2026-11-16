@@ -1653,7 +1653,8 @@
     "factCheckValues": {
       "on": "Yes",
       "off": "No"
-    }
+    },
+    "trialNote": "These questions were asked in the free first check. Questions you add are asked in the next check, once a plan is switched on."
   },
   "PromptForm": {
     "addTitle": "Add questions",
@@ -2647,7 +2648,7 @@
         "done": "Our team does the fixes"
       },
       "notIncluded": "not included",
-      "requested": "Your request for {plan} has reached us. We’ll be in touch within one working day, in Telegram or by phone.",
+      "requested": "Your request for {plan} has reached us. We’ll be in touch within one working day, at your account's email.",
       "cancelRequested": "Your request to cancel has reached us. We’ll confirm in Telegram; the reports keep coming until the paid period ends.",
       "askTitle": "Switch to {plan}?",
       "askText": "Billing: {cycle}. Online payment isn’t ready yet: your request comes to us, and we switch the plan and send the payment details.",
@@ -2891,7 +2892,11 @@
     "competitorsNone": "If you don't know your competitors, skip this step. Later we show the businesses the answers name, and you add them with one click.",
     "domainTaken": "A project already exists for this website. One website is tracked in one project only.",
     "firstCheckMax": "Up to {max} in the first check",
-    "questionsFirstMax": "The first check asks at most {max} questions. Untick the extra ones."
+    "questionsFirstMax": "The first check asks at most {max} questions. Untick the extra ones.",
+    "competitorsRows": "Competitors",
+    "competitorsRowsFull": "{max} at most. Remove one to add another.",
+    "competitorsRowsNote": "The website tells us which company it is: check it and correct a wrong one.",
+    "removeNamed": "Remove {name}"
   },
   "RunProgress": {
     "metaTitle": "Check",
@@ -4008,7 +4013,7 @@
       "anotherSite": "Another website",
       "reading": {
         "title": "Reading your website",
-        "text": "We are reading the pages of {site} and preparing what is listed below. It takes up to a minute; no assistant has been asked yet.",
+        "text": "We are reading the pages of {site} and preparing what is listed below. It takes a minute or two: we find the competitors with a web search. Your questions have not been asked yet.",
         "profile": "Your business: name, field, services",
         "competitors": "Your competitors",
         "questions": "The questions customers ask AI"
@@ -4020,7 +4025,7 @@
       },
       "competitors": {
         "title": "Your competitors",
-        "text": "The ones we found. Untick those that are wrong and add those that are missing (up to {max}). They stand beside you in the results; if places are left, the businesses the answers name most are added."
+        "text": "The ones we found with a web search, each with its own website. Remove the wrong ones with ✕ or correct them, and add those that are missing (up to {max}). They stand beside you in the results; if places are left, the businesses the answers name most are added."
       },
       "questions": {
         "title": "Your questions to track",
@@ -4030,7 +4035,8 @@
       "starting": "Starting…",
       "confirmFailed": "Couldn't start the check. Try again.",
       "limit": "No checks left for today. Try again tomorrow.",
-      "replayed": "Development mode: this is not the website you typed but a saved check's data ({site}). No assistant is asked."
+      "replayed": "Development mode: this is not the website you typed but a saved check's data ({site}). No assistant is asked.",
+      "freeUsed": "Your free check has been used. Another website needs a plan: send a request from your project's Settings › Plan page."
     },
     "saving": "Saving…",
     "saveFailed": "Couldn't save the project. Try again."

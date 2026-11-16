@@ -54,6 +54,7 @@ export default async function PromptsPage({ params, searchParams }: Props) {
         projectId={report.project.id}
         plan={plan}
         limit={limits.prompts}
+        trial={report.project.billing.status === "trial"}
         initialPrompts={allPrompts}
         initialSuggestions={suggestions}
         initialTopics={topicList}

@@ -185,6 +185,35 @@ that is committed.
 
 ## Done (as of 16 November 2026)
 
+- **Built, waiting for the user's look: the review's four fixes (16 Nov), on the branch `searched-competitors`
+  with the competitor search; merged, pushed and deployed the same day (the user said "yes" to "shall I do
+  these four? The competitor search would go out with them in the same push and deploy").** The user asked
+  for the whole flow reviewed: "login, projects, each project competitors, prompts used, gemini and chatgpt
+  as initial responses then it is paid plan available". Walked in a browser on this computer; what was wrong
+  and is now changed: (1) every new project got a free check, against the rule of 15 Nov: now one free check
+  an account, a second website answers "your free check has been used" (not bound: an account paying for
+  Enterprise, our own in the new variable `TEAM_EMAILS`, replay mode); (2) a plan request only reached the
+  server's log: it is now emailed to us with the command that switches the plan on, and the page says we
+  answer by email (it said Telegram or phone); (3) the plan page said one assistant and Savollar told a free
+  project to add 20 questions: now two assistants, and a note that added questions are asked once a plan is
+  on; (4) the first check's competitor step follows the user's screenshots: a row each with the site's icon,
+  the name and website to correct, ✕ to remove. Tried: the free-check rule and the plan email by script (the
+  email caught, not sent), the competitor step in a browser in Uzbek on desktop and phone width, the icon
+  finder on real sites. Not tried: the icons in a browser (replay has none), a real plan request's email, a
+  second website refused on the live site, Russian and English. Still true: there is no payment; a plan is
+  switched on by hand (`python -m app.admin plan`). New variable: `TEAM_EMAILS` (`ENVIRONMENT.md`).
+
+- **Built, waiting for the user's look: competitors found by a web search (16 Nov), on the branch
+  `searched-competitors`; merged, pushed and deployed the same day with the review's fixes above.** After "what is next" the user chose "better
+  competitors" of four. Step 3 of the first check listed what the writing model recalled, which could be
+  wrong. Now, while the website is read, one assistant with web search (Gemini when it can be asked, else
+  ChatGPT) is asked who the business competes with in its country; the answer is read into names and
+  websites, a website is kept only when it opens, and the recalled list fills in only when the search finds
+  fewer than three (`backend/README.md`). Tried once for real on this computer on ChatGPT with the user's
+  own site: five local competitors, each with a website that opens, where the recalled list had been five
+  international names; the reading took 66 seconds and cost $0.075 (it was about a cent). Not tried: on
+  Gemini, in a browser, another country. The steps' texts say the search and "a minute or two". No new variable.
+
 - **Built, waiting for the user's look: the first check confirms first and checks after (16 Nov), on the
   branch `landing-redesign` with the landing page's rebuild; merged, pushed and deployed the same day, when the
   user said "push, replay, and deploy".** The user typed their own site on

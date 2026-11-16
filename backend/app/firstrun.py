@@ -20,8 +20,10 @@ from __future__ import annotations
 import datetime
 import json
 import re
+import socket
 import urllib.error
 import urllib.request
+from urllib.parse import urljoin
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any, Callable, Dict, List, Optional, Tuple
@@ -333,6 +335,90 @@ def questions_for(engine: str, asked: List[str], count: int) -> List[int]:
     return sorted({round(index * count / limit) for index in range(limit)}) if limit > 0 else []
 
 
+# --- the competitors, by a web search -------------------------------------------------------------------
+
+# Asked once while the website is prepared, of an assistant with web search: who a customer would compare the
+# business with. The writing model's own list (`profile`) came from memory and could be wrong or made up
+# (the user, 16 Nov 2026: "better competitors"); it now only fills the places a search leaves.
+COMPETITOR_QUESTIONS = {
+    "ru": "Какие компании — главные конкуренты и альтернативы для «{name}» ({site}): {category}{place}? Назови до восьми реальных компаний того же типа, которые выбирают те же клиенты, и для каждой укажи официальный сайт.",
+    "uz": "«{name}» ({site}) uchun asosiy raqobatchilar va muqobillar qaysi kompaniyalar: {category}{place}? Xuddi shu mijozlar tanlaydigan, shu turdagi sakkiztagacha haqiqiy kompaniyani ayting va har birining rasmiy saytini koʻrsating.",
+    "en": "Which companies are the main competitors of and alternatives to {name} ({site}): {category}{place}? Name up to eight real companies of the same kind that the same customers choose between, each with its official website.",
+}
+
+COMPETITOR_RULES = """An AI assistant with web search was asked who competes with one business. You are given the business, the assistant's answer and the pages it cited. List the competitors the answer names: businesses of the same kind that the same customers would choose between, the strongest first, eight at most.
+
+- name: the short name customers use, as the answer writes it.
+- domain: the competitor's own official website, without "https://" and without a path, only when the answer or a cited page's address gives it; otherwise empty. Never a catalogue, a marketplace, a news site, a social network or an app store page.
+Leave out the business itself, and anything that is not a company a customer could choose (catalogues, rating sites, media, exams, authorities). Add nothing the answer does not name."""
+
+COMPETITOR_SCHEMA = obj(competitors=arr(obj(name=STR, domain=STR)))
+
+SITE = re.compile(r"[a-z0-9-]+(\.[a-z0-9-]+)+")
+
+
+ICON = re.compile(r"<link\b[^>]*\brel=[\"'][^\"']*\bicon\b[^\"']*[\"'][^>]*>", re.IGNORECASE)
+HREF = re.compile(r"\bhref=[\"']([^\"']+)[\"']", re.IGNORECASE)
+
+
+def site_icon(domain: str) -> Tuple[bool, Optional[str]]:
+    """Whether the site opens, and the address of the icon its home page names (its logo in our lists)."""
+    try:
+        request = urllib.request.Request(f"https://{domain}", headers={"User-Agent": web.USER_AGENT})
+        with web.opener.open(request, timeout=12) as reply:
+            html = reply.read(300_000).decode(reply.headers.get_content_charset() or "utf-8", "replace")
+    except urllib.error.HTTPError:
+        # The site is there and refuses our reader (a large site's protection): its address stands, without an icon
+        return True, None
+    except (urllib.error.URLError, OSError, ValueError) as error:
+        # No answer in time is a site that ignores our reader, not a missing one: only an address that
+        # doesn't exist, or refuses the connection, loses the website
+        late = (TimeoutError, socket.timeout)  # two classes before Python 3.10
+        slow = isinstance(error, late) or isinstance(getattr(error, "reason", None), late)
+        return slow, None
+    for tag in ICON.findall(html[:200_000]):
+        href = HREF.search(tag)
+        if href and not href.group(1).startswith("data:"):
+            return True, urljoin(f"https://{domain}/", href.group(1).strip())[:500]
+    return True, None
+
+
+def search_competitors(who: Dict[str, Any], domain: str, country: str) -> Tuple[List[Dict[str, Any]], float]:
+    """Competitors found by one web search, each with its own website when the search gave one that opens.
+    Empty when no assistant can be asked or the search failed: the profile's own list then stands."""
+    asked = [engine for engine in ("gemini", "chatgpt") if engine in settings.engines][:1]
+    if not asked:
+        return [], 0.0
+    language = languages_for(country)[0]
+    city = who["city"] if language == "ru" else who["cityEn"]
+    place = f", {city}" if city else f", {country}"
+    question = COMPETITOR_QUESTIONS[language].format(name=who["name"], site=domain, category=who["category"], place=place)
+    try:
+        answer = engines.ask(asked[0], question, country, who["cityEn"] or who["city"], TIMEZONES.get(country, ""))
+        cited = "\n".join(f"- {citation.get('title') or ''} {citation['url']}" for citation in answer["citations"][:30])
+        found, usd = engines.read(COMPETITOR_RULES, f"Business: {who['name']} ({domain}), {who['category']}\n\nAnswer:\n{answer['text'][:8000]}\n\nCited pages:\n{cited}", "competitors", COMPETITOR_SCHEMA)
+    except engines.EngineError as error:
+        print(f"first run {domain}: competitors not searched: {error}")
+        return [], 0.0
+    spellings = [who["name"]] + who["aliases"]
+    rivals: List[Dict[str, Any]] = []
+    for rival in found["competitors"]:
+        name = " ".join(rival["name"].split())
+        site = web.domain_of(rival["domain"].strip()) if rival["domain"].strip() else ""
+        if not name or web.names(name, spellings) or site == domain or any(name.lower() == listed["name"].lower() or (site and site == listed["domain"]) for listed in rivals):
+            continue
+        rivals.append({"name": name, "domain": site if SITE.fullmatch(site) else ""})
+    rivals = rivals[:8]
+    # A website is kept only when it opens: an address that leads nowhere would mark the wrong company
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        opens = list(pool.map(lambda rival: site_icon(rival["domain"]) if rival["domain"] else (False, None), rivals))
+    for rival, (alive, icon) in zip(rivals, opens):
+        rival["logo"] = icon if alive else None
+        if not alive:
+            rival["domain"] = ""
+    return rivals, (answer["usd"] or 0.0) + usd
+
+
 def prepare(domain: str, category: Optional[str], city: Optional[str], country: Optional[str] = None) -> Tuple[Dict[str, Any], float]:
     """The first half of a first check, before anybody is asked: the website read, and from it the profile,
     the competitors and the questions, for the owner to correct. Returns the draft the check is then made
@@ -351,6 +437,12 @@ def prepare(domain: str, category: Optional[str], city: Optional[str], country: 
     who["questions"] = [question for question in who["questions"] if question["language"] in languages] or who["questions"]
     who["brandQuestions"] = [question for question in who["brandQuestions"] if question["language"] in languages]
     general = [{"text": brand_question(language, who["name"], who["city"] if language == "ru" else who["cityEn"]), "language": language} for language in languages]
+    # The competitors a search finds come first; the ones the profile recalled fill the places left
+    searched, spent = search_competitors(who, web.domain_of(pages[0]["url"]), country)
+    usd += spent
+    recalled = [rival for rival in who.get("competitors") or [] if all(rival["name"].lower() != found["name"].lower() and not (rival["domain"] and rival["domain"] == found["domain"]) for found in searched)]
+    who["competitors"] = (searched + ([] if len(searched) >= 3 else recalled))[:COMPETITOR_LIMIT]
+    who["competitorsSearched"] = bool(searched)
     return {
         "who": who,
         "country": country,
@@ -501,6 +593,8 @@ def check(draft: Dict[str, Any], confirmed: Dict[str, Any], progress: Progress, 
     rivals = [rival["name"] for rival in chosen]
     rivals += [name for name, _ in named.most_common() if name != client and name not in rivals][: COMPETITOR_LIMIT - len(rivals)]
     given = {rival["name"]: rival for rival in chosen}
+    # A confirmed competitor keeps the icon found with its website, while the website is still the one found
+    icons = {rival["domain"]: rival.get("logo") for rival in read.get("competitors") or [] if rival.get("domain")}
     tracked = [client] + rivals
     ids = {name: f"b{index}" for index, name in enumerate(tracked)}
     mentions = sum(named[name] for name in tracked) or 1
@@ -603,7 +697,7 @@ def check(draft: Dict[str, Any], confirmed: Dict[str, Any], progress: Progress, 
         "services": who["services"],
         "method": {"engine": " + ".join(engines.ENGINE_NAMES[engine] for engine in asked), "model": ", ".join(sorted({answer["model"] for answer in answers})), "webSearch": True, "samples": 1, "collectedAt": collected},
         "brand": {"id": ids[client], "name": client, "aliases": who["aliases"], "domain": own, "logo": None},
-        "competitors": [{"id": ids[name], "name": name, "aliases": given.get(name, {}).get("aliases") or [], "domain": given.get(name, {}).get("domain") or "", "logo": None} for name in rivals],
+        "competitors": [{"id": ids[name], "name": name, "aliases": given.get(name, {}).get("aliases") or [], "domain": given.get(name, {}).get("domain") or "", "logo": icons.get(given.get(name, {}).get("domain") or "")} for name in rivals],
         "scores": [score(name, answers) for name in tracked],
         # The same numbers per assistant, and how often each business is recommended: new beside the old contract
         "engines": [

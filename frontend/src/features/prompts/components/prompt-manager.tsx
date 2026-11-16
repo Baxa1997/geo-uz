@@ -118,6 +118,7 @@ export function PromptManager({
   projectId,
   plan,
   limit,
+  trial = false,
   initialPrompts,
   initialSuggestions,
   initialTopics,
@@ -143,6 +144,8 @@ export function PromptManager({
 }: {
   projectId: string;
   plan: Plan;
+  /** The free first check only: nothing is asked again until a plan is paid, and the page says so. */
+  trial?: boolean;
   /** Questions the plan lets the project track at once. */
   limit: number;
   /** Every question of the project, archived ones too. */
@@ -1016,7 +1019,7 @@ export function PromptManager({
             )
           ) : (
             <>
-              {tracked.length > 0 && tracked.length < Math.min(MIN_PROMPTS, limit) && <p className="mx-4 mt-3 rounded-lg bg-muted px-3 py-2 text-sm">{t("belowMin")}</p>}
+              {trial ? <p className="mx-4 mt-3 rounded-lg bg-muted px-3 py-2 text-sm">{t("trialNote")}</p> : tracked.length > 0 && tracked.length < Math.min(MIN_PROMPTS, limit) && <p className="mx-4 mt-3 rounded-lg bg-muted px-3 py-2 text-sm">{t("belowMin")}</p>}
               {tracked.length === 0 ? (
                 <div className="m-4 flex flex-col items-center gap-1 rounded-lg border border-dashed p-6 text-center">
                   <p className="font-medium">{t("empty")}</p>

@@ -709,7 +709,8 @@ export interface FirstRunDraft {
   city: string;
   description: string;
   services: string[];
-  competitors: CompetitorSuggestion[];
+  /** `logo`: the icon the competitor's website names, when the search found one. */
+  competitors: (CompetitorSuggestion & { logo?: string | null })[];
   questions: PromptSuggestion[];
   /** The general ones first, then the ones written for this business. */
   brandQuestions: BrandQuestion[];

@@ -45,7 +45,9 @@ slices change in the contract below:
   `getFirstRunDraft` fills steps 2 to 4; the last button is `confirmFirstRun` (`POST /first-runs/{id}/start`),
   then the progress, then the statistics, whose button saves the check as the project
   (`projectFromFirstRun`) and opens its dashboard. No setup after the check: `/onboarding?firstRun=` is no
-  longer linked to. The steps reuse the wizard's pickers and its preview of the app on the right.
+  longer linked to. The steps reuse the wizard's pickers and its preview of the app on the right. Step 3 is
+  `CompetitorRows` (the user's picture): a row a competitor with its site's icon, its name and website to
+  correct, ✕ to remove, a row to add one. A 402 from the backend is "your free check has been used".
 
 ## MVP scope
 1. Brand setup: name, aliases (Latin + Cyrillic spellings), domain, description, category, city, services,
