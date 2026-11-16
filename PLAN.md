@@ -29,13 +29,13 @@ a full site audit.
 | --- | --- |
 | Every page's design | Built on sample data, in three languages, with our own look |
 | Login by email | **Real**: the backend sends the code; reached a real inbox. Entering the code on the deployed site is untried |
-| First check | **Real** on ChatGPT (run once, $0.47); Gemini written, never run. The page works on a replayed run |
+| First check | **Real** on ChatGPT (run once, $0.47) and, since 15 Nov, on Gemini alone (three runs on the server, about $0.55 each). Both together, started from the site, untried. Since 15–16 Nov it also writes a conclusion and asks the brand questions |
 | Setup from the first check | Fills in from the run; the project it creates is still sample data |
 | Dashboard (read only) | **Built on this computer (15 Nov), waiting for the user's look**: a first run saved as a real project, every page reading it |
 | The pages' buttons, the weekly check | **Built on this computer (15 Nov), waiting for the user's look**; the check has never asked an assistant |
 | The report by link, as a PDF and by email | **Built on this computer (15 Nov), waiting for the user's look** |
-| Fixes and wrong facts | **Built on this computer (15 Nov), waiting for the user's look**; wrong facts and page briefs have never run on a model |
-| Backend on the server | Running at `geo-api.shopsready.com` with Supabase's database; no assistant's key on it |
+| Fixes and wrong facts | **Built, waiting for the user's look**. Since 16 Nov wrong facts come from the brand answers against the website, with no facts typed in; the check against the client's own facts and the page briefs have never run on a model |
+| Backend on the server | Running at `geo-api.shopsready.com` with Supabase's database, the OpenAI key and Google credentials (since 15 Nov) |
 | Frontend on Vercel | Deployed; behind Vercel's own login |
 | The pilot report (a one-off report made by script) | Works; run once for a first client |
 
@@ -145,7 +145,7 @@ The "what to do" half: the part that keeps a small business paying.
 | What the assistant searched | The web searches behind an answer | the search tool's report | kept, not shown yet |
 | Untracked brands | Businesses the answers name that aren't tracked | names in the answers | first check only |
 | Site checks | AI bots blocked, prices as pictures, no business markup, contacts missing | reading the client's site | first check |
-| Wrong facts | Claims about the client that contradict its facts | a model against the client's facts | written, never run |
+| Wrong facts | Claims about the client that contradict its website or its own facts | the brand answers against the website (since 16 Nov); a model against the client's facts | from the website: yes, from the first check; from the client's facts: written, never run |
 | Condition score | One number from 0 to 100 over five areas | a formula over the values above | counted for every check |
 | Risks and opportunities | The report's register | written from the numbers in the frontend | no (stage 3) |
 | Recommended actions | Fixes with impact, steps, questions and proof | rules over the answers and sites | yes, from the first check; briefs need a live check |

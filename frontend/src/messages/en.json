@@ -1221,7 +1221,7 @@
     "missingDescription": "In {count} of {total} questions, ChatGPT named competitors but not you.",
     "missingNone": "Whenever ChatGPT named a competitor, it named you too.",
     "missingMore": "{count, plural, one {# more question} other {# more questions}} on the Answers page.",
-    "wrongFacts": "ChatGPT states {count, plural, one {# wrong fact} other {# wrong facts}} about you",
+    "wrongFacts": "AI states {count, plural, one {# wrong fact} other {# wrong facts}} about you",
     "wrongFactsAction": "Review",
     "export": "Download CSV",
     "nextRun": "Next weekly check: {date}",
@@ -2960,7 +2960,7 @@
   "WrongFactsPage": {
     "kpi": {
       "count": "Wrong facts",
-      "countHint": "Claims about you in ChatGPT’s answers that aren’t true.",
+      "countHint": "Claims about you in AI answers that aren’t true.",
       "questions": "Questions affected",
       "questionsHint": "How many questions a wrong fact came up in.",
       "since": "First found",
@@ -2968,8 +2968,8 @@
     },
     "table": {
       "title": "Wrong facts about you",
-      "hint": "What ChatGPT says, what’s true, the question it came up in and when it was found.",
-      "says": "ChatGPT says",
+      "hint": "What AI says, what’s true, the question it came up in and when it was found.",
+      "says": "AI says",
       "correct": "In fact",
       "question": "Question",
       "found": "Found"
