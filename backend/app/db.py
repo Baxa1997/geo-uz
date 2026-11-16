@@ -65,8 +65,10 @@ class FirstRun(Base):
     id: Mapped[str] = mapped_column(String(32), primary_key=True, default=new_id)
     user_id: Mapped[str] = mapped_column(ForeignKey("users.id"), index=True)
     domain: Mapped[str] = mapped_column(String(255), index=True)
-    # queued, reading_site, asking, reading_answers, done, failed
+    # queued, reading_site, ready (read, waiting for the owner to confirm), asking, reading_answers, done, failed
     status: Mapped[str] = mapped_column(String(20), default="queued")
+    # What the website gave (`firstrun.prepare`): the profile, competitors and questions the owner corrects
+    draft: Mapped[Optional[Any]] = mapped_column(JSON, nullable=True)
     answered: Mapped[int] = mapped_column(Integer, default=0)
     total: Mapped[int] = mapped_column(Integer, default=0)
     error: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
@@ -77,6 +79,17 @@ class FirstRun(Base):
     raw: Mapped[Optional[Any]] = mapped_column(JSON, nullable=True)
     created_at: Mapped[datetime.datetime] = mapped_column(DateTime, default=now, index=True)
     finished_at: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime, nullable=True)
+
+class DemoRequest(Base):
+    """"Book a demo" on the landing page: who asked, how to reach them, their field. The team is told by email."""
+
+    __tablename__ = "demo_requests"
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=new_id)
+    name: Mapped[str] = mapped_column(String(120))
+    phone: Mapped[str] = mapped_column(String(20))
+    sector: Mapped[str] = mapped_column(String(20))
+    created_at: Mapped[datetime.datetime] = mapped_column(DateTime, default=now, index=True)
+
 
 class Project(Base):
     __tablename__ = "projects"

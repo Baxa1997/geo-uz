@@ -68,7 +68,8 @@ interface MockState {
   runs: Map<string, StoredRun>;
   snapshots: Map<string, Snapshot>;
   /** First run id → whose it is, when it started and what it will show. */
-  firstRuns: Map<string, { userId: string; startedAt: number; result: FirstRunResult }>;
+  /** `startedAt`: when the website was given; `confirmedAt`: when the owner confirmed the draft and the asking began. */
+  firstRuns: Map<string, { userId: string; startedAt: number; confirmedAt: number | null; result: FirstRunResult }>;
   /** Project id → action id → what the client changed on it. */
   actionStates: Map<string, Map<string, ActionState>>;
   /** Project id → the actions the client made with "Add content". */
@@ -400,8 +401,11 @@ function firstRunOf(id: string): FirstRun {
   const run = state.firstRuns.get(id);
   if (!run) throw new ApiError(404, `First run ${id} not found`);
   const total = run.result.answers;
-  const asked = Math.floor((Date.now() - run.startedAt - RUN_QUEUED_MS) / (RUN_MS_PER_ANSWER * 3));
-  const status = asked < 0 ? "reading_site" : asked < total ? "asking" : Date.now() - run.startedAt < RUN_QUEUED_MS + total * RUN_MS_PER_ANSWER * 3 + RUN_ANALYZING_MS ? "reading_answers" : "done";
+  // Until the owner confirms the draft nobody is asked: the site is "read" for a moment, then the run waits
+  if (run.confirmedAt === null) return { id, domain: run.result.domain, status: Date.now() - run.startedAt < RUN_QUEUED_MS ? "reading_site" : "ready", answered: 0, total: 0, error: null };
+  const since = Date.now() - run.confirmedAt;
+  const asked = Math.floor(since / (RUN_MS_PER_ANSWER * 3));
+  const status = asked < total ? "asking" : since < total * RUN_MS_PER_ANSWER * 3 + RUN_ANALYZING_MS ? "reading_answers" : "done";
   return { id, domain: run.result.domain, status, answered: Math.max(0, Math.min(asked, total)), total, error: null };
 }
 
@@ -817,6 +821,7 @@ export const mockApi: ApiClient = {
     state.firstRuns.set(id, {
       userId: user.id,
       startedAt: Date.now(),
+      confirmedAt: null,
       result: { ...snapshot, description: "", services: [], answers, recommended: {}, engines: [{ engine: "chatgpt", name: "ChatGPT", answers, scores: snapshot.scores }] },
     });
     return respond(firstRunOf(id));
@@ -830,6 +835,39 @@ export const mockApi: ApiClient = {
   getFirstRun: async (id) => {
     const user = await currentUser();
     if (state.firstRuns.get(id)?.userId !== user.id) throw new ApiError(404, `First run ${id} not found`);
+    return respond(firstRunOf(id));
+  },
+
+  getFirstRunDraft: async (id) => {
+    const user = await currentUser();
+    const run = state.firstRuns.get(id);
+    if (run?.userId !== user.id) throw new ApiError(404, `First run ${id} not found`);
+    if (firstRunOf(id).status === "reading_site") throw new ApiError(409, "Not read yet");
+    const { result } = run;
+    return respond({
+      id,
+      domain: result.domain,
+      name: result.brand.name,
+      aliases: result.brand.aliases,
+      category: result.category,
+      country: result.country ?? "UZ",
+      city: result.city,
+      description: result.description,
+      services: result.services,
+      competitors: result.competitors.map(({ name, aliases, domain }) => ({ name, aliases, domain })),
+      questions: result.prompts.map(({ prompt }) => ({ text: prompt.text, language: prompt.language, topic: prompt.topic })),
+      brandQuestions: [],
+      maxQuestions: 10,
+      replayed: false,
+    });
+  },
+
+  // The mocks keep their sample numbers whatever was corrected: only the asking starts
+  confirmFirstRun: async (id) => {
+    const user = await currentUser();
+    const run = state.firstRuns.get(id);
+    if (run?.userId !== user.id) throw new ApiError(404, `First run ${id} not found`);
+    run.confirmedAt ??= Date.now();
     return respond(firstRunOf(id));
   },
 

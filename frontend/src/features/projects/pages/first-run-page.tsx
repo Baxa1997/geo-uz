@@ -5,7 +5,6 @@ import { api } from "@/shared/api/client";
 import { orNull } from "@/shared/api/errors";
 import { requireUser } from "@/shared/api/session";
 import { FirstRunFlow } from "../components/first-run-flow";
-import { OnboardingHeader } from "../components/onboarding-header";
 import { accountLabel } from "../helpers/account";
 
 type Props = PageProps<"/[locale]/onboarding/first-run">;
@@ -17,7 +16,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 /**
- * The first thing after login: the user's website, the first run on it, then the first statistics.
+ * The first thing after login: the user's website, what we read from it to confirm (the business, its
+ * competitors, the questions), the check on that, then the first statistics.
  * `?run=` is the run on screen, so the page can be reloaded or come back to; without it, the form.
  */
 export default async function FirstRunPage({ params, searchParams }: Props) {
@@ -27,11 +27,6 @@ export default async function FirstRunPage({ params, searchParams }: Props) {
   const run = typeof runId === "string" ? await orNull(api.getFirstRun(runId)) : null;
 
   return (
-    <>
-      <OnboardingHeader who={accountLabel(user)} />
-      <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-4 py-10 sm:py-14">
-        <FirstRunFlow key={run?.id ?? "new"} initial={run} site={typeof site === "string" ? site : ""} />
-      </main>
-    </>
+    <FirstRunFlow key={run?.id ?? "new"} initial={run} site={typeof site === "string" ? site : ""} who={accountLabel(user)} year={new Date().getFullYear()} />
   );
 }

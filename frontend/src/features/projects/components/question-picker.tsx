@@ -27,7 +27,13 @@ export function QuestionPicker({
   onShow,
   errors,
   onChange,
+  max = MAX_PROMPTS,
+  first = false,
 }: {
+  /** How many may be ticked: the plan's most, or a first check's few. */
+  max?: number;
+  /** A first check: the limit is said as its own, not as a recommendation. */
+  first?: boolean;
   questions: QuestionDraft[];
   topics: TopicDraft[];
   /** The topic on screen, or ALL_TOPICS. */
@@ -54,7 +60,7 @@ export function QuestionPicker({
     if (questions.some((question) => question.text.toLowerCase() === value.toLowerCase())) {
       return setError(t("questionDuplicate"));
     }
-    if (selected >= MAX_PROMPTS) return setError(t("questionsMax", { max: MAX_PROMPTS }));
+    if (selected >= max) return setError(t("questionsMax", { max }));
     // A question added while one topic is on screen goes into that topic
     const topic = shown === ALL_TOPICS ? OWN_QUESTION_TOPIC : shown;
     onChange([...questions, { key: `own-${questions.length}`, text: value, language, topic, selected: true }]);
@@ -71,14 +77,14 @@ export function QuestionPicker({
         <p className="flex items-baseline justify-between gap-3 text-sm font-medium">
           {t("questionsPick")}
           <span aria-live="polite" className="font-normal text-muted-foreground tabular-nums">
-            <span className="font-medium text-foreground">{selected}</span>/{MAX_PROMPTS}
+            <span className={cn("font-medium", selected > max ? "text-destructive" : "text-foreground")}>{selected}</span>/{max}
           </span>
         </p>
-        <p className="text-xs text-muted-foreground">{t("recommended", { min: MIN_PROMPTS, max: MAX_PROMPTS })}</p>
+        <p className="text-xs text-muted-foreground">{first ? t("firstCheckMax", { max }) : t("recommended", { min: MIN_PROMPTS, max: MAX_PROMPTS })}</p>
       </div>
       {errors.questions && (
         <p role="alert" className="text-sm text-destructive">
-          {t(errors.questions)}
+          {t(errors.questions, { max })}
         </p>
       )}
 

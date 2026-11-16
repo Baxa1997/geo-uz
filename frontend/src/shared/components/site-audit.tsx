@@ -1,5 +1,3 @@
-"use client";
-
 import { CheckCircleIcon as CircleCheck } from "@phosphor-icons/react/dist/ssr/CheckCircle";
 import { XCircleIcon as CircleX } from "@phosphor-icons/react/dist/ssr/XCircle";
 import { useTranslations } from "next-intl";

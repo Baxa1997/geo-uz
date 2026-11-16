@@ -39,8 +39,15 @@ export const INPUT_CLASS = "h-10";
 /** How often the progress screen asks how the first run is going. */
 export const RUN_POLL_MS = 1000;
 
-/** A first run's stages in order, as the backend names them; texts in messages/FirstRun.steps. */
-export const FIRST_RUN_STEPS = ["reading_site", "asking", "reading_answers"] as const;
+/**
+ * The first check's steps, in order (the user's correction, 16 Nov 2026: confirm first, check after): the
+ * website and country, then what we read from it to correct: the business, its competitors, the questions.
+ * Only then is anybody asked. Texts in messages/FirstRun.setup.
+ */
+export const FIRST_CHECK_STEPS = ["website", "profile", "competitors", "questions"] as const;
+
+/** The check's own stages once the questions are confirmed, as the backend names them; texts in messages/FirstRun.steps. */
+export const FIRST_RUN_STEPS = ["asking", "reading_answers"] as const;
 
 /** How many questions without the client the first statistics list. */
 export const FIRST_RUN_MISSED = 5;

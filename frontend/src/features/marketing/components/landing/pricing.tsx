@@ -8,7 +8,7 @@ import { PRICING, PRICING_FEATURES, SECTION } from "../../constants";
 import { formatPrice } from "@/shared/constants";
 import { MonoLabel } from "./mono-label";
 import { PlanTable } from "./plan-table";
-import { Panel, Section, SectionIntro } from "./section";
+import { Panel, Section, SectionHead } from "./section";
 import { SectionLink } from "../section-link";
 
 /** The plans as cards, the done-for-you service as a banner, then the full comparison. */
@@ -17,7 +17,7 @@ export function Pricing() {
 
   return (
     <Section id={SECTION.pricing} labelledBy="pricing-title">
-      <SectionIntro id="pricing-title" pill={t("pill")} title={t("title")} sub={t("sub")} />
+      <SectionHead id="pricing-title" kicker={t("pill")} title={t("title")} text={t("sub")} />
 
       <div className="flex flex-col gap-3">
         <ul data-reveal className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -85,7 +85,7 @@ export function Pricing() {
 
       <PlanTable />
       <p className="max-w-3xl text-sm text-pretty text-muted-foreground">
-        {t("users")} {t("note")}
+        {t("note")}
       </p>
     </Section>
   );

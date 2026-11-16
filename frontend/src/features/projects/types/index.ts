@@ -63,7 +63,8 @@ export type OnboardingErrorKey =
   | "manualDomainInvalid"
   | "manualDuplicate"
   | "topicsRequired"
-  | "questionsRequired";
+  | "questionsRequired"
+  | "questionsFirstMax";
 
 export type OnboardingErrors = Partial<
   Record<"website" | "name" | "description" | "category" | "services" | "competitors" | "manualName" | "manualDomain" | "topics" | "questions", OnboardingErrorKey>

@@ -8,7 +8,7 @@ import { formatShortDate } from "@/shared/helpers/dates";
 import { cn } from "@/shared/helpers/utils";
 import type { ConditionArea, Report } from "@/shared/types/api";
 import { STATUS_FILL } from "../constants";
-import { ConditionColumns, ConditionGauge } from "./condition-gauge";
+import { ConditionColumns, ConditionGauge } from "@/shared/components/condition-gauge";
 import { ScoreBar, StatusChip } from "./report-parts";
 
 /**

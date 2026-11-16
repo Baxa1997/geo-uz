@@ -14,6 +14,10 @@ export type ConditionStatus = "good" | "fair" | "weak";
 export const GOOD_FROM = 70;
 export const FAIR_FROM = 40;
 
+/** A status as a fill (dots, bars) and as a CSS color (a gauge's arc): green, amber, red, always beside its word. */
+export const STATUS_FILL: Record<ConditionStatus, string> = { good: "bg-positive", fair: "bg-progress", weak: "bg-negative" };
+export const STATUS_COLOR: Record<ConditionStatus, string> = { good: "var(--positive)", fair: "var(--progress)", weak: "var(--negative)" };
+
 export const conditionStatus = (score: number): ConditionStatus => (score >= GOOD_FROM ? "good" : score >= FAIR_FROM ? "fair" : "weak");
 
 /** Each wrong fact ChatGPT states about the client takes this many points off the accuracy area. */

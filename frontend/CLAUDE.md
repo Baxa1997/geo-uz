@@ -38,6 +38,14 @@ slices change in the contract below:
   `recommended` (per brand id), `answers`, `description` and `services`; an answer says its `engine`, a mention
   whether it is `recommended`. `POST /snapshot` is not built.
 - Two assistants, ChatGPT and Gemini, not one.
+- **Confirm first, check after (16 Nov; the user: "I don't understand the flow we have … more structured").**
+  `/onboarding/first-run` is four numbered steps before anybody is asked (`FirstRunSetup`, `FIRST_CHECK_STEPS`):
+  1 the website and the country; 2 the business as we read it; 3 its competitors; 4 the questions (ten at most
+  in a first check) and the brand questions. `POST /first-runs` only reads the site and stops at `ready`;
+  `getFirstRunDraft` fills steps 2 to 4; the last button is `confirmFirstRun` (`POST /first-runs/{id}/start`),
+  then the progress, then the statistics, whose button saves the check as the project
+  (`projectFromFirstRun`) and opens its dashboard. No setup after the check: `/onboarding?firstRun=` is no
+  longer linked to. The steps reuse the wizard's pickers and its preview of the app on the right.
 
 ## MVP scope
 1. Brand setup: name, aliases (Latin + Cyrillic spellings), domain, description, category, city, services,
@@ -102,11 +110,34 @@ Biznes 490,000 (75 prompts, 5 competitors) · Agentlik 1,490,000 (300 prompts, u
 Managed GEO from 3,000,000. Weekly runs, ChatGPT, 3 samples per prompt, unlimited users.
 
 ## Landing page
-The home page follows the section order of peec.ai (hero with the dashboard preview, the three metrics,
-key features, a statement, Telegram reports, reports, why local, pricing with a comparison table, FAQ,
-demo form, dark call to action, dark footer). Structure only: the name, logo, colors, wording, numbers and
-screens are ours. Never add customer quotes, logos or ratings we haven't earned, and mark features that
-aren't built yet "tez orada" wherever they appear.
+Rebuilt on 16 Nov 2026 after the user's look at vizibleai.com ("our landing page is not accurate and not
+structured correctly … make it clear everything"): the structure of a clear product page, in our own look and
+words. In order (`SECTION` in marketing/constants, `pages/landing-page.tsx`):
+
+1. **Hero**: the label (ChatGPT and Gemini, the first check free), the headline, one sentence on what a visitor
+   gets, and **the website field itself** (`SiteForm` → `/check?site=`, which goes to the real first check,
+   login by email first, when `first-run` is live), a line "free · email · 2–3 minutes · book a demo", then
+   the dashboard preview.
+2. **Assistants** (`Engines`): ChatGPT and Gemini "every check", Google's AI answers and Yandex "soon", then why
+   these, three StatCounter figures for Uzbekistan with their month (`MARKET_FIGURES`: update the numbers and
+   the month in messages together).
+3. **How it works**: three numbered steps and the button.
+4. **Metrics**: the three tabs on one sample answer (`MetricTabs`).
+5. **Competitors and sources** (`Compare`), 6. **What AI says about you** (`BrandAnswers`), 7. **Fixes**
+   (`Fixes`), 8. **Report** (`ReportPreview`): each a section head (`SectionHead`: label and heading on the
+   left, one paragraph on the right) over **real pieces of the app** in `ProductFrame`s (a light ground, the
+   app's own card, a caption under it): `BrandTable`, the cited sites with "are you on it", `BrandViewCard`,
+   the open fixes with `useActionTitle` and `ImpactBadge`, `SiteAudit`, the report's first page with
+   `ConditionGauge` (moved to shared/components for this). The sample is the clinic of `mocks/demo.ts`
+   (`DEMO_REPORT`, `DEMO_BRAND_VIEW`, `DEMO_ACTIONS`, `DEMO_SITE_CHECKS`).
+9. **Why us** (`Local`): six cards. 10. **Who it is for** (`Audience`): a business (the navy card), an agency.
+11. **Pricing** (the cards, Managed GEO, the comparison `PLAN_TABLE`), 12. **FAQ**, 13. **Demo form** (since
+   16 Nov it reaches the backend, `POST /demo-requests`), the navy closing band, the footer.
+
+Every claim says what the product does on that date, and a planned part says "tez orada" wherever it appears
+(Telegram, Google's AI answers, Yandex, the full site audit, the agency's name on reports). Never add customer
+quotes, logos, ratings or contacts we haven't got: the footer's placeholder contacts were removed. A market
+figure goes on the page only with its source and month, read from the source itself.
 
 The hero's dashboard is the app's Overview built from the same shared components (`shared/components/scores`:
 HeadlineKpis, TrendPanel, BrandTable, TopDomains, SourceTypesChart) with `mocks/demo.ts`, so the
