@@ -1,5 +1,5 @@
 import { useLocale, useMessages, useTimeZone, useTranslations } from "next-intl";
-import { engineOf, TIME_ZONE } from "@/shared/constants";
+import { engineOf, PROMPT_LANGUAGES, TIME_ZONE } from "@/shared/constants";
 import { CONDITION_AREAS, FAIR_FROM, GOOD_FROM, WRONG_FACT_PENALTY } from "@/shared/helpers/condition";
 import { formatLongDate } from "@/shared/helpers/dates";
 import { placeLabel } from "@/shared/helpers/labels";
@@ -31,6 +31,7 @@ function Rows({ rows }: { rows: { key: string; label: string; value: string }[] 
 export function Method({ report }: { report: Report }) {
   const t = useTranslations("Report.method");
   const engines = useTranslations("Engines");
+  const languages = useTranslations("Locales");
   const messages = useMessages();
   const locale = useLocale();
   const timeZone = useTimeZone() ?? TIME_ZONE;
@@ -44,7 +45,7 @@ export function Method({ report }: { report: Report }) {
       rows={[
         { key: "assistant", label: t("assistant"), value: t("assistantValue", { engine: engines(engineOf(method.engine)), model: method.model }) },
         { key: "location", label: t("location"), value: t("locationValue", { city: placeLabel(messages.Cities, locale, project) }) },
-        { key: "questions", label: t("questions"), value: t("questionsValue", { count: report.prompts.length, uz: inLanguage("uz"), ru: inLanguage("ru") }) },
+        { key: "questions", label: t("questions"), value: t("questionsValue", { count: report.prompts.length, split: PROMPT_LANGUAGES.filter((language) => inLanguage(language) > 0).map((language) => t("questionsPart", { count: inLanguage(language), language: languages(language) })).join(", ") }) },
         { key: "samples", label: t("samples"), value: t("samplesValue", { samples: method.samples }) },
         {
           key: "checks",

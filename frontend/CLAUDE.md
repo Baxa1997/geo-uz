@@ -553,7 +553,8 @@ Types:
 - Brand { id, name, aliases: string[], domain, logo: string | null (its logo's address, found by the backend on the
   brand's website (the site's icon); shown in the chart's tooltip, the brands table and Savollar, the initial where
   there is none) }
-- Prompt { id, text, language: "uz"|"ru", topic, createdAt, archivedAt | null }
+- Prompt { id, text, language: "uz"|"ru"|"en" (English since 16 Nov, for a business serving a country outside
+  Uzbekistan and its Russian-speaking neighbours), topic, createdAt, archivedAt | null }
 - Report { project, period, method: { engine, model, webSearch: boolean, samples, collectedAt },
   scores: BrandScore[], prompts: PromptResult[], topSources: Source[], wrongFacts: WrongFact[],
   history: HistoryPoint[] (past runs, oldest first, ending with this one),

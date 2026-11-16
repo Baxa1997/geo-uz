@@ -11,7 +11,7 @@ import { Input } from "@/shared/components/ui/input";
 import { api, ApiError } from "@/shared/api/client";
 import { isValidDomain, normalizeDomain } from "@/shared/helpers/domain";
 import type { FirstRun } from "@/shared/types/api";
-import { CountrySelect } from "./country-select";
+import { CountrySelect } from "@/shared/components/country-select";
 
 const POINTS = ["p1", "p2", "p3"] as const;
 

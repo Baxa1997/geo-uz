@@ -116,16 +116,37 @@ def site_checks(pages: List[Dict[str, str]], html: Optional[str], robots: Option
 # The time zone told to the search tool with the country; left out for the others
 TIMEZONES = {"UZ": "Asia/Tashkent", "KZ": "Asia/Almaty", "KG": "Asia/Bishkek", "TJ": "Asia/Dushanbe", "TM": "Asia/Ashgabat"}
 
+# The languages the questions are written in, by the country the business serves (the user's choice,
+# 16 Nov 2026: "questions by country"): Uzbek and Russian in Uzbekistan, Russian where customers type in
+# Russian, English everywhere else. Only these three: they are the ones the interface and the reading
+# rules know. The first of a country's languages is also the one its topics and profile are written in.
+RUSSIAN_SPEAKING = {"KZ", "KG", "TJ", "TM", "RU", "BY"}
+QUESTION_LANGUAGES = ("ru", "uz", "en")
+
+
+def languages_for(country: str) -> List[str]:
+    code = (country or "").strip().upper()
+    return ["ru", "uz"] if code in ("UZ", "") else ["ru"] if code in RUSSIAN_SPEAKING else ["en"]
+
+
+LANGUAGE_RULES = """The languages, by the country the business mainly serves:
+- Uzbekistan (UZ): half of the questions in Russian (language \"ru\") and half in Uzbek in Latin script (language \"uz\"); the profile's own texts (category, city, description, services, topics) in Russian.
+- Kazakhstan, Kyrgyzstan, Tajikistan, Turkmenistan, Russia, Belarus: every question in Russian (language \"ru\"); the profile's own texts in Russian.
+- Any other country: every question in English (language \"en\"); the profile's own texts in English."""
+
 PROFILE_RULES = """You read a business's website and prepare a first check of how AI assistants answer its customers.
 
 From the text, give:
 - name: the business's name as customers write it. aliases: its other spellings on the site and in common use (Latin and Cyrillic, short forms); never a generic word, and never an abbreviation of three letters or fewer.
-- category: what kind of business it is, two to four words in Russian (\"частная школа\", \"чат-боты для бизнеса\", \"магазин мебели\").
-- country: the two-letter code of the country it mainly serves. city: the city it mainly serves, in Russian, and cityEn, the same in English; both empty when it serves a whole country or several, or works online.
-- description: one sentence in Russian on what it offers.
-- services: up to six of its main services, in Russian.
-- questions: exactly {count} questions a customer there (in that city, or in that country when no city is given) would ask an AI assistant when choosing such a business, before knowing any business's name. Half in Russian (language \"ru\"), half in Uzbek in Latin script (language \"uz\"). Cover: the best in the city or country, how to choose, prices, the business's main services or specialities, and its district if the site names one. Each with a `topic` of one or two words in Russian. Natural, short, the way people type. Never name this business or any other in a question.
-- brandQuestions: exactly four questions a customer who has already heard of this business would ask an AI assistant about it by its name: two in Russian, two in Uzbek in Latin script. Each names the business as customers write it, and each asks about one thing: its prices, whether it is good and what people say, one of its main services, how to reach or find it. Natural and short."""
+- country: the two-letter code of the country it mainly serves.
+- category: what kind of business it is, two to four words (\"частная школа\", \"чат-боты для бизнеса\", \"furniture store\").
+- city: the city it mainly serves, and cityEn, the same in English; both empty when it serves a whole country or several, or works online.
+- description: one sentence on what it offers.
+- services: up to six of its main services.
+- questions: exactly {count} questions a customer there (in that city, or in that country when no city is given) would ask an AI assistant when choosing such a business, before knowing any business's name, in the languages set below. Cover: the best in the city or country, how to choose, prices, the business's main services or specialities, and its district if the site names one. Each with a `topic` of one or two words. Natural, short, the way people type. Never name this business or any other in a question.
+- brandQuestions: exactly four questions a customer who has already heard of this business would ask an AI assistant about it by its name, in the languages set below (two and two where there are two languages). Each names the business as customers write it, and each asks about one thing: its prices, whether it is good and what people say, one of its main services, how to reach or find it. Natural and short.
+
+""" + LANGUAGE_RULES
 
 
 def profile(domain: str, pages: List[Dict[str, str]], category: Optional[str], city: Optional[str], count: int, country: Optional[str] = None) -> Tuple[Dict[str, Any], float]:
@@ -140,8 +161,8 @@ def profile(domain: str, pages: List[Dict[str, str]], category: Optional[str], c
         country=STR,
         description=STR,
         services=arr(STR),
-        questions=arr(obj(text=STR, language={"type": "string", "enum": ["ru", "uz"]}, topic=STR)),
-        brandQuestions=arr(obj(text=STR, language={"type": "string", "enum": ["ru", "uz"]})),
+        questions=arr(obj(text=STR, language={"type": "string", "enum": list(QUESTION_LANGUAGES)}, topic=STR)),
+        brandQuestions=arr(obj(text=STR, language={"type": "string", "enum": list(QUESTION_LANGUAGES)})),
     )
     found, usd = engines.write(PROFILE_RULES.replace("{count}", str(count)) + given, f"Website: {domain}\n\n{text}", "site_profile", schema)
     spellings = [found["name"]] + found["aliases"]
@@ -179,6 +200,7 @@ NAMES_RULES = (
 BRAND_QUESTIONS = {
     "ru": "Что известно о «{name}»{place}? Чем занимается, какие цены, где находится и какие о нём отзывы?",
     "uz": "{name}{place} haqida nima maʼlum? Nima bilan shugʻullanadi, narxlari qanday, qayerda joylashgan va u haqda qanday fikrlar bor?",
+    "en": "What is known about {name}{place}? What does it do, what are its prices, where is it, and what do people say about it?",
 }
 
 BRAND_RULES = """An AI assistant was asked about one business by its name. You are given the business as its own website describes it, and the assistant's answer. Say what the assistant states about the business, for its owner, who is not technical.
@@ -198,10 +220,11 @@ BRAND_SCHEMA = obj(
 )
 
 
-def brand_languages(engine: str, asked: List[str]) -> List[str]:
-    """The brand questions an assistant gets: both languages, and ChatGPT one when Gemini is asked too
-    (the same economy as `questions_for`)."""
-    return ["ru"] if engine == "chatgpt" and "gemini" in asked else list(BRAND_QUESTIONS)
+def brand_languages(engine: str, asked: List[str], languages: Optional[List[str]] = None) -> List[str]:
+    """The brand questions an assistant gets: one in each of the country's languages, and ChatGPT only the
+    first when Gemini is asked too (the same economy as `questions_for`)."""
+    languages = languages or languages_for("UZ")
+    return languages[:1] if engine == "chatgpt" and "gemini" in asked else list(languages)
 
 
 def brand_question(language: str, name: str, city: str) -> str:
@@ -303,7 +326,8 @@ def run(domain: str, category: Optional[str], city: Optional[str], progress: Pro
     cost = 0.0
 
     progress("reading_site", 0, 0)
-    pages = web.read_site(domain, "ru")
+    # The site's version to read: English for a country whose questions are English, when the owner named it
+    pages = web.read_site(domain, "en" if country and languages_for(country) == ["en"] else "ru")
     if not pages:
         raise FirstRunError("site_unreadable", domain)
     root = f"https://{web.domain_of(pages[0]['url'])}"
@@ -314,6 +338,10 @@ def run(domain: str, category: Optional[str], city: Optional[str], progress: Pro
     # The owner's own word on the country wins over what the website suggests
     country = country or who["country"].strip().upper()[:2] or "UZ"
     place = (country, who["cityEn"] or who["city"], TIMEZONES.get(country, ""))
+    languages = languages_for(country)
+    # The rules name the languages; a question that came in another one is left out
+    who["questions"] = [question for question in who["questions"] if question["language"] in languages] or who["questions"]
+    who["brandQuestions"] = [question for question in who["brandQuestions"] if question["language"] in languages]
 
     # Every question to every assistant, a few at a time; one that fails is left out and the run goes on
     jobs = [(q, engine) for engine in asked for q in questions_for(engine, asked, len(who["questions"]))]
@@ -323,8 +351,8 @@ def run(domain: str, category: Optional[str], city: Optional[str], progress: Pro
     with ThreadPoolExecutor(max_workers=5) as pool:
         futures = {pool.submit(engines.ask, engine, who["questions"][q]["text"], *place): (q, engine) for q, engine in jobs}
         # The brand questions go with them and are kept apart: not counted in the progress or in any score
-        general = {language: brand_question(language, who["name"], who["cityEn"] if language == "uz" else who["city"]) for language in BRAND_QUESTIONS}
-        named_asks = [(engine, language, general[language]) for engine in asked for language in brand_languages(engine, asked)]
+        general = {language: brand_question(language, who["name"], who["city"] if language == "ru" else who["cityEn"]) for language in languages}
+        named_asks = [(engine, language, general[language]) for engine in asked for language in brand_languages(engine, asked, languages)]
         named_futures = [(pool.submit(engines.ask, engine, text, *place), engine, language, text) for engine, language, text in named_asks]
         for done, future in enumerate(as_completed(futures), start=1):
             q, engine = futures[future]

@@ -5,7 +5,8 @@
 import { languageOfText } from "@/shared/helpers/prompts";
 import type { PromptLanguage } from "@/shared/types/api";
 
-type Pool = Record<PromptLanguage, string[]>;
+/** The sample business is asked about in Uzbek and Russian only. */
+type Pool = Record<Exclude<PromptLanguage, "en">, string[]>;
 
 /** More questions per topic (the codes of messages/Topics), in both languages. */
 const MORE: Record<string, Pool> = {
@@ -192,7 +193,7 @@ export interface Draft {
 /** The questions a topic offers in the given languages, the languages taking turns. */
 export function poolFor(topic: string, languages: PromptLanguage[]): Draft[] {
   const pool = MORE[topic] ?? generic(topic);
-  const lists = languages.map((language) => pool[language].map((text) => ({ text, language, topic })));
+  const lists = languages.map((language) => (language === "en" ? [] : pool[language]).map((text) => ({ text, language, topic })));
   const longest = Math.max(0, ...lists.map((list) => list.length));
   return Array.from({ length: longest }, (_, index) => lists.flatMap((list) => list[index] ?? [])).flat();
 }

@@ -178,6 +178,19 @@ that is committed.
 
 ## Done (as of 16 November 2026)
 
+- **Built, waiting for the user's look: questions by country (16 Nov), on the branch `questions-by-country`;
+  merged, pushed and the backend deployed the same day, when the user said "yes, commit, push and deploy".** The user chose it as the next step. The questions (customers' and brand
+  ones), their topics and the profile's texts are written in the country's languages: Uzbek and Russian in
+  Uzbekistan, Russian in Kazakhstan, Kyrgyzstan, Tajikistan, Turkmenistan, Russia and Belarus, English
+  everywhere else (`firstrun.languages_for`; only these three, the ones the interface knows: no Kazakh,
+  Turkish and so on). A question's language may be English through the pages (filters, labels, the add
+  window, the report's method line and question chips); a typed question's language is guessed as Uzbek,
+  Russian or English. Sozlamalar › Profil has the country, with the city typed for a country other than
+  Uzbekistan (the list and the map are Uzbekistan's); changing it does not rewrite the questions a project
+  has. Tried: the helpers by script, the profile page in a browser in Uzbek for a project abroad and one in
+  Uzbekistan, the type check and the linter. **Not tried: the writing itself with a model (a paid request),
+  so no English question has been generated yet.** No new variable.
+
 - **Built, waiting for the user's look: fifteen corrections from the first real use (16 Nov), on the branch
   `fixes-from-first-real-use`; merged, pushed and the backend deployed to the server the same day, when the user
   said "yes" to "commit, push and deploy?".** The user tried the Vercel site with a chatbot

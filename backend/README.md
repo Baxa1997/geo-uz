@@ -51,6 +51,7 @@ SECURE_COOKIES=true
 | `GET /auth/me`, `PATCH /auth/me` `{name}`, `POST /auth/logout` | The account; its name; logging out |
 | `POST /first-runs` `{domain, country?, category?, city?}` | Starts a new account's first run and returns at once (202). `country` (two letters, asked with the website) wins over what the website suggests. 409 `domain_taken` when a project, anyone's, already follows the website: one website, one project |
 | `GET /first-runs` | The account's first runs, newest first |
+| (languages) | The questions are written in the country's languages (`firstrun.languages_for`, 16 Nov): `ru` and `uz` in Uzbekistan, `ru` in KZ, KG, TJ, TM, RU, BY, `en` elsewhere. A question's `language` is one of `uz`, `ru`, `en` |
 | `GET /first-runs/{id}` | Its progress: `status`, `answered`, `total` |
 | `GET /first-runs/{id}/result` | The first statistics, in the frontend's `Snapshot` shape and a little more |
 | `POST /projects` `{name, aliases, domain, category, city, competitors, prompts, firstRunId?}` | The setup's last button: a project. With `firstRunId`, the first run's answers become its first check, for the questions that were kept. 409 `domain_taken` as above (also from `PATCH /projects/{id}` for a new website) |
