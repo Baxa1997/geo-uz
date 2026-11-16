@@ -79,7 +79,7 @@ export default async function OverviewPage({ params, searchParams }: Props) {
 
   if (report.prompts.length === 0) {
     return (
-      <Page title={t("overview")} engines toolbar={hasFilters(filters) && <ReportFilterBar topics={topics} />}>
+      <Page title={t("overview")} engines={report.engines ?? true} toolbar={hasFilters(filters) && <ReportFilterBar topics={topics} />}>
         {hasFilters(filters) ? <FilteredEmpty resetHref={base} /> : <NoData projectId={report.project.id} promptCount={prompts.length} />}
       </Page>
     );
@@ -90,7 +90,7 @@ export default async function OverviewPage({ params, searchParams }: Props) {
   return (
     <Page
       title={t("overview")}
-      engines
+      engines={report.engines ?? true}
       tour="overview"
       toolbar={
         <>
@@ -115,7 +115,7 @@ export default async function OverviewPage({ params, searchParams }: Props) {
       {report.project.billing.status === "trial" && <TrialNotice href={`${base}/settings/plan`} />}
       {report.wrongFacts.length > 0 && <WrongFactsAlert count={report.wrongFacts.length} href={to("/wrong-facts")} />}
       <div data-tour="verdict">
-        <Verdict report={report} />
+        <Verdict report={report} engine={filters.engine} />
       </div>
 
       <HeadlineKpis report={report} />

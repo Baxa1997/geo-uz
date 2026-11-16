@@ -55,7 +55,7 @@ SECURE_COOKIES=true
 | `GET /first-runs/{id}/result` | The first statistics, in the frontend's `Snapshot` shape and a little more |
 | `POST /projects` `{name, aliases, domain, category, city, competitors, prompts, firstRunId?}` | The setup's last button: a project. With `firstRunId`, the first run's answers become its first check, for the questions that were kept |
 | `GET /projects`, `GET /projects/{id}`, `GET /projects/{id}/prompts` | The account's projects; one; its questions |
-| `GET /projects/{id}/report` `?language=&topic=` | The `Report` the dashboard's pages read, counted from the answers |
+| `GET /projects/{id}/report` `?language=&topic=&engine=` | The `Report` the dashboard's pages read, counted from the answers. `engine` (`chatgpt`, `gemini`): one assistant's answers alone, in every check; an assistant that didn't answer is ignored. `engines` lists the assistants of the latest check with their answers |
 | `GET /projects/{id}/prompts/{promptId}/report`, `GET /projects/{id}/reports/{runId}` | The report over one question; the report as it stood at a run |
 | `GET /projects/{id}/topics`, `/tags` | Counted from the questions |
 | `POST`, `PATCH /projects/{id}/prompts`, `PUT`, `PATCH /projects/{id}/prompts/{promptId}` | Questions: add several (all or none; 409 at the plan's limit, 422 for a repeat), edit one, archive or track again, and for several at once a topic, tags, fact-checking |

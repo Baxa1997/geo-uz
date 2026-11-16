@@ -26,7 +26,7 @@
     "allTopics": "Barcha mavzular",
     "reset": "Tozalash",
     "emptyTitle": "Bu filtrlarga mos natija yoʻq",
-    "emptyText": "Tanlangan til va mavzu boʻyicha ChatGPT’ga berilgan savol topilmadi."
+    "emptyText": "Tanlangan til va mavzu boʻyicha AI’ga berilgan savol topilmadi."
   },
   "Locales": {
     "uz": "Oʻzbekcha",
@@ -74,7 +74,7 @@
     "print": "Chop etish yoki PDF",
     "copy": "Havolani nusxalash",
     "copied": "Havola nusxalandi",
-    "footer": "GEO tomonidan ChatGPT’ning {date} dagi javoblari asosida tayyorlandi. Raqamlar shu javoblarni tasvirlaydi; bu prognoz emas.",
+    "footer": "GEO tomonidan AI’ning {date} dagi javoblari asosida tayyorlandi. Raqamlar shu javoblarni tasvirlaydi; bu prognoz emas.",
     "meta": {
       "period": "Davr",
       "periodRange": "{from} – {to}",
@@ -93,7 +93,7 @@
       "changes": "Oldingi hisobotdan beri nima oʻzgardi",
       "competitors": "Raqobatdagi oʻrin",
       "topics": "Mavzular va savollar",
-      "sources": "ChatGPT tayanadigan manbalar",
+      "sources": "AI tayanadigan manbalar",
       "accuracy": "Aniqlik va baho",
       "risks": "Xavflar va imkoniyatlar",
       "actions": "Harakatlar rejasi",
@@ -160,7 +160,7 @@
       "compared": "Siz va eng kuchli raqobatchi"
     },
     "sources": {
-      "lead": "ChatGPT eng koʻp havola beradigan saytlar. Ularda boʻlish — javoblarga kirishning eng tez yoʻli.",
+      "lead": "AI eng koʻp havola beradigan saytlar. Ularda boʻlish — javoblarga kirishning eng tez yoʻli.",
       "site": "Sayt",
       "kind": "Turi",
       "used": "Ishlatilgan",
@@ -170,7 +170,7 @@
       "own": "Sizning saytingiz",
       "competitor": "Raqobatchi sayti",
       "more": "Yana {count} ta saytga kamroq havola berilgan.",
-      "split": "ChatGPT havolalari kimga ishlaydi",
+      "split": "AI havolalari kimga ishlaydi",
       "splitLabel": "Havolalar taqsimoti: {parts}",
       "parts": {
         "own": "Oʻz saytingiz",
@@ -182,15 +182,15 @@
       "top": "Eng koʻp keltirilgan saytlar"
     },
     "accuracy": {
-      "lead": "ChatGPT siz haqingizda qanday baho bilan gapiradi va aytgani toʻgʻrimi. Notoʻgʻri narx yoki manzil mijoz yoʻqotishga olib keladi.",
+      "lead": "AI siz haqingizda qanday baho bilan gapiradi va aytgani toʻgʻrimi. Notoʻgʻri narx yoki manzil mijoz yoʻqotishga olib keladi.",
       "none": "Bu tekshiruvda notoʻgʻri fakt topilmadi.",
       "notChecked": "Javoblar hali faktlaringiz bilan solishtirilmagan.",
-      "says": "ChatGPT aytadi",
+      "says": "AI aytadi",
       "correct": "Toʻgʻrisi",
       "question": "Savol",
       "since": "Birinchi marta",
       "toneTitle": "Baho",
-      "toneNone": "Bu tekshiruvda ChatGPT sizni tilga olmadi, shuning uchun bahoni oʻlchab boʻlmaydi.",
+      "toneNone": "Bu tekshiruvda AI sizni tilga olmadi, shuning uchun bahoni oʻlchab boʻlmaydi.",
       "toneOf": "100 dan. Shu tekshiruv javoblarida siz {count} marta tilga olingansiz:",
       "factsTitle": "Notoʻgʻri faktlar"
     },
@@ -237,19 +237,19 @@
       "shareOfVoice": "Brendning tilga olinishlari kuzatilayotgan barcha brendlarning tilga olinishlariga nisbatan. Eʼtibor qanday taqsimlanganini koʻrsatadi.",
       "position": "Javobda tilga olingan bizneslar orasida brend nechanchi turgani. 1 — birinchi; qancha kichik boʻlsa, shuncha yaxshi. Brend tilga olingan javoblar boʻyicha oʻrtacha.",
       "sentiment": "Brend haqida qanchalik ijobiy gapirilgani: 0 (salbiy) dan 100 (ijobiy) gacha.",
-      "usedAsSource": "Saytga havola bergan javoblar ulushi. Oʻz saytingiz uchun — ChatGPT siz yozgan maʼlumotga qanchalik tayanishini koʻrsatadi.",
+      "usedAsSource": "Saytga havola bergan javoblar ulushi. Oʻz saytingiz uchun — AI siz yozgan maʼlumotga qanchalik tayanishini koʻrsatadi.",
       "checkTerm": "Tekshiruv",
       "check": "Haftalik bir aylanish: unda har bir kuzatilayotgan savol bir necha marta beriladi.",
       "numbers": "Beshta koʻrsatkich",
       "conditionTitle": "Holat bahosi",
       "conditionTerm": "Holat bahosi",
-      "condition": "ChatGPT’dagi holatingizni koʻrsatadigan 0 dan 100 gacha bitta son: quyidagi {areas} ta yoʻnalish bahosining oʻrtachasi.",
+      "condition": "AI’dagi holatingizni koʻrsatadigan 0 dan 100 gacha bitta son: quyidagi {areas} ta yoʻnalish bahosining oʻrtachasi.",
       "areas": {
         "visibility": "Tilga olinishingiz son sifatida: javoblarning 42%ida tilga olinsangiz — 42.",
         "competition": "Tilga olinishingiz eng koʻp tilga olingan kuzatilayotgan brendnikiga nisbatan, foizda. Yetakchi boʻlsangiz — 100.",
         "coverage": "Kuzatilayotgan savollarning necha foizida kamida bitta javob sizni tilga olgani.",
-        "sources": "ChatGPT biznes joylashishi mumkin boʻlgan saytlarga (kataloglar, xaritalar, yangiliklar, ijtimoiy tarmoqlar) bergan havolalarning necha foizi siz bor saytlarga toʻgʻri kelgani.",
-        "accuracy": "Sizga berilgan baho (100 dan); ChatGPT siz haqingizda aytgan har bir notoʻgʻri fakt uchun {penalty} ball ayiriladi."
+        "sources": "AI biznes joylashishi mumkin boʻlgan saytlarga (kataloglar, xaritalar, yangiliklar, ijtimoiy tarmoqlar) bergan havolalarning necha foizi siz bor saytlarga toʻgʻri kelgani.",
+        "accuracy": "Sizga berilgan baho (100 dan); AI siz haqingizda aytgan har bir notoʻgʻri fakt uchun {penalty} ball ayiriladi."
       },
       "statusTerm": "Holat",
       "status": "Baho qanday oʻqiladi: {good} dan — yaxshi, {fair} dan — oʻrtacha, {fair} dan past — zaif."
@@ -258,11 +258,11 @@
       "lead": "Bu tekshiruvdagi har bir savol va javoblarida tilga olingan brendlar. Javoblarni oʻqish uchun savolni oching."
     },
     "changes": {
-      "lead": "Raqamlar ortidagi voqealar: brendlar orasidagi oʻrningiz, ChatGPT tayanadigan saytlar, yangi notoʻgʻri faktlar va bu hafta bajarilgan ishlar. Raqamlarning oʻzi oldingi boʻlimda.",
+      "lead": "Raqamlar ortidagi voqealar: brendlar orasidagi oʻrningiz, AI tayanadigan saytlar, yangi notoʻgʻri faktlar va bu hafta bajarilgan ishlar. Raqamlarning oʻzi oldingi boʻlimda.",
       "first": "Bu birinchi hisobot: solishtirish uchun oldingi tekshiruv yoʻq. Keyingi hisobotdan boshlab bu yerda nima oʻzgargani koʻrinadi.",
       "groups": {
         "brands": "Brendlar orasida",
-        "sources": "ChatGPT tayanadigan saytlar",
+        "sources": "AI tayanadigan saytlar",
         "facts": "Notoʻgʻri faktlar",
         "done": "Bu hafta bajarilgan ishlar"
       },
@@ -326,27 +326,27 @@
       "since": "oldingi hisobotga nisbatan"
     },
     "findings": {
-      "visibility": "ChatGPT sizni har 10 javobdan {you} tasida tilga oladi ({percent}).",
+      "visibility": "AI sizni har 10 javobdan {you} tasida tilga oladi ({percent}).",
       "visibilityUp": "Bu oldingi hisobotdagidan {points} punkt koʻp.",
       "visibilityDown": "Bu oldingi hisobotdagidan {points} punkt kam.",
       "visibilitySame": "Oldingi hisobotda ham shunday edi.",
       "competitionBehind": "Kuzatilayotgan {of} ta brend ichida {rank}-oʻrindasiz. Yetakchi — {leader}: {leaderValue}, sizdan {gap} punkt oldinda.",
       "competitionFirst": "Kuzatilayotgan {of} ta brend ichida birinchisiz. Keyingisi — {next}: {nextValue}.",
       "competitionAlone": "Hozircha raqobatchilar kuzatilmayapti, shuning uchun solishtiradigan brend yoʻq.",
-      "coverage": "ChatGPT {total} ta savoldan {named} tasida sizni tilga oladi.",
+      "coverage": "AI {total} ta savoldan {named} tasida sizni tilga oladi.",
       "coverageMissing": "{count} ta savolda u faqat raqobatchilarni tilga oladi, sizni esa hech qachon.",
       "coverageAll": "Faqat raqobatchilar tilga olingan savol yoʻq.",
       "weakTopic": "Eng zaif mavzuingiz — “{topic}”: sizda {value}, {leader}da {leaderValue}.",
-      "sources": "ChatGPT biznes joylashishi mumkin boʻlgan saytlarga (kataloglar, xaritalar, yangiliklar, ijtimoiy tarmoqlar) bergan havolalarining {percent} qismi siz bor saytlarga toʻgʻri keladi.",
+      "sources": "AI biznes joylashishi mumkin boʻlgan saytlarga (kataloglar, xaritalar, yangiliklar, ijtimoiy tarmoqlar) bergan havolalarining {percent} qismi siz bor saytlarga toʻgʻri keladi.",
       "sourcesMissing": "Shunday {count} ta saytda siz yoʻqsiz; eng koʻp keltiriladiganlari: {sites}.",
       "sourcesAll": "Ularning barchasida borsiz.",
-      "sourcesNoneCited": "ChatGPT biznes joylashishi mumkin boʻlgan birorta saytga havola bermadi.",
+      "sourcesNoneCited": "AI biznes joylashishi mumkin boʻlgan birorta saytga havola bermadi.",
       "ownSite": "Oʻz saytingizga esa u javoblarning {own} qismida havola beradi.",
-      "accuracy": "ChatGPT siz haqingizda gapirgandagi baho — 100 dan {score} ({tone}).",
+      "accuracy": "AI siz haqingizda gapirgandagi baho — 100 dan {score} ({tone}).",
       "accuracyFacts": "U siz haqingizda {count} ta notoʻgʻri fakt aytmoqda; har biri bu bahodan {penalty} ball ayiradi.",
       "accuracyClean": "Siz haqingizda notoʻgʻri fakt topilmadi.",
       "accuracyNotChecked": "Notoʻgʻri faktlar hali tekshirilmagan.",
-      "accuracyNotNamed": "ChatGPT sizni tilga olmayapti, shuning uchun bahoni hozircha oʻlchab boʻlmaydi."
+      "accuracyNotNamed": "AI sizni tilga olmayapti, shuning uchun bahoni hozircha oʻlchab boʻlmaydi."
     },
     "events": {
       "placeUp": "{now}-oʻringa koʻtarildingiz",
@@ -386,11 +386,11 @@
       },
       "items": {
         "facts": {
-          "title": "ChatGPT mijozlarga siz haqingizda {count} ta notoʻgʻri fakt aytmoqda.",
+          "title": "AI mijozlarga siz haqingizda {count} ta notoʻgʻri fakt aytmoqda.",
           "detail": "Masalan: “{claim}”. Bunga ishongan mijoz sizga kelmasligi mumkin."
         },
         "lostTopics": {
-          "title": "ChatGPT {topics} {count, plural, one {mavzusida} other {mavzularida}} sizni umuman tilga olmaydi.",
+          "title": "AI {topics} {count, plural, one {mavzusida} other {mavzularida}} sizni umuman tilga olmaydi.",
           "detail": "Shu haqda soʻragan mijoz siz haqingizda emas, {leader} haqida eshitadi."
         },
         "leaderGap": {
@@ -406,11 +406,11 @@
           "detail": "Bir hafta tasodif boʻlishi mumkin; ikkinchi hafta ham tushsa, bu yoʻnalish — chora koʻrish kerak."
         },
         "tone": {
-          "title": "ChatGPT siz haqingizda gapirgandagi baho — 100 dan {score}.",
+          "title": "AI siz haqingizda gapirgandagi baho — 100 dan {score}.",
           "detail": "U sharhlarda oʻqiganini takrorlaydi. Sharhlarga javob bering va sababini bartaraf eting — baho oʻzgaradi."
         },
         "listings": {
-          "title": "ChatGPT tayanadigan {count} ta saytda siz yoʻqsiz: {sites}.",
+          "title": "AI tayanadigan {count} ta saytda siz yoʻqsiz: {sites}.",
           "detail": "Foiz — shu saytga havola bergan javoblar ulushi. Ularga joylashish — shu javoblarga kirishning eng tez yoʻli."
         },
         "closeTopics": {
@@ -418,7 +418,7 @@
           "detail": "Eng yaqinida farq — {gap} punkt: shu mavzuda bitta kuchli sahifa yetakchilikni olib berishi mumkin."
         },
         "ownSite": {
-          "title": "ChatGPT javoblarning {you} qismida saytingizga havola beradi, {rival} saytiga esa — {rivalValue} qismida.",
+          "title": "AI javoblarning {you} qismida saytingizga havola beradi, {rival} saytiga esa — {rivalValue} qismida.",
           "detail": "Xizmatlar va narxlar aniq yozilgan sahifalarga koʻproq havola beriladi, havola berilgan sayt esa koʻproq tilga olinadi."
         },
         "rivalFalling": {
@@ -442,11 +442,11 @@
     }
   },
   "Headline": {
-    "title": "ChatGPT sizni qanchalik koʻp tilga oladi",
+    "title": "AI sizni qanchalik koʻp tilga oladi",
     "you": "Siz",
     "topCompetitor": "Asosiy raqobatchi",
-    "summary": "ChatGPT har 10 ta javobdan {you} tasida sizni tilga oladi ({percent}). Asosiy raqobatchingiz {competitor} — {them} tasida.",
-    "summaryAlone": "ChatGPT har 10 ta javobdan {you} tasida sizni tilga oladi ({percent}).",
+    "summary": "{assistant} har 10 ta javobdan {you} tasida sizni tilga oladi ({percent}). Asosiy raqobatchingiz {competitor} — {them} tasida.",
+    "summaryAlone": "{assistant} har 10 ta javobdan {you} tasida sizni tilga oladi ({percent}).",
     "trendUp": "Oʻtgan haftaga nisbatan +{points} punkt",
     "trendDown": "Oʻtgan haftaga nisbatan −{points} punkt",
     "trendFlat": "Oʻtgan haftadagidek",
@@ -467,8 +467,8 @@
       "shareOfVoice": "Ovoz ulushi"
     },
     "hints": {
-      "visibility": "ChatGPT javoblarining necha foizida brend tilga olingani.",
-      "sentiment": "ChatGPT brend haqida qanchalik ijobiy gapirgani: 0 — salbiy, 100 — ijobiy.",
+      "visibility": "AI javoblarining necha foizida brend tilga olingani.",
+      "sentiment": "AI brend haqida qanchalik ijobiy gapirgani: 0 — salbiy, 100 — ijobiy.",
       "position": "Brend javobda nechanchi boʻlib tilga olingani. 1 — birinchi; son qancha kichik boʻlsa, shuncha yaxshi.",
       "shareOfVoice": "Barcha kuzatilayotgan brendlarning tilga olinishidan brendning ulushi, foizda."
     },
@@ -523,7 +523,7 @@
     "sortHint": "Sarlavhani bossangiz, jadval shu koʻrsatkich boʻyicha saralanadi."
   },
   "SourcesTable": {
-    "title": "ChatGPT tayangan manbalar",
+    "title": "AI tayangan manbalar",
     "viewLabel": "Manbalar roʻyxati turi",
     "domains": "Saytlar",
     "pages": "Sahifalar",
@@ -535,7 +535,7 @@
     "usedHint": "Javoblarning necha foizida shu manbaga havola berilgani",
     "citations": "Oʻrt. havola",
     "citationsHint": "Manbaga tayangan bitta javobdagi oʻrtacha havolalar soni",
-    "empty": "ChatGPT javoblarida havolalar yoʻq.",
+    "empty": "AI javoblarida havolalar yoʻq.",
     "mentioned": "Siz",
     "mentionedHint": "Sahifada brendingiz tilga olinganmi",
     "mentionedYes": "Bor",
@@ -544,17 +544,17 @@
     "hint": "Javoblarning necha foizida shu sayt yoki sahifaga havola berilgan. Nuqta saytning turini koʻrsatadi.",
     "listed": "Brendingiz shu saytda",
     "shown": "Jami: {count}",
-    "takeawayTop": "ChatGPT eng koʻp tayanadigan sayt: {domain} — javoblarning {share} qismida.",
-    "takeawayMissing": "ChatGPT tayanadigan saytlardan {count} tasida brendingiz hali yoʻq. Eng muhimlari: {sites}.",
+    "takeawayTop": "AI eng koʻp tayanadigan sayt: {domain} — javoblarning {share} qismida.",
+    "takeawayMissing": "AI tayanadigan saytlardan {count} tasida brendingiz hali yoʻq. Eng muhimlari: {sites}.",
     "takeawayListed": "Roʻyxatdagi katalog, yangilik va boshqa saytlarning barchasida brendingiz bor.",
-    "guide": "Foiz — javoblarning qancha qismida shu manbaga havola berilgani. Ustun qancha uzun boʻlsa, ChatGPT shu manbaga shuncha koʻp tayanadi.",
+    "guide": "Foiz — javoblarning qancha qismida shu manbaga havola berilgani. Ustun qancha uzun boʻlsa, AI shu manbaga shuncha koʻp tayanadi.",
     "legendYes": "brendingiz bor",
     "legendNo": "brendingiz yoʻq",
     "legendUnknown": "sahifa oʻqilmadi"
   },
   "SourceTypes": {
     "title": "Manbalar turi boʻyicha",
-    "description": "ChatGPT qaysi turdagi saytlarga koʻproq tayanadi.",
+    "description": "AI qaysi turdagi saytlarga koʻproq tayanadi.",
     "own": "Sizning saytingiz",
     "competitor": "Raqobatchilar saytlari",
     "directory": "Xarita va kataloglar",
@@ -570,10 +570,10 @@
       "other": "Boshqa"
     },
     "total": "Jami {count} ta havola",
-    "takeaway": "ChatGPT eng koʻp tayanadigan manba turi: {type} — barcha havolalarning {share} qismi.",
+    "takeaway": "AI eng koʻp tayanadigan manba turi: {type} — barcha havolalarning {share} qismi.",
     "takeawayOwn": "Sizning saytingiz ulushi: {share}.",
     "takeawayNoOwn": "Sizning saytingizga hali havola berilmagan.",
-    "guide": "Foiz — barcha havolalarning qancha qismi shu turdagi saytlarga toʻgʻri kelishi. Ustun qancha uzun boʻlsa, ChatGPT shu turga shuncha koʻp tayanadi.",
+    "guide": "Foiz — barcha havolalarning qancha qismi shu turdagi saytlarga toʻgʻri kelishi. Ustun qancha uzun boʻlsa, AI shu turga shuncha koʻp tayanadi.",
     "count": "{count} ta havola",
     "top": "Eng koʻp: {sites}.",
     "about": {
@@ -602,7 +602,7 @@
       "news": "{domain}’da tilga olinishga erishing",
       "social": "{domain}’da sahifangizni yuriting",
       "other": "{domain}’da paydo boʻling",
-      "fact": "ChatGPT’dagi notoʻgʻri faktni tuzating",
+      "fact": "AI’dagi notoʻgʻri faktni tuzating",
       "content": "“{topic}” haqida sahifa yozing",
       "ai_bots_blocked": "AI qidiruv botlariga saytni oching",
       "prices_as_images": "Narxlarni rasm emas, matn qilib yozing",
@@ -611,13 +611,13 @@
       "rework": "“{topic}” uchun sahifangizni yaxshilang"
     },
     "why": {
-      "listing": "ChatGPT {answers} ta javobda {domain} saytiga tayangan. Bu javoblarda {competitors} tilga olingan, siz esa u yerda yoʻqsiz.",
-      "listingAlone": "ChatGPT {answers} ta javobda {domain} saytiga tayangan, siz esa u yerda yoʻqsiz.",
-      "factSaid": "ChatGPT aytmoqda",
+      "listing": "AI {answers} ta javobda {domain} saytiga tayangan. Bu javoblarda {competitors} tilga olingan, siz esa u yerda yoʻqsiz.",
+      "listingAlone": "AI {answers} ta javobda {domain} saytiga tayangan, siz esa u yerda yoʻqsiz.",
+      "factSaid": "AI aytmoqda",
       "factCorrect": "Toʻgʻrisi",
-      "content": "{count} ta savolda ChatGPT raqobatchilarni aytdi, sizni emas.",
-      "ai_bots_blocked": "Saytingizning robots.txt fayli ChatGPT qidiruv botini (OAI-SearchBot) toʻsib qoʻygan, shuning uchun u sahifalaringizni oʻqiy olmaydi.",
-      "prices_as_images": "Narxlaringiz rasmda — ChatGPT ularni oʻqiy olmaydi va narxni boshqa saytlardan oladi.",
+      "content": "{count} ta savolda AI raqobatchilarni aytdi, sizni emas.",
+      "ai_bots_blocked": "Saytingizning robots.txt fayli AI qidiruv botini (OAI-SearchBot) toʻsib qoʻygan, shuning uchun u sahifalaringizni oʻqiy olmaydi.",
+      "prices_as_images": "Narxlaringiz rasmda — AI ularni oʻqiy olmaydi va narxni boshqa saytlardan oladi.",
       "no_business_markup": "Saytingizda biznes belgisi (schema.org) topilmadi. U AI’ga manzil, ish vaqti va xizmatlaringizni aniq oʻqishga yordam beradi.",
       "contacts_missing": "Saytingizda manzil, telefon yoki ish vaqti matn sifatida topilmadi."
     },
@@ -690,7 +690,7 @@
     "changed": "{title}: {status}",
     "saveFailed": "Holatni saqlab boʻlmadi. Qayta urinib koʻring.",
     "noneTitle": "Harakatlar yoʻq",
-    "noneText": "ChatGPT savollaringizning hammasida sizni tilga oladi va muhim saytlarning hammasida borsiz.",
+    "noneText": "AI savollaringizning hammasida sizni tilga oladi va muhim saytlarning hammasida borsiz.",
     "managedTitle": "Buni oʻzingiz qilishni xohlamaysizmi?",
     "managedText": "Managed GEO tarifida bu ishlarni jamoamiz bajaradi, natijasi esa haftalik hisobotda koʻrinadi.",
     "managedAction": "Batafsil",
@@ -727,13 +727,13 @@
       "topic": "Mavzu",
       "createdAt": "Qoʻshilgan sana"
     },
-    "heading": "ChatGPT sizni tilga olishi uchun nima qilish kerak",
-    "subtitle": "Avval notoʻgʻri faktlarni tuzating, keyin ChatGPT oʻqiydigan saytlarga chiqing, yetishmayotgan sahifalarni yozing va saytingizni AI oʻqiy oladigan qiling. Roʻyxat har haftalik tekshiruvdan keyin yangilanadi.",
+    "heading": "AI sizni tilga olishi uchun nima qilish kerak",
+    "subtitle": "Avval notoʻgʻri faktlarni tuzating, keyin AI oʻqiydigan saytlarga chiqing, yetishmayotgan sahifalarni yozing va saytingizni AI oʻqiy oladigan qiling. Roʻyxat har haftalik tekshiruvdan keyin yangilanadi.",
     "goalHints": {
-      "fact": "ChatGPT narxingiz, manzilingiz yoki ish vaqtingiz haqida notoʻgʻri aytgan joylar. Ularni birinchi tuzating: notoʻgʻri narx yoki manzil mijozni yoʻqotadi.",
-      "listing": "ChatGPT javob yozishda tayanadigan, lekin sizni tilga olmaydigan saytlar: kataloglar, nashrlar, ijtimoiy tarmoqlar. U yerda paydo boʻlsangiz, ChatGPT sizni ham koʻradi.",
+      "fact": "AI narxingiz, manzilingiz yoki ish vaqtingiz haqida notoʻgʻri aytgan joylar. Ularni birinchi tuzating: notoʻgʻri narx yoki manzil mijozni yoʻqotadi.",
+      "listing": "AI javob yozishda tayanadigan, lekin sizni tilga olmaydigan saytlar: kataloglar, nashrlar, ijtimoiy tarmoqlar. U yerda paydo boʻlsangiz, AI sizni ham koʻradi.",
       "content": "Faqat raqobatchilar tilga olinadigan mavzular: saytingizda shu savollarga javob beradigan sahifa yozing yoki borini yaxshilang.",
-      "technical": "Saytingizdagi ChatGPT oʻqiy olmaydigan narsalar: yopiq botlar, rasm koʻrinishidagi narxlar, matn sifatida yozilmagan manzil va telefon."
+      "technical": "Saytingizdagi AI oʻqiy olmaydigan narsalar: yopiq botlar, rasm koʻrinishidagi narxlar, matn sifatida yozilmagan manzil va telefon."
     },
     "categories": {
       "fact": "Notoʻgʻri fakt",
@@ -765,7 +765,7 @@
     "ownerHints": {
       "own": "Bu ish oʻz saytingizda qilinadi.",
       "earned": "Bu ish boshqa saytda qilinadi: u yerda roʻyxatdan oʻting yoki siz haqingizda yozishlariga erishing.",
-      "everywhere": "Toʻgʻri maʼlumotni saytingizga ham, ChatGPT oʻqigan boshqa saytlarga ham yozing."
+      "everywhere": "Toʻgʻri maʼlumotni saytingizga ham, AI oʻqigan boshqa saytlarga ham yozing."
     },
     "groupBy": {
       "goal": "Maqsad",
@@ -814,9 +814,9 @@
     "added": "Yangi harakat qoʻshildi: {title}",
     "stepsHint": "Belgilangan qadamlar, uchtadan",
     "closePanel": "Yopish",
-    "copy": "ChatGPT uchun nusxalash",
+    "copy": "AI uchun nusxalash",
     "copied": "Nusxalandi",
-    "copyHint": "Harakatni topshiriq matni qilib nusxalaydi: uni ChatGPT yoki boshqa yordamchiga qoʻying, u har bir qadamni batafsil tushuntiradi.",
+    "copyHint": "Harakatni topshiriq matni qilib nusxalaydi: uni AI yoki boshqa yordamchiga qoʻying, u har bir qadamni batafsil tushuntiradi.",
     "sections": {
       "overview": "Umumiy",
       "topic": "Mavzu",
@@ -825,19 +825,19 @@
       "brief": "Topshiriq",
       "steps": "Qanday qilinadi",
       "page": "Sahifa",
-      "sitePages": "ChatGPT oʻqigan sahifalar",
+      "sitePages": "AI oʻqigan sahifalar",
       "questions": "Taʼsir qiladigan savollar",
       "outcome": "Kutilayotgan natija"
     },
     "overview": {
-      "fact": "ChatGPT javoblarida siz haqingizda notoʻgʻri maʼlumot bor. Toʻgʻrisini saytingizga va ChatGPT tayanadigan saytlarga yozing.",
-      "directory": "{domain} — ChatGPT tayanadigan katalog. U yerda toʻliq maʼlumot bilan turgan biznesni ChatGPT tavsiya qila oladi.",
-      "news": "{domain} — ChatGPT keltiradigan nashr. U yerda siz haqingizda maqola yoki reyting chiqsa, ChatGPT sizni ham tilga oladi.",
-      "social": "ChatGPT javob yozishda {domain} sahifalarini oʻqiydi. Rasmiy sahifangiz toʻliq va faol boʻlsin.",
-      "other": "ChatGPT {domain} saytiga tayanadi, lekin u yerda siz haqingizda hech narsa yoʻq.",
-      "newPage": "Bu mavzudagi savollarga saytingizda javob yoʻq, shuning uchun ChatGPT faqat raqobatchilarni tilga oladi. Shu savollarga javob beradigan sahifa yozing.",
+      "fact": "AI javoblarida siz haqingizda notoʻgʻri maʼlumot bor. Toʻgʻrisini saytingizga va AI tayanadigan saytlarga yozing.",
+      "directory": "{domain} — AI tayanadigan katalog. U yerda toʻliq maʼlumot bilan turgan biznesni AI tavsiya qila oladi.",
+      "news": "{domain} — AI keltiradigan nashr. U yerda siz haqingizda maqola yoki reyting chiqsa, AI sizni ham tilga oladi.",
+      "social": "AI javob yozishda {domain} sahifalarini oʻqiydi. Rasmiy sahifangiz toʻliq va faol boʻlsin.",
+      "other": "AI {domain} saytiga tayanadi, lekin u yerda siz haqingizda hech narsa yoʻq.",
+      "newPage": "Bu mavzudagi savollarga saytingizda javob yoʻq, shuning uchun AI faqat raqobatchilarni tilga oladi. Shu savollarga javob beradigan sahifa yozing.",
       "rework": "Siz qoʻshgan sahifa shu mavzudagi savollarga yaxshiroq javob beradigan qilib qayta yoziladi.",
-      "access": "AI qidiruv botlarini saytingizga kiriting, shunda ChatGPT sahifalaringizni oʻqib, ularga havola bera oladi.",
+      "access": "AI qidiruv botlarini saytingizga kiriting, shunda AI sahifalaringizni oʻqib, ularga havola bera oladi.",
       "markup": "Maʼlumotlaringizni AI aniq oʻqiy oladigan qilib yozing: narx, manzil, telefon va ish vaqti matn boʻlsin, biznes belgisi bilan."
     },
     "brief": {
@@ -851,7 +851,7 @@
       "metaDescriptionHint": "Qidiruv natijalarida taxminan {max} belgigacha koʻrinadi; uzunini qisqartiring."
     },
     "assistantQuestion": "«{title}» uchun sahifa matnini topshiriq boʻyicha yozib ber.",
-    "sitePagesHint": "{domain} saytining oxirgi tekshiruvda ChatGPT keltirgan sahifalari va har birini keltirgan javoblar ulushi.",
+    "sitePagesHint": "{domain} saytining oxirgi tekshiruvda AI keltirgan sahifalari va har birini keltirgan javoblar ulushi.",
     "pageShare": "Oxirgi tekshiruvdagi javoblarning shu sahifani keltirgan ulushi",
     "questionsHint": "Bu harakat koʻtarishi kerak boʻlgan savollar. Raqam: oxirgi tekshiruvda sizni tilga olgan javoblar, uchtadan. Bosilsa, savol sahifasi ochiladi.",
     "namedHint": "{total} ta javobdan {named} tasida tilga olingansiz",
@@ -863,12 +863,12 @@
       "low": "Past"
     },
     "prompt": {
-      "intro": "Men {brand} ({domain}) biznesini yuritaman. ChatGPT javoblarida koʻproq tilga olinishim uchun quyidagi ishni qilishim kerak.",
+      "intro": "Men {brand} ({domain}) biznesini yuritaman. AI javoblarida koʻproq tilga olinishim uchun quyidagi ishni qilishim kerak.",
       "task": "Vazifa: {title}",
       "why": "Nima uchun: {why}",
       "steps": "Qadamlar:",
       "brief": "Sahifa topshirigʻi:",
-      "questions": "Mijozlar ChatGPT’dan soʻraydigan savollar:",
+      "questions": "Mijozlar AI’dan soʻraydigan savollar:",
       "ask": "Har bir qadamni qanday bajarishni oddiy tilda batafsil tushuntirib ber; sahifa kerak boʻlsa, uning matnini yozib ber."
     },
     "toast": {
@@ -942,7 +942,7 @@
       },
       "why": {
         "title": "Nima uchun muhim",
-        "text": "ChatGPT javoblaridan olingan dalil: u tayangan sayt, notoʻgʻri aytgan gapi yoki faqat raqobatchilar tilga olingan savollar."
+        "text": "AI javoblaridan olingan dalil: u tayangan sayt, notoʻgʻri aytgan gapi yoki faqat raqobatchilar tilga olingan savollar."
       },
       "brief": {
         "title": "Topshiriq boʻyicha yozing",
@@ -962,8 +962,8 @@
   },
   "WrongFacts": {
     "title": "Siz haqingizdagi notoʻgʻri maʼlumotlar",
-    "description": "ChatGPT javoblaridagi haqiqatga toʻgʻri kelmaydigan daʼvolar.",
-    "says": "ChatGPT aytadi",
+    "description": "AI javoblaridagi haqiqatga toʻgʻri kelmaydigan daʼvolar.",
+    "says": "AI aytadi",
     "correct": "Aslida",
     "prompt": "Savol",
     "empty": "Notoʻgʻri maʼlumot topilmadi.",
@@ -1018,8 +1018,8 @@
     },
     "hints": {
       "rank": "Sayt nechta javobda ishlatilgani boʻyicha oʻrni.",
-      "site": "ChatGPT havola bergan sayt. Qatorni bossangiz, saytning oʻz sahifasi ochiladi: uning sahifalari, unga havola bergan javoblar va vaqt davomidagi oʻzgarishi.",
-      "page": "ChatGPT havola bergan aniq sahifa: sarlavhasi va ostida manzili. Manzil sahifani yangi oynada ochadi; qatorni bossangiz, shu sahifaga havola bergan javoblar koʻrinadi.",
+      "site": "AI havola bergan sayt. Qatorni bossangiz, saytning oʻz sahifasi ochiladi: uning sahifalari, unga havola bergan javoblar va vaqt davomidagi oʻzgarishi.",
+      "page": "AI havola bergan aniq sahifa: sarlavhasi va ostida manzili. Manzil sahifani yangi oynada ochadi; qatorni bossangiz, shu sahifaga havola bergan javoblar koʻrinadi.",
       "type": "Saytning turi: xarita va kataloglar, yangiliklar, ijtimoiy tarmoq, raqobatchi sayti yoki sizning saytingiz.",
       "named": "Shu sayt yoki sahifada nomi uchraydigan kuzatilayotgan brendlar. Belgi ustiga kursorni olib borsangiz, brend nomi koʻrinadi.",
       "used": "Javoblarning necha foizida shu manbaga havola berilgan.",
@@ -1044,10 +1044,10 @@
         "sites": {
           "rising": "Oldingi tekshiruvdagidan koʻproq javobda havola berilgan saytlar.",
           "falling": "Oldingi tekshiruvdagidan kamroq javobda havola berilgan saytlar; oxirgi tekshiruvda umuman havola berilmagan boʻlsa — 0%.",
-          "fresh": "ChatGPT oxirgi tekshiruvda birinchi marta havola bergan saytlar."
+          "fresh": "AI oxirgi tekshiruvda birinchi marta havola bergan saytlar."
         },
         "pages": {
-          "fresh": "ChatGPT oxirgi tekshiruvda birinchi marta havola bergan sahifalar.",
+          "fresh": "AI oxirgi tekshiruvda birinchi marta havola bergan sahifalar.",
           "rising": "Oldingi tekshiruvdagidan koʻproq javobda havola berilgan sahifalar.",
           "falling": "Oldingi tekshiruvdagidan kamroq javobda havola berilgan sahifalar; oxirgi tekshiruvda umuman havola berilmagan boʻlsa — 0%."
         }
@@ -1056,8 +1056,8 @@
       "column": "Ishlatilgan",
       "columnHint": "Oxirgi tekshiruvda javoblarning necha foizi havola bergani; yonida — oldingi tekshiruvdan buyon necha punktga oʻzgargani.",
       "hint": {
-        "sites": "Oldingi tekshiruvga nisbatan ChatGPT birinchi marta, koʻproq yoki kamroq tayangan saytlar. Sayt sahifasini ochish uchun qatorni bosing.",
-        "pages": "Oldingi tekshiruvga nisbatan ChatGPT birinchi marta, koʻproq yoki kamroq tayangan sahifalar. Shu sahifaga havola bergan javoblarni ochish uchun qatorni bosing."
+        "sites": "Oldingi tekshiruvga nisbatan AI birinchi marta, koʻproq yoki kamroq tayangan saytlar. Sayt sahifasini ochish uchun qatorni bosing.",
+        "pages": "Oldingi tekshiruvga nisbatan AI birinchi marta, koʻproq yoki kamroq tayangan sahifalar. Shu sahifaga havola bergan javoblarni ochish uchun qatorni bosing."
       },
       "none": {
         "fresh": "Oxirgi tekshiruvda yangi manba yoʻq.",
@@ -1070,8 +1070,8 @@
       "sites": "Saytlar",
       "pages": "Sahifalar",
       "hints": {
-        "sites": "ChatGPT havola bergan saytlar: qaysilari koʻp ishlatiladi, nima oʻzgardi va ularda siz bormisiz.",
-        "pages": "Shu saytlardagi aniq sahifalar: ChatGPT aynan qaysi sahifaga tayangani va ular sizni tilga oladimi."
+        "sites": "AI havola bergan saytlar: qaysilari koʻp ishlatiladi, nima oʻzgardi va ularda siz bormisiz.",
+        "pages": "Shu saytlardagi aniq sahifalar: AI aynan qaysi sahifaga tayangani va ular sizni tilga oladimi."
       }
     },
     "sections": {
@@ -1082,23 +1082,23 @@
       },
       "movers": {
         "title": "Nima oʻzgardi",
-        "sites": "{date} dagi tekshiruvga nisbatan ChatGPT qaysi saytlarga birinchi marta, koʻproq yoki kamroq tayangani; yonida — uning havolalari sizga qanchalik ishlaydi.",
-        "pages": "{date} dagi tekshiruvga nisbatan ChatGPT qaysi sahifalarga birinchi marta, koʻproq yoki kamroq tayangani; yonida — u havola bergan sahifalar sizni tilga oladimi.",
-        "site": "{date} dagi tekshiruvga nisbatan ChatGPT saytning qaysi sahifalariga birinchi marta, koʻproq yoki kamroq tayangani; yonida — shu saytga tayanganda kimni tilga olgani.",
+        "sites": "{date} dagi tekshiruvga nisbatan AI qaysi saytlarga birinchi marta, koʻproq yoki kamroq tayangani; yonida — uning havolalari sizga qanchalik ishlaydi.",
+        "pages": "{date} dagi tekshiruvga nisbatan AI qaysi sahifalarga birinchi marta, koʻproq yoki kamroq tayangani; yonida — u havola bergan sahifalar sizni tilga oladimi.",
+        "site": "{date} dagi tekshiruvga nisbatan AI saytning qaysi sahifalariga birinchi marta, koʻproq yoki kamroq tayangani; yonida — shu saytga tayanganda kimni tilga olgani.",
         "first": {
-          "sites": "Bu birinchi tekshiruv: oʻzgarishlar keyingisidan keyin koʻrinadi. Yonida — ChatGPT havolalari sizga qanchalik ishlaydi.",
-          "pages": "Bu birinchi tekshiruv: oʻzgarishlar keyingisidan keyin koʻrinadi. Yonida — ChatGPT havola bergan sahifalar sizni tilga oladimi.",
-          "site": "Bu birinchi tekshiruv: oʻzgarishlar keyingisidan keyin koʻrinadi. Yonida — ChatGPT shu saytga tayanganda kimni tilga olgani."
+          "sites": "Bu birinchi tekshiruv: oʻzgarishlar keyingisidan keyin koʻrinadi. Yonida — AI havolalari sizga qanchalik ishlaydi.",
+          "pages": "Bu birinchi tekshiruv: oʻzgarishlar keyingisidan keyin koʻrinadi. Yonida — AI havola bergan sahifalar sizni tilga oladimi.",
+          "site": "Bu birinchi tekshiruv: oʻzgarishlar keyingisidan keyin koʻrinadi. Yonida — AI shu saytga tayanganda kimni tilga olgani."
         }
       },
       "sites": {
         "title": "Saytlar",
-        "description": "ChatGPT havola bergan har bir sayt: turi, unda kim tilga olingani, javoblarning necha foizida ishlatilgani va u yerda siz bormisiz. Qatorni bossangiz, saytning oʻz sahifasi ochiladi."
+        "description": "AI havola bergan har bir sayt: turi, unda kim tilga olingani, javoblarning necha foizida ishlatilgani va u yerda siz bormisiz. Qatorni bossangiz, saytning oʻz sahifasi ochiladi."
       },
       "pages": {
         "title": "Sahifalar",
-        "description": "ChatGPT havola bergan har bir sahifa: qaysi saytda ekani, kimni tilga olgani, javoblarning necha foizida ishlatilgani va sizni aytadimi. Qatorni bossangiz, shu sahifaga havola bergan javoblar ochiladi.",
-        "descriptionSite": "Shu saytning ChatGPT havola bergan sahifalari: kimni tilga olgani, javoblarning necha foizida ishlatilgani va sizni aytadimi. Qatorni bossangiz, shu sahifaga havola bergan javoblar ochiladi."
+        "description": "AI havola bergan har bir sahifa: qaysi saytda ekani, kimni tilga olgani, javoblarning necha foizida ishlatilgani va sizni aytadimi. Qatorni bossangiz, shu sahifaga havola bergan javoblar ochiladi.",
+        "descriptionSite": "Shu saytning AI havola bergan sahifalari: kimni tilga olgani, javoblarning necha foizida ishlatilgani va sizni aytadimi. Qatorni bossangiz, shu sahifaga havola bergan javoblar ochiladi."
       }
     },
     "gaps": {
@@ -1124,8 +1124,8 @@
         "pages": "Sahifalar vaqt davomida"
       },
       "hint": {
-        "sites": "ChatGPT eng koʻp havola bergan saytlarga tekshiruvdan tekshiruvga qanchalik tayangani. Sayt sahifasini ochish uchun grafik ostidagi nomini bosing.",
-        "pages": "ChatGPT eng koʻp havola bergan sahifalarga tekshiruvdan tekshiruvga qanchalik tayangani. Shu sahifaga havola bergan javoblarni ochish uchun grafik ostidagi manzilini bosing."
+        "sites": "AI eng koʻp havola bergan saytlarga tekshiruvdan tekshiruvga qanchalik tayangani. Sayt sahifasini ochish uchun grafik ostidagi nomini bosing.",
+        "pages": "AI eng koʻp havola bergan sahifalarga tekshiruvdan tekshiruvga qanchalik tayangani. Shu sahifaga havola bergan javoblarni ochish uchun grafik ostidagi manzilini bosing."
       },
       "label": {
         "sites": "Chiziqli grafik: {checks} ta tekshiruvda {count} ta saytga havola bergan javoblar ulushi. Tekshiruvlarni chap va oʻng strelkalar bilan koʻring.",
@@ -1138,8 +1138,8 @@
         "pages": "Sizni aytadimi?"
       },
       "hint": {
-        "sites": "ChatGPT havolalarining qancha qismi sizning saytingizga, siz bor saytlarga, siz yoʻq saytlarga va raqobatchilar saytlariga toʻgʻri keladi. «Siz yoʻq saytlar» ulushi — qoʻshilishingiz mumkin boʻlgan joylar.",
-        "pages": "ChatGPT havolalarining qancha qismi sizni tilga olgan sahifalarga, faqat raqobatchilarni tilga olgan sahifalarga va kuzatilayotgan brendlardan hech birini tilga olmagan sahifalarga toʻgʻri keladi."
+        "sites": "AI havolalarining qancha qismi sizning saytingizga, siz bor saytlarga, siz yoʻq saytlarga va raqobatchilar saytlariga toʻgʻri keladi. «Siz yoʻq saytlar» ulushi — qoʻshilishingiz mumkin boʻlgan joylar.",
+        "pages": "AI havolalarining qancha qismi sizni tilga olgan sahifalarga, faqat raqobatchilarni tilga olgan sahifalarga va kuzatilayotgan brendlardan hech birini tilga olmagan sahifalarga toʻgʻri keladi."
       },
       "groups": {
         "own": "Sizning saytingiz",
@@ -1152,9 +1152,9 @@
         "unknown": "Oʻqib boʻlmadi"
       },
       "about": {
-        "own": "ChatGPT sizning rasmiy saytingizga bergan havolalar.",
-        "listed": "Sizning kartochka yoki sahifangiz bor saytlarga havolalar: u yerda ChatGPT sizni topa oladi.",
-        "missing": "Sizning kartochkangiz yoʻq saytlarga havolalar: qoʻshilsangiz, ChatGPT u yerda sizni ham topadi.",
+        "own": "AI sizning rasmiy saytingizga bergan havolalar.",
+        "listed": "Sizning kartochka yoki sahifangiz bor saytlarga havolalar: u yerda AI sizni topa oladi.",
+        "missing": "Sizning kartochkangiz yoʻq saytlarga havolalar: qoʻshilsangiz, AI u yerda sizni ham topadi.",
         "competitor": "Siz kuzatayotgan raqobatchilarning oʻz saytlariga havolalar.",
         "you": "Sizni nomi bilan tilga olgan sahifalarga havolalar.",
         "rivals": "Raqobatchilarni tilga olgan, sizni esa yoʻq sahifalarga havolalar: shu sahifalarga qoʻshilish kerak.",
@@ -1198,34 +1198,34 @@
   },
   "Dashboard": {
     "title": "Loyihalar",
-    "description": "ChatGPT’da kuzatilayotgan brendlar",
+    "description": "AI’da kuzatilayotgan brendlar",
     "newProject": "Yangi loyiha",
     "empty": "Hali loyiha yoʻq",
-    "emptyHint": "Birinchi brendni qoʻshing — ChatGPT uni qanchalik koʻp tilga olishini oʻlchaymiz.",
+    "emptyHint": "Birinchi brendni qoʻshing — AI uni qanchalik koʻp tilga olishini oʻlchaymiz.",
     "noData": "Hali oʻlchov yoʻq",
     "promptCount": "{count} ta savol",
     "rival": "{name}: {score}",
-    "visibility": "ChatGPT’da tilga olinish",
+    "visibility": "AI’da tilga olinish",
     "openReport": "Hisobot"
   },
   "Overview": {
     "noDataTitle": "Hali oʻlchov yoʻq",
-    "noDataDescription": "Savollarni qoʻshing — ChatGPT’ga navbatdagi soʻrovdan keyin natijalar shu yerda paydo boʻladi.",
+    "noDataDescription": "Savollarni qoʻshing — AI’ga navbatdagi soʻrovdan keyin natijalar shu yerda paydo boʻladi.",
     "noDataAction": "Savollarga oʻtish",
     "you": "(siz)",
-    "heroLabel": "ChatGPT’da tilga olinishingiz",
+    "heroLabel": "AI’da tilga olinishingiz",
     "queuedTitle": "Birinchi oʻlchov navbatda",
-    "queuedDescription": "{count} ta savolni ChatGPT’ga beramiz. Natijalar tayyor boʻlishi bilan shu yerda chiqadi.",
+    "queuedDescription": "{count} ta savolni AI’ga beramiz. Natijalar tayyor boʻlishi bilan shu yerda chiqadi.",
     "queuedAction": "Savollarni koʻrish",
     "missingTitle": "Sizni aytmagan savollar",
-    "missingDescription": "{total} ta savoldan {count} tasida ChatGPT raqobatchilarni aytdi, sizni emas.",
-    "missingNone": "ChatGPT raqobatchilarni aytgan har bir savolda sizni ham tilga oldi.",
+    "missingDescription": "{total} ta savoldan {count} tasida AI raqobatchilarni aytdi, sizni emas.",
+    "missingNone": "AI raqobatchilarni aytgan har bir savolda sizni ham tilga oldi.",
     "missingMore": "Yana {count} ta savol — Javoblar sahifasida.",
     "wrongFacts": "AI siz haqingizda {count} ta notoʻgʻri fakt aytmoqda",
     "wrongFactsAction": "Koʻrib chiqish",
     "export": "CSV yuklab olish",
     "nextRun": "Keyingi haftalik tekshiruv: {date}",
-    "nextRunHint": "Savollaringiz har hafta dushanba kuni ertalab ChatGPT’ga qayta beriladi.",
+    "nextRunHint": "Savollaringiz har hafta dushanba kuni ertalab AI’ga qayta beriladi.",
     "csv": {
       "date": "Sana",
       "brand": "Brend",
@@ -1242,7 +1242,7 @@
     "copied": "Havola nusxalandi",
     "recent": {
       "title": "Soʻnggi javoblar",
-      "hint": "ChatGPT oxirgi tekshiruvda savollaringizga bergan javoblar, har savoldan bittadan.",
+      "hint": "AI oxirgi tekshiruvda savollaringizga bergan javoblar, har savoldan bittadan.",
       "all": "Barcha javoblar",
       "answer": "Javob",
       "brands": "Tilga olinganlar",
@@ -1253,7 +1253,7 @@
     },
     "breakdown": {
       "title": "Mavzu va til boʻyicha tilga olinish",
-      "hint": "Har bir mavzu va har bir til savollarida ChatGPT javoblarining necha foizida tilga olinganingiz. Yonida shu savollarda eng koʻp tilga olingan brend turadi.",
+      "hint": "Har bir mavzu va har bir til savollarida AI javoblarining necha foizida tilga olinganingiz. Yonida shu savollarda eng koʻp tilga olingan brend turadi.",
       "topics": "Mavzular",
       "languages": "Savol tili",
       "leader": "Yetakchi",
@@ -1274,18 +1274,18 @@
   },
   "Competitors": {
     "aheadTitle": "Raqobatchilar qayerda oldinda",
-    "aheadDescription": "ChatGPT raqobatchini aytgan, sizni esa aytmagan savollar.",
+    "aheadDescription": "AI raqobatchini aytgan, sizni esa aytmagan savollar.",
     "aheadCount": "{count} ta savolda u bor, siz yoʻq",
     "aheadNone": "Uni aytgan har bir savolda siz ham borsiz.",
     "namedIn": "{total} ta javobdan {count} tasida tilga olingan",
     "more": "Yana {count} ta savol",
     "readAnswers": "Javoblarni oʻqish",
-    "untrackedTitle": "ChatGPT yana {count} ta brendni tilga olmoqda",
+    "untrackedTitle": "AI yana {count} ta brendni tilga olmoqda",
     "untrackedText": "Siz ularni hali kuzatmayapsiz. Javoblarda koʻp uchrayotganlari yangi raqobatchilaringiz boʻlishi mumkin: “Kuzatish” brendni raqobatchilar qatoriga qoʻshadi, × esa roʻyxatdan yashiradi.",
     "untrackedAnswers": "{total} ta javobdan {count} tasida",
     "topics": {
       "title": "Mavzular boʻyicha oʻrinlar",
-      "hint": "Har bir mavzu savollarida ChatGPT brendlarni qanchalik koʻp tilga olishi boʻyicha tartib.",
+      "hint": "Har bir mavzu savollarida AI brendlarni qanchalik koʻp tilga olishi boʻyicha tartib.",
       "topic": "Mavzu",
       "you": "(siz)",
       "empty": "Hech kim",
@@ -1296,11 +1296,11 @@
     "kpi": {
       "place": "Oʻrningiz",
       "placeOf": "{of} ta brend ichida",
-      "placeHint": "Tilga olinish boʻyicha kuzatilayotgan brendlar orasidagi oʻrningiz. Tilga olinish — ChatGPT javoblarining necha foizida tilga olinganingiz.",
+      "placeHint": "Tilga olinish boʻyicha kuzatilayotgan brendlar orasidagi oʻrningiz. Tilga olinish — AI javoblarining necha foizida tilga olinganingiz.",
       "topics": "Siz yetakchi",
-      "topicsHint": "Nechta mavzuda ChatGPT sizni boshqa brendlardan koʻproq tilga oladi.",
+      "topicsHint": "Nechta mavzuda AI sizni boshqa brendlardan koʻproq tilga oladi.",
       "without": "Siz yoʻq savollar",
-      "withoutHint": "ChatGPT raqobatchini tilga olgan, sizni esa olmagan savollar soni. Roʻyxati sahifa pastida.",
+      "withoutHint": "AI raqobatchini tilga olgan, sizni esa olmagan savollar soni. Roʻyxati sahifa pastida.",
       "topicsOf": "{total} mavzudan",
       "withoutOf": "{total} tadan",
       "gap": "Yetakchidan orqada",
@@ -1341,7 +1341,7 @@
     "add": "Savol qoʻshish",
     "edit": "Tahrirlash",
     "empty": "Hali savol yoʻq",
-    "emptyHint": "Mijozlaringiz ChatGPT’dan nima soʻrashini yozing, masalan: “Toshkentdagi eng yaxshi stomatologiya qaysi?”",
+    "emptyHint": "Mijozlaringiz AI’dan nima soʻrashini yozing, masalan: “Toshkentdagi eng yaxshi stomatologiya qaysi?”",
     "columns": {
       "question": "Savol",
       "topic": "Mavzu",
@@ -1411,52 +1411,52 @@
     "restore": "Kuzatuvga qaytarish",
     "restoreLabel": "Kuzatuvga qaytarish: {text}",
     "limitReached": "Tarif chegarasi toʻlgan. Avval boshqa savolni arxivlang.",
-    "archiveIntro": "Arxivdagi savollar endi ChatGPT’ga berilmaydi va tarif chegarasiga kirmaydi. Oldingi natijalari saqlanadi. Qaytarilgan savol keyingi haftalik tekshiruvdan boshlab yana oʻlchanadi.",
+    "archiveIntro": "Arxivdagi savollar endi AI’ga berilmaydi va tarif chegarasiga kirmaydi. Oldingi natijalari saqlanadi. Qaytarilgan savol keyingi haftalik tekshiruvdan boshlab yana oʻlchanadi.",
     "archiveEmpty": "Arxiv boʻsh. Kerak boʻlmay qolgan savolni roʻyxatdagi arxiv tugmasi bilan shu yerga oʻtkazasiz.",
     "full": "{plan} tarifidagi {max} ta savolning hammasi band. Yangi savol qoʻshish uchun birini arxivlang yoki tarifni oshiring.",
     "saveFailed": "Saqlab boʻlmadi. Qayta urinib koʻring.",
     "hints": {
       "tabs": {
-        "tracked": "Har hafta ChatGPT’ga beriladigan savollar.",
+        "tracked": "Har hafta AI’ga beriladigan savollar.",
         "suggested": "Mijozlar soʻrashi mumkin boʻlgan, siz hali kuzatmayotgan savollar. Har birini kuzatish yoki rad etish mumkin; «Yana tavsiya qilish» yangilarini qoʻshadi.",
         "archived": "Kuzatish toʻxtatilgan savollar. Ular endi tekshirilmaydi, natijalari saqlanadi."
       },
       "topics": "Savollar mavzular boʻyicha guruhlangan; yonidagi son — mavzudagi savollar soni. Mavzuni bossangiz, roʻyxatda faqat shu mavzu qoladi.",
-      "question": "ChatGPT’ga beriladigan savol. Qatorni bossangiz, shu savolning sahifasi ochiladi: javoblar, brendlar, manbalar va ChatGPT qidirgan soʻrovlar.",
+      "question": "AI’ga beriladigan savol. Qatorni bossangiz, shu savolning sahifasi ochiladi: javoblar, brendlar, manbalar va AI qidirgan soʻrovlar.",
       "visibility": "Oxirgi tekshiruvda shu savolga berilgan javoblarning nechtasida tilga olingansiz. Masalan, 2/3 — 3 ta javobdan 2 tasida.",
-      "tone": "ChatGPT sizni tilga olgan javoblarda siz haqingizda qanchalik ijobiy gapiradi: 0 — salbiy, 100 — ijobiy. Nuqta rangi: yashil — ijobiy, kulrang — neytral, qizil — salbiy.",
+      "tone": "AI sizni tilga olgan javoblarda siz haqingizda qanchalik ijobiy gapiradi: 0 — salbiy, 100 — ijobiy. Nuqta rangi: yashil — ijobiy, kulrang — neytral, qizil — salbiy.",
       "position": "Javoblarda oʻrtacha nechanchi boʻlib tilga olingansiz. 1 — birinchi; son kichikroq boʻlsa, yaxshiroq.",
       "named": "Shu savolga berilgan javoblarda tilga olingan kuzatilayotgan brendlar. Belgi ustiga kursorni olib borsangiz, brend nomi koʻrinadi.",
       "leader": "Shu savolda eng koʻp javobda tilga olingan brend. “Siz” — yetakchi sizsiz.",
       "sort": "Sarlavhani bossangiz, jadval shu ustun boʻyicha saralanadi.",
       "summary": {
         "visibility": "Roʻyxatdagi savollarga berilgan javoblarning necha foizida tilga olingansiz.",
-        "tone": "Roʻyxatdagi savollar boʻyicha ChatGPT siz haqingizda qanchalik ijobiy gapiradi: 0 — salbiy, 100 — ijobiy.",
+        "tone": "Roʻyxatdagi savollar boʻyicha AI siz haqingizda qanchalik ijobiy gapiradi: 0 — salbiy, 100 — ijobiy.",
         "position": "Roʻyxatdagi savollar boʻyicha javoblarda oʻrtacha nechanchi boʻlib tilga olinasiz. 1 — birinchi.",
-        "webSearch": "Koʻrsatilgan savollarga berilgan javoblarning qanchasida ChatGPT internetdan qidirgan."
+        "webSearch": "Koʻrsatilgan savollarga berilgan javoblarning qanchasida AI internetdan qidirgan."
       },
-      "queued": "Savol hali ChatGPT’ga berilmagan. Navbatdagi haftalik tekshiruvda birinchi marta beriladi.",
+      "queued": "Savol hali AI’ga berilmagan. Navbatdagi haftalik tekshiruvda birinchi marta beriladi.",
       "language": {
         "uz": "Savol oʻzbek tilida beriladi",
         "ru": "Savol rus tilida beriladi"
       },
       "count": "Hozir kuzatilayotgan savollar soni.",
-      "schedule": "Savollaringiz har hafta dushanba kuni ertalab ChatGPT’ga qayta beriladi.",
+      "schedule": "Savollaringiz har hafta dushanba kuni ertalab AI’ga qayta beriladi.",
       "edit": "Savol matni, tili yoki mavzusini oʻzgartirish",
       "shareOfVoice": "Shu savolga berilgan javoblarda kuzatilayotgan brendlar necha marta tilga olingan boʻlsa, shundan necha foizi sizniki.",
-      "webSearch": "Shu savolga javob berishda ChatGPT nechta javobda internetdan qidirgan. Qidirgan boʻlsa, javob saytlarga tayanadi — demak, oʻsha saytlarda boʻlish muhim.",
+      "webSearch": "Shu savolga javob berishda AI nechta javobda internetdan qidirgan. Qidirgan boʻlsa, javob saytlarga tayanadi — demak, oʻsha saytlarda boʻlish muhim.",
       "wrongFacts": "Shu savolga berilgan javoblarda siz haqingizda topilgan notoʻgʻri faktlar soni. Har bir savol tekshiriladi.",
       "added": "Savol qoʻshilgan sana. Natijalari shundan keyingi birinchi haftalik tekshiruvdan boshlanadi.",
       "archivedOn": "Savol qachon arxivlangan: shu kundan beri soʻralmaydi.",
-      "branded": "Savolda brendingiz nomi bormi. Brendsiz savollar muhimroq: mijoz sizni hali bilmasdan soʻraydi va ChatGPT sizni oʻzi topishi kerak.",
-      "brandedYes": "Savolda brendingiz nomi bor: u ChatGPT sizni bilishini tekshiradi.",
-      "brandedNo": "Savolda brendingiz nomi yoʻq: ChatGPT sizni oʻzi topishi kerak.",
+      "branded": "Savolda brendingiz nomi bormi. Brendsiz savollar muhimroq: mijoz sizni hali bilmasdan soʻraydi va AI sizni oʻzi topishi kerak.",
+      "brandedYes": "Savolda brendingiz nomi bor: u AI sizni bilishini tekshiradi.",
+      "brandedNo": "Savolda brendingiz nomi yoʻq: AI sizni oʻzi topishi kerak.",
       "languageColumn": "Savol qaysi tilda beriladi: UZ — oʻzbekcha, RU — ruscha.",
       "factCheck": "Yoqilgan boʻlsa, shu savolga berilgan javoblar brendingiz haqidagi toʻgʻri maʼlumotlar bilan solishtiriladi va topilgan notoʻgʻri faktlar soni yonida koʻrinadi. Oʻchirilsa, keyingi tekshiruvdan boshlab solishtirilmaydi.",
       "tags": "Savollarga oʻzingiz qoʻyadigan belgilar, masalan filial yoki aksiya. “Teg” filtri roʻyxatni ular boʻyicha saralaydi.",
-      "location": "Savol qaysi shahardan berilgandek soʻraladi: ChatGPT shu shahardagi odamga javob bergandek qidiradi. Savol oynasida oʻzgartiriladi."
+      "location": "Savol qaysi shahardan berilgandek soʻraladi: AI shu shahardagi odamga javob bergandek qidiradi. Savol oynasida oʻzgartiriladi."
     },
-    "webSearchCell": "{total} ta javobdan {count} tasida ChatGPT internetdan qidirgan",
+    "webSearchCell": "{total} ta javobdan {count} tasida AI internetdan qidirgan",
     "wrongFactsSome": "{count} ta notoʻgʻri fakt — koʻrish uchun bosing",
     "wrongFactsNone": "Notoʻgʻri fakt topilmadi",
     "wrongFactsNotChecked": "Hali tekshirilmagan",
@@ -1510,20 +1510,20 @@
         "decide": "Qaror"
       },
       "hints": {
-        "question": "Mijozlar ChatGPT’dan soʻrashi mumkin boʻlgan, siz hali kuzatmayotgan savol: tili va (barcha mavzular koʻrinsa) mavzusi bilan.",
-        "source": "Savol nimadan kelib chiqqan: xizmatlaringizdan, ChatGPT qidiruvlaridan, «Savollar yaratish»dan yoki yuklangan kalit soʻzlardan.",
+        "question": "Mijozlar AI’dan soʻrashi mumkin boʻlgan, siz hali kuzatmayotgan savol: tili va (barcha mavzular koʻrinsa) mavzusi bilan.",
+        "source": "Savol nimadan kelib chiqqan: xizmatlaringizdan, AI qidiruvlaridan, «Savollar yaratish»dan yoki yuklangan kalit soʻzlardan.",
         "date": "Savol qachon tavsiya qilingan."
       },
       "new": "yangi",
       "sources": {
         "profile": "Xizmatlaringizdan",
-        "searches": "ChatGPT qidiruvlaridan",
+        "searches": "AI qidiruvlaridan",
         "discovery": "Savollar yaratishdan",
         "keywords": "Kalit soʻzlardan"
       },
       "sourceHints": {
         "profile": "Biznesingiz xizmatlari va mavzulari asosida tuzilgan.",
-        "searches": "ChatGPT siz kuzatayotgan savollarga javob berayotib internetda shunga oʻxshash narsani qidirgan.",
+        "searches": "AI siz kuzatayotgan savollarga javob berayotib internetda shunga oʻxshash narsani qidirgan.",
         "discovery": "«Savollar yaratish»da kiritilgan xizmatlar va mijozlar asosida tuzilgan.",
         "keywords": "Siz yuklagan kalit soʻzlar asosida tuzilgan."
       },
@@ -1542,7 +1542,7 @@
       "moreNote": "{count} ta yangi tavsiya qoʻshildi.",
       "noMore": "Hozircha yangi savol topilmadi. Kalit soʻzlarni yuklang yoki «Savollar yaratish»ni sinab koʻring.",
       "emptyTitle": "Tavsiyalar yoʻq",
-      "emptyText": "Mijozlar ChatGPT’ga beradigan savollarni tavsiya qilishimizdan boshlang.",
+      "emptyText": "Mijozlar AI’ga beradigan savollarni tavsiya qilishimizdan boshlang.",
       "emptyButton": "Savollar tavsiya qilish",
       "noneInTopic": "Bu mavzuda tavsiya yoʻq: «Yana tavsiya qilish»ni bosing."
     },
@@ -1623,7 +1623,7 @@
     "textDuplicate": "Bu savol allaqachon bor: “{text}”.",
     "topicRequired": "Mavzuni kiriting.",
     "saveFailed": "Saqlab boʻlmadi. Qayta urinib koʻring.",
-    "addHint": "Mijoz ChatGPT’dan soʻraydigan savolni yozing, brendingiz nomisiz. Har bir qator — alohida savol.",
+    "addHint": "Mijoz AI’dan soʻraydigan savolni yozing, brendingiz nomisiz. Har bir qator — alohida savol.",
     "fileTitle": "Fayldan yuklash",
     "fileHint": "CSV yoki TXT fayl: savollar birinchi ustunda yoki har biri alohida qatorda. Sarlavha qatori oʻtkazib yuboriladi.",
     "modeLabel": "Qanday qoʻshiladi",
@@ -1674,8 +1674,8 @@
     "brandsHint": "Bu savolga berilgan javoblar boʻyicha toʻrt koʻrsatkich va oldingi tekshiruvga nisbatan oʻzgarish.",
     "brandsHintFirst": "Bu savolga berilgan javoblar boʻyicha toʻrt koʻrsatkich.",
     "verdict": {
-      "named": "Oxirgi tekshiruvda ({date}) ChatGPT bu savolga bergan {total} ta javobdan {count} tasida sizni tilga oldi.",
-      "missing": "Oxirgi tekshiruvda ({date}) ChatGPT bu savolga bergan {total} ta javobning hech birida sizni tilga olmadi.",
+      "named": "Oxirgi tekshiruvda ({date}) AI bu savolga bergan {total} ta javobdan {count} tasida sizni tilga oldi.",
+      "missing": "Oxirgi tekshiruvda ({date}) AI bu savolga bergan {total} ta javobning hech birida sizni tilga olmadi.",
       "ahead": "Raqobatchilar ichida eng koʻp tilga olingani — {competitor}: {total} tadan {count} tasida.",
       "level": "{competitor} ham shuncha javobda tilga olingan.",
       "behind": "Bu savolda yetakchi — {competitor}: {total} ta javobdan {count} tasida.",
@@ -1687,9 +1687,9 @@
     "queued": {
       "title": "Bu savol hali tekshirilmagan",
       "text": "Birinchi tekshiruv: {date}. Natijalar shu sahifada chiqadi.",
-      "textNoDate": "Savol navbatdagi haftalik tekshiruvda ChatGPT’ga beriladi. Natijalar shu sahifada chiqadi.",
+      "textNoDate": "Savol navbatdagi haftalik tekshiruvda AI’ga beriladi. Natijalar shu sahifada chiqadi.",
       "archivedTitle": "Bu savol tekshirilmagan",
-      "archivedText": "Savol birinchi tekshiruvdan oldin arxivlangan, shuning uchun natijasi yoʻq. Kuzatuvga qaytarsangiz, navbatdagi haftalik tekshiruvda ChatGPT’ga beriladi."
+      "archivedText": "Savol birinchi tekshiruvdan oldin arxivlangan, shuning uchun natijasi yoʻq. Kuzatuvga qaytarsangiz, navbatdagi haftalik tekshiruvda AI’ga beriladi."
     },
     "actions": {
       "title": "Bu savol uchun nima qilish kerak",
@@ -1697,8 +1697,8 @@
       "empty": "Bu savol uchun hozircha tavsiya yoʻq."
     },
     "answers": {
-      "title": "ChatGPT javoblari",
-      "hint": "Oxirgi tekshiruvda ChatGPT bu savolga bergan {samples} ta javob. ChatGPT har safar biroz boshqacha javob beradi, shuning uchun savol bir necha marta beriladi. Toʻliq oʻqish uchun javobni bosing.",
+      "title": "AI javoblari",
+      "hint": "Oxirgi tekshiruvda AI bu savolga bergan {samples} ta javob. AI har safar biroz boshqacha javob beradi, shuning uchun savol bir necha marta beriladi. Toʻliq oʻqish uchun javobni bosing.",
       "sample": "{n}-javob",
       "nobody": "Hech kim tilga olinmagan",
       "notNamed": "Siz yoʻq",
@@ -1707,10 +1707,10 @@
     "hints": {
       "added": "Savol qoʻshilgan sana. Natijalari shundan keyingi birinchi haftalik tekshiruvdan boshlanadi.",
       "topic": "Savol qaysi mavzuga tegishli. Savollar sahifasi va hisobotlarni mavzu boʻyicha filtrlash mumkin.",
-      "language": "Savol ChatGPT’ga shu tilda beriladi. Oʻzbekcha va ruscha savollarga javoblar farq qilishi mumkin.",
+      "language": "Savol AI’ga shu tilda beriladi. Oʻzbekcha va ruscha savollarga javoblar farq qilishi mumkin.",
       "city": "Savol shu shahardagi mijoz nomidan beriladi, shuning uchun javob mahalliy boʻladi.",
       "status": {
-        "tracked": "Savol har hafta ChatGPT’ga beriladi.",
+        "tracked": "Savol har hafta AI’ga beriladi.",
         "queued": "Savol hali berilmagan; navbatdagi haftalik tekshiruvda birinchi marta beriladi.",
         "archived": "Savol endi berilmaydi va tarif chegarasiga kirmaydi. Oldingi natijalari saqlangan."
       },
@@ -1720,10 +1720,10 @@
       "actionStatus": "Tavsiyaning holati. Harakatlar sahifasida qadamlarni belgilaganingizda oʻzgaradi."
     },
     "searches": {
-      "title": "ChatGPT nimani qidirgan",
-      "hint": "Javob yozishdan oldin ChatGPT internetda qidirgan soʻrovlar va har birini nechta javobda ishlatgani. Saytingizdagi sahifa shu soʻrovlarga aniq javob bersa, ChatGPT uni manba qilib olishi ehtimoli oshadi.",
+      "title": "AI nimani qidirgan",
+      "hint": "Javob yozishdan oldin AI internetda qidirgan soʻrovlar va har birini nechta javobda ishlatgani. Saytingizdagi sahifa shu soʻrovlarga aniq javob bersa, AI uni manba qilib olishi ehtimoli oshadi.",
       "used": "{total} ta javobdan {count} tasida qidirgan",
-      "empty": "ChatGPT bu savolga internetdan qidirmasdan javob bergan.",
+      "empty": "AI bu savolga internetdan qidirmasdan javob bergan.",
       "row": "{total} ta javobdan {count} tasida shu soʻrov qidirilgan"
     },
     "filters": {
@@ -1742,7 +1742,7 @@
       "overview": "Umumiy koʻrinish",
       "overviewText": "Shu savolga javoblardagi brendlar: har tekshiruvda har biri qanchalik tez-tez tilga olingani va hozir qaysi oʻrinda turgani. Yuqoridagi filtrlar koʻrsatiladigan haftalar va raqobatchilarni tanlaydi.",
       "sources": "Manbalar taqsimoti",
-      "sourcesText": "Oxirgi tekshiruvda ChatGPT shu savolga javob yozishda tayangan saytlar va ularning turlari. Chiziq qancha uzun boʻlsa, saytni shuncha koʻp javob keltirgan."
+      "sourcesText": "Oxirgi tekshiruvda AI shu savolga javob yozishda tayangan saytlar va ularning turlari. Chiziq qancha uzun boʻlsa, saytni shuncha koʻp javob keltirgan."
     }
   },
   "Plans": {
@@ -2228,8 +2228,8 @@
       "steps": {
         "project": "Loyiha yaratildi",
         "overview": "Holatingizni tekshiring",
-        "answers": "ChatGPT javobini oʻqing",
-        "sources": "ChatGPT manbalarini koʻring",
+        "answers": "AI javobini oʻqing",
+        "sources": "AI manbalarini koʻring",
         "actions": "Birinchi harakatni tanlang"
       },
       "left": "Qolgan qadamlar"
@@ -2794,10 +2794,12 @@
   },
   "Engines": {
     "label": "AI tizimi",
+    "all": "Barchasi",
     "soon": "tez orada",
     "chatgpt": "ChatGPT",
     "gemini": "Gemini",
-    "yandex": "Yandex"
+    "yandex": "Yandex",
+    "ai": "AI"
   },
   "Assistant": {
     "label": "GEO AI yordamchi",
@@ -2846,15 +2848,15 @@
     "emptyText": "Soʻrovni oʻzgartiring yoki filtrni tozalang",
     "kpi": {
       "total": "Jami javoblar",
-      "totalHint": "Oxirgi tekshiruvda ChatGPT bergan javoblar: har savolga {samples} tadan.",
+      "totalHint": "Oxirgi tekshiruvda AI bergan javoblar: har savolga {samples} tadan.",
       "named": "Sizni tilga olgan",
       "namedHint": "Siz tilga olingan javoblar soni va ulushi.",
       "negative": "Siz haqingizda salbiy",
-      "negativeHint": "ChatGPT sizni salbiy baho bilan tilga olgan javoblar. Jadvaldagi “Holat” filtri ularni koʻrsatadi.",
+      "negativeHint": "AI sizni salbiy baho bilan tilga olgan javoblar. Jadvaldagi “Holat” filtri ularni koʻrsatadi.",
       "nobody": "Hech kim tilga olinmagan",
       "nobodyHint": "Kuzatilayotgan brendlardan hech biri tilga olinmagan javoblar: bu yerda oʻrin hali boʻsh.",
       "searched": "Veb-qidiruv bilan",
-      "searchedHint": "ChatGPT javob yozishdan oldin internetdan qidirgan javoblar. Qidirgan boʻlsa, javob saytlarga tayanadi."
+      "searchedHint": "AI javob yozishdan oldin internetdan qidirgan javoblar. Qidirgan boʻlsa, javob saytlarga tayanadi."
     },
     "table": {
       "title": "Barcha javoblar",
@@ -2896,15 +2898,15 @@
         "sites": "Havola berilgan saytlar",
         "pages": "Havola berilgan sahifalar",
         "text": "Javob matni",
-        "searches": "ChatGPT qidirgan soʻrovlar"
+        "searches": "AI qidirgan soʻrovlar"
       },
       "noSources": "Bu javobda havola berilmagan",
       "hints": {
-        "answer": "ChatGPT javobining boshlanishi. Bir savolga berilgan javoblar savol ostida ketma-ket turadi; savolni bossangiz, uning sahifasi ochiladi. Javob qatorini bossangiz, javob toʻliq ochiladi.",
+        "answer": "AI javobining boshlanishi. Bir savolga berilgan javoblar savol ostida ketma-ket turadi; savolni bossangiz, uning sahifasi ochiladi. Javob qatorini bossangiz, javob toʻliq ochiladi.",
         "brands": "Shu javobda tilga olingan kuzatilayotgan brendlar, javobdagi tartibda. Belgi ustiga kursorni olib borsangiz, brend nomi koʻrinadi.",
-        "sources": "ChatGPT shu javobda havola bergan saytlar. Belgi ustiga kursorni olib borsangiz, sayt nomi koʻrinadi.",
+        "sources": "AI shu javobda havola bergan saytlar. Belgi ustiga kursorni olib borsangiz, sayt nomi koʻrinadi.",
         "position": "Shu javobda nechanchi boʻlib tilga olingansiz. 1 — birinchi. Chiziqcha — tilga olinmagansiz.",
-        "tone": "Shu javobda ChatGPT siz haqingizda qanday baho bilan gapirgan: ijobiy, neytral yoki salbiy.",
+        "tone": "Shu javobda AI siz haqingizda qanday baho bilan gapirgan: ijobiy, neytral yoki salbiy.",
         "count": "Qidiruv va filtrlarga mos javoblar soni."
       }
     },
@@ -2928,11 +2930,11 @@
         "city": "Savol shu shahardagi mijoz nomidan berilgan.",
         "language": "Savol shu tilda berilgan.",
         "named": "Shu javobda tilga olingan kuzatilayotgan brendlar: nechanchi boʻlib va qanday baho bilan.",
-        "sources": "ChatGPT shu javobda havola bergan sahifalar: sarlavhasi va ostida manzili. Bossangiz, sahifa yangi oynada ochiladi.",
+        "sources": "AI shu javobda havola bergan sahifalar: sarlavhasi va ostida manzili. Bossangiz, sahifa yangi oynada ochiladi.",
         "sample": "Shu savolga olingan javoblardan nechanchisi. Har tekshiruvda savol bir necha marta beriladi.",
-        "searches": "Shu javobni yozishdan oldin ChatGPT internetda qidirgan soʻrovlar."
+        "searches": "Shu javobni yozishdan oldin AI internetda qidirgan soʻrovlar."
       },
-      "searches": "ChatGPT qidirgan",
+      "searches": "AI qidirgan",
       "noSearches": "Internetdan qidirmagan.",
       "viewAll": "Hammasi: {count} ta",
       "viewLess": "Kamroq koʻrsatish"
@@ -2950,11 +2952,11 @@
       "usedAsSource": "Manba sifatida"
     },
     "hints": {
-      "visibility": "ChatGPT javoblarining necha foizida tilga olindingiz.",
+      "visibility": "AI javoblarining necha foizida tilga olindingiz.",
       "shareOfVoice": "Javoblarda kuzatilayotgan brendlar necha marta tilga olingan boʻlsa, shundan necha foizi sizniki.",
-      "sentiment": "ChatGPT siz haqingizda qanchalik ijobiy gapiradi: 0 — salbiy, 100 — ijobiy.",
+      "sentiment": "AI siz haqingizda qanchalik ijobiy gapiradi: 0 — salbiy, 100 — ijobiy.",
       "position": "Javobda nechanchi boʻlib tilga olinasiz. 1 — birinchi; son kichikroq boʻlsa, yaxshiroq.",
-      "usedAsSource": "Javoblarning necha foizida ChatGPT sizning saytingizga havola bergan."
+      "usedAsSource": "Javoblarning necha foizida AI sizning saytingizga havola bergan."
     }
   },
   "WrongFactsPage": {
@@ -2982,8 +2984,8 @@
     "behind": "{metric} boʻyicha {of} ta brend ichida {rank}-oʻrindasiz: {value}. Yetakchi — {leader}: {leaderValue}.",
     "first": "{metric} boʻyicha {of} ta brend ichida birinchisiz: {value}. Keyingi oʻrinda — {next}: {nextValue}.",
     "only": "{metric} boʻyicha natijangiz: {value}.",
-    "unnamed": "{metric}: ChatGPT javoblarida hali tilga olinmagansiz. Yetakchi — {leader}: {leaderValue}.",
-    "nobody": "ChatGPT javoblarida kuzatilayotgan brendlardan hech biri hali tilga olinmagan.",
+    "unnamed": "{metric}: AI javoblarida hali tilga olinmagansiz. Yetakchi — {leader}: {leaderValue}.",
+    "nobody": "AI javoblarida kuzatilayotgan brendlardan hech biri hali tilga olinmagan.",
     "better": "Oʻtgan haftaga nisbatan {amount} ga yaxshilandi.",
     "worse": "Oʻtgan haftaga nisbatan {amount} ga yomonlashdi.",
     "same": "Oʻtgan haftaga nisbatan oʻzgarmadi."
@@ -3012,15 +3014,15 @@
     "ownSite": "Sizniki",
     "competitorSite": "{name} (raqobatchi)",
     "verdict": {
-      "missing": "ChatGPT javoblarining {share} qismida {domain} saytiga tayanadi, siz esa u yerda yoʻqsiz.",
+      "missing": "AI javoblarining {share} qismida {domain} saytiga tayanadi, siz esa u yerda yoʻqsiz.",
       "rivals": "U yerda bor: {rivals}.",
       "action": "Qanday qoʻshilish",
-      "listed": "Siz {domain} saytida borsiz. Unga havola bergan {citing} ta javobdan {named} tasida ChatGPT sizni tilga oldi.",
-      "own": "Bu sizning saytingiz. ChatGPT unga {citing} ta javobda havola berdi.",
+      "listed": "Siz {domain} saytida borsiz. Unga havola bergan {citing} ta javobdan {named} tasida AI sizni tilga oldi.",
+      "own": "Bu sizning saytingiz. AI unga {citing} ta javobda havola berdi.",
       "ownUnnamed": "Shulardan {unnamed} tasida sizni tilga olmadi: saytingizdan maʼlumot oldi, sizni esa tavsiya qilmadi.",
       "ownNamed": "Ularning hammasida sizni tilga oldi.",
-      "competitor": "Bu {name} sayti, shuning uchun unga qoʻshilib boʻlmaydi. ChatGPT unga {citing} ta javobda havola berdi: qaysi sahifalariga tayanganini koʻring va shu mavzularda oʻz sahifangizni yozing.",
-      "lost": "ChatGPT oxirgi tekshiruvda ({date}) bu saytga havola bermadi. Oxirgi marta {last} dagi tekshiruvda havola bergan.",
+      "competitor": "Bu {name} sayti, shuning uchun unga qoʻshilib boʻlmaydi. AI unga {citing} ta javobda havola berdi: qaysi sahifalariga tayanganini koʻring va shu mavzularda oʻz sahifangizni yozing.",
+      "lost": "AI oxirgi tekshiruvda ({date}) bu saytga havola bermadi. Oxirgi marta {last} dagi tekshiruvda havola bergan.",
       "filtered": "Bu filtrlar boʻyicha hech bir javob bu saytga havola bermagan."
     },
     "chart": {
@@ -3042,7 +3044,7 @@
       "label": "Sayt koʻrinishi"
     },
     "tabHints": {
-      "pages": "ChatGPT shu saytning qaysi sahifalariga havola bergan.",
+      "pages": "AI shu saytning qaysi sahifalariga havola bergan.",
       "answers": "Shu saytga havola bergan javoblar. Toʻliq oʻqish uchun javobni bosing."
     },
     "answers": {
@@ -3068,7 +3070,7 @@
     "emptyFile": "Faylda hech narsa topilmadi.",
     "unreadable": "Faylni oʻqib boʻlmadi.",
     "keywordsTitle": "Kalit soʻzlarni yuklash",
-    "keywordsHint": "Google Search Console yoki boshqa SEO vositasidan eksport, kalit soʻzlar birinchi ustunda. Ulardan mijozlar ChatGPT’ga beradigan savollarni tavsiya qilamiz.",
+    "keywordsHint": "Google Search Console yoki boshqa SEO vositasidan eksport, kalit soʻzlar birinchi ustunda. Ulardan mijozlar AI’ga beradigan savollarni tavsiya qilamiz.",
     "keywordsFound": "{count} ta kalit soʻz",
     "keywordsFirst": "birinchi {max} tasi olinadi",
     "keywordsMore": "va yana {count} ta",
@@ -3104,7 +3106,7 @@
     "nothingNew": "Yangi savol topilmadi: boshqa xizmat yoki mijoz turini qoʻshib koʻring.",
     "failed": "Savollarni yaratib boʻlmadi. Qayta urinib koʻring.",
     "intro": {
-      "headline": "Mijozlaringiz ChatGPT’dan nima soʻraydi?",
+      "headline": "Mijozlaringiz AI’dan nima soʻraydi?",
       "services": "Nima sotishingizni yozing: xizmatlaringiz allaqachon kiritilgan.",
       "customers": "Kimlar sotib olishini qoʻshing: har bir mijoz turi oʻz savollarini beradi.",
       "languages": "Tillarni tanlang: savollar oʻzbek va rus tillarida tuziladi.",
@@ -3132,23 +3134,23 @@
       },
       "verdict": {
         "title": "Siz qayerdasiz",
-        "text": "ChatGPT bu hafta biznesingizni qanday tilga olishi haqida bitta jumla, eng kuchli raqobatchingiz bilan yonma-yon."
+        "text": "AI bu hafta biznesingizni qanday tilga olishi haqida bitta jumla, eng kuchli raqobatchingiz bilan yonma-yon."
       },
       "kpis": {
         "title": "Beshta asosiy raqam",
-        "text": "ChatGPT sizni qanchalik tez-tez tilga oladi, brendlar orasidagi ulushingiz, roʻyxatlardagi oʻrningiz, bahosi va saytingizga qanchalik tayanadi — har biri oʻtgan haftaga nisbatan oʻzgarishi bilan. ⓘ raqam nimani anglatishini aytadi."
+        "text": "AI sizni qanchalik tez-tez tilga oladi, brendlar orasidagi ulushingiz, roʻyxatlardagi oʻrningiz, bahosi va saytingizga qanchalik tayanadi — har biri oʻtgan haftaga nisbatan oʻzgarishi bilan. ⓘ raqam nimani anglatishini aytadi."
       },
       "trend": {
         "title": "Haftalar davomida",
         "text": "Har bir brend har haftalik tekshiruvda. Grafik ustida koʻrsatkichni almashtiring; ⤢ uni kattalashtirib, qanday oʻqishni aytadi."
       },
       "sources": {
-        "title": "ChatGPT tayanadigan saytlar",
+        "title": "AI tayanadigan saytlar",
         "text": "Javoblarida eng koʻp keltiriladigan saytlar. Ularda tilga olinish — javoblarga kirishning eng ishonchli yoʻli; sayt bosilsa, uning sahifasi ochiladi."
       },
       "topics": {
         "title": "Mavzu va til boʻyicha",
-        "text": "ChatGPT sizni qayerda tilga oladi va qayerda yoʻq. Zaif mavzudan boshlang: bosilsa, uning savollari ochiladi."
+        "text": "AI sizni qayerda tilga oladi va qayerda yoʻq. Zaif mavzudan boshlang: bosilsa, uning savollari ochiladi."
       },
       "todo": {
         "title": "Keyin nima qilish kerak",
@@ -3192,7 +3194,7 @@
       },
       "verdict": {
         "title": "Javoblari nima deydi",
-        "text": "Shu savolga oxirgi javoblar haqida bitta jumla: ChatGPT kimni tilga oladi va siz ular orasida qanchalik tez-tez borsiz."
+        "text": "Shu savolga oxirgi javoblar haqida bitta jumla: AI kimni tilga oladi va siz ular orasida qanchalik tez-tez borsiz."
       },
       "trend": {
         "title": "Shu savol haftalar davomida",
@@ -3200,10 +3202,10 @@
       },
       "sources": {
         "title": "Shu savol manbalari",
-        "text": "ChatGPT shu savolga javob berganda keltiradigan saytlar. Raqobatchilaringizni tilga oladiganlariga joylashing."
+        "text": "AI shu savolga javob berganda keltiradigan saytlar. Raqobatchilaringizni tilga oladiganlariga joylashing."
       },
       "searches": {
-        "title": "ChatGPT nimani qidirdi",
+        "title": "AI nimani qidirdi",
         "text": "Javoblari ortidagi veb-qidiruvlar: sahifalaringiz javob berishi kerak boʻlgan soʻzlar."
       },
       "todo": {
@@ -3218,7 +3220,7 @@
     "discovery": {
       "intro": {
         "title": "Bu qanday ishlaydi",
-        "text": "Nima sotishingiz va kim sotib olishini ayting: biz shunday mijozlar ChatGPT’ga beradigan savollarni mavzulari bilan tuzamiz."
+        "text": "Nima sotishingiz va kim sotib olishini ayting: biz shunday mijozlar AI’ga beradigan savollarni mavzulari bilan tuzamiz."
       },
       "form": {
         "title": "Ikki qisqa qadam",
@@ -3232,7 +3234,7 @@
     "answers": {
       "kpis": {
         "title": "Javoblar raqamlarda",
-        "text": "ChatGPT nechta javob berdi, ulardan nechtasi sizni tilga oladi, siz haqingizda yomon gapiradi, hech bir brendni aytmaydi yoki avval internetdan qidirgan."
+        "text": "AI nechta javob berdi, ulardan nechtasi sizni tilga oladi, siz haqingizda yomon gapiradi, hech bir brendni aytmaydi yoki avval internetdan qidirgan."
       },
       "tools": {
         "title": "Javoblarni toping",
@@ -3258,11 +3260,11 @@
       },
       "topics": {
         "title": "Har bir mavzuda kim yetakchi",
-        "text": "Har bir mavzuda ChatGPT eng koʻp tilga oladigan brend va u yerdagi oʻrningiz. Mavzu bosilsa, uning savollari ochiladi."
+        "text": "Har bir mavzuda AI eng koʻp tilga oladigan brend va u yerdagi oʻrningiz. Mavzu bosilsa, uning savollari ochiladi."
       },
       "untracked": {
         "title": "Hali kuzatilmayotgan brendlar",
-        "text": "ChatGPT tilga olgan, lekin roʻyxatingizda yoʻq brendlar. Birini shu yerda kuzatish uchun qoʻshing yoki yashiring."
+        "text": "AI tilga olgan, lekin roʻyxatingizda yoʻq brendlar. Birini shu yerda kuzatish uchun qoʻshing yoki yashiring."
       },
       "rivals": {
         "title": "Har bir raqobatchi qayerda yutadi",
@@ -3272,7 +3274,7 @@
     "sources": {
       "views": {
         "title": "Saytlar yoki sahifalar",
-        "text": "ChatGPT keltirgan saytlarni yoki ularning sahifalarini birma-bir koʻring."
+        "text": "AI keltirgan saytlarni yoki ularning sahifalarini birma-bir koʻring."
       },
       "chart": {
         "title": "Eng koʻp keltirilganlar",
@@ -3294,7 +3296,7 @@
     "source": {
       "header": {
         "title": "Shu sayt",
-        "text": "Bu qanday sayt, ChatGPT uni hozir va oldingi tekshiruvda qanchalik koʻp keltirgan va u kimning sayti."
+        "text": "Bu qanday sayt, AI uni hozir va oldingi tekshiruvda qanchalik koʻp keltirgan va u kimning sayti."
       },
       "verdict": {
         "title": "Bu siz uchun nimani anglatadi",
@@ -3306,7 +3308,7 @@
       },
       "movers": {
         "title": "Bu yerda nima oʻzgardi",
-        "text": "Oldingi tekshiruvdan beri koʻproq yoki kamroq keltirilgan sahifalari va ChatGPT shu saytga tayanganda kimni tilga oladi."
+        "text": "Oldingi tekshiruvdan beri koʻproq yoki kamroq keltirilgan sahifalari va AI shu saytga tayanganda kimni tilga oladi."
       },
       "views": {
         "title": "Sahifalar va javoblar",
@@ -3316,11 +3318,11 @@
     "wrongFacts": {
       "kpis": {
         "title": "Notoʻgʻri faktlar raqamlarda",
-        "text": "ChatGPT siz haqingizda nechta notoʻgʻri gap aytadi, nechta savolda va qachondan beri."
+        "text": "AI siz haqingizda nechta notoʻgʻri gap aytadi, nechta savolda va qachondan beri."
       },
       "table": {
         "title": "Har bir notoʻgʻri fakt",
-        "text": "ChatGPT nima dedi, toʻgʻrisi qanday va bu qaysi savolda chiqdi. Savol bosilsa, uning javoblari ochiladi."
+        "text": "AI nima dedi, toʻgʻrisi qanday va bu qaysi savolda chiqdi. Savol bosilsa, uning javoblari ochiladi."
       },
       "fix": {
         "title": "Tuzatishni rejalang",
@@ -3348,7 +3350,7 @@
     "settingsFacts": {
       "facts": {
         "title": "Faktlaringiz",
-        "text": "Siz haqingizdagi toʻgʻri maʼlumotlar, har biri bir qatorda. ChatGPT javoblari shular bilan solishtiriladi; “Saytdan toʻldirish” taklif beradi."
+        "text": "Siz haqingizdagi toʻgʻri maʼlumotlar, har biri bir qatorda. AI javoblari shular bilan solishtiriladi; “Saytdan toʻldirish” taklif beradi."
       },
       "found": {
         "title": "Saytingizdan",
@@ -3362,7 +3364,7 @@
       },
       "suggestions": {
         "title": "Taklif etilgan brendlar",
-        "text": "ChatGPT tilga oladigan, siz kuzatmaydigan brendlar: ✓ kuzatadi, ✕ yashiradi."
+        "text": "AI tilga oladigan, siz kuzatmaydigan brendlar: ✓ kuzatadi, ✕ yashiradi."
       }
     },
     "settingsTags": {
@@ -3535,7 +3537,7 @@
       "telegramHint": "Hisobot havolasini Telegram’dagi chatga yuborish.",
       "pdf": "PDF",
       "pdfHint": "Hisobot A4 koʻrinishida ochiladi va chop etish oynasi chiqadi: “PDF sifatida saqlash”ni tanlang.",
-      "text": "{brand}: ChatGPT’dagi koʻrinish hisoboti, {date}"
+      "text": "{brand}: AI’dagi koʻrinish hisoboti, {date}"
     },
     "detail": {
       "title": "{date} hisoboti",

@@ -51,7 +51,7 @@ export default async function ActionsPage({ params, searchParams }: Props) {
 
   if (report.prompts.length === 0) {
     return (
-      <Page title={t("actions")} engines>
+      <Page title={t("actions")} engines={!report.engines}>
         <NoData projectId={project.id} promptCount={prompts.filter(isTracked).length} />
       </Page>
     );
@@ -100,7 +100,7 @@ export default async function ActionsPage({ params, searchParams }: Props) {
   );
 
   return (
-    <Page title={t("actions")} engines bleed>
+    <Page title={t("actions")} engines={!report.engines} bleed>
       {actions.length > 0 ? (
         <ActionBoard
           projectId={project.id}

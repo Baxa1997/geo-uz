@@ -178,6 +178,19 @@ that is committed.
 
 ## Done (as of 16 November 2026)
 
+- **Built, waiting for the user's look: the pages show every assistant, or one (16 Nov), on the branch
+  `both-assistants`; merged, pushed and deployed the same day, when the user said "yes".** The user said "yes" to it as the next step. On a real project the
+  switcher at a page's top offers "Barchasi" and each assistant that answered (ChatGPT, Gemini; Yandex stays
+  "tez orada"); the choice is in the address (`?engine=`), follows the links like the language and topic
+  filters, and the report is counted over that assistant's answers alone (`GET /projects/{id}/report?engine=`,
+  `Report.engines`). Overview, Savollar, Javoblar, Raqobatchilar, Manbalar, a site's page and Notoʻgʻri
+  faktlar follow it; Harakatlar, Hisobotlar and a question's page show the whole check and have no switcher
+  on a real project. The Overview's sentence names the assistant chosen ("AI" for all), and the dashboard's
+  texts say "AI" where they said "ChatGPT" (about 178 a language; the landing page, the free check and the
+  login keep ChatGPT). Looked at in a browser in Uzbek on desktop and phone width with a made-up sample
+  project answered by both, removed after: the numbers change with the assistant. Not read one by one: the
+  reworded texts in Russian and English. Sample data keeps the old switcher. No new variable.
+
 - **Built, waiting for the user's look: Notoʻgʻri faktlar fed from the brand answers (16 Nov), on the branch
   `wrong-facts-from-brand-answers`; merged, pushed and deployed the same day, when the user said "yes".** The user: "do what is next"; this was the piece named as
   missing after the brand questions. A statement of a brand answer that the website contradicts becomes a

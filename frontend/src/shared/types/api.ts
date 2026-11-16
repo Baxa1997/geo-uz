@@ -426,6 +426,8 @@ export interface Report {
   factsChecked?: boolean;
   /** What each assistant said of the business by name at this check; absent in sample data. */
   brandView?: BrandView[];
+  /** The assistants that answered in the latest check, whichever the report is filtered to; absent in sample data. */
+  engines?: ReportEngine[];
   /** Past runs, oldest first, ending with this one (a single point after the first run). */
   history: HistoryPoint[];
   /** The cited sites over the same runs, oldest first, ending with this one (whose counts are `topSources`). */
@@ -461,6 +463,15 @@ export type UpdateReportSettingsRequest = Partial<Pick<ReportSettings, "email" |
 export interface ReportFilters {
   language?: PromptLanguage;
   topic?: string;
+  /** One assistant's answers alone ("chatgpt", "gemini"); left out: every assistant together. */
+  engine?: string;
+}
+
+/** An assistant that answered in the latest check, with how many answers it gave. */
+export interface ReportEngine {
+  engine: string;
+  name: string;
+  answers: number;
 }
 
 // Request bodies

@@ -23,7 +23,7 @@ from sqlalchemy.orm import Session as Db
 from . import firstrun
 from .config import settings
 from .db import Answer, Brand, Citation, FirstRun, Mention, Project, Prompt, Run, User, WrongFact, now
-from .engines import web
+from .engines import ENGINE_NAMES, web
 
 # What each plan allows (`frontend/src/shared/constants`, PLAN_LIMITS)
 # The plans as the user set them on 15 Nov 2026: "start" is Standard ($39.99 a month, checked weekly),
@@ -464,7 +464,7 @@ def _wrong_facts(db: Db, project: Project, checks: List[_Check], prompt_ids: set
     ]
 
 
-def report(db: Db, project: Project, language: Optional[str] = None, topic: Optional[str] = None, prompt_id: Optional[str] = None, run_id: Optional[str] = None) -> Dict[str, Any]:
+def report(db: Db, project: Project, language: Optional[str] = None, topic: Optional[str] = None, prompt_id: Optional[str] = None, run_id: Optional[str] = None, engine: Optional[str] = None) -> Dict[str, Any]:
     brands = brands_of(db, project.id)
     prompts = prompts_of(db, project.id)
     if prompt_id is not None:
@@ -475,6 +475,14 @@ def report(db: Db, project: Project, language: Optional[str] = None, topic: Opti
     else:
         prompts = [prompt for prompt in prompts if prompt.archived_at is None and (not language or prompt.language == language) and (not topic or prompt.topic == topic)]
     checks = _checks(db, project, [prompt.id for prompt in prompts], run_id)
+    # The assistants that answered in the latest check, whatever one the page is looking at
+    answered = Counter(answer.engine for answer in checks[-1].answers) if checks else Counter()
+    assistants = [{"engine": key, "name": ENGINE_NAMES.get(key, key), "answers": answered[key]} for key in ENGINE_NAMES if answered[key]]
+    if engine in answered:
+        # One assistant's report: every check over its answers alone; a check where it wasn't asked is left out
+        checks = [_Check(check.run, theirs, check.mentions, check.citations) for check in checks for theirs in [[answer for answer in check.answers if answer.engine == engine]] if theirs]
+    else:
+        engine = None
     latest = checks[-1] if checks else None
     before = checks[-2] if len(checks) > 1 else None
 
@@ -493,7 +501,8 @@ def report(db: Db, project: Project, language: Optional[str] = None, topic: Opti
         # False: nobody checked this run's answers against the client's facts, so an empty list is not "none found"
         "factsChecked": bool(latest and latest.run.facts_checked),
         # What each assistant said of the business by name at this check; [] when no brand question was asked
-        "brandView": (latest.run.brand_view if latest else None) or [],
+        "brandView": [view for view in (latest.run.brand_view if latest else None) or [] if not engine or view.get("engine") == engine],
+        "engines": assistants,
         "history": [{"runId": check.run.id, "collectedAt": iso(check.run.collected_at), "scores": check.scores(brands)} for check in checks],
         "sourceHistory": [
             {

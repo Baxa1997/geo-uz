@@ -206,3 +206,12 @@ export function slicesBy(results: PromptResult[], keyOf: (prompt: Prompt) => str
 
 /** A brand's visibility (0–1) in a group of questions. */
 export const sliceShare = (slice: Slice, brandId: string) => (slice.answers ? (slice.named[brandId] ?? 0) / slice.answers : 0);
+
+/**
+ * Who a sentence about the answers names: the assistant the report is filtered to, the only one that
+ * answered, or `ai` ("AI") for several together. Sample data has no list of assistants: ChatGPT.
+ */
+export function assistantLabel(report: Pick<Report, "engines">, engine: string | undefined, ai: string): string {
+  if (!report.engines) return "ChatGPT";
+  return report.engines.find((item) => item.engine === engine)?.name ?? (report.engines.length === 1 ? report.engines[0].name : ai);
+}

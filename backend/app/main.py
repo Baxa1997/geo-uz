@@ -353,8 +353,8 @@ def get_prompts(project_id: str, user: User = Depends(current_user)) -> Any:
 # The report is read without login: its page is the link a client shares (`/projects/{id}/report`), and the
 # server prints the same page as a PDF. The project's id, 32 random characters, is what the link's holder knows.
 @app.get("/projects/{project_id}/report")
-def get_report(project_id: str, language: Optional[str] = None, topic: Optional[str] = None) -> Any:
-    return in_project(lambda db: projects.report(db, projects.shared(db, project_id), language=language, topic=topic))
+def get_report(project_id: str, language: Optional[str] = None, topic: Optional[str] = None, engine: Optional[str] = None) -> Any:
+    return in_project(lambda db: projects.report(db, projects.shared(db, project_id), language=language, topic=topic, engine=engine))
 
 
 @app.get("/projects/{project_id}/prompts/{prompt_id}/report")

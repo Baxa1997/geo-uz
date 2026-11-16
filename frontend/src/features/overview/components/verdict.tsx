@@ -1,7 +1,7 @@
 import { LightbulbIcon as Lightbulb } from "@phosphor-icons/react/dist/ssr/Lightbulb";
 import { useLocale, useTranslations } from "next-intl";
 import { formatDecimal, formatPercent } from "@/shared/helpers/numbers";
-import { headlineMetrics, outOfTen, scoreOf, topCompetitor } from "@/shared/helpers/scores";
+import { assistantLabel, headlineMetrics, outOfTen, scoreOf, topCompetitor } from "@/shared/helpers/scores";
 import type { Report } from "@/shared/types/api";
 
 /**
@@ -9,10 +9,11 @@ import type { Report } from "@/shared/types/api";
  * the strongest competitor, and whether that got better since last week. Never a place without its
  * number: "first" means little at 2 answers in 10.
  */
-export function Verdict({ report }: { report: Report }) {
+export function Verdict({ report, engine }: { report: Report; engine?: string }) {
   const t = useTranslations("Headline");
   const common = useTranslations("Common");
   const standing = useTranslations("Standing");
+  const assistant = assistantLabel(report, engine, useTranslations("Engines")("ai"));
   const locale = useLocale();
   const { brand, competitors } = report.project;
   const you = scoreOf(report.scores, brand.id);
@@ -30,12 +31,13 @@ export function Verdict({ report }: { report: Report }) {
         <span className="font-medium">
           {rival
             ? t("summary", {
+                assistant,
                 you: outOfTen(you.visibility),
                 percent,
                 competitor: rival.brand.name,
                 them: outOfTen(rival.score.visibility),
               })
-            : t("summaryAlone", { you: outOfTen(you.visibility), percent })}
+            : t("summaryAlone", { assistant, you: outOfTen(you.visibility), percent })}
         </span>
         {change !== null && amount !== null && (
           <span className="text-muted-foreground"> {amount === "0" ? standing("same") : standing(change > 0 ? "better" : "worse", { amount })}</span>

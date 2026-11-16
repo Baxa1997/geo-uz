@@ -5,6 +5,7 @@ import { EngineSwitcher } from "@/shared/components/engine-switcher";
 import { PageTour, type TourId } from "@/shared/components/page-tour";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/shared/helpers/utils";
+import type { ReportEngine } from "@/shared/types/api";
 
 /**
  * A workspace page, laid out like Peec's: a bar across the top with the page's place as a breadcrumb
@@ -28,7 +29,8 @@ export function Page({
   title: string;
   crumbs?: { href: string; label: string }[];
   actions?: React.ReactNode;
-  engines?: boolean;
+  /** True: the switcher as sample data has it. A list: the assistants that answered, to choose among. */
+  engines?: boolean | ReportEngine[];
   tour?: TourId;
   /** The page's filters (and tools that act on the whole page), in a strip under the title bar. */
   toolbar?: React.ReactNode;
@@ -58,7 +60,7 @@ export function Page({
           )}
           <h1 className="min-w-0 truncate px-1.5 py-1">{title}</h1>
         </div>
-        {engines && <EngineSwitcher />}
+        {engines && <EngineSwitcher available={Array.isArray(engines) ? engines : undefined} />}
         {actions}
         {tour && <PageTour id={tour} />}
       </header>

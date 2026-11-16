@@ -42,12 +42,13 @@ export function HeadlineScore({
         <p className="text-sm text-pretty">
           {rival
             ? t("summary", {
+                assistant: "ChatGPT",
                 you: outOfTen(you.visibility),
                 percent,
                 competitor: rival.brand.name,
                 them: outOfTen(rival.score.visibility),
               })
-            : t("summaryAlone", { you: outOfTen(you.visibility), percent })}
+            : t("summaryAlone", { assistant: "ChatGPT", you: outOfTen(you.visibility), percent })}
         </p>
 
         <dl className="grid grid-cols-2 gap-3 border-t pt-4 text-sm">
