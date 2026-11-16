@@ -179,7 +179,8 @@ that is committed.
 ## Done (as of 16 November 2026)
 
 - **Built, waiting for the user's look: fifteen corrections from the first real use (16 Nov), on the branch
-  `fixes-from-first-real-use`, not committed, not deployed.** The user tried the Vercel site with a chatbot
+  `fixes-from-first-real-use`; merged, pushed and the backend deployed to the server the same day, when the user
+  said "yes" to "commit, push and deploy?".** The user tried the Vercel site with a chatbot
   company and sent fifteen points. The cause of six of them: Vercel had `NEXT_PUBLIC_LIVE=auth,first-run`, so
   projects were sample data (the server's log has no project request from the site): a saved project was the
   sample dental clinic, kept in one server instance's memory (clinic facts and sources, a project in the
