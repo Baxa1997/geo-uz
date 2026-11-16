@@ -3921,7 +3921,7 @@
       }
     },
     "runningTitle": "Checking how AI answers your customers",
-    "runningText": "This takes two to three minutes. You can close the page: the result appears here.",
+    "runningText": "This takes four to five minutes. You can close the page: the result appears here.",
     "steps": {
       "reading_site": {
         "title": "Reading your website",
@@ -4007,7 +4007,7 @@
       },
       "country": "Where are your customers?",
       "countryHint": "We ask the assistants as a customer in this country, and write the questions in its language.",
-      "time": "2–3 minutes",
+      "time": "the check takes 4–5 minutes",
       "next": "Next",
       "readingSite": "Reading the site…",
       "anotherSite": "Another website",

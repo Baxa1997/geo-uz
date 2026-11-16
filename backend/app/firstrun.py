@@ -320,9 +320,15 @@ def _kind(domain: str, own: str, competitors: List[str]) -> str:
 
     if domain == own:
         return "own"
-    slug = re.sub(r"[^a-z0-9]", "", domain.split(".")[0])
-    if any(len(word) >= 5 and word in slug for name in competitors for word in re.findall(r"[a-z0-9]+", name.lower())):
-        return "competitor"
+    # Every part of the address but its ending, written together: a competitor's site may be a subdomain
+    slug = re.sub(r"[^a-z0-9]", "", "".join(domain.split(".")[:-1]))
+    # A competitor's own site carries its name: the whole name, or its first two words, written together. One
+    # word of a longer name proves nothing: "ielts" in a competitor's name made ielts.org a competitor's site
+    # (seen in the first weekly check, 16 Nov 2026)
+    for name in competitors:
+        words = re.findall(r"[a-z0-9]+", name.lower())
+        if any(len(written) >= 5 and written in slug for written in {"".join(words), "".join(words[:2])}):
+            return "competitor"
     return "news" if among(NEWS) else "directory" if among(DIRECTORIES) else "social" if among(SOCIAL) else "other"
 
 
@@ -487,16 +493,16 @@ def check(draft: Dict[str, Any], confirmed: Dict[str, Any], progress: Progress, 
     if not asked:
         raise FirstRunError("no_engines", "No assistant has a key")
     cost = 0.0
-    read = draft["who"]
+    site = draft["who"]
     city = confirmed["city"]
     who = {
-        **read,
+        **site,
         "name": confirmed["name"],
         "aliases": confirmed["aliases"],
         "category": confirmed["category"],
         "city": city,
         # The city in English is the website's reading; a city the owner typed is told as typed
-        "cityEn": read["cityEn"] if city == read["city"] else city,
+        "cityEn": site["cityEn"] if city == site["city"] else city,
         "description": confirmed["description"],
         "services": confirmed["services"],
         "questions": confirmed["prompts"][: settings.first_run_questions],
@@ -594,7 +600,7 @@ def check(draft: Dict[str, Any], confirmed: Dict[str, Any], progress: Progress, 
     rivals += [name for name, _ in named.most_common() if name != client and name not in rivals][: COMPETITOR_LIMIT - len(rivals)]
     given = {rival["name"]: rival for rival in chosen}
     # A confirmed competitor keeps the icon found with its website, while the website is still the one found
-    icons = {rival["domain"]: rival.get("logo") for rival in read.get("competitors") or [] if rival.get("domain")}
+    icons = {rival["domain"]: rival.get("logo") for rival in draft["who"].get("competitors") or [] if rival.get("domain")}
     tracked = [client] + rivals
     ids = {name: f"b{index}" for index, name in enumerate(tracked)}
     mentions = sum(named[name] for name in tracked) or 1
