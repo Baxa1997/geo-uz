@@ -3921,7 +3921,7 @@
       }
     },
     "runningTitle": "AI mijozlaringizga nima deyishini tekshiryapmiz",
-    "runningText": "Bu ikki-uch daqiqa davom etadi. Sahifani yopsangiz ham boʻladi: natija shu yerda chiqadi.",
+    "runningText": "Bu toʻrt-besh daqiqa davom etadi. Sahifani yopsangiz ham boʻladi: natija shu yerda chiqadi.",
     "steps": {
       "reading_site": {
         "title": "Saytingizni oʻqiyapmiz",
@@ -4007,7 +4007,7 @@
       },
       "country": "Mijozlaringiz qayerda?",
       "countryHint": "Yordamchilardan shu davlatdagi mijoz sifatida soʻraymiz, savollar ham shu davlat tilida yoziladi.",
-      "time": "2–3 daqiqa",
+      "time": "tekshiruv 4–5 daqiqa",
       "next": "Keyingi",
       "readingSite": "Sayt oʻqilmoqda…",
       "anotherSite": "Boshqa sayt",

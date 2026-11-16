@@ -185,6 +185,24 @@ that is committed.
 
 ## Done (as of 16 November 2026)
 
+- **Tried, waiting for the user's look: the first real weekly check (16 Nov); its corrections on the
+  branch `first-weekly-check`; merged, pushed and deployed the same day, when the user said "commit, push and
+  deploy".** After "what is next" the user chose "first paid weekly
+  check" of four. The server had no project, so one was made the real way under the user's account: their
+  own site through the new four-step flow on the live backend (the first time ChatGPT and Gemini answered
+  together in it, and the first competitor search on Gemini), saved as a project, switched to paid Standard
+  by hand (`app.admin`), then `python -m app.weekly --project`. It worked: 20 answers of 20, a second point
+  on the charts, a wrong fact, two fixes, the next check's date. The numbers and what they do to the prices
+  are in `backend/PLAN.md`, change log: $0.84 the first check, $1.63 the weekly one, about seven minutes.
+  Corrected from it: the competitors' icons were lost between the check and the project (this one is on the
+  server already, copied there before the weekly check); a site sharing one word with a competitor's name
+  was counted as that competitor's, and the pages said "2–3 minutes" for a check that takes four to five
+  (these two went out with the push). Not looked at: the project's pages in a browser on the live site (the
+  user's to open). Found and not done: AI assistants named among the untracked brands; a paid project's
+  report is emailed to nobody until an address is set in Hisobotlar, and has no PDF until the server has a
+  browser. That project stays on the server, paid: the timer will check it every Monday at about $1.63
+  until it is switched back (`python -m app.admin plan <id> start --trial`).
+
 - **Built, waiting for the user's look: the review's four fixes (16 Nov), on the branch `searched-competitors`
   with the competitor search; merged, pushed and deployed the same day (the user said "yes" to "shall I do
   these four? The competitor search would go out with them in the same push and deploy").** The user asked

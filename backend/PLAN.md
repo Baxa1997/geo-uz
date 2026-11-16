@@ -222,6 +222,21 @@ That is roughly one to two US cents per answer, and it has to cover the answer w
 
 ## Change log
 
+- **16 Nov 2026. The first real weekly check, and the first check on both assistants in the new flow
+  (measured on the server, the user's own site, a project of ten questions and six brand questions).** The
+  first check: the website read with the competitor search on Gemini in 73 seconds; ten questions on Gemini
+  and five on ChatGPT with the brand questions in 233 seconds; $0.84 in all (it was estimated at $0.50). The
+  weekly check on the Standard plan: every question on both assistants (20 answers of 20), the six brand
+  questions on both, the wrong facts and a brief; 413 seconds, **$1.63**. At that rate a Standard project
+  with its 25 questions costs about $3.50 a check, about $15 a month against the $9 the prices assumed
+  (still under the $39.99); the brand questions (12 answers, each read by the writing model) are a fixed
+  share of it whatever the plan. What it gave: a second point on every chart, one wrong fact from a brand
+  answer with what the website says, two fixes (a page to write with its brief, the wrong fact), the next
+  check's date. What it showed to correct: a site was taken for a competitor's on one shared word (fixed,
+  `firstrun._kind`); the answers name AI assistants themselves ("ChatGPT", "Claude") among the businesses,
+  which then stand among the untracked brands (not fixed); no report was emailed, because a project has no
+  report address until its owner sets one in Hisobotlar, and the server has no browser for the PDF.
+
 - **15 Nov 2026. The first-run page is wired.** New here: `GET /first-runs` (the account's runs, newest first;
   the frontend sends a new account to its first run when the list is empty) and `FIRST_RUN_REPLAY` (development:
   the latest saved run again, no assistant asked, `replayed: true` in the result; the day's limit is off with
