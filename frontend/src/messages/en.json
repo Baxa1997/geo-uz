@@ -246,7 +246,7 @@
       "location": "Asked as",
       "locationValue": "A customer in {city}",
       "questions": "Questions",
-      "questionsValue": "{count} tracked questions: {uz} in Uzbek, {ru} in Russian",
+      "questionsValue": "{count} tracked questions: {split}",
       "samples": "Answers per question",
       "samplesValue": "{samples}: an assistant answers differently each time, so every question is asked several times",
       "checks": "Checks",
@@ -256,7 +256,8 @@
       "limits": "Limits",
       "limitsValue": "An AI assistant’s answers vary from one asking to the next, and between its API and its app. The numbers are shares over all {answers} answers of this check; a change of a few points between two checks can be chance. A trend over several checks is more reliable than one week’s change.",
       "condition": "Condition score",
-      "conditionValue": "The mean of {areas} areas, each rated from 0 to 100 from this check’s answers. {good} and above reads good, {fair} and above fair, under {fair} weak. How each area is counted is in the definitions."
+      "conditionValue": "The mean of {areas} areas, each rated from 0 to 100 from this check’s answers. {good} and above reads good, {fair} and above fair, under {fair} weak. How each area is counted is in the definitions.",
+      "questionsPart": "{count} in {language}"
     },
     "glossary": {
       "visibility": "The share of answers that name the brand. 42% means 42 of every 100 answers.",
@@ -410,7 +411,8 @@
       "quote": "“{text}”",
       "languages": {
         "uz": "Uzbek",
-        "ru": "Russian"
+        "ru": "Russian",
+        "en": "English"
       },
       "items": {
         "facts": {
@@ -1304,7 +1306,8 @@
       "nobody": "Nobody",
       "lang": {
         "uz": "Questions in Uzbek",
-        "ru": "Questions in Russian"
+        "ru": "Questions in Russian",
+        "en": "Questions in English"
       },
       "takeawayTopics": "Your strongest topic is {best}, at {bestValue}. Your weakest is {worst}, at {worstValue}.",
       "takeawayLanguages": "On questions in Uzbek your visibility is {uz}; in Russian it is {ru}.",
@@ -1481,7 +1484,8 @@
       "queued": "The question hasn’t been asked yet. It is asked for the first time in the next weekly check.",
       "language": {
         "uz": "Asked in Uzbek",
-        "ru": "Asked in Russian"
+        "ru": "Asked in Russian",
+        "en": "Asked in English"
       },
       "count": "How many questions are tracked now.",
       "schedule": "Your questions are asked again every Monday morning.",
@@ -1704,7 +1708,8 @@
     },
     "languages": {
       "uz": "Uzbek",
-      "ru": "Russian"
+      "ru": "Russian",
+      "en": "English"
     },
     "status": {
       "tracked": "Tracked",
@@ -2329,7 +2334,11 @@
       "mapCities": "Cities to ask from",
       "saveNote": "Saving changes writes new question suggestions.",
       "invalid": "Something in the profile isn’t valid.",
-      "failed": "Couldn’t save. Try again."
+      "failed": "Couldn’t save. Try again.",
+      "country": "Country",
+      "wholeCountry": "The whole country",
+      "cityOptional": "City (optional)",
+      "countryNote": "Questions are asked as a customer in this country (and city, when one is chosen). Changing the country doesn't change the language of the questions you have: add new ones on the Questions page."
     },
     "facts": {
       "title": "Brand facts",
@@ -3140,7 +3149,8 @@
     "languages": "Question languages",
     "languageNote": {
       "uz": "In Uzbek, in Latin letters",
-      "ru": "In Russian"
+      "ru": "In Russian",
+      "en": "In English"
     },
     "next": "Next: languages",
     "back": "Back",
@@ -3825,7 +3835,7 @@
       },
       "p2": {
         "title": "We ask 10 questions",
-        "text": "The ones customers ask, in Uzbek and Russian. None of them names you."
+        "text": "The ones customers ask, in the language of your customers' country: Uzbek and Russian in Uzbekistan. None of them names you."
       },
       "p3": {
         "title": "We count who is named",

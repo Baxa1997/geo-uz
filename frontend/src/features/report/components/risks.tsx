@@ -37,7 +37,7 @@ export function Risks({ report, actions }: { report: Report; actions: Action[] }
   const { risks, opportunities } = outlook(report, actions);
   const percent = (value: number) => formatPercent(value / 100, locale);
   const topics = (keys: string[]) => keys.map((key) => t("quote", { text: labelFor(messages.Topics, key) })).join(", ");
-  const language = (key: string) => (key === "uz" || key === "ru" ? t(`languages.${key}`) : key);
+  const language = (key: string) => (key === "uz" || key === "ru" || key === "en" ? t(`languages.${key}`) : key);
 
   const risk = (entry: Risk): Pick<Line, "title" | "detail"> => {
     switch (entry.kind) {

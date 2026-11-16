@@ -246,7 +246,7 @@
       "location": "Kim nomidan",
       "locationValue": "{city}dagi mijoz nomidan",
       "questions": "Savollar",
-      "questionsValue": "{count} ta kuzatilayotgan savol: {uz} tasi oʻzbekcha, {ru} tasi ruscha",
+      "questionsValue": "{count} ta kuzatilayotgan savol: {split}",
       "samples": "Har savolga javoblar",
       "samplesValue": "{samples} ta: AI yordamchi har safar boshqacha javob beradi, shuning uchun har bir savol bir necha marta beriladi",
       "checks": "Tekshiruvlar",
@@ -256,7 +256,8 @@
       "limits": "Cheklovlar",
       "limitsValue": "AI yordamchining javoblari har safar va API bilan ilova orasida farq qilishi mumkin. Raqamlar — shu tekshiruvdagi barcha {answers} ta javob boʻyicha ulushlar; ikki tekshiruv orasidagi bir necha punktlik farq tasodif boʻlishi mumkin. Bir necha tekshiruv davomidagi yoʻnalish bir haftalik oʻzgarishdan ishonchliroq.",
       "condition": "Holat bahosi",
-      "conditionValue": "{areas} ta yoʻnalishning oʻrtachasi; har biri shu tekshiruv javoblari boʻyicha 0 dan 100 gacha baholanadi. {good} va undan yuqori — yaxshi, {fair} va undan yuqori — oʻrtacha, {fair} dan past — zaif. Har bir yoʻnalish qanday hisoblanishi “Atamalar” boʻlimida."
+      "conditionValue": "{areas} ta yoʻnalishning oʻrtachasi; har biri shu tekshiruv javoblari boʻyicha 0 dan 100 gacha baholanadi. {good} va undan yuqori — yaxshi, {fair} va undan yuqori — oʻrtacha, {fair} dan past — zaif. Har bir yoʻnalish qanday hisoblanishi “Atamalar” boʻlimida.",
+      "questionsPart": "{count} tasi — {language}"
     },
     "glossary": {
       "visibility": "Brendni tilga olgan javoblar ulushi. 42% — har 100 javobdan 42 tasi.",
@@ -410,7 +411,8 @@
       "quote": "“{text}”",
       "languages": {
         "uz": "oʻzbek tilidagi",
-        "ru": "rus tilidagi"
+        "ru": "rus tilidagi",
+        "en": "Inglizcha"
       },
       "items": {
         "facts": {
@@ -1304,7 +1306,8 @@
       "nobody": "Hech kim",
       "lang": {
         "uz": "Oʻzbekcha savollar",
-        "ru": "Ruscha savollar"
+        "ru": "Ruscha savollar",
+        "en": "Ingliz tilidagi savollar"
       },
       "takeawayTopics": "Eng kuchli mavzuingiz — {best}: {bestValue}. Eng zaifi — {worst}: {worstValue}.",
       "takeawayLanguages": "Oʻzbekcha savollarda tilga olinishingiz — {uz}, ruscha savollarda — {ru}.",
@@ -1481,7 +1484,8 @@
       "queued": "Savol hali AI’ga berilmagan. Navbatdagi haftalik tekshiruvda birinchi marta beriladi.",
       "language": {
         "uz": "Savol oʻzbek tilida beriladi",
-        "ru": "Savol rus tilida beriladi"
+        "ru": "Savol rus tilida beriladi",
+        "en": "Ingliz tilida beriladi"
       },
       "count": "Hozir kuzatilayotgan savollar soni.",
       "schedule": "Savollaringiz har hafta dushanba kuni ertalab AI’ga qayta beriladi.",
@@ -1704,7 +1708,8 @@
     },
     "languages": {
       "uz": "Oʻzbekcha",
-      "ru": "Ruscha"
+      "ru": "Ruscha",
+      "en": "Inglizcha"
     },
     "status": {
       "tracked": "Kuzatilmoqda",
@@ -2329,7 +2334,11 @@
       "mapCities": "Savol beriladigan shaharlar",
       "saveNote": "Oʻzgarishlarni saqlash savol takliflarini yangilaydi.",
       "invalid": "Profilda nimadir notoʻgʻri.",
-      "failed": "Saqlab boʻlmadi. Qayta urinib koʻring."
+      "failed": "Saqlab boʻlmadi. Qayta urinib koʻring.",
+      "country": "Davlat",
+      "wholeCountry": "Butun mamlakat",
+      "cityOptional": "Shahar (ixtiyoriy)",
+      "countryNote": "Savollar shu davlatdagi (va tanlansa, shu shahardagi) mijoz nomidan beriladi. Davlatni oʻzgartirish mavjud savollar tilini oʻzgartirmaydi: yangi savollarni Savollar sahifasida qoʻshing."
     },
     "facts": {
       "title": "Brend faktlari",
@@ -3140,7 +3149,8 @@
     "languages": "Savol tillari",
     "languageNote": {
       "uz": "Oʻzbek tilida, lotin yozuvida",
-      "ru": "Rus tilida"
+      "ru": "Rus tilida",
+      "en": "Ingliz tilida"
     },
     "next": "Keyingi: tillar",
     "back": "Orqaga",
@@ -3825,7 +3835,7 @@
       },
       "p2": {
         "title": "10 ta savol beramiz",
-        "text": "Mijozlar beradigan savollar, oʻzbek va rus tillarida. Hech birida nomingiz yoʻq."
+        "text": "Mijozlar beradigan savollar, mijozlaringiz davlati tilida: Oʻzbekistonda oʻzbek va rus tillarida. Hech birida nomingiz yoʻq."
       },
       "p3": {
         "title": "Kim tilga olinganini sanaymiz",

@@ -6,6 +6,7 @@ import { PencilSimpleIcon as Pencil } from "@phosphor-icons/react/dist/ssr/Penci
 import { useMessages, useTranslations } from "next-intl";
 import { useId, useState } from "react";
 import { ChipInput } from "@/shared/components/chip-input";
+import { CountrySelect } from "@/shared/components/country-select";
 import { FormSelect } from "@/shared/components/form-select";
 import { InfoTip } from "@/shared/components/info-tip";
 import { Modal } from "@/shared/components/modal";
@@ -21,7 +22,7 @@ import { FIELD, SaveBar } from "./settings-parts";
 /** The most chips a list of the profile keeps. */
 const MAX_CHIPS = 12;
 
-type Form = Required<Pick<UpdateProjectRequest, "description" | "category" | "identity" | "services" | "customers" | "city">>;
+type Form = Required<Pick<UpdateProjectRequest, "description" | "category" | "identity" | "services" | "customers" | "city" | "country">>;
 
 const formOf = (project: Project): Form => ({
   description: project.description,
@@ -30,6 +31,7 @@ const formOf = (project: Project): Form => ({
   services: project.services,
   customers: project.customers,
   city: project.city,
+  country: project.country ?? "UZ",
 });
 
 /** One field as Peec's profile has it: its name with an ⓘ, a gray line under it, then the field. */
@@ -96,6 +98,7 @@ export function ProfileForm({ project, categories, cities }: { project: Project;
   const error = save.error instanceof ApiError && save.error.status === 422 ? t("invalid") : save.isError ? t("failed") : undefined;
   const label = (dictionary: Record<string, string>, key: string) => dictionary[key] ?? key;
   const { brand } = project;
+  const inUzbekistan = form.country === "UZ";
 
   return (
     <>
@@ -166,25 +169,47 @@ export function ProfileForm({ project, categories, cities }: { project: Project;
               </h3>
               <p className="text-sm text-pretty text-muted-foreground">{t("marketsHint")}</p>
             </div>
-            <div className="flex items-center gap-2">
-              <label htmlFor={`${id}-city`} className="sr-only">
+          </div>
+          {/* The country first (since 16 Nov 2026): the city's list and the map are Uzbekistan's, so another
+              country has its city typed, or left empty for the whole country */}
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor={`${id}-country`} className="text-sm font-medium">
+                {t("country")}
+              </label>
+              <CountrySelect
+                id={`${id}-country`}
+                value={form.country}
+                onChange={(country) => setForm((current) => ({ ...current, country, city: country === current.country ? current.city : country === saved.country ? saved.city : "" }))}
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor={`${id}-city`} className="text-sm font-medium">
                 {t("city")}
               </label>
-              <div className="w-44">
-                <FormSelect id={`${id}-city`} value={form.city} onChange={(value) => set("city", value)}>
-                  {cities.map((key) => (
-                    <option key={key} value={key}>
-                      {label(messages.Cities, key)}
-                    </option>
-                  ))}
-                </FormSelect>
-              </div>
-              <Button variant="outline" size="icon" aria-label={t("mapLarge")} onClick={() => setMapOpen(true)} className="size-11 rounded-xl bg-background">
-                <Maximize2 aria-hidden />
-              </Button>
+              {inUzbekistan ? (
+                <div className="flex items-center gap-2">
+                  <div className="min-w-0 flex-1">
+                    <FormSelect id={`${id}-city`} value={form.city} onChange={(value) => set("city", value)}>
+                      <option value="">{t("wholeCountry")}</option>
+                      {(form.city && !cities.includes(form.city) ? [form.city, ...cities] : cities).map((key) => (
+                        <option key={key} value={key}>
+                          {label(messages.Cities, key)}
+                        </option>
+                      ))}
+                    </FormSelect>
+                  </div>
+                  <Button variant="outline" size="icon" aria-label={t("mapLarge")} onClick={() => setMapOpen(true)} className="size-10 shrink-0 rounded-lg bg-background">
+                    <Maximize2 aria-hidden />
+                  </Button>
+                </div>
+              ) : (
+                <input id={`${id}-city`} value={form.city} maxLength={200} placeholder={t("cityOptional")} onChange={(event) => set("city", event.target.value)} className={FIELD} />
+              )}
             </div>
           </div>
-          <MarketMap city={form.city} onChoose={(city) => set("city", city)} />
+          <p className="text-xs text-pretty text-muted-foreground">{t("countryNote")}</p>
+          {inUzbekistan && <MarketMap city={form.city} onChoose={(city) => set("city", city)} />}
         </section>
       </div>
 

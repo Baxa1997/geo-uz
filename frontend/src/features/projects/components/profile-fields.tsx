@@ -8,7 +8,7 @@ import { INPUT_CLASS, MAX_ALIASES, MAX_DESCRIPTION_LENGTH, MAX_SERVICES } from "
 import type { OnboardingErrors, SiteDraft } from "../types";
 import { ChipInput } from "@/shared/components/chip-input";
 import { DEFAULT_COUNTRY } from "@/shared/constants/countries";
-import { CountrySelect } from "./country-select";
+import { CountrySelect } from "@/shared/components/country-select";
 import { SuggestInput } from "./suggest-input";
 
 /** Onboarding step 2: the brand profile the backend read from the website, each field with what it's for. */

@@ -72,7 +72,7 @@ export function Topics({ report }: { report: Report }) {
         <div className="flex flex-col gap-2 print:break-inside-avoid">
           <BlockTitle>{t("languageTitle")}</BlockTitle>
           <ReportCard className="@container">
-            <GroupTable heading={t("language")} rows={byLanguage} label={(key) => (key === "uz" || key === "ru" ? languages(key) : key)} />
+            <GroupTable heading={t("language")} rows={byLanguage} label={(key) => (key === "uz" || key === "ru" || key === "en" ? languages(key) : key)} />
           </ReportCard>
         </div>
       )}

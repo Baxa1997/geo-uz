@@ -40,7 +40,7 @@ export function QuestionPicker({
   const messages = useMessages();
   const id = useId();
   const [text, setText] = useState("");
-  const [language, setLanguage] = useState<PromptLanguage>("uz");
+  const [language, setLanguage] = useState<PromptLanguage>(questions[0]?.language ?? "uz");
   const [error, setError] = useState<string>();
   const inTopics = questionsInTopics(questions, topics);
   const selected = inTopics.filter((question) => question.selected).length;

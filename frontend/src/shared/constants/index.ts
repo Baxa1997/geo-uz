@@ -17,7 +17,7 @@ export const PHONE_LOCAL_DIGITS = 9;
 export const MIN_PROMPTS = 20;
 export const MAX_PROMPTS = 50;
 
-export const PROMPT_LANGUAGES: PromptLanguage[] = ["uz", "ru"];
+export const PROMPT_LANGUAGES: PromptLanguage[] = ["uz", "ru", "en"];
 
 export const PROMPT_TEXT_MIN_LENGTH = 5;
 export const PROMPT_TEXT_MAX_LENGTH = 300;

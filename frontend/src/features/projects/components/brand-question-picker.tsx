@@ -30,7 +30,7 @@ export function BrandQuestionPicker({
   const t = useTranslations("Onboarding.brandQuestions");
   const id = useId();
   const [text, setText] = useState("");
-  const [language, setLanguage] = useState<PromptLanguage>("uz");
+  const [language, setLanguage] = useState<PromptLanguage>(questions[0]?.language ?? "uz");
   const [error, setError] = useState<string>();
   const selected = questions.filter((question) => question.selected).length;
 

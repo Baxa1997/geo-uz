@@ -6,12 +6,13 @@ import { useState } from "react";
 import { FilterChips } from "@/shared/components/filter-chips";
 import { answersNaming, namedBrands } from "@/shared/helpers/scores";
 import { cn } from "@/shared/helpers/utils";
-import type { Brand, PromptResult, Tone } from "@/shared/types/api";
+import { PROMPT_LANGUAGES } from "@/shared/constants";
+import type { Brand, PromptLanguage, PromptResult, Tone } from "@/shared/types/api";
 import { AnswerViewer } from "@/shared/components/scores/answer-viewer";
 import { NamedBrandChips } from "@/shared/components/scores/named-brand-chips";
 import { ToneIcon } from "@/shared/components/scores/tone-icon";
 
-type Filter = "all" | "missing" | "uz" | "ru";
+type Filter = "all" | "missing" | PromptLanguage;
 
 const TONES: Tone[] = ["positive", "neutral", "negative"];
 
@@ -44,19 +45,15 @@ export function PromptTable({ results, brands, youId }: { results: PromptResult[
   const [filter, setFilter] = useState<Filter>("all");
   const [openId, setOpenId] = useState<string | null>(null);
 
-  const matches: Record<Filter, (result: PromptResult) => boolean> = {
-    all: () => true,
-    missing: (result) => answersNaming(result, youId) === 0,
-    uz: (result) => result.prompt.language === "uz",
-    ru: (result) => result.prompt.language === "ru",
-  };
+  const matches = (id: Filter) => (result: PromptResult) => (id === "all" ? true : id === "missing" ? answersNaming(result, youId) === 0 : result.prompt.language === id);
+  // A chip per language the questions are in; one language alone needs none
+  const spoken = PROMPT_LANGUAGES.filter((language) => results.some((result) => result.prompt.language === language));
   const filters: { id: Filter; label: string }[] = [
     { id: "all", label: t("all") },
     { id: "missing", label: t("missing") },
-    { id: "uz", label: "UZ" },
-    { id: "ru", label: "RU" },
+    ...(spoken.length > 1 ? spoken.map((language) => ({ id: language, label: language.toUpperCase() })) : []),
   ];
-  const visible = results.filter(matches[filter]);
+  const visible = results.filter(matches(filter));
 
   return (
     <div className="flex flex-col gap-3">
@@ -66,7 +63,7 @@ export function PromptTable({ results, brands, youId }: { results: PromptResult[
             label={t("filterLabel")}
             value={filter}
             onChange={setFilter}
-            options={filters.map(({ id, label }) => ({ id, label, count: results.filter(matches[id]).length }))}
+            options={filters.map(({ id, label }) => ({ id, label, count: results.filter(matches(id)).length }))}
           />
         </div>
 

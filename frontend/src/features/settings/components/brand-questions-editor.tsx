@@ -14,7 +14,7 @@ import type { BrandQuestion, PromptLanguage } from "@/shared/types/api";
 import { FIELD, SaveBar, SettingsCard } from "./settings-parts";
 
 const clean = (text: string) => text.trim().replace(/\s+/g, " ");
-const LANGUAGES: PromptLanguage[] = ["uz", "ru"];
+const LANGUAGES: PromptLanguage[] = ["uz", "ru", "en"];
 
 /**
  * The brand questions: the ones that name the business, asked to every assistant at every check and kept
@@ -27,7 +27,7 @@ export function BrandQuestionsEditor({ projectId, brand, initial, overviewHref }
   const [saved, setSaved] = useState(initial);
   const [questions, setQuestions] = useState(initial);
   const [draft, setDraft] = useState("");
-  const [language, setLanguage] = useState<PromptLanguage>("uz");
+  const [language, setLanguage] = useState<PromptLanguage>(initial[0]?.language ?? "uz");
   const kept = questions.map((question) => ({ ...question, text: clean(question.text) })).filter((question) => question.text);
   const dirty = JSON.stringify(kept) !== JSON.stringify(saved);
   const full = questions.length >= MAX_BRAND_QUESTIONS;

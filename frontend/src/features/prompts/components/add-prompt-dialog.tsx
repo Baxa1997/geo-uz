@@ -251,6 +251,7 @@ export function AddPromptDialog({
                   {!prompt && <option value="auto">{t("languageAuto")}</option>}
                   <option value="uz">{languages("uz")}</option>
                   <option value="ru">{languages("ru")}</option>
+                  <option value="en">{languages("en")}</option>
                 </FormSelect>
               </div>
             </div>

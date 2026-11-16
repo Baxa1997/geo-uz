@@ -91,7 +91,7 @@ def project_json(db: Db, project: Project) -> Dict[str, Any]:
         "category": project.category,
         "city": project.city,
         "country": project.country or DEFAULT_COUNTRY,
-        "languages": languages or ["uz", "ru"],
+        "languages": languages or sorted(firstrun.languages_for(project.country or DEFAULT_COUNTRY), reverse=True),
         "description": project.description,
         "services": project.services or [],
         "customers": project.customers or [],
@@ -170,12 +170,12 @@ def _brand_questions(given: Any, name: str, city: str, result: Optional[Dict[str
     the ones the first run asked, or the two general ones. An empty list is the client's choice: none."""
     if given is None:
         asked = [question for question in (result or {}).get("brandQuestions") or [] if question.get("asked")]
-        given = asked or [{"text": firstrun.brand_question(language, name, city), "language": language} for language in firstrun.BRAND_QUESTIONS]
+        given = asked or [{"text": firstrun.brand_question(language, name, city), "language": language} for language in firstrun.languages_for((result or {}).get("country") or DEFAULT_COUNTRY)]
     kept: List[Dict[str, str]] = []
     for question in given if isinstance(given, list) else []:
         text = _clean(question.get("text") if isinstance(question, dict) else "")[:300]
         if len(text) >= 5 and all(not _same(text, other["text"]) for other in kept):
-            kept.append({"text": text, "language": "ru" if question.get("language") == "ru" else "uz"})
+            kept.append({"text": text, "language": _language(question.get("language"))})
     return kept[: firstrun.BRAND_QUESTION_LIMIT]
 
 
@@ -239,7 +239,7 @@ def create(db: Db, user: User, body: Dict[str, Any]) -> Tuple[Project, Optional[
             continue
         if len(prompts) >= limits["prompts"]:
             raise ProjectError(409, "prompt_limit")
-        prompts.append(Prompt(project_id=project.id, text=text, language="ru" if given.get("language") == "ru" else "uz", topic=_clean(given.get("topic")), location=_clean(given.get("location")) or city, tags=[], position=len(prompts)))
+        prompts.append(Prompt(project_id=project.id, text=text, language=_language(given.get("language")), topic=_clean(given.get("topic")), location=_clean(given.get("location")) or city, tags=[], position=len(prompts)))
     db.add_all(prompts)
     db.flush()
 
@@ -584,7 +584,8 @@ def _prompt(db: Db, project: Project, prompt_id: str) -> Prompt:
 
 
 def _language(value: Any) -> str:
-    return "ru" if value == "ru" else "uz"
+    """A question's language: Uzbek, Russian or English (since 16 Nov 2026); Uzbek for anything else."""
+    return value if value in firstrun.QUESTION_LANGUAGES else "uz"
 
 
 def topics(db: Db, project: Project) -> List[str]:
