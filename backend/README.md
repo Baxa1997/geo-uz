@@ -49,11 +49,12 @@ SECURE_COOKIES=true
 | `POST /auth/code` `{email}` | Sends a six-digit code: by this service's own email when `SMTP_HOST` is set, else by Supabase's, else (development) into the server's log |
 | `POST /auth/code/verify` `{email, code}` | Logs in, makes the account on the first login, sets the cookie |
 | `GET /auth/me`, `PATCH /auth/me` `{name}`, `POST /auth/logout` | The account; its name; logging out |
-| `POST /first-runs` `{domain, category?, city?}` | Starts a new account's first run and returns at once (202) |
+| `POST /first-runs` `{domain, country?, category?, city?}` | Starts a new account's first run and returns at once (202). `country` (two letters, asked with the website) wins over what the website suggests. 409 `domain_taken` when a project, anyone's, already follows the website: one website, one project |
 | `GET /first-runs` | The account's first runs, newest first |
 | `GET /first-runs/{id}` | Its progress: `status`, `answered`, `total` |
 | `GET /first-runs/{id}/result` | The first statistics, in the frontend's `Snapshot` shape and a little more |
-| `POST /projects` `{name, aliases, domain, category, city, competitors, prompts, firstRunId?}` | The setup's last button: a project. With `firstRunId`, the first run's answers become its first check, for the questions that were kept |
+| `POST /projects` `{name, aliases, domain, category, city, competitors, prompts, firstRunId?}` | The setup's last button: a project. With `firstRunId`, the first run's answers become its first check, for the questions that were kept. 409 `domain_taken` as above (also from `PATCH /projects/{id}` for a new website) |
+| `DELETE /projects/{id}` | Removes the project with its checks, answers, questions, brands and fixes (204); its website is then free. The first run it came from stays |
 | `GET /projects`, `GET /projects/{id}`, `GET /projects/{id}/prompts` | The account's projects; one; its questions |
 | `GET /projects/{id}/report` `?language=&topic=&engine=` | The `Report` the dashboard's pages read, counted from the answers. `engine` (`chatgpt`, `gemini`): one assistant's answers alone, in every check; an assistant that didn't answer is ignored. `engines` lists the assistants of the latest check with their answers |
 | `GET /projects/{id}/prompts/{promptId}/report`, `GET /projects/{id}/reports/{runId}` | The report over one question; the report as it stood at a run |

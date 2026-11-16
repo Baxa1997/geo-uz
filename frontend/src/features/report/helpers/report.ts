@@ -33,10 +33,13 @@ export function bestCompetitorSite(report: Pick<Report, "project" | "topSources"
 export interface GroupRow {
   key: string;
   prompts: number;
+  /** The answers collected in the group, and how many of them name the client. */
+  answers: number;
+  named: number;
   /** Visibility in whole percent. */
   you: number;
-  /** The competitor named most in the group; null when no competitor is tracked. */
-  leader: { name: string; value: number } | null;
+  /** The competitor named most in the group, with the answers naming it; null when no competitor is tracked. */
+  leader: { name: string; value: number; named: number } | null;
 }
 
 /** The questions grouped by `keyOf`, the groups where the client trails most first. */
@@ -47,10 +50,12 @@ export function groupsAgainstLeader(report: Pick<Report, "project" | "prompts">,
     .map((slice) => ({
       key: slice.key,
       prompts: slice.prompts,
+      answers: slice.answers,
+      named: slice.named[brand.id] ?? 0,
       you: Math.round(sliceShare(slice, brand.id) * 100),
       leader:
         competitors
-          .map((competitor) => ({ name: competitor.name, value: Math.round(sliceShare(slice, competitor.id) * 100) }))
+          .map((competitor) => ({ name: competitor.name, value: Math.round(sliceShare(slice, competitor.id) * 100), named: slice.named[competitor.id] ?? 0 }))
           .sort((a, b) => b.value - a.value)[0] ?? null,
     }))
     .sort((a, b) => gap(a) - gap(b));

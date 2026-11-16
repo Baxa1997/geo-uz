@@ -25,7 +25,7 @@ All three are public (built into the site), none is a secret.
 | --- | --- | --- | --- |
 | `NEXT_PUBLIC_API_URL` | The backend's address. The browser reaches it through the site itself (`/api/backend`) | `http://localhost:8000` | `https://geo-api.shopsready.com` |
 | `NEXT_PUBLIC_USE_MOCKS` | `true`: pages the backend doesn't serve yet use sample data. `false`: everything calls the backend | `true` | `true` |
-| `NEXT_PUBLIC_LIVE` | The parts of the API that are the backend's while the rest are sample data: `auth`, `first-run`, `projects` (since 15 Nov: the project list, a project's questions and its report) | `auth,first-run,projects` | `auth,first-run` (add `,projects` once the server has the new backend) |
+| `NEXT_PUBLIC_LIVE` | The parts of the API that are the backend's while the rest are sample data: `auth`, `first-run`, `projects` (since 15 Nov: the project list, a project's questions and its report) | `auth,first-run,projects` | `auth,first-run,projects`. Since 16 Nov `first-run` alone also makes projects the backend's (a real first run saved into sample data became the sample dental clinic), so the old value `auth,first-run` works too once the new code is deployed |
 
 ## Backend
 

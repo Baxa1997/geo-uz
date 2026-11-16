@@ -15,13 +15,32 @@ type Filter = "all" | "missing" | "uz" | "ru";
 
 const TONES: Tone[] = ["positive", "neutral", "negative"];
 
+/** How much of an answer the paper shows: about six lines. */
+const PRINTED_CHARACTERS = 520;
+
+/** An answer's beginning as plain text, for paper: no Markdown marks, no link addresses, cut at a word. */
+function beginning(text: string) {
+  const plain = text
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/[*_#>`|]+|-{3,}:?/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (plain.length <= PRINTED_CHARACTERS) return plain;
+  const cut = plain.slice(0, PRINTED_CHARACTERS);
+  return `${cut.slice(0, Math.max(cut.lastIndexOf(" "), PRINTED_CHARACTERS - 40))} …`;
+}
+
 /**
  * The report's appendix: every question with how many of its answers name the client, who was named and in
- * what tone; a row opens to read the answers. The filters and the open answers are for the screen: on paper
- * the list prints as it stands.
+ * what tone; a row opens to read the answers. The filters and the opening are for the screen. On paper
+ * nothing can be opened, so every question prints with all its answers under it (the user, 16 Nov 2026:
+ * "in pdf download how it will be displayed"): each answer under its assistant's name, by its beginning,
+ * with a line saying where the full texts are.
  */
 export function PromptTable({ results, brands, youId }: { results: PromptResult[]; brands: Brand[]; youId: string }) {
   const t = useTranslations("Prompts");
+  const paper = useTranslations("Report.appendix");
+  const engines = useTranslations("Engines");
   const [filter, setFilter] = useState<Filter>("all");
   const [openId, setOpenId] = useState<string | null>(null);
 
@@ -59,6 +78,8 @@ export function PromptTable({ results, brands, youId }: { results: PromptResult[
         </p>
       </div>
 
+      <p className="hidden text-xs text-pretty text-muted-foreground print:block">{paper("printNote")}</p>
+
       <ul className="divide-y overflow-hidden rounded-xl bg-card ring-1 ring-foreground/10">
           {visible.map((result) => {
             const open = openId === result.prompt.id;
@@ -66,13 +87,13 @@ export function PromptTable({ results, brands, youId }: { results: PromptResult[
             const youCount = answersNaming(result, youId);
             const named = namedBrands(result, brands, youId);
             return (
-              <li key={result.prompt.id} className="print:break-inside-avoid">
+              <li key={result.prompt.id}>
                 <button
                   type="button"
                   aria-expanded={open}
                   aria-controls={panelId}
                   onClick={() => setOpenId(open ? null : result.prompt.id)}
-                  className="flex w-full items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-muted/50"
+                  className="flex w-full items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-muted/50 print:break-inside-avoid print:break-after-avoid"
                 >
                   <span
                     className={cn(
@@ -105,10 +126,21 @@ export function PromptTable({ results, brands, youId }: { results: PromptResult[
                   />
                 </button>
                 {open && (
-                  <div id={panelId} className="px-4 pb-4">
+                  <div id={panelId} className="px-4 pb-4 print:hidden">
                     <AnswerViewer result={result} brands={brands} youId={youId} />
                   </div>
                 )}
+                {/* Paper only: every answer, whichever row was open on screen */}
+                <ol className="hidden flex-col gap-2 px-4 pb-3 print:flex">
+                  {result.answers.map((answer) => (
+                    <li key={`${answer.engine ?? ""}-${answer.sample}`} className="flex flex-col gap-1 border-l-2 border-foreground/20 pl-3 print:break-inside-avoid">
+                      <span className="text-xs font-semibold">
+                        {paper("answerOf", { engine: answer.engine === "chatgpt" || answer.engine === "gemini" ? engines(answer.engine) : (answer.engine ?? "AI"), n: answer.sample })}
+                      </span>
+                      <p className="text-xs leading-relaxed text-pretty">{beginning(answer.text)}</p>
+                    </li>
+                  ))}
+                </ol>
               </li>
             );
           })}

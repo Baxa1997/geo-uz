@@ -77,7 +77,7 @@ export function MobileMenu() {
           )}
         </nav>
         <div className="mt-auto flex flex-col gap-3 border-t p-4">
-          <LocaleSwitcher />
+          <LocaleSwitcher row />
           <Link href="/login" onClick={close} className={cn(buttonVariants({ variant: "outline", size: "lg" }), "h-11")}>
             {t("login")}
           </Link>

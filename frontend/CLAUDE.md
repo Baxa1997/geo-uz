@@ -19,7 +19,9 @@ the rest are mocks; `shared/api/client.ts` builds `api` from the mocks with thos
 (`sendCode`, `verifyCode`, `getMe`, `logout`, `updateMe`) and "first-run" (`startFirstRun`, `getFirstRuns`,
 `getFirstRun`, `getFirstRunResult`; the page is `/onboarding/first-run`, see `features/projects`), and since
 15 Nov "projects": every call about a project (all but login, the first run, the free check, the setup's
-suggestions and the landing page's forms). The backend serves the reads (`backend/README.md`); the writes it
+suggestions and the landing page's forms). Since 16 Nov "first-run" implies "projects", `/onboarding` without a
+first run and `/check` both go to `/onboarding/first-run`, and a logged-in visitor of `/login` goes to the
+dashboard: on the Vercel site (`auth,first-run`) real accounts were getting the sample dental clinic. The backend serves the reads (`backend/README.md`); the writes it
 doesn't have yet fail on a real project. `Report.factsChecked` false means nobody checked the answers against
 the brand's facts: an empty list of wrong facts then reads "not checked yet", never "none found". The setup
 sends `firstRunId` with `POST /projects`. With it on, the session cookie is the backend's; the
@@ -136,8 +138,10 @@ paper", the pilot report's look). The tokens are in `globals.css`:
   - Plain paper behind the hero (no dotted texture, no glows), no hairlines down the page's sides, flat cards (a
     line, no shadow) with a smaller radius, a navy closing band with a white button.
   - The navbar is 80px tall with text in the body's size; the language is a button (globe, "UZ", chevron) that
-    opens the three languages under their own names with a check on the current one (`LocaleSwitcher menu`; the
-    app keeps the three short links).
+    opens the three languages under their own names with a check on the current one (`LocaleSwitcher menu`). Since
+    16 Nov the app has the same dropdown, smaller, on every page (the user: "make it as landing page header"): the
+    workspace's top bar, login, the first check, the setup (`up`: it opens upward) and the shared report; only the
+    phone's menu on the landing page keeps the three short links (`row`).
   - An icon on the public pages sits in a filled rounded square, white on a color of its own (`TILE_COLORS`): the
     navbar's menus and the "why us" cards.
 - **The logo** (`LogoMark`): three lines of an answer on navy, the middle one bright among the faint ones: the
@@ -716,9 +720,15 @@ It runs in four parts, every section numbered (`REPORT_PARTS`, `REPORT_SECTIONS`
   each action improves (`ACTION_AREAS`), then what is done and what it changed.
 - **Sign-off** (`ReportSignOff`), where the report proper ends: who prepared it and when, and lines for the reader
   to sign that they have read it.
-- **IV. Reference.** 10 Method and scope with the limits of the numbers, 11 Definitions (the five numbers, then the
-  condition score, each area's formula and where a status begins), 12 Appendix: every question. Last, a line on
+- **IV. Reference.** Method and scope with the limits of the numbers, then Definitions (the five numbers, then the
+  condition score, each area's formula and where a status begins), which close the report. Last, a line on
   what the numbers are.
+- **The order since 16 Nov** (the user's corrections): every question with its answers is section 6, right after
+  Topics, and the definitions are the last section (`REPORT_SECTIONS`). Topics says what a topic is and what it
+  is for, counts the topics by standing, and gives a row a topic in answers ("0 / 2"), with the standing as a
+  word and what to do. Accuracy answers two questions apart: A the tone (how the score is made, every tone
+  counted), B whether what AI says is true (statements against the website, wrong facts as a table). On paper
+  nothing opens, so every question prints with the beginning of each of its answers (`PromptTable`).
 
 The sections are drawn by one component (`ReportBody`), so the shared report and Hisobotlar's report page never
 differ.

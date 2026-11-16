@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Logo } from "@/shared/components/logo";
-import { Link } from "@/i18n/navigation";
+import { Link, redirect } from "@/i18n/navigation";
 import { setPageLocale } from "@/i18n/page-locale";
 import { AUTH_LIVE } from "@/shared/api/client";
+import { getCurrentUser } from "@/shared/api/session";
 import { EmailLogin } from "../components/email-login";
 import { parseLoginTarget } from "../helpers/login-target";
 
@@ -21,6 +22,9 @@ export default async function LoginPage({ params, searchParams }: Props) {
     searchParams.then(parseLoginTarget),
     getTranslations({ locale, namespace: "Login" }),
   ]);
+  // Logged in already (the session lasts 30 days): straight to where they were going, never the form again.
+  // Asked of the backend, not read off the cookie: a cookie whose session has ended must still get the form.
+  if (await getCurrentUser().catch(() => null)) redirect({ href: target.next ?? "/dashboard", locale });
   // Mock login only: the sample account's address, since any code works there
   const demoEmail = AUTH_LIVE ? null : (await import("@/mocks/accounts")).DEMO_USER.email;
 

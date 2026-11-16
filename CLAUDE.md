@@ -178,6 +178,25 @@ that is committed.
 
 ## Done (as of 16 November 2026)
 
+- **Built, waiting for the user's look: fifteen corrections from the first real use (16 Nov), on the branch
+  `fixes-from-first-real-use`, not committed, not deployed.** The user tried the Vercel site with a chatbot
+  company and sent fifteen points. The cause of six of them: Vercel had `NEXT_PUBLIC_LIVE=auth,first-run`, so
+  projects were sample data (the server's log has no project request from the site): a saved project was the
+  sample dental clinic, kept in one server instance's memory (clinic facts and sources, a project in the
+  sidebar and not in the list, the report's link "not found", the old "asking ChatGPT" screen). Now a live
+  first run implies live projects, the old setup without a first run and the landing page's free check both
+  go to the real first check, and the setup ends on the project, not on the waiting screen. Also: a logged-in
+  visitor of the login page goes to the dashboard; one website, one project, for all accounts (409
+  `domain_taken`, asked before the check is paid for); the country is asked with the website; the project
+  cards have edit and delete (`DELETE /projects/{id}`) and a colored score with the condition beside it; the
+  language is a dropdown on every page; the report has every question right after Topics and the definitions
+  last, Topics and Accuracy rebuilt to explain themselves, and every answer's beginning printed in the PDF;
+  the app's texts no longer say "clinic". Tried on this computer in a browser (Uzbek; the report also at
+  phone width in Russian and as a 13-page PDF) and by request (the domain rule, delete). Not tried: on
+  Vercel; English. Not done: the server's own PDF (no Chrome there, and `FRONTEND_ORIGIN` on the server is
+  still `http://localhost:3000`: it needs the site's public address), which the emailed report needs; the
+  landing page's sample texts still speak of a clinic (a labelled sample). No new variable.
+
 - **Built, waiting for the user's look: the pages show every assistant, or one (16 Nov), on the branch
   `both-assistants`; merged, pushed and deployed the same day, when the user said "yes".** The user said "yes" to it as the next step. On a real project the
   switcher at a page's top offers "Barchasi" and each assistant that answered (ChatGPT, Gemini; Yandex stays

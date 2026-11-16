@@ -6,16 +6,18 @@ import type { ActionKind, ConditionArea } from "@/shared/types/api";
  * numbers, the analysis behind each area, the decisions, then how it was measured. Titles in
  * messages/Report.sections.
  */
-export const REPORT_SECTIONS = ["summary", "scorecard", "changes", "competitors", "topics", "sources", "accuracy", "risks", "actions", "method", "glossary", "appendix"] as const;
+// Every question stands right after the topics it is grouped into, and the definitions close the report
+// (the user's order, 16 Nov 2026); "appendix" keeps its key from when it was the last section.
+export const REPORT_SECTIONS = ["summary", "scorecard", "changes", "competitors", "topics", "appendix", "sources", "accuracy", "risks", "actions", "method", "glossary"] as const;
 
 export type ReportSectionKey = (typeof REPORT_SECTIONS)[number];
 
 /** The report's four parts, each a run of sections. Titles in messages/Report.parts. */
 export const REPORT_PARTS = [
   { key: "condition", sections: ["summary", "scorecard", "changes"] },
-  { key: "analysis", sections: ["competitors", "topics", "sources", "accuracy"] },
+  { key: "analysis", sections: ["competitors", "topics", "appendix", "sources", "accuracy"] },
   { key: "decisions", sections: ["risks", "actions"] },
-  { key: "reference", sections: ["method", "glossary", "appendix"] },
+  { key: "reference", sections: ["method", "glossary"] },
 ] as const satisfies readonly { key: string; sections: readonly ReportSectionKey[] }[];
 
 export type ReportPartKey = (typeof REPORT_PARTS)[number]["key"];

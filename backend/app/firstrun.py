@@ -120,7 +120,7 @@ PROFILE_RULES = """You read a business's website and prepare a first check of ho
 
 From the text, give:
 - name: the business's name as customers write it. aliases: its other spellings on the site and in common use (Latin and Cyrillic, short forms); never a generic word, and never an abbreviation of three letters or fewer.
-- category: what kind of business it is, two to four words in Russian (\"частная школа\", \"стоматологическая клиника\").
+- category: what kind of business it is, two to four words in Russian (\"частная школа\", \"чат-боты для бизнеса\", \"магазин мебели\").
 - country: the two-letter code of the country it mainly serves. city: the city it mainly serves, in Russian, and cityEn, the same in English; both empty when it serves a whole country or several, or works online.
 - description: one sentence in Russian on what it offers.
 - services: up to six of its main services, in Russian.
@@ -128,9 +128,9 @@ From the text, give:
 - brandQuestions: exactly four questions a customer who has already heard of this business would ask an AI assistant about it by its name: two in Russian, two in Uzbek in Latin script. Each names the business as customers write it, and each asks about one thing: its prices, whether it is good and what people say, one of its main services, how to reach or find it. Natural and short."""
 
 
-def profile(domain: str, pages: List[Dict[str, str]], category: Optional[str], city: Optional[str], count: int) -> Tuple[Dict[str, Any], float]:
+def profile(domain: str, pages: List[Dict[str, str]], category: Optional[str], city: Optional[str], count: int, country: Optional[str] = None) -> Tuple[Dict[str, Any], float]:
     text = "\n\n".join(f"[{page['url']}]\n{page['text']}" for page in pages)[:40_000]
-    given = "".join(f"\nThe owner says the {name} is: {value}. Use it." for name, value in (("category", category), ("city", city)) if value)
+    given = "".join(f"\nThe owner says the {name} is: {value}. Use it." for name, value in (("category", category), ("city", city), ("country it serves (two-letter code)", country)) if value)
     schema = obj(
         name=STR,
         aliases=arr(STR),
@@ -295,7 +295,7 @@ def questions_for(engine: str, asked: List[str], count: int) -> List[int]:
     return sorted({round(index * count / limit) for index in range(limit)}) if limit > 0 else []
 
 
-def run(domain: str, category: Optional[str], city: Optional[str], progress: Progress, engine_names: Optional[List[str]] = None) -> Tuple[Dict[str, Any], Dict[str, Any], float]:
+def run(domain: str, category: Optional[str], city: Optional[str], progress: Progress, engine_names: Optional[List[str]] = None, country: Optional[str] = None) -> Tuple[Dict[str, Any], Dict[str, Any], float]:
     """The whole first run. Returns the Snapshot, the raw answers and the cost in US dollars."""
     asked = engine_names or settings.engines
     if not asked:
@@ -308,10 +308,11 @@ def run(domain: str, category: Optional[str], city: Optional[str], progress: Pro
         raise FirstRunError("site_unreadable", domain)
     root = f"https://{web.domain_of(pages[0]['url'])}"
     checks = site_checks(pages, _raw(pages[0]["url"]), _raw(f"{root}/robots.txt"))
-    who, usd = profile(domain, pages, category, city, settings.first_run_questions)
+    who, usd = profile(domain, pages, category, city, settings.first_run_questions, country)
     cost += usd
     spellings = [who["name"]] + who["aliases"]
-    country = who["country"].strip().upper()[:2] or "UZ"
+    # The owner's own word on the country wins over what the website suggests
+    country = country or who["country"].strip().upper()[:2] or "UZ"
     place = (country, who["cityEn"] or who["city"], TIMEZONES.get(country, ""))
 
     # Every question to every assistant, a few at a time; one that fails is left out and the run goes on

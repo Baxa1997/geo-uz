@@ -11,17 +11,20 @@ import { Input } from "@/shared/components/ui/input";
 import { api, ApiError } from "@/shared/api/client";
 import { isValidDomain, normalizeDomain } from "@/shared/helpers/domain";
 import type { FirstRun } from "@/shared/types/api";
+import { CountrySelect } from "./country-select";
 
 const POINTS = ["p1", "p2", "p3"] as const;
 
 /** The one field a new account fills in: its website. Everything else is read from it. */
-export function FirstRunForm({ onStarted }: { onStarted: (run: FirstRun) => void }) {
+export function FirstRunForm({ onStarted, site = "" }: { onStarted: (run: FirstRun) => void; site?: string }) {
   const t = useTranslations("FirstRun");
   const engines = useTranslations("Engines");
   const id = useId();
-  const [website, setWebsite] = useState("");
+  const [website, setWebsite] = useState(site);
   const [invalid, setInvalid] = useState(false);
-  const start = useMutation({ mutationFn: (domain: string) => api.startFirstRun({ domain }), onSuccess: onStarted });
+  // Asked with the website (the user, 16 Nov 2026): the assistants are asked as a customer in this country
+  const [country, setCountry] = useState("UZ");
+  const start = useMutation({ mutationFn: (domain: string) => api.startFirstRun({ domain, country }), onSuccess: onStarted });
 
   function submit(event: FormEvent) {
     event.preventDefault();
@@ -31,7 +34,7 @@ export function FirstRunForm({ onStarted }: { onStarted: (run: FirstRun) => void
   }
 
   const status = start.error instanceof ApiError ? start.error.status : null;
-  const error = invalid || status === 422 ? t("websiteInvalid") : status === 429 ? t("limit") : start.isError ? t("startFailed") : undefined;
+  const error = invalid || status === 422 ? t("websiteInvalid") : status === 409 ? t("domainTaken") : status === 429 ? t("limit") : start.isError ? t("startFailed") : undefined;
   const busy = start.isPending || start.isSuccess;
 
   return (
@@ -71,6 +74,11 @@ export function FirstRunForm({ onStarted }: { onStarted: (run: FirstRun) => void
             </Button>
           </div>
           <FieldError id={`${id}-error`}>{error}</FieldError>
+        </Field>
+        <Field className="sm:max-w-xs">
+          <FieldLabel htmlFor={`${id}-country`}>{t("country")}</FieldLabel>
+          <FieldDescription>{t("countryHint")}</FieldDescription>
+          <CountrySelect id={`${id}-country`} value={country} onChange={setCountry} />
         </Field>
         <p className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
           {t("asks")}

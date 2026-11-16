@@ -197,6 +197,8 @@ class FirstRunRequest(BaseModel):
     domain: str
     category: Optional[str] = None
     city: Optional[str] = None
+    # The country the business serves, as its two-letter code: asked with the website (the user, 16 Nov 2026)
+    country: Optional[str] = None
 
 
 def run_json(run: FirstRun) -> Dict[str, Any]:
@@ -223,7 +225,7 @@ def replay(run_id: str, progress: Any) -> Dict[str, Any]:
     return {"status": "done", "result": {**result, "id": run_id, "replayed": True}, "raw": raw, "cost_usd": 0.0}
 
 
-def work(run_id: str, domain: str, category: Optional[str], city: Optional[str]) -> None:
+def work(run_id: str, domain: str, category: Optional[str], city: Optional[str], country: Optional[str] = None) -> None:
     """Does a first run outside the request that started it, writing its progress as it goes."""
 
     def progress(status: str, answered: int, total: int) -> None:
@@ -237,7 +239,7 @@ def work(run_id: str, domain: str, category: Optional[str], city: Optional[str])
         if settings.first_run_replay:
             outcome: Dict[str, Any] = replay(run_id, progress)
         else:
-            snapshot, raw, cost = firstrun.run(domain, category, city, progress)
+            snapshot, raw, cost = firstrun.run(domain, category, city, progress, country=country)
             outcome = {"status": "done", "result": {"id": run_id, **snapshot}, "raw": raw, "cost_usd": cost}
     except firstrun.FirstRunError as error:
         outcome = {"status": "failed", "error": error.code}
@@ -261,6 +263,9 @@ def start_first_run(body: FirstRunRequest, user: User = Depends(current_user)) -
     except firstrun.FirstRunError as error:
         raise HTTPException(422, error.code) from error
     with SessionLocal() as db:
+        # One website, one project: asked before the run, so nobody pays for a check that can't be saved
+        if projects.domain_taken(db, domain):
+            raise HTTPException(409, "domain_taken")
         day = now() - datetime.timedelta(days=1)
         # The same website again within a day: the run it already has, not a second one to pay for
         again = db.scalar(select(FirstRun).where(FirstRun.user_id == user.id, FirstRun.domain == domain, FirstRun.created_at > day, FirstRun.status != "failed").order_by(FirstRun.created_at.desc()))
@@ -272,7 +277,7 @@ def start_first_run(body: FirstRunRequest, user: User = Depends(current_user)) -
         db.add(run)
         db.commit()
         started = run_json(run)
-    threading.Thread(target=work, args=(started["id"], domain, body.category, body.city), daemon=True).start()
+    threading.Thread(target=work, args=(started["id"], domain, body.category, body.city, projects._country(body.country) or None), daemon=True).start()
     return started
 
 
@@ -343,6 +348,12 @@ def create_project(body: Dict[str, Any] = Body(...), user: User = Depends(curren
 @app.get("/projects/{project_id}")
 def get_project(project_id: str, user: User = Depends(current_user)) -> Any:
     return in_project(lambda db: projects.project_json(db, projects.own(db, user, project_id)))
+
+
+@app.delete("/projects/{project_id}", status_code=204)
+def delete_project(project_id: str, user: User = Depends(current_user)) -> None:
+    """Removes the project with its checks and answers; its website is then free for a new project."""
+    in_project(lambda db: projects.delete(db, projects.own(db, user, project_id)))
 
 
 @app.get("/projects/{project_id}/prompts")

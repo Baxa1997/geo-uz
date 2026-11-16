@@ -99,7 +99,7 @@
       "actions": "Harakatlar rejasi",
       "method": "Usul va qamrov",
       "glossary": "Atamalar",
-      "appendix": "Ilova. Barcha savollar"
+      "appendix": "Barcha savollar va javoblar"
     },
     "summary": {
       "highlights": "Hafta yangiliklari",
@@ -143,21 +143,38 @@
       "you": "siz"
     },
     "topics": {
-      "lead": "Har bir mavzudagi tilga olinishingiz shu mavzudagi eng kuchli raqobatchiniki bilan yonma-yon, ikki chiziq bilan. Eng koʻp ortda qolgan mavzular birinchi.",
+      "lead": "AI mijozlaringizning qaysi ehtiyojlari haqida gapirganda sizni tilga oladi, qaysilarida esa faqat raqobatchilarni.",
+      "whatTitle": "Mavzu nima?",
+      "what": "Mavzu — mijozning bitta ehtiyoji haqidagi savollar guruhi: masalan, narxlar, tanlash yoki aniq bir xizmat.",
+      "why": "Sizga nima beradi: AI sizni tilga olmagan mavzu — mijoz shu haqda soʻraganda raqobatchiga ketadigan joy. Aynan shu mavzuda saytingizga sahifa yozish yoki maʼlumot qoʻshish kerak.",
+      "totals": {
+        "strong": "mavzuda siz oldindasiz",
+        "even": "mavzuda raqobatchi bilan tengsiz",
+        "lost": "mavzuda yoʻqsiz yoki ortdasiz"
+      },
       "topic": "Mavzu",
       "questions": "Savollar",
-      "you": "Siz",
-      "gap": "Natija",
-      "ahead": "{points} punkt oldinda",
-      "behind": "{points} punkt ortda",
-      "level": "teng",
+      "youNamed": "Siz tilga olingan javoblar",
+      "rival": "Eng koʻp tilga olingan raqobatchi",
+      "standing": "Holat",
+      "ofAnswers": "{named} / {answers}",
+      "noRival": "Hech kim tilga olinmagan",
+      "standings": {
+        "absent": "Yoʻqsiz",
+        "behind": "Ortdasiz",
+        "level": "Teng",
+        "ahead": "Oldindasiz",
+        "nobody": "Hech kim yoʻq"
+      },
+      "advice": {
+        "absent": "AI bu yerda sizni umuman tilga olmadi, {rival}ni esa oldi. Shu mavzuda sahifa kerak.",
+        "behind": "{rival} sizdan koʻproq tilga olingan. Shu mavzudagi sahifangizni kuchaytiring.",
+        "level": "{rival} bilan bir xil tilga olingansiz.",
+        "ahead": "Bu mavzuda siz yetakchisiz: borini saqlang.",
+        "nobody": "AI bu yerda hech bir kuzatilayotgan brendni tilga olmadi: birinchi boʻlish imkoniyati."
+      },
       "languageTitle": "Savol tili boʻyicha",
-      "language": "Til",
-      "missingTitle": "Faqat raqobatchilar tilga olingan savollar",
-      "missingMore": "va yana {count} ta",
-      "missingNone": "Yoʻq: kuzatilayotgan brend tilga olingan har bir savolda siz ham tilga olingansiz.",
-      "named": "Tilga olingan: {brands}",
-      "compared": "Siz va eng kuchli raqobatchi"
+      "language": "Til"
     },
     "sources": {
       "lead": "AI eng koʻp havola beradigan saytlar. Ularda boʻlish — javoblarga kirishning eng tez yoʻli.",
@@ -182,17 +199,26 @@
       "top": "Eng koʻp keltirilgan saytlar"
     },
     "accuracy": {
-      "lead": "AI siz haqingizda qanday baho bilan gapiradi va aytgani toʻgʻrimi. Notoʻgʻri narx yoki manzil mijoz yoʻqotishga olib keladi.",
-      "none": "Bu tekshiruvda notoʻgʻri fakt topilmadi.",
-      "notChecked": "Javoblar hali faktlaringiz bilan solishtirilmagan.",
-      "says": "AI aytadi",
-      "correct": "Toʻgʻrisi",
-      "question": "Savol",
-      "since": "Birinchi marta",
-      "toneTitle": "Baho",
+      "lead": "Ikki savol: AI siz haqingizda qanday ohangda gapiradi va aytgani toʻgʻrimi. Notoʻgʻri narx yoki manzil mijoz yoʻqotishga olib keladi.",
+      "toneTitle": "A. AI siz haqingizda qanday ohangda gapiradi",
+      "toneHow": "Sizni tilga olgan har bir javob ijobiy (100), neytral (50) yoki salbiy (0) deb baholanadi. Baho — shularning oʻrtachasi: 67 va undan yuqori — ijobiy, 33 va undan past — salbiy.",
       "toneNone": "Bu tekshiruvda AI sizni tilga olmadi, shuning uchun bahoni oʻlchab boʻlmaydi.",
-      "toneOf": "100 dan. Shu tekshiruv javoblarida siz {count} marta tilga olingansiz:",
-      "factsTitle": "Notoʻgʻri faktlar"
+      "toneOf": "Shu tekshiruv javoblarida siz {count} marta tilga olingansiz:",
+      "truthTitle": "B. AI aytgani toʻgʻrimi",
+      "truthHow": "AI yordamchilardan “{brand}” haqida nomi bilan soʻraymiz va har bir gapini saytingizdagi maʼlumot bilan solishtiramiz.",
+      "checks": {
+        "confirmed": "ta gap saytingizga mos",
+        "contradicted": "ta gap saytingizga zid",
+        "unverified": "ta gap saytingizda yoʻq: tekshirib boʻlmadi"
+      },
+      "factsTitle": "Notoʻgʻri faktlar",
+      "none": "Bu tekshiruvda notoʻgʻri fakt topilmadi.",
+      "notChecked": "Bu tekshiruvda AI aytganlari hali saytingiz bilan solishtirilmagan.",
+      "says": "AI aytadi",
+      "correct": "Aslida (saytingizda)",
+      "where": "Qayerda aytilgan",
+      "question": "Savol",
+      "since": "Birinchi marta"
     },
     "actions": {
       "lead": "Nima qilish kerakligi, eng samaralisidan boshlab. Har bir harakat yuqoridagi boʻlimlardan kelib chiqadi va holatingizning bir yoʻnalishini yaxshilaydi.",
@@ -255,7 +281,9 @@
       "status": "Baho qanday oʻqiladi: {good} dan — yaxshi, {fair} dan — oʻrtacha, {fair} dan past — zaif."
     },
     "appendix": {
-      "lead": "Bu tekshiruvdagi har bir savol va javoblarida tilga olingan brendlar. Javoblarni oʻqish uchun savolni oching."
+      "lead": "Yuqoridagi mavzularga kirgan har bir savol: nechta javobda tilga olingansiz va yoningizda kim tilga olingan. Javoblarni oʻqish uchun savolni oching.",
+      "printNote": "Qogʻozda har bir javobning boshi berilgan. Javoblarning toʻliq matni — hisobot havolasida.",
+      "answerOf": "{engine} · {n}-javob"
     },
     "changes": {
       "lead": "Raqamlar ortidagi voqealar: brendlar orasidagi oʻrningiz, AI tayanadigan saytlar, yangi notoʻgʻri faktlar va bu hafta bajarilgan ishlar. Raqamlarning oʻzi oldingi boʻlimda.",
@@ -1169,13 +1197,13 @@
     "all": "Hammasi",
     "missing": "Siz yoʻq",
     "youNamed": "{total} ta javobdan {count} tasida siz tilga olingansiz",
-    "nobody": "Kuzatilayotgan klinikalar tilga olinmagan",
+    "nobody": "Kuzatilayotgan brendlar tilga olinmagan",
     "toneLegend": "Baho"
   },
   "Answer": {
     "sample": "{n}-javob",
     "named": "Tilga olinganlar (tartib boʻyicha)",
-    "none": "Bu javobda kuzatilayotgan klinikalar tilga olinmagan.",
+    "none": "Bu javobda kuzatilayotgan brendlar tilga olinmagan.",
     "sources": "Manbalar"
   },
   "App": {
@@ -1206,7 +1234,22 @@
     "promptCount": "{count} ta savol",
     "rival": "{name}: {score}",
     "visibility": "AI’da tilga olinish",
-    "openReport": "Hisobot"
+    "openReport": "Hisobot",
+    "edit": "Tahrirlash",
+    "editLabel": "{name}: tahrirlash",
+    "delete": "Oʻchirish",
+    "deleteLabel": "{name}: oʻchirish",
+    "deleteTitle": "“{name}” loyihasi oʻchirilsinmi?",
+    "deleteText": "Loyiha barcha tekshiruvlari, javoblari, savollari va hisobotlari bilan butunlay oʻchadi. Buni qaytarib boʻlmaydi.",
+    "deleteFailed": "Oʻchirib boʻlmadi. Qayta urinib koʻring.",
+    "deleteConfirm": "Oʻchirish",
+    "cancel": "Bekor qilish",
+    "condition": "Holat: {score}/100 · {status}",
+    "status": {
+      "good": "Yaxshi",
+      "fair": "Oʻrtacha",
+      "weak": "Zaif"
+    }
   },
   "Overview": {
     "noDataTitle": "Hali oʻlchov yoʻq",
@@ -1341,7 +1384,7 @@
     "add": "Savol qoʻshish",
     "edit": "Tahrirlash",
     "empty": "Hali savol yoʻq",
-    "emptyHint": "Mijozlaringiz AI’dan nima soʻrashini yozing, masalan: “Toshkentdagi eng yaxshi stomatologiya qaysi?”",
+    "emptyHint": "Mijozlaringiz AI’dan nima soʻrashini yozing, masalan: “Toshkentda eng yaxshisi qaysi?”",
     "columns": {
       "question": "Savol",
       "topic": "Mavzu",
@@ -1612,7 +1655,7 @@
     "addTitle": "Savol qoʻshish",
     "editTitle": "Savolni tahrirlash",
     "text": "Savol",
-    "textPlaceholder": "Toshkentdagi eng yaxshi stomatologiya qaysi?\nToshkentda implant narxi qancha?",
+    "textPlaceholder": "Har qatorga bitta savol, mijoz AI’dan soʻraganidek",
     "language": "Savol tili",
     "topic": "Mavzu",
     "save": "Saqlash",
@@ -1634,7 +1677,7 @@
     "add": "Qoʻshish",
     "addMany": "{count} ta savolni qoʻshish",
     "counter": "{count} ta savol · rejada {room} ta joy",
-    "editPlaceholder": "Toshkentdagi eng yaxshi stomatologiya qaysi?",
+    "editPlaceholder": "Savol, mijoz AI’dan soʻraganidek",
     "newTopicOption": "+ Yangi mavzu…",
     "newTopic": "Yangi mavzu nomi",
     "newTopicPlaceholder": "masalan, Narxlar",
@@ -2688,7 +2731,7 @@
     "questionsMax": "Koʻpi bilan {max} ta savol qoʻshish mumkin.",
     "noQuestions": "Hali savol yoʻq. Mijozlaringiz ChatGPT’dan soʻraydigan savollarni qoʻshing.",
     "addQuestion": "Oʻz savolingizni qoʻshing",
-    "questionPlaceholder": "Masalan: Toshkentda qaysi klinika yaxshi?",
+    "questionPlaceholder": "Mijozingiz AI’dan soʻraydigan savol",
     "language": "Til",
     "add": "Qoʻshish",
     "questionShort": "Savol juda qisqa.",
@@ -2765,7 +2808,8 @@
     "countryHint": "Mijozlaringiz qaysi mamlakatda. Savollar shu mamlakatdagi mijoz nomidan beriladi.",
     "optional": "ixtiyoriy",
     "cityPlaceholder": "Masalan: Toshkent",
-    "competitorsNone": "Raqobatchilarni bilmasangiz, bu qadamni oʻtkazib yuboring. Javoblarda tilga olingan bizneslarni keyin koʻrsatamiz va ularni bir bosishda qoʻshasiz."
+    "competitorsNone": "Raqobatchilarni bilmasangiz, bu qadamni oʻtkazib yuboring. Javoblarda tilga olingan bizneslarni keyin koʻrsatamiz va ularni bir bosishda qoʻshasiz.",
+    "domainTaken": "Bu sayt uchun loyiha allaqachon ochilgan. Bir sayt faqat bitta loyihada kuzatiladi."
   },
   "RunProgress": {
     "metaTitle": "Tekshiruv",
@@ -3090,7 +3134,7 @@
     "customersHint": "Kimlar uchun: masalan, ota-onalar, tishi ogʻriyotganlar, talabalar.",
     "context": "Qoʻshimcha maʼlumot",
     "contextHint": "Savollar shunga qarab tuziladi: masalan, qaysi xizmatga koʻproq eʼtibor berish kerak.",
-    "contextPlaceholder": "masalan, implantlarga eʼtibor bering, bolalar stomatologiyasi kerak emas",
+    "contextPlaceholder": "masalan, qaysi xizmatga eʼtibor berish va qaysi biri kerak emasligi",
     "marketsTitle": "Tillar",
     "marketsText": "Savollar {city} uchun tuziladi. Qaysi tillarda soʻralsin?",
     "languages": "Savol tillari",
@@ -3858,7 +3902,10 @@
     "nextTitle": "Bu bir martalik nazar edi. Keyingisi — har hafta kuzatish.",
     "nextText": "Biznes profilingiz, raqobatchilaringiz va savollaringizni tasdiqlang.",
     "next": "Sozlashga oʻtish",
-    "again": "Boshqa saytni tekshirish"
+    "again": "Boshqa saytni tekshirish",
+    "country": "Davlat",
+    "countryHint": "Mijozlaringiz qaysi davlatda? AI yordamchilardan shu davlatdagi mijoz sifatida soʻraymiz.",
+    "domainTaken": "Bu sayt uchun loyiha allaqachon ochilgan. Bir sayt faqat bitta loyihada kuzatiladi."
   },
   "Trial": {
     "title": "Bepul birinchi tekshiruvingiz tayyor",

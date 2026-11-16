@@ -483,6 +483,15 @@ export const mockApi: ApiClient = {
 
   getProject: async (id) => respond(findProject(id)),
 
+  deleteProject: async (id) => {
+    await findOwnProject(id);
+    state.projects = state.projects.filter((project) => project.id !== id);
+    state.owners.delete(id);
+    state.prompts.delete(id);
+    state.runs.delete(id);
+    return respond(undefined);
+  },
+
   // The report is made from the answers it already has, so a new competitor's numbers appear at once
   addCompetitor: async (projectId, { name, aliases, domain }) => {
     const project = await findOwnProject(projectId);

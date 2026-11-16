@@ -2,6 +2,7 @@ import { CaretRightIcon as ChevronRight } from "@phosphor-icons/react/dist/ssr/C
 import { useTranslations } from "next-intl";
 import { Fragment } from "react";
 import { EngineSwitcher } from "@/shared/components/engine-switcher";
+import { LocaleSwitcher } from "@/shared/components/locale-switcher";
 import { PageTour, type TourId } from "@/shared/components/page-tour";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/shared/helpers/utils";
@@ -63,6 +64,8 @@ export function Page({
         {engines && <EngineSwitcher available={Array.isArray(engines) ? engines : undefined} />}
         {actions}
         {tour && <PageTour id={tour} />}
+        {/* The interface language, on every page as in the landing page's header (the user, 16 Nov 2026) */}
+        <LocaleSwitcher />
       </header>
       {toolbar && <div className="flex shrink-0 flex-wrap items-center gap-2 border-b px-4 py-2 sm:px-6">{toolbar}</div>}
       {tabs && <div className="shrink-0 border-b px-4 sm:px-6">{tabs}</div>}

@@ -17,12 +17,13 @@ import re
 from collections import Counter, defaultdict
 from typing import Any, Dict, List, Optional, Tuple
 
+from sqlalchemy import delete as sql_delete
 from sqlalchemy import select
 from sqlalchemy.orm import Session as Db
 
 from . import firstrun
 from .config import settings
-from .db import Answer, Brand, Citation, FirstRun, Mention, Project, Prompt, Run, User, WrongFact, now
+from .db import Action, Answer, Brand, Citation, FirstRun, Mention, Project, Prompt, Run, User, WrongFact, now
 from .engines import ENGINE_NAMES, web
 
 # What each plan allows (`frontend/src/shared/constants`, PLAN_LIMITS)
@@ -136,6 +137,26 @@ def shared(db: Db, project_id: str) -> Project:
 # --- creating ------------------------------------------------------------------------------------------
 
 
+def domain_taken(db: Db, domain: str, but: Optional[str] = None) -> bool:
+    """Whether a project (anyone's) already follows this website: one website, one project (the user's rule,
+    16 Nov 2026). `but` is the project asking, which may keep its own."""
+    return any(brand.project_id != but for brand in db.scalars(select(Brand).where(Brand.own.is_(True), Brand.domain == domain)))
+
+
+def delete(db: Db, project: Project) -> None:
+    """Removes a project with everything of it: its checks, answers, questions, brands and fixes. The first
+    run it came from stays, as what the account spent."""
+    runs = list(db.scalars(select(Run.id).where(Run.project_id == project.id)))
+    answers = list(db.scalars(select(Answer.id).where(Answer.run_id.in_(runs)))) if runs else []
+    if answers:
+        db.execute(sql_delete(Mention).where(Mention.answer_id.in_(answers)))
+        db.execute(sql_delete(Citation).where(Citation.answer_id.in_(answers)))
+        db.execute(sql_delete(Answer).where(Answer.id.in_(answers)))
+    for table in (WrongFact, Action, Run, Prompt, Brand):
+        db.execute(sql_delete(table).where(table.project_id == project.id))
+    db.delete(project)
+
+
 def _clean(text: Any) -> str:
     return " ".join(str(text or "").split())
 
@@ -167,6 +188,8 @@ def create(db: Db, user: User, body: Dict[str, Any]) -> Tuple[Project, Optional[
         domain = firstrun.normalize(body.get("domain") or "")
     except firstrun.FirstRunError as error:
         raise ProjectError(422, error.code) from error
+    if domain_taken(db, domain):
+        raise ProjectError(409, "domain_taken")
 
     result: Optional[Dict[str, Any]] = None
     raw: Dict[str, Any] = {}
@@ -742,9 +765,12 @@ def _rename(db: Db, project: Project, brand: Brand, body: Dict[str, Any]) -> Non
     if "domain" in body:
         if brand.own or body["domain"]:
             try:
-                brand.domain = firstrun.normalize(body["domain"] or "")
+                domain = firstrun.normalize(body["domain"] or "")
             except firstrun.FirstRunError as error:
                 raise ProjectError(422, error.code) from error
+            if brand.own and domain != brand.domain and domain_taken(db, domain, but=project.id):
+                raise ProjectError(409, "domain_taken")
+            brand.domain = domain
         else:
             brand.domain = ""
 

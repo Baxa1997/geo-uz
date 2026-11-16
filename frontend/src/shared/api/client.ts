@@ -81,7 +81,10 @@ export const FIRST_RUN_LIVE = !USE_MOCKS || (LIVE.has("first-run") && LIVE.has("
  * project then goes to the backend, the ones it doesn't serve yet too (they fail, and the page says so):
  * a real project doesn't exist in the mocks.
  */
-export const PROJECTS_LIVE = !USE_MOCKS || (LIVE.has("projects") && LIVE.has("auth"));
+// A live first run implies live projects (16 Nov 2026): a real run saved into the mocks became the sample
+// dental clinic, kept in one server instance's memory, which is what the Vercel site did with
+// NEXT_PUBLIC_LIVE=auth,first-run.
+export const PROJECTS_LIVE = !USE_MOCKS || (LIVE.has("auth") && (LIVE.has("projects") || LIVE.has("first-run")));
 
 export interface ApiClient {
   sendCode(body: SendCodeRequest): Promise<SendCodeResponse>;
@@ -92,6 +95,8 @@ export interface ApiClient {
   getProjects(): Promise<Project[]>;
   createProject(body: CreateProjectRequest): Promise<CreateProjectResponse>;
   getProject(id: string): Promise<Project>;
+  /** Removes a project with its checks and answers; its website is then free for a new project. */
+  deleteProject(id: string): Promise<void>;
   /** Tracks one more competitor; 409 at the plan's limit or when the brand is tracked already. */
   addCompetitor(projectId: string, body: AddCompetitorRequest): Promise<Project>;
   /** Stops tracking a competitor; the answers keep its mentions, so it can be tracked again. */
@@ -233,6 +238,7 @@ const httpApi: ApiClient = {
   getProjects: () => request("/projects"),
   createProject: (body) => send("POST", "/projects", body),
   getProject: (projectId) => request(`/projects/${id(projectId)}`),
+  deleteProject: (projectId) => send("DELETE", `/projects/${id(projectId)}`),
   addCompetitor: (projectId, body) => send("POST", `/projects/${id(projectId)}/competitors`, body),
   removeCompetitor: (projectId, brandId) => send("DELETE", `/projects/${id(projectId)}/competitors/${id(brandId)}`),
   dismissBrand: (projectId, body) => send("PATCH", `/projects/${id(projectId)}/untracked-brands`, body),
@@ -316,6 +322,7 @@ const mockBridge = (): ApiClient => ({
       getProjects: () => mocks().then((m) => unwrap(m.getProjects())),
       createProject: (body) => mocks().then((m) => unwrap(m.createProject(body))),
       getProject: (projectId) => mocks().then((m) => unwrap(m.getProject(projectId))),
+      deleteProject: (projectId) => mocks().then((m) => unwrap(m.deleteProject(projectId))),
       addCompetitor: (projectId, body) => mocks().then((m) => unwrap(m.addCompetitor(projectId, body))),
       removeCompetitor: (projectId, brandId) => mocks().then((m) => unwrap(m.removeCompetitor(projectId, brandId))),
       dismissBrand: (projectId, body) => mocks().then((m) => unwrap(m.dismissBrand(projectId, body))),

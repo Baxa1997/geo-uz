@@ -9,7 +9,7 @@ import { Logo } from "@/shared/components/logo";
 import { LogoutButton } from "@/shared/components/logout-button";
 import { Button } from "@/shared/components/ui/button";
 import { useRouter } from "@/i18n/navigation";
-import { api } from "@/shared/api/client";
+import { api, ApiError } from "@/shared/api/client";
 import { queryKeys } from "@/shared/api/query-keys";
 import { normalizeDomain } from "@/shared/helpers/domain";
 import { cn } from "@/shared/helpers/utils";
@@ -99,7 +99,9 @@ export function OnboardingWizard({
     onSuccess: async ({ project, runId }) => {
       await queryClient.invalidateQueries({ queryKey: queryKeys.projects() });
       // Replace: going back must not land on the wizard and create the project twice
-      router.replace(runId ? `/onboarding/runs/${runId}` : `/projects/${project.id}`);
+      // From a first run the answers are already in: straight to the project, not to the screen that waits
+      // for a check to be asked (which showed the asking a second time)
+      router.replace(runId && !firstRun ? `/onboarding/runs/${runId}` : `/projects/${project.id}`);
     },
   });
   const busy =
@@ -197,7 +199,7 @@ export function OnboardingWizard({
     (step === "website" && analyze.isError && t("analyzeFailed")) ||
     (step === "profile" && findCompetitors.isError && t("competitorsFailed")) ||
     (step === "competitors" && findQuestions.isError && t("questionsFailed")) ||
-    (step === "questions" && create.isError && t("saveFailed"));
+    (step === "questions" && create.isError && t(create.error instanceof ApiError && create.error.status === 409 && firstRun ? "domainTaken" : "saveFailed"));
   const chosen = choice
     ? [
         ...choice.suggestions.filter((_, i) => choice.selected[i]),
@@ -331,7 +333,7 @@ export function OnboardingWizard({
 
         <footer className="flex shrink-0 items-center justify-between gap-3 px-5 pb-5 text-sm text-muted-foreground sm:px-10">
           <span>{t("copyright", { year })}</span>
-          <LocaleSwitcher />
+          <LocaleSwitcher up />
         </footer>
       </div>
 

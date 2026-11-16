@@ -83,6 +83,10 @@ export async function getProject(id: string) {
   return run((m) => m.getProject(id));
 }
 
+export async function deleteProject(id: string) {
+  return run((m) => m.deleteProject(id));
+}
+
 export async function addCompetitor(projectId: string, body: AddCompetitorRequest) {
   return run((m) => m.addCompetitor(projectId, body));
 }

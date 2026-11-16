@@ -694,6 +694,8 @@ export type FirstRunStatus = "queued" | "reading_site" | "asking" | "reading_ans
 
 export interface FirstRunRequest {
   domain: string;
+  /** The country the business serves, as a two-letter code; left out, the backend reads it from the website. */
+  country?: string;
 }
 
 export interface FirstRun {

@@ -15,9 +15,9 @@ import { FirstRunResultView } from "./first-run-result";
 const isOver = (run: FirstRun) => run.status === "done" || run.status === "failed";
 
 /** Website → the run's progress, asked for every second → the first statistics. */
-export function FirstRunFlow({ initial }: { initial: FirstRun | null }) {
+export function FirstRunFlow({ initial, site = "" }: { initial: FirstRun | null; /** A website given on the landing page, filled into the form. */ site?: string }) {
   const router = useRouter();
-  if (!initial) return <FirstRunForm onStarted={(run) => router.replace({ pathname: "/onboarding/first-run", query: { run: run.id } })} />;
+  if (!initial) return <FirstRunForm site={site} onStarted={(run) => router.replace({ pathname: "/onboarding/first-run", query: { run: run.id } })} />;
   return <FirstRunStarted initial={initial} />;
 }
 
