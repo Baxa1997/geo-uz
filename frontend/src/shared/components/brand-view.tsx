@@ -16,17 +16,21 @@ const MARKS = {
 
 /**
  * What each assistant says when asked about the business by name: whether it knows it, and its statements,
- * each marked against the website (says the same, says otherwise, says nothing about it).
+ * each marked against the website (says the same, says otherwise, says nothing about it). On the first
+ * check's result and on a project's Overview; `action` is a link beside its title.
  */
-export function FirstRunBrandView({ views, brand }: { views: BrandView[]; brand: string }) {
-  const t = useTranslations("FirstRun.brandView");
+export function BrandViewCard({ views, brand, action, className }: { views: BrandView[]; brand: string; action?: React.ReactNode; className?: string }) {
+  const t = useTranslations("BrandView");
   const locale = useLocale() as "uz" | "ru" | "en";
 
   return (
-    <div className="rounded-xl border bg-background">
-      <div className="flex flex-col gap-1 border-b p-4 sm:px-5">
-        <h2 className="font-semibold">{t("title", { brand })}</h2>
-        <p className="text-sm text-pretty text-muted-foreground">{t("text")}</p>
+    <div className={cn("rounded-xl border bg-background", className)}>
+      <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2 border-b p-4 sm:px-5">
+        <div className="flex min-w-0 flex-1 basis-64 flex-col gap-1">
+          <h2 className="font-semibold">{t("title", { brand })}</h2>
+          <p className="text-sm text-pretty text-muted-foreground">{t("text")}</p>
+        </div>
+        {action}
       </div>
       <ul className="divide-y">
         {views.map((view) => {

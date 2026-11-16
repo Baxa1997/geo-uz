@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { cache } from "react";
 import { ArrowLink } from "@/shared/components/arrow-link";
+import { BrandViewCard } from "@/shared/components/brand-view";
 import { FilteredEmpty } from "@/shared/components/filtered-empty";
 import { NoData } from "@/shared/components/no-data";
 import { Page } from "@/shared/components/page";
@@ -179,6 +180,16 @@ export default async function OverviewPage({ params, searchParams }: Props) {
           />
         </div>
       </div>
+
+      {/* What each assistant says of the business by name, at this check; absent in sample data */}
+      {report.brandView && report.brandView.length > 0 && (
+        <BrandViewCard
+          views={report.brandView}
+          brand={brand.name}
+          className="border-0 bg-card ring-1 ring-foreground/10"
+          action={<ArrowLink href={`${base}/settings/brand-questions`}>{tOverview("brandQuestionsLink")}</ArrowLink>}
+        />
+      )}
 
       <RecentAnswers
         report={report}

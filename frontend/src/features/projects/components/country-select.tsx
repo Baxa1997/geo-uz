@@ -10,7 +10,9 @@ import { countryName } from "@/shared/helpers/labels";
 export function CountrySelect({ id, value, onChange }: { id: string; value: string; onChange: (value: string) => void }) {
   const locale = useLocale();
   const countries = useMemo(
-    () => COUNTRY_CODES.map((code) => ({ code, name: countryName(locale, code) })).sort((a, b) => a.name.localeCompare(b.name, locale)),
+    // Sorted by the letters' own order, not `localeCompare`: the server and the browser order Uzbek names
+    // differently, and the page then failed to hydrate (seen 16 Nov 2026)
+    () => COUNTRY_CODES.map((code) => ({ code, name: countryName(locale, code), key: countryName(locale, code).toLowerCase().replace(/ё/g, "е") })).sort((a, b) => (a.key < b.key ? -1 : a.key > b.key ? 1 : 0)),
     [locale],
   );
 

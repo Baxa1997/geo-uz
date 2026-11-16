@@ -61,7 +61,7 @@ SECURE_COOKIES=true
 | `POST`, `PATCH /projects/{id}/prompts`, `PUT`, `PATCH /projects/{id}/prompts/{promptId}` | Questions: add several (all or none; 409 at the plan's limit, 422 for a repeat), edit one, archive or track again, and for several at once a topic, tags, fact-checking |
 | `POST /projects/{id}/topics`, `PATCH`, `DELETE /projects/{id}/topics/{topic}`; the same for `/tags` | Topics and tags; deleting a topic archives its questions |
 | `POST /projects/{id}/competitors`, `PATCH`, `DELETE /projects/{id}/competitors/{brandId}`, `PATCH /projects/{id}/untracked-brands` | Competitors: one added gets the mentions the answers already hold under its name, one removed leaves them as an untracked name; hiding an untracked brand |
-| `PATCH /projects/{id}` | The brand profile |
+| `PATCH /projects/{id}` | The brand profile, and the brand questions (`brandQuestions`, replaced as a whole) |
 | `GET`, `PUT /projects/{id}/facts`; `GET`, `PATCH /projects/{id}/report-settings`; `POST /projects/{id}/plan-requests` | The brand's facts against the plan's limit; where the report goes (connecting Telegram answers 501: no bot yet); a plan request, written to the log |
 | `GET /projects/{id}/reports/{runId}/pdf` `?lang=` | The run's report as a PDF (503 when no browser is installed) |
 | `GET /projects/{id}/actions` | The recommended fixes, each with its proof once done (read without login, like the report) |
@@ -130,8 +130,9 @@ In the setup the client keeps, drops or adds to them, six at most; `POST /projec
 `Project.brandQuestions`). The first check's brand answers to kept questions are saved on its run, and a
 weekly check asks every brand question to every assistant, reads the website again and saves the statements
 (`runs.brand_view`, `Report.brandView`). Tried offline with stand-in answers, and the profile step once for
-real. Not built: a page in the dashboard that shows `Report.brandView`, editing the list in Sozlamalar, and
-feeding Notoʻgʻri faktlar from it.
+real. Since 16 Nov the Overview shows `Report.brandView` and Sozlamalar › Brend savollari edits the list:
+`PATCH /projects/{id}` takes `brandQuestions` and replaces them as a whole (the same cleaning and limit); they
+are asked from the next check on. Not built: feeding Notoʻgʻri faktlar from the brand answers.
 
 **Projects** (`app/projects.py`, 15 Nov 2026; read only). Tables: `projects`, `brands` (the client's own and
 the competitors, in a fixed order), `prompts`, `runs`, `answers`, `mentions` (every business an answer names;

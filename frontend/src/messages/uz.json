@@ -1269,7 +1269,8 @@
       "guide": "Foiz — shu savollarga berilgan javoblarning qancha qismida tilga olinganingiz. Ustun qancha uzun boʻlsa, shu mavzuda yoki tilda shuncha koʻp koʻrinasiz. «Yetakchi» — shu savollarda eng koʻp tilga olingan brend va uning foizi. Mavzu yoki til nomini bossangiz, uning savollari ochiladi.",
       "detailLeader": "Yetakchi — {leader}: {value}.",
       "detailYouLead": "Bu yerda yetakchi — siz."
-    }
+    },
+    "brandQuestionsLink": "Savollarni tahrirlash"
   },
   "Competitors": {
     "aheadTitle": "Raqobatchilar qayerda oldinda",
@@ -2241,6 +2242,7 @@
       },
       "profile": "Profil",
       "facts": "Faktlar",
+      "brandQuestions": "Brend savollari",
       "brands": "Brendlar",
       "tags": "Teglar",
       "account": "Umumiy",
@@ -2308,6 +2310,24 @@
       "tooLong": "Fakt koʻpi bilan {max} ta belgi boʻladi.",
       "failed": "Saqlab boʻlmadi. Qayta urinib koʻring.",
       "notInPlan": "{plan} tarifida notoʻgʻri faktlar tekshirilmaydi, shuning uchun brend faktlari ham yoʻq. Ular Pro tarifidan boshlanadi: <link>tariflarni koʻring</link>."
+    },
+    "brandQuestions": {
+      "title": "{brand} haqidagi savollar",
+      "text": "Bu savollarda biznesingiz nomi bor. Har tekshiruvda har bir yordamchiga beriladi, javoblari saytingiz bilan solishtiriladi va <link>Umumiy koʻrinish</link>da koʻrsatiladi. Koʻrsatkichlarga qoʻshilmaydi.",
+      "count": "{count} / {max}",
+      "empty": "Hozircha savol yoʻq: yordamchilardan biznesingiz haqida nomi bilan soʻralmaydi. Pastda qoʻshing.",
+      "full": "Koʻpi bilan {max} ta savol: har biri har tekshiruvda har bir yordamchiga yana bitta soʻrov. Yangisini qoʻshish uchun birini olib tashlang.",
+      "questionLabel": "{number}-savol",
+      "languageLabel": "{number}-savol tili",
+      "newLabel": "Yangi savol",
+      "newLanguageLabel": "Yangi savol tili",
+      "placeholder": "Masalan: {brand} narxlari qancha?",
+      "add": "Qoʻshish",
+      "remove": "{number}-savolni olib tashlash",
+      "short": "Savollardan biri juda qisqa.",
+      "repeated": "Bir xil savol ikki marta yozilgan.",
+      "failed": "Saqlab boʻlmadi. Qayta urinib koʻring.",
+      "saveNote": "Oʻzgarishlar keyingi tekshiruvdan boshlab qoʻllanadi."
     },
     "brands": {
       "title": "Kuzatilayotgan brendlar",
@@ -3791,31 +3811,6 @@
     "tryAgain": "Qayta urinish",
     "resultKicker": "Birinchi statistika",
     "resultTitle": "{brand}: AI bugun sizni qanday koʻradi",
-    "brandView": {
-      "title": "AI {brand} haqida nima deydi",
-      "text": "Har bir yordamchidan biznesingiz haqida nomi bilan soʻradik. Quyida uning aytganlari, har biri saytingizdagi maʼlumot bilan solishtirilgan. Bu javoblar yuqoridagi sonlarga qoʻshilmagan.",
-      "knows": "{count} ta gap aytdi{wrong, plural, =0 {} other {, shundan # tasi saytingizga zid}}",
-      "confuses": "Sizni boshqa biznes bilan adashtiryapti",
-      "unknown": "Biznesingiz haqida aniq hech narsa bilmaydi",
-      "asked": "Savol: {question}",
-      "correct": "Saytingizda: {text}",
-      "topics": {
-        "what": "Faoliyat",
-        "prices": "Narxlar",
-        "place": "Manzil",
-        "contacts": "Aloqa",
-        "reputation": "Fikrlar",
-        "other": "Boshqa"
-      },
-      "checks": {
-        "confirmed": "Saytingizda ham shunday",
-        "contradicted": "Saytingizga zid",
-        "unverified": "Saytingizda bu haqda yoʻq",
-        "confirmedHint": "Saytingizda ham shu maʼlumot yozilgan.",
-        "contradictedHint": "Saytingizda boshqacha yozilgan: yordamchi mijozga notoʻgʻri maʼlumot beryapti.",
-        "unverifiedHint": "Saytingizda bu haqda hech narsa yoʻq, shuning uchun tekshirib boʻlmadi. Yordamchi buni boshqa saytlardan olgan."
-      }
-    },
     "conclusionTitle": "Xulosa",
     "conclusionHint": "Yuqoridagi sonlar nimani anglatishi va birinchi navbatda nima qilish kerakligi. Matnni sunʼiy intellekt shu sonlar asosida yozgan.",
     "replayed": "Ishlab chiqish rejimi: bu saqlangan tekshiruv ({site}) raqamlari, yordamchilarga soʻrov yubormasdan qayta koʻrsatildi.",
@@ -3867,5 +3862,30 @@
     "title": "Bepul birinchi tekshiruvingiz tayyor",
     "text": "Bu raqamlar bitta tekshiruvdan. Har hafta qayta tekshirish, oʻzgarishni koʻrish va hisobot olish uchun tarif tanlang.",
     "cta": "Tariflarni koʻrish"
+  },
+  "BrandView": {
+    "title": "AI {brand} haqida nima deydi",
+    "text": "Har bir yordamchidan biznesingiz haqida nomi bilan soʻradik. Quyida uning aytganlari, har biri saytingizdagi maʼlumot bilan solishtirilgan. Bu javoblar yuqoridagi sonlarga qoʻshilmagan.",
+    "knows": "{count} ta gap aytdi{wrong, plural, =0 {} other {, shundan # tasi saytingizga zid}}",
+    "confuses": "Sizni boshqa biznes bilan adashtiryapti",
+    "unknown": "Biznesingiz haqida aniq hech narsa bilmaydi",
+    "asked": "Savol: {question}",
+    "correct": "Saytingizda: {text}",
+    "topics": {
+      "what": "Faoliyat",
+      "prices": "Narxlar",
+      "place": "Manzil",
+      "contacts": "Aloqa",
+      "reputation": "Fikrlar",
+      "other": "Boshqa"
+    },
+    "checks": {
+      "confirmed": "Saytingizda ham shunday",
+      "contradicted": "Saytingizga zid",
+      "unverified": "Saytingizda bu haqda yoʻq",
+      "confirmedHint": "Saytingizda ham shu maʼlumot yozilgan.",
+      "contradictedHint": "Saytingizda boshqacha yozilgan: yordamchi mijozga notoʻgʻri maʼlumot beryapti.",
+      "unverifiedHint": "Saytingizda bu haqda hech narsa yoʻq, shuning uchun tekshirib boʻlmadi. Yordamchi buni boshqa saytlardan olgan."
+    }
   }
 }

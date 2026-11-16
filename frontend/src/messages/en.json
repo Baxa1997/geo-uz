@@ -1269,7 +1269,8 @@
       "guide": "The percentage is the share of answers to those questions that name you. The longer the bar, the more visible you are on that topic or in that language. “Leader” is the brand named most on those questions, with its share. Click a topic or a language to open its questions.",
       "detailLeader": "{leader} leads with {value}.",
       "detailYouLead": "You lead here."
-    }
+    },
+    "brandQuestionsLink": "Edit the questions"
   },
   "Competitors": {
     "aheadTitle": "Where competitors are ahead",
@@ -2241,6 +2242,7 @@
       },
       "profile": "Profile",
       "facts": "Facts",
+      "brandQuestions": "Brand questions",
       "brands": "Brands",
       "tags": "Tags",
       "account": "General",
@@ -2308,6 +2310,24 @@
       "tooLong": "A fact is at most {max} characters.",
       "failed": "Couldn’t save. Try again.",
       "notInPlan": "The {plan} plan doesn’t check wrong facts, so it keeps no brand facts. They come with Pro: <link>see the plans</link>."
+    },
+    "brandQuestions": {
+      "title": "Questions about {brand}",
+      "text": "These questions name your business. At every check each assistant is asked them, the answers are compared with your website and shown on the <link>Overview</link>. They are not part of the scores.",
+      "count": "{count} / {max}",
+      "empty": "No questions yet: the assistants are not asked about your business by name. Add one below.",
+      "full": "No more than {max} questions: each is one more request to every assistant at every check. Remove one to add another.",
+      "questionLabel": "Question {number}",
+      "languageLabel": "Language of question {number}",
+      "newLabel": "New question",
+      "newLanguageLabel": "Language of the new question",
+      "placeholder": "For example: how much does {brand} cost?",
+      "add": "Add",
+      "remove": "Remove question {number}",
+      "short": "One of the questions is too short.",
+      "repeated": "The same question is written twice.",
+      "failed": "Could not save. Try again.",
+      "saveNote": "Changes apply from the next check."
     },
     "brands": {
       "title": "Tracked brands",
@@ -3791,31 +3811,6 @@
     "tryAgain": "Try again",
     "resultKicker": "First statistics",
     "resultTitle": "How AI sees {brand} today",
-    "brandView": {
-      "title": "What AI says about {brand}",
-      "text": "We asked each assistant about your business by name. Below are its statements, each compared with your website. These answers are not part of the numbers above.",
-      "knows": "{count, plural, one {# statement} other {# statements}}{wrong, plural, =0 {} other {, # against your website}}",
-      "confuses": "Confuses you with another business",
-      "unknown": "Knows nothing specific about your business",
-      "asked": "Question: {question}",
-      "correct": "On your website: {text}",
-      "topics": {
-        "what": "What it does",
-        "prices": "Prices",
-        "place": "Address",
-        "contacts": "Contacts",
-        "reputation": "Reviews",
-        "other": "Other"
-      },
-      "checks": {
-        "confirmed": "Same as your website",
-        "contradicted": "Against your website",
-        "unverified": "Not on your website",
-        "confirmedHint": "Your website says the same.",
-        "contradictedHint": "Your website says otherwise: the assistant gives customers wrong information.",
-        "unverifiedHint": "Your website says nothing about this, so it could not be checked. The assistant took it from other sites."
-      }
-    },
     "conclusionTitle": "Conclusion",
     "conclusionHint": "What the counts above mean and what to do first. Written by AI from those counts.",
     "replayed": "Development mode: these are the numbers of a saved check ({site}), shown again without asking the assistants.",
@@ -3867,5 +3862,30 @@
     "title": "Your free first check is ready",
     "text": "These numbers come from one check. To be checked every week, see what changes and get the report, choose a plan.",
     "cta": "See the plans"
+  },
+  "BrandView": {
+    "title": "What AI says about {brand}",
+    "text": "We asked each assistant about your business by name. Below are its statements, each compared with your website. These answers are not part of the numbers above.",
+    "knows": "{count, plural, one {# statement} other {# statements}}{wrong, plural, =0 {} other {, # against your website}}",
+    "confuses": "Confuses you with another business",
+    "unknown": "Knows nothing specific about your business",
+    "asked": "Question: {question}",
+    "correct": "On your website: {text}",
+    "topics": {
+      "what": "What it does",
+      "prices": "Prices",
+      "place": "Address",
+      "contacts": "Contacts",
+      "reputation": "Reviews",
+      "other": "Other"
+    },
+    "checks": {
+      "confirmed": "Same as your website",
+      "contradicted": "Against your website",
+      "unverified": "Not on your website",
+      "confirmedHint": "Your website says the same.",
+      "contradictedHint": "Your website says otherwise: the assistant gives customers wrong information.",
+      "unverifiedHint": "Your website says nothing about this, so it could not be checked. The assistant took it from other sites."
+    }
   }
 }

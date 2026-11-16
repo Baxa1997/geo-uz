@@ -7,10 +7,10 @@ import { LanguageToggle } from "@/shared/components/language-toggle";
 import { Button } from "@/shared/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";
-import { PROMPT_TEXT_MAX_LENGTH, PROMPT_TEXT_MIN_LENGTH } from "@/shared/constants";
+import { MAX_BRAND_QUESTIONS, PROMPT_TEXT_MAX_LENGTH, PROMPT_TEXT_MIN_LENGTH } from "@/shared/constants";
 import { cn } from "@/shared/helpers/utils";
 import type { PromptLanguage } from "@/shared/types/api";
-import { INPUT_CLASS, MAX_BRAND_QUESTIONS } from "../constants";
+import { INPUT_CLASS } from "../constants";
 import type { BrandQuestionDraft } from "../types";
 
 /**

@@ -6,7 +6,7 @@ import { api } from "@/shared/api/client";
 import { orNotFound } from "@/shared/api/errors";
 
 /** A settings section: its name in messages/Sidebar.settingsNav. */
-export type SettingsSection = "profile" | "facts" | "brands" | "tags" | "account" | "members" | "plan";
+export type SettingsSection = "profile" | "facts" | "brandQuestions" | "brands" | "tags" | "account" | "members" | "plan";
 
 /** Shared by generateMetadata and the page within one request. */
 export const getProject = cache((id: string) => orNotFound(api.getProject(id)));

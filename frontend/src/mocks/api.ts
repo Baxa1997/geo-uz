@@ -901,6 +901,7 @@ export const mockApi: ApiClient = {
       services: list(body.services, project.services),
       customers: list(body.customers, project.customers),
       identity: list(body.identity, project.identity),
+      brandQuestions: body.brandQuestions ?? project.brandQuestions,
     };
     replaceProject(updated);
     return respond(updated);

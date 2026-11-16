@@ -1,4 +1,5 @@
 import { BuildingsIcon as Building2 } from "@phosphor-icons/react/dist/ssr/Buildings";
+import { ChatCircleTextIcon as ChatCircleText } from "@phosphor-icons/react/dist/ssr/ChatCircleText";
 import { CreditCardIcon as CreditCard } from "@phosphor-icons/react/dist/ssr/CreditCard";
 import { SealCheckIcon as FileCheck2 } from "@phosphor-icons/react/dist/ssr/SealCheck";
 import { SlidersHorizontalIcon as SlidersHorizontal } from "@phosphor-icons/react/dist/ssr/SlidersHorizontal";
@@ -51,12 +52,13 @@ export const SETTINGS: NavItem = { key: "settings", path: "/settings", icon: Ico
  * The settings' own menu, which takes the sidebar's place on a settings page, as Peec's does: the
  * project's settings, then the account's. `path` follows /projects/[id]; labels in messages/Sidebar.settingsNav.
  */
-export const SETTINGS_GROUPS: { key: "project" | "account"; items: { key: "profile" | "facts" | "brands" | "tags" | "account" | "members" | "plan"; path: string; icon: AppIcon }[] }[] = [
+export const SETTINGS_GROUPS: { key: "project" | "account"; items: { key: "profile" | "facts" | "brandQuestions" | "brands" | "tags" | "account" | "members" | "plan"; path: string; icon: AppIcon }[] }[] = [
   {
     key: "project",
     items: [
       { key: "profile", path: "/settings", icon: UserRound },
       { key: "facts", path: "/settings/facts", icon: FileCheck2 },
+      { key: "brandQuestions", path: "/settings/brand-questions", icon: ChatCircleText },
       { key: "brands", path: "/settings/brands", icon: Building2 },
       { key: "tags", path: "/settings/tags", icon: Tag },
     ],

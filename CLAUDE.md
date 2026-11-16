@@ -176,7 +176,21 @@ that is committed.
    time: a branch for the work, a commit, a merge into `main`, and a push of both. Before any commit, check
    that no key and no client's name is in it.
 
-## Done (as of 15 November 2026)
+## Done (as of 16 November 2026)
+
+- **Built, waiting for the user's look: a project's brand answers on the Overview, and Sozlamalar › Brend
+  savollari (16 Nov), on the branch `brand-answers-and-settings`; merged, pushed and deployed the same day, when the
+  user said "yes" to "commit, push and deploy?".** The user: "yes, build the
+  dashboard block and Sozlamalar editing". The Overview shows "AI <brand> haqida nima deydi" over the latest
+  answers (the first check's block, now `shared/components/brand-view.tsx`, texts under `BrandView`), with a
+  link to edit the questions. The settings' menu has "Brend savollari" after Faktlar: the questions one a
+  row, each with its language, editable and removable, a new one typed under the list, six at most, saved
+  with the page's Save. Looked at in a browser in Uzbek on desktop and phone width with a made-up sample
+  project (removed after): the Overview's block, the settings page, the setup's brand questions. Saving was
+  tried through the API, not by clicking Save. Found on the way and fixed: the setup's profile step failed to
+  hydrate in Uzbek, because the server and the browser sorted the countries differently. Not tried: Russian
+  and English. Not built: Notoʻgʻri faktlar fed from the brand answers; a tour for the new settings page.
+  No new variable.
 
 - **Built, waiting for the user's look: brand questions in the setup (15 Nov), on the branch
   `brand-questions-in-setup`; merged, pushed and deployed on 16 Nov, when the user said "yes, commit, push and

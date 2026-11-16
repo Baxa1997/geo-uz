@@ -24,8 +24,6 @@ export const MAX_DESCRIPTION_LENGTH = 400;
 
 /** Topic of questions typed in during onboarding (the Questions page lets users set their own). */
 export const OWN_QUESTION_TOPIC = "other";
-/** How many brand questions a project keeps (the backend's `BRAND_QUESTION_LIMIT`). */
-export const MAX_BRAND_QUESTIONS = 6;
 /** The two general brand questions, as the backend writes them (`firstrun.BRAND_QUESTIONS`). */
 export const BRAND_QUESTION_TEMPLATES = {
   ru: "Что известно о «{name}»{place}? Чем занимается, какие цены, где находится и какие о нём отзывы?",
