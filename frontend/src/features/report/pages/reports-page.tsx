@@ -49,7 +49,7 @@ export default async function ReportsPage({ params }: Props) {
 
   if (report.prompts.length === 0 || !latest) {
     return (
-      <Page title={t("reports")} engines>
+      <Page title={t("reports")} engines={!report.engines}>
         <NoData projectId={project.id} />
       </Page>
     );
@@ -60,7 +60,7 @@ export default async function ReportsPage({ params }: Props) {
   const shared = getPathname({ href: `/projects/${project.id}/report`, locale });
 
   return (
-    <Page title={t("reports")} engines tour="reports">
+    <Page title={t("reports")} engines={!report.engines} tour="reports">
       <div className="flex flex-col gap-6 sm:gap-7">
         <LatestReport
           report={report}

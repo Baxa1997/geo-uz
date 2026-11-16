@@ -49,7 +49,7 @@ export default async function PromptsPage({ params, searchParams }: Props) {
   const fresh = typeof query.new === "string" ? Math.max(0, Number.parseInt(query.new, 10) || 0) : 0;
 
   return (
-    <Page title={t("prompts")} engines tour="prompts" bleed>
+    <Page title={t("prompts")} engines={report.engines ?? true} tour="prompts" bleed>
       <PromptManager
         projectId={report.project.id}
         plan={plan}

@@ -52,7 +52,7 @@ export default async function CompetitorsPage({ params, searchParams }: Props) {
 
   if (report.prompts.length === 0) {
     return (
-      <Page title={t("competitors")} engines toolbar={hasFilters(filters) && <ReportFilterBar topics={topics} />}>
+      <Page title={t("competitors")} engines={report.engines ?? true} toolbar={hasFilters(filters) && <ReportFilterBar topics={topics} />}>
         {hasFilters(filters) ? <FilteredEmpty resetHref={`${base}/competitors`} /> : <NoData projectId={report.project.id} promptCount={prompts.length} />}
       </Page>
     );
@@ -71,7 +71,7 @@ export default async function CompetitorsPage({ params, searchParams }: Props) {
   const withoutYou = promptsWithoutYou(report.prompts, brand.id, competitors.map((competitor) => competitor.id)).length;
 
   return (
-    <Page title={t("competitors")} engines tour="competitors" toolbar={<ReportFilterBar topics={topics} />}>
+    <Page title={t("competitors")} engines={report.engines ?? true} tour="competitors" toolbar={<ReportFilterBar topics={topics} />}>
       <KpiStrip
         items={[
           {

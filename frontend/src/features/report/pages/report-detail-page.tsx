@@ -51,7 +51,7 @@ export default async function ReportDetailPage({ params }: Props) {
 
   if (report.prompts.length === 0) {
     return (
-      <Page title={tReports("detail.title", { date })} crumbs={crumbs} engines>
+      <Page title={tReports("detail.title", { date })} crumbs={crumbs} engines={!report.engines}>
         <NoData projectId={project.id} />
       </Page>
     );
@@ -80,7 +80,7 @@ export default async function ReportDetailPage({ params }: Props) {
     <Page
       title={tReports("detail.title", { date })}
       crumbs={crumbs}
-      engines
+      engines={!report.engines}
       tour="reportDetail"
       bleed
       toolbar={

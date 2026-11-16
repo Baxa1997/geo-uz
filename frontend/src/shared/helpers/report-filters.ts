@@ -4,7 +4,7 @@ import type { PromptLanguage, ReportFilters } from "@/shared/types/api";
 type SearchParams = Record<string, string | string[] | undefined>;
 
 /** URL names of the filters shared by a project's data pages: ?lang=uz&topic=implants. */
-export const FILTER_PARAMS = { language: "lang", topic: "topic" } as const;
+export const FILTER_PARAMS = { language: "lang", topic: "topic", engine: "engine" } as const;
 
 const isLanguage = (value: unknown): value is PromptLanguage => PROMPT_LANGUAGES.some((language) => language === value);
 
@@ -12,19 +12,22 @@ const isLanguage = (value: unknown): value is PromptLanguage => PROMPT_LANGUAGES
 export function parseReportFilters(params: SearchParams): ReportFilters {
   const language = params[FILTER_PARAMS.language];
   const topic = params[FILTER_PARAMS.topic];
+  const engine = params[FILTER_PARAMS.engine];
   return {
     ...(isLanguage(language) ? { language } : {}),
     ...(typeof topic === "string" && topic ? { topic } : {}),
+    ...(typeof engine === "string" && /^[a-z]{2,20}$/.test(engine) ? { engine } : {}),
   };
 }
 
 export const hasFilters = ({ language, topic }: ReportFilters) => Boolean(language || topic);
 
 /** Adds the filters (and any extra params) to a link, so they follow the user from page to page. */
-export function withFilters(href: string, { language, topic }: ReportFilters, extra: Record<string, string> = {}) {
+export function withFilters(href: string, { language, topic, engine }: ReportFilters, extra: Record<string, string> = {}) {
   const params = new URLSearchParams({
     ...(language ? { [FILTER_PARAMS.language]: language } : {}),
     ...(topic ? { [FILTER_PARAMS.topic]: topic } : {}),
+    ...(engine ? { [FILTER_PARAMS.engine]: engine } : {}),
     ...extra,
   });
   return params.size > 0 ? `${href}?${params}` : href;

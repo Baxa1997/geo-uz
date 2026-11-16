@@ -78,7 +78,7 @@ export default async function SourcesPage({ params, searchParams }: Props) {
 
   if (report.prompts.length === 0) {
     return (
-      <Page title={tSources(`views.${scope}`)} crumbs={crumbs} engines toolbar={hasFilters(filters) && <ReportFilterBar topics={topics} />}>
+      <Page title={tSources(`views.${scope}`)} crumbs={crumbs} engines={report.engines ?? true} toolbar={hasFilters(filters) && <ReportFilterBar topics={topics} />}>
         {hasFilters(filters) ? <FilteredEmpty resetHref={`${base}/sources`} /> : <NoData projectId={report.project.id} promptCount={prompts.length} />}
       </Page>
     );
@@ -93,7 +93,7 @@ export default async function SourcesPage({ params, searchParams }: Props) {
   const tableProps = { sources: report.topSources, totalAnswers: totalAnswers(report.prompts), brands: seriesBrands(report.project), filename, sitePattern };
 
   return (
-    <Page title={tSources(`views.${scope}`)} crumbs={crumbs} engines tour="sources" toolbar={<ReportFilterBar topics={topics} />} tabs={tabs}>
+    <Page title={tSources(`views.${scope}`)} crumbs={crumbs} engines={report.engines ?? true} tour="sources" toolbar={<ReportFilterBar topics={topics} />} tabs={tabs}>
       <div className="flex flex-col gap-8 sm:gap-10">
         <PageSection tour="chart" title={tSources("sections.overview.title")} description={tSources(`sections.overview.${scope}`)}>
           <SourcesChart

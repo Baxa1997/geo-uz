@@ -83,7 +83,7 @@ export default async function PromptPage({ params, searchParams }: Props) {
     <Page
       title={prompt.text}
       crumbs={[{ href: withFilters(`${base}/prompts`, filters), label: t("prompts") }]}
-      engines
+      engines={!report.engines}
       tour={result ? "prompt" : undefined}
       toolbar={result ? <PromptFilters brands={brands} kinds={kinds} /> : undefined}
     >

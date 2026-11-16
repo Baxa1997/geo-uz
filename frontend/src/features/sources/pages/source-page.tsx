@@ -92,7 +92,7 @@ export default async function SourcePage({ params, searchParams }: Props) {
     // Nothing under these filters; without them the site may well be there
     if (!hasFilters(filters)) notFound();
     return (
-      <Page title={domain} crumbs={crumbs} engines toolbar={toolbar}>
+      <Page title={domain} crumbs={crumbs} engines={report.engines ?? true} toolbar={toolbar}>
         <EmptyState icon={FilterX} title={tFilters("emptyTitle")} text={tPage("verdict.filtered")}>
           <Link href={`${base}/sources/${encodeURIComponent(domain)}`} className={buttonVariants({ variant: "outline", size: "lg" })}>
             {tFilters("reset")}
@@ -122,7 +122,7 @@ export default async function SourcePage({ params, searchParams }: Props) {
 
   if (source && tab === "answers") {
     return (
-      <Page title={domain} crumbs={crumbs} engines toolbar={toolbar} tabs={tabs}>
+      <Page title={domain} crumbs={crumbs} engines={report.engines ?? true} toolbar={toolbar} tabs={tabs}>
         <div className="flex flex-col gap-8 sm:gap-10">
           <SiteAnswers
             // Keyed: a link to another page of the site starts its answers, even from this same view
@@ -154,7 +154,7 @@ export default async function SourcePage({ params, searchParams }: Props) {
   const movers = pageMovers(history, domain);
 
   return (
-    <Page title={domain} crumbs={crumbs} engines tour="source" toolbar={toolbar} tabs={tabs}>
+    <Page title={domain} crumbs={crumbs} engines={report.engines ?? true} tour="source" toolbar={toolbar} tabs={tabs}>
       <div data-tour="header">
         <SourceHeader
           domain={domain}
