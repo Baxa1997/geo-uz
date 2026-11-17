@@ -3,153 +3,50 @@
 import { useMutation } from "@tanstack/react-query";
 import { BookOpenIcon as BookOpen } from "@phosphor-icons/react/dist/ssr/BookOpen";
 import { CheckIcon as Check } from "@phosphor-icons/react/dist/ssr/Check";
-import { CaretDownIcon as ChevronDown } from "@phosphor-icons/react/dist/ssr/CaretDown";
-import { CircleIcon as Circle } from "@phosphor-icons/react/dist/ssr/Circle";
-import { FileTextIcon as FileText } from "@phosphor-icons/react/dist/ssr/FileText";
-import { FolderIcon as Folder } from "@phosphor-icons/react/dist/ssr/Folder";
-import { GlobeIcon as Globe } from "@phosphor-icons/react/dist/ssr/Globe";
-import { StackIcon as Layers } from "@phosphor-icons/react/dist/ssr/Stack";
-import { FunnelSimpleIcon as ListFilter } from "@phosphor-icons/react/dist/ssr/FunnelSimple";
-import { TreeViewIcon as ListTree } from "@phosphor-icons/react/dist/ssr/TreeView";
 import { PlusIcon as Plus } from "@phosphor-icons/react/dist/ssr/Plus";
-import { ArrowCounterClockwiseIcon as RotateCcw } from "@phosphor-icons/react/dist/ssr/ArrowCounterClockwise";
-import { CellSignalHighIcon as SignalHigh } from "@phosphor-icons/react/dist/ssr/CellSignalHigh";
-import { CellSignalLowIcon as SignalLow } from "@phosphor-icons/react/dist/ssr/CellSignalLow";
-import { CellSignalMediumIcon as SignalMedium } from "@phosphor-icons/react/dist/ssr/CellSignalMedium";
-import { ArrowUUpLeftIcon as Undo2 } from "@phosphor-icons/react/dist/ssr/ArrowUUpLeft";
 import { UploadSimpleIcon as Upload } from "@phosphor-icons/react/dist/ssr/UploadSimple";
 import { XIcon as X } from "@phosphor-icons/react/dist/ssr/X";
 import { useMessages, useTimeZone, useTranslations } from "next-intl";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { ActionWhy } from "@/shared/components/actions/action-why";
 import { ACTION_KIND_ICONS, useActionTitle } from "@/shared/components/actions/action-title";
+import { ImpactBadge } from "@/shared/components/actions/impact-badge";
 import { Hint } from "@/shared/components/hint";
 import { ConfirmModal } from "@/shared/components/modal";
 import { Tour, type TourStep } from "@/shared/components/tour";
 import { Button } from "@/shared/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from "@/shared/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/shared/components/ui/dropdown-menu";
 import { api } from "@/shared/api/client";
 import { ACTION_STEP_COUNT, TIME_ZONE } from "@/shared/constants";
 import { downloadCsv } from "@/shared/helpers/csv";
 import { formatIsoDay } from "@/shared/helpers/dates";
 import { labelFor } from "@/shared/helpers/labels";
 import { cn } from "@/shared/helpers/utils";
-import type { Action, ActionImpact, ActionKind, ActionStatus, SourceType, UpdateActionRequest } from "@/shared/types/api";
-import { GOALS, SHOWN_ROWS, STATUS_GROUPS } from "../constants";
+import type { Action, ActionKind, ActionStatus, UpdateActionRequest } from "@/shared/types/api";
+import { FIRST_SHOWN, GOALS, IMPACT_ORDER, STATUS_TABS } from "../constants";
 import { downloadJson } from "../helpers/export";
-import {
-  CATEGORIES,
-  GROUP_BYS,
-  IMPACTS,
-  NO_FILTERS,
-  OWNERS,
-  categoryOf,
-  filterCount,
-  ownerOf,
-  passes,
-  topicOf,
-  type ActionFilters,
-  type Category,
-  type GroupBy,
-  type Owner,
-} from "../helpers/grouping";
+import { categoryOf, ownerOf, topicOf } from "../helpers/grouping";
+import type { PromptProfile } from "../hooks/use-ai-prompt";
 import { ActionPanel, type QuestionInfo, type SitePages } from "./action-panel";
 import { ActionRow } from "./action-row";
 import { ActionToast, type ToastState } from "./action-toast";
 import { AddContentDialog } from "./add-content-dialog";
-import { GoalTiles, type GoalCount } from "./goal-tiles";
-import { StatusIcon } from "./status-icon";
-import type { AppIcon } from "@/shared/types/icon";
 
-/** From this width of the page (Tailwind's @4xl) an opened action sits beside the list, as on Peec; below it, it covers the screen. */
+/** From this width of the page (Tailwind's @4xl) an opened action sits beside the list; below it, it covers the screen. */
 const SPLIT_WIDTH = 896;
-/** The group of actions without a topic, when grouping by topic. */
-const NO_TOPIC = "";
 /** Remembers in the browser that the tour was shown, so it starts by itself only once. */
 const TOUR_KEY = "geo-tour:actions";
-/** The kinds of site a listing can be on, for the "Site kind" filter. */
-const SITE_KINDS: SourceType[] = ["directory", "news", "social", "other"];
 
-const CATEGORY_KINDS: Record<Category, ActionKind> = {
-  fact: "fact",
-  directory: "listing",
-  news: "listing",
-  social: "listing",
-  other: "listing",
-  newPage: "content",
-  rework: "content",
-  access: "technical",
-  markup: "technical",
-};
-const IMPACT_ICONS: Record<ActionImpact, AppIcon> = { high: SignalHigh, medium: SignalMedium, low: SignalLow };
-const OWNER_ICONS: Record<Owner, AppIcon> = { own: FileText, earned: Globe, everywhere: Layers };
+/** Most effective first; of equal effect, in the goals' order (a wrong fact before a listing). */
+const byEffect = (a: Action, b: Action) => IMPACT_ORDER.indexOf(a.impact) - IMPACT_ORDER.indexOf(b.impact) || GOALS.indexOf(a.kind) - GOALS.indexOf(b.kind);
+/** Done ones, the latest first. */
+const byDone = (a: Action, b: Action) => (b.doneAt ?? "").localeCompare(a.doneAt ?? "");
 
-/** A group of actions under a status, and its sub-groups by what to do when there are two or more. */
-interface Branch {
-  group: string;
-  key: string;
-  rows: Action[];
-  categories: { category: Category; key: string; rows: Action[] }[] | null;
-}
-
-const statusKey = (status: ActionStatus) => `s:${status}`;
-
-function groupOf(action: Action, groupBy: GroupBy, topic: string | null): string {
-  switch (groupBy) {
-    case "goal":
-      return action.kind;
-    case "category":
-      return categoryOf(action);
-    case "impact":
-      return action.impact;
-    case "owner":
-      return ownerOf(action);
-    case "topic":
-      return topic ?? NO_TOPIC;
-  }
-}
-
-/** The groups of one status in their order; under a goal, its kinds of work when it has two or more, as on Peec. */
-function branchesOf(list: Action[], status: ActionStatus, groupBy: GroupBy, order: string[], topicFor: (action: Action) => string | null): Branch[] {
-  const inStatus = list.filter((action) => action.status === status);
-  return order.flatMap((group) => {
-    const rows = inStatus.filter((action) => groupOf(action, groupBy, topicFor(action)) === group);
-    if (rows.length === 0) return [];
-    const categories =
-      groupBy === "goal"
-        ? CATEGORIES.flatMap((category) => {
-            const inCategory = rows.filter((action) => categoryOf(action) === category);
-            return inCategory.length > 0 ? [{ category, key: `c:${status}:${group}:${category}`, rows: inCategory }] : [];
-          })
-        : [];
-    return [{ group, key: `g:${status}:${groupBy}:${group}`, rows, categories: categories.length > 1 ? categories : null }];
-  });
-}
-
-/** What to open (and show in full) so an action's row is on screen. */
-function revealOf(list: Action[], action: Action, groupBy: GroupBy, order: string[], topicFor: (action: Action) => string | null) {
-  const branch = branchesOf(list, action.status, groupBy, order, topicFor).find((candidate) => candidate.rows.some((row) => row.id === action.id));
-  if (!branch) return null;
-  const leaf = branch.categories?.find((candidate) => candidate.rows.some((row) => row.id === action.id)) ?? null;
-  const rows = leaf?.rows ?? branch.rows;
-  return {
-    open: { [statusKey(action.status)]: true, [branch.key]: true, ...(leaf ? { [leaf.key]: true } : {}) },
-    expand: rows.findIndex((row) => row.id === action.id) >= SHOWN_ROWS ? (leaf?.key ?? branch.key) : null,
-  };
+/** The tab an action's status falls in: the first tab with actions, when nothing is asked for. */
+function tabFor(actions: Action[], opened: Action | undefined): ActionStatus {
+  if (opened) return opened.status;
+  return STATUS_TABS.find((status) => status !== "declined" && actions.some((action) => action.status === status)) ?? "new";
 }
 
 /** The change as the server will make it, shown before it answers. */
@@ -166,14 +63,15 @@ function apply(action: Action, { status, stepsDone }: UpdateActionRequest): Acti
   };
 }
 
-const toggle = <T,>(list: T[], item: T) => (list.includes(item) ? list.filter((x) => x !== item) : [...list, item]);
-
 /**
- * The project's actions laid out like Peec's: a strip of tools (statuses, filters, grouping; the guide,
- * export, "Add a page", "Accept all"), a heading, the four goals as tiles, then the list by status, goal and
- * kind of work, with boxes to pick rows and a footer that stays in view. A row opens the action beside the
- * list (over the screen on a phone), where it is accepted, worked through and marked done; a toast says
- * where it went. Changes show at once and are saved in the background; if saving fails, they go back.
+ * The project's actions, made simple (the user, 17 Nov 2026: "logic is good, but UI is not very
+ * understandable"; until then Peec's layout: three menus, four goal tiles and a tree of status, goal and kind
+ * of work with boxes to pick rows). Now: the actions by status as tabs (to do, in progress, done, declined);
+ * on "to do" the three most effective as cards with the evidence behind each and a Start button, then the
+ * rest as a flat list, narrowed by goal; every row carries the one step its status calls for (start, done,
+ * reopen, restore) and opens beside the list (over the screen on a phone), where it is worked through. A
+ * toast says where an action went. Changes show at once and are saved in the background; if saving fails,
+ * they go back.
  */
 export function ActionBoard({
   projectId,
@@ -184,13 +82,14 @@ export function ActionBoard({
   topics,
   competitors,
   brand,
+  profile,
   nextRunAt,
   filename,
   after,
 }: {
   projectId: string;
   initial: Action[];
-  /** Opens this action at once (?action= in the URL, from the Overview). */
+  /** Opens this action at once (?action= in the URL, from the Overview, Manbalar or Hisobotlar). */
   initialOpenId?: string;
   /** The questions the actions should move, by id. */
   questions: Record<string, QuestionInfo>;
@@ -200,6 +99,8 @@ export function ActionBoard({
   topics: string[];
   competitors: { id: string; name: string }[];
   brand: { name: string; domain: string };
+  /** What the business is, for the AI prompts. */
+  profile: PromptProfile;
   nextRunAt: string | null;
   filename: string;
   /** Shown under the list (the Managed GEO offer). */
@@ -212,19 +113,9 @@ export function ActionBoard({
   const root = useRef<HTMLDivElement>(null);
   const opened = initial.find((action) => action.id === initialOpenId);
   const [actions, setActions] = useState(initial);
-  const [statuses, setStatuses] = useState<ActionStatus[]>(STATUS_GROUPS);
-  const [filters, setFilters] = useState<ActionFilters>(NO_FILTERS);
-  const [groupBy, setGroupBy] = useState<GroupBy>("goal");
+  const [tab, setTab] = useState<ActionStatus>(() => tabFor(initial, opened));
   const [goal, setGoal] = useState<ActionKind | null>(null);
-  // Groups opened or folded by hand, by key; the others follow their default (the first of each level open)
-  const [toggled, setToggled] = useState<Record<string, boolean>>(() => (opened ? (revealOf(initial, opened, "goal", GOALS, () => null)?.open ?? {}) : {}));
-  // Groups showing all their rows, not the first SHOWN_ROWS
-  const [expanded, setExpanded] = useState<string[]>(() => {
-    const expand = opened ? revealOf(initial, opened, "goal", GOALS, () => null)?.expand : null;
-    return expand ? [expand] : [];
-  });
   const [selectedId, setSelectedId] = useState(opened?.id);
-  const [picked, setPicked] = useState<string[]>([]);
   const [toast, setToast] = useState<ToastState | null>(null);
   const [announcement, setAnnouncement] = useState("");
   const [tourOpen, setTourOpen] = useState(false);
@@ -240,29 +131,18 @@ export function ActionBoard({
     ...topics,
     ...new Set(actions.map(topicFor).filter((topic): topic is string => topic !== null && !topics.includes(topic))),
   ];
-  const order: string[] =
-    groupBy === "goal" ? GOALS : groupBy === "category" ? CATEGORIES : groupBy === "impact" ? IMPACTS : groupBy === "owner" ? OWNERS : [...topicOrder, NO_TOPIC];
 
-  const filtered = actions.filter((action) => passes(action, filters, topicFor(action)));
-  const shown = goal ? filtered.filter((action) => action.kind === goal) : filtered;
   const selected = actions.find((action) => action.id === selectedId) ?? null;
   const split = selected !== null && wide !== false;
-  const newShown = shown.filter((action) => action.status === "new");
-  const openShown = shown.filter((action) => action.status === "new" || action.status === "in_progress").length;
-  const firstStatus = STATUS_GROUPS.find((status) => shown.some((action) => action.status === status)) ?? "new";
-  const counts = Object.fromEntries(
-    GOALS.map((kind): [ActionKind, GoalCount] => {
-      const ofKind = filtered.filter((action) => action.kind === kind);
-      return [
-        kind,
-        {
-          open: ofKind.filter((action) => action.status === "new" || action.status === "in_progress").length,
-          done: ofKind.filter((action) => action.status === "done").length,
-          total: ofKind.filter((action) => action.status !== "declined").length,
-        },
-      ];
-    }),
-  ) as Record<ActionKind, GoalCount>;
+  const inTab = actions.filter((action) => action.status === tab).sort(tab === "done" ? byDone : byEffect);
+  const goalsHere = GOALS.filter((kind) => inTab.some((action) => action.kind === kind));
+  const listed = goal ? inTab.filter((action) => action.kind === goal) : inTab;
+  // The three most effective new ones as cards; with a goal picked, the list holds them all
+  const first = tab === "new" && !goal ? listed.slice(0, FIRST_SHOWN) : [];
+  const rest = listed.slice(first.length);
+  const done = actions.filter((action) => action.status === "done").length;
+  const kept = actions.filter((action) => action.status !== "declined").length;
+  const newListed = listed.filter((action) => action.status === "new");
 
   useEffect(() => {
     const element = root.current;
@@ -313,83 +193,57 @@ export function ActionBoard({
     },
   });
 
-  /** Opens the groups that hold an action's row, in the list as it is (or will be, with `list`). */
-  function reveal(action: Action, list: Action[] = shown) {
-    const found = revealOf(list, action, groupBy, order, topicFor);
-    if (!found) return;
-    setToggled((current) => ({ ...current, ...found.open }));
-    if (found.expand) {
-      const key = found.expand;
-      setExpanded((current) => (current.includes(key) ? current : [...current, key]));
-    }
-  }
-
   function announce(status: ActionStatus, count: number, action?: Action) {
     setToast((current) => ({ key: (current?.key ?? 0) + 1, status, count }));
     setAnnouncement(action ? t("changed", { title: title(action), status: t(`status.${status}`) }) : t("changedMany", { count, status: t(`status.${status}`) }));
   }
 
-  /** One action moved on from its panel or its first ticked step. */
+  /** One action moved on: from its row's button, its panel or its first ticked step. */
   function changeStatus(action: Action, status: ActionStatus, stepsDone?: number[]) {
     save.mutate({ id: action.id, change: stepsDone ? { status, stepsDone } : { status } });
     announce(status, 1, action);
-    if (action.status === "new" && status === "in_progress") {
-      // As on Peec: "New" folds and "In progress" opens on the accepted action
-      const moved = apply(action, { status, stepsDone });
-      reveal(moved, shown.map((candidate) => (candidate.id === action.id ? moved : candidate)));
-      setToggled((current) => ({ ...current, [statusKey("new")]: false }));
-      setStatuses((list) => (list.includes(status) ? list : [...list, status]));
-    }
   }
 
   function changeMany(ids: string[], status: ActionStatus) {
     if (ids.length === 0) return;
     saveMany.mutate({ ids, status });
-    setPicked([]);
     announce(status, ids.length);
   }
 
   function toggleStep(action: Action, step: number) {
-    const stepsDone = action.stepsDone.includes(step) ? action.stepsDone.filter((done) => done !== step) : [...action.stepsDone, step].sort((a, b) => a - b);
+    const stepsDone = action.stepsDone.includes(step) ? action.stepsDone.filter((ticked) => ticked !== step) : [...action.stepsDone, step].sort((a, b) => a - b);
     // Ticking a step of a new action takes it on
     if (action.status === "new" && stepsDone.length > action.stepsDone.length) changeStatus(action, "in_progress", stepsDone);
     else save.mutate({ id: action.id, change: { stepsDone } });
   }
 
-  /** The toast's link: the group the action went to, opened and brought into view. */
+  function showTab(status: ActionStatus) {
+    setTab(status);
+    setGoal(null);
+  }
+
+  /** The toast's link: the tab the action went to. */
   function openGroup(status: ActionStatus) {
-    setStatuses((list) => (list.includes(status) ? list : [...list, status]));
-    setToggled((current) => ({ ...current, [statusKey(status)]: true }));
-    requestAnimationFrame(() => document.getElementById(`actions-${status}`)?.scrollIntoView({ block: "start", behavior: "smooth" }));
+    showTab(status);
+    requestAnimationFrame(() => root.current?.closest("main")?.scrollTo({ top: 0, behavior: "smooth" }));
   }
 
   function closePanel() {
     const id = selectedId;
     setSelectedId(undefined);
-    // Back to the action's row
-    if (id) requestAnimationFrame(() => document.querySelector<HTMLElement>(`[data-action-row="${CSS.escape(id)}"] button`)?.focus());
+    // Back to the action's row or card
+    if (id) requestAnimationFrame(() => document.querySelector<HTMLElement>(`[data-action-row="${CSS.escape(id)}"] [data-open]`)?.focus());
   }
 
-  const isOpen = (key: string, byDefault: boolean) => toggled[key] ?? byDefault;
-  const flip = (key: string, byDefault: boolean) => setToggled((current) => ({ ...current, [key]: !(current[key] ?? byDefault) }));
-  const pick = (ids: string[], on: boolean) => setPicked((list) => (on ? [...new Set([...list, ...ids])] : list.filter((id) => !ids.includes(id))));
-  // Whatever narrows the list drops the rows picked, so a button never acts on rows out of sight
-  const narrow = <T,>(set: (value: T) => void) => (value: T) => {
-    set(value);
-    setPicked([]);
-  };
-
-  // The guided tour opens an action with a brief when there is one, as Peec's does, to show the brief
+  // The guided tour opens an action with a brief when there is one, to show the brief
   const tourAction =
-    shown.find((action) => action.kind === "content" && action.brief && action.status === "new") ??
-    shown.find((action) => action.kind === "content" && action.brief) ??
-    shown.find((action) => action.status === "new") ??
-    shown[0];
-  // As Peec's: the heading with the goals, the status filter, the impact bars, then an action opened
+    actions.find((action) => action.kind === "content" && action.brief && action.status === "new") ??
+    actions.find((action) => action.kind === "content" && action.brief) ??
+    actions.find((action) => action.status === "new") ??
+    actions[0];
   const tourSteps: TourStep[] = [
-    { target: '[data-tour="goals"]', title: t("tour.goals.title"), text: t("tour.goals.text") },
-    { target: '[data-tour="status"]', title: t("tour.status.title"), text: t("tour.status.text") },
-    { target: '[data-tour="impact"]', title: t("tour.impact.title"), text: t("tour.impact.text"), side: "right" },
+    { target: '[data-tour="first"]', title: t("tour.first.title"), text: t("tour.first.text") },
+    { target: '[data-tour="tabs"]', title: t("tour.tabs.title"), text: t("tour.tabs.text") },
     {
       target: '[data-tour="row"]',
       title: t("tour.row.title"),
@@ -397,6 +251,7 @@ export function ActionBoard({
       action: { label: t("tour.row.action"), run: () => tourAction && setSelectedId(tourAction.id) },
     },
     { target: '[data-tour="why"]', title: t("tour.why.title"), text: t("tour.why.text") },
+    { target: '[data-tour="prompt"]', title: t("tour.prompt.title"), text: t("tour.prompt.text") },
     ...(tourAction?.kind === "content" && tourAction.brief
       ? [
           { target: '[data-tour="brief"]', title: t("tour.brief.title"), text: t("tour.brief.text") },
@@ -411,12 +266,11 @@ export function ActionBoard({
   function startTour() {
     if (!tourAction) return;
     setSelectedId(undefined);
-    setGoal(null);
-    reveal(tourAction, filtered);
+    showTab(tourAction.status);
     setTourOpen(true);
   }
 
-  // Peec starts its tour by itself on the first visit; so does ours, once per browser
+  // The tour starts by itself on the first visit, once per browser
   useEffect(() => {
     if (initialOpenId || initial.length === 0) return;
     try {
@@ -432,7 +286,7 @@ export function ActionBoard({
   }, []);
 
   const exportRows = () =>
-    shown.map((action) => ({
+    actions.map((action) => ({
       action,
       title: title(action),
       topic: topicFor(action),
@@ -493,85 +347,14 @@ export function ActionBoard({
     );
   }
 
-  // The rows picked, and which buttons of the footer apply to them
-  const pickedActions = actions.filter((action) => picked.includes(action.id));
-  const idsIn = (...from: ActionStatus[]) => pickedActions.filter((action) => from.includes(action.status)).map((action) => action.id);
-  const toDecline = idsIn("new", "in_progress");
-  const toAccept = idsIn("new");
-  const toFinish = idsIn("in_progress");
-  const toRestore = idsIn("declined");
-  const toReopen = idsIn("done");
-
-  const filterOptions: { [K in keyof ActionFilters]: { value: ActionFilters[K][number]; label: string }[] } = {
-    topics: topicOrder.map((topic) => ({ value: topic, label: labelFor(messages.Topics, topic) })),
-    owners: OWNERS.map((owner) => ({ value: owner, label: t(`owners.${owner}`) })),
-    sourceTypes: SITE_KINDS.map((kind) => ({ value: kind, label: t(`siteKinds.${kind as "directory"}`) })),
-    categories: CATEGORIES.map((category) => ({ value: category, label: t(`categories.${category}`) })),
-  };
-  const activeFilters = filterCount(filters);
-  const statusLabel =
-    statuses.length === STATUS_GROUPS.length ? t("statusAll") : statuses.length === 1 ? t(`status.${statuses[0] ?? "new"}`) : t("statusSome", { count: statuses.length });
-
-  const groupLabel = (key: string): string => {
-    switch (groupBy) {
-      case "goal":
-        return t(`goals.${key as ActionKind}`);
-      case "category":
-        return t(`categories.${key as Category}`);
-      case "impact":
-        return t(`impact.${key as ActionImpact}`);
-      case "owner":
-        return t(`owners.${key as Owner}`);
-      case "topic":
-        return key === NO_TOPIC ? t("noTopic") : labelFor(messages.Topics, key);
-    }
-  };
-  const groupIcon = (key: string): AppIcon => {
-    switch (groupBy) {
-      case "goal":
-        return ACTION_KIND_ICONS[key as ActionKind];
-      case "category":
-        return ACTION_KIND_ICONS[CATEGORY_KINDS[key as Category]];
-      case "impact":
-        return IMPACT_ICONS[key as ActionImpact];
-      case "owner":
-        return OWNER_ICONS[key as Owner];
-      case "topic":
-        return Folder;
-    }
-  };
-
-  /** A list of rows: the first SHOWN_ROWS, then "Show all", on a line down the left as on Peec. */
-  function rowList(rows: Action[], key: string) {
-    const all = expanded.includes(key);
-    return (
-      <div className="ml-3.25 flex flex-col border-l pl-2">
-        <ul className="flex flex-col">
-          {(all ? rows : rows.slice(0, SHOWN_ROWS)).map((action) => (
-            <ActionRow
-              key={action.id}
-              action={action}
-              open={action.id === selectedId}
-              picked={picked.includes(action.id)}
-              picking={picked.length > 0}
-              tour={tourOpen && action.id === tourAction?.id}
-              onOpen={() => setSelectedId(action.id)}
-              onPick={() => pick([action.id], !picked.includes(action.id))}
-            />
-          ))}
-        </ul>
-        {rows.length > SHOWN_ROWS && (
-          <button
-            type="button"
-            onClick={() => setExpanded((list) => toggle(list, key))}
-            className="my-1 ml-7 w-fit rounded-md bg-muted px-2 py-1 text-sm transition-colors hover:bg-muted/70"
-          >
-            {all ? t("showLess") : t("showAll", { count: rows.length })}
-          </button>
-        )}
-      </div>
-    );
-  }
+  const rowProps = (action: Action) => ({
+    action,
+    open: action.id === selectedId,
+    tour: tourOpen && action.id === tourAction?.id,
+    busy: save.isPending && save.variables?.id === action.id,
+    onOpen: () => setSelectedId(action.id),
+    onStatus: (status: ActionStatus) => changeStatus(action, status),
+  });
 
   const panel = selected && (
     <ActionPanel
@@ -580,6 +363,7 @@ export function ActionBoard({
       sites={sites}
       competitors={namesById}
       brand={brand}
+      profile={profile}
       nextRunAt={nextRunAt}
       questionHref={(promptId) => `/projects/${projectId}/prompts/${encodeURIComponent(promptId)}`}
       busy={save.isPending && save.variables?.id === selected.id && save.variables.change.status !== undefined}
@@ -589,99 +373,32 @@ export function ActionBoard({
       onStep={(step) => toggleStep(selected, step)}
     />
   );
-  const toolButton =
-    "inline-flex h-8 min-w-0 items-center gap-1.5 rounded-lg border bg-background px-2.5 text-sm shadow-xs transition-colors outline-none hover:bg-muted/50 focus-visible:ring-3 focus-visible:ring-ring/50 data-[popup-open]:bg-muted/60";
 
   return (
     <div ref={root} className="@container flex flex-1 flex-col">
-      {/* The page's tools, as Peec's strip: what to show on the left, what to do on the right */}
+      {/* The statuses as tabs on the left, the page's tools on the right */}
       <div className="flex flex-wrap items-center gap-2 border-b bg-background px-4 py-2 sm:px-6 @4xl:sticky @4xl:top-12 @4xl:z-5 @4xl:h-12.25 @4xl:flex-nowrap">
-        <div className="flex min-w-0 flex-wrap items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger data-tour="status" className={cn(toolButton, statuses.length < STATUS_GROUPS.length && "border-foreground/25 font-medium")}>
-              <Circle aria-hidden className="size-4 shrink-0 text-muted-foreground" />
-              <span className="truncate">{statusLabel}</span>
-              <ChevronDown aria-hidden className="size-3.5 shrink-0 text-muted-foreground" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-52">
-              <DropdownMenuCheckboxItem checked={statuses.length === STATUS_GROUPS.length} onCheckedChange={() => narrow(setStatuses)(STATUS_GROUPS)}>
-                {t("statusAll")}
-              </DropdownMenuCheckboxItem>
-              <DropdownMenuSeparator />
-              {STATUS_GROUPS.map((status) => (
-                <CheckRow
-                  key={status}
-                  checked={statuses.includes(status)}
-                  // The last status stays: an empty list would read as a bug
-                  onToggle={() => statuses.length > 1 || !statuses.includes(status) ? narrow(setStatuses)(STATUS_GROUPS.filter((candidate) => candidate === status ? !statuses.includes(status) : statuses.includes(candidate))) : undefined}
-                >
-                  <StatusIcon status={status} />
-                  {t(`status.${status}`)}
-                </CheckRow>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger className={cn(toolButton, activeFilters > 0 && "border-foreground/25 font-medium")}>
-              <ListFilter aria-hidden className="size-4 shrink-0 text-muted-foreground" />
-              <span className="truncate">{activeFilters > 0 ? t("filtersSome", { count: activeFilters }) : t("filtersAll")}</span>
-              <ChevronDown aria-hidden className="size-3.5 shrink-0 text-muted-foreground" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-60">
-              <DropdownMenuGroup>
-                <DropdownMenuLabel>{t("filterBy")}</DropdownMenuLabel>
-                {(Object.keys(filterOptions) as (keyof ActionFilters)[]).map((group) => {
-                  const chosen = filters[group] as string[];
-                  return (
-                    <DropdownMenuSub key={group}>
-                      <DropdownMenuSubTrigger>
-                        <span className="flex-1">{t(`filterGroups.${group}`)}</span>
-                        {chosen.length > 0 && <span className="text-xs text-muted-foreground tabular-nums">{chosen.length}</span>}
-                      </DropdownMenuSubTrigger>
-                      <DropdownMenuSubContent className="max-h-80 w-64">
-                        <DropdownMenuCheckboxItem checked={chosen.length === 0} onCheckedChange={() => narrow(setFilters)({ ...filters, [group]: [] })}>
-                          {t("filterAll")}
-                        </DropdownMenuCheckboxItem>
-                        <DropdownMenuSeparator />
-                        {(filterOptions[group] as { value: string; label: string }[]).map((option) => (
-                          <CheckRow key={option.value} checked={chosen.includes(option.value)} onToggle={() => narrow(setFilters)({ ...filters, [group]: toggle(chosen, option.value) })}>
-                            <span className="truncate">{option.label}</span>
-                          </CheckRow>
-                        ))}
-                      </DropdownMenuSubContent>
-                    </DropdownMenuSub>
-                  );
-                })}
-              </DropdownMenuGroup>
-              {activeFilters > 0 && (
-                <>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => narrow(setFilters)(NO_FILTERS)}>
-                    <X aria-hidden />
-                    {t("clearFilters")}
-                  </DropdownMenuItem>
-                </>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger className={toolButton}>
-              <ListTree aria-hidden className="size-4 shrink-0 text-muted-foreground" />
-              <span className="truncate">{t("groupByLabel", { by: t(`groupBy.${groupBy}`) })}</span>
-              <ChevronDown aria-hidden className="size-3.5 shrink-0 text-muted-foreground" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-52">
-              <DropdownMenuRadioGroup value={groupBy} onValueChange={(value: GroupBy) => setGroupBy(value)}>
-                {GROUP_BYS.map((option) => (
-                  <DropdownMenuRadioItem key={option} value={option} closeOnClick>
-                    {t(`groupBy.${option}`)}
-                  </DropdownMenuRadioItem>
-                ))}
-              </DropdownMenuRadioGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
+        <div role="tablist" aria-label={t("tabsLabel")} data-tour="tabs" className="-mx-1 flex min-w-0 items-center gap-1 overflow-x-auto px-1">
+          {STATUS_TABS.map((status) => {
+            const count = actions.filter((action) => action.status === status).length;
+            const on = tab === status;
+            return (
+              <button
+                key={status}
+                type="button"
+                role="tab"
+                aria-selected={on}
+                onClick={() => showTab(status)}
+                className={cn(
+                  "inline-flex h-8 shrink-0 items-center gap-2 rounded-lg px-3 text-sm whitespace-nowrap transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+                  on ? "bg-foreground font-medium text-background" : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                )}
+              >
+                {t(`tabs.${status}`)}
+                <span className={cn("tabular-nums", on ? "text-background/70" : "text-muted-foreground")}>{count}</span>
+              </button>
+            );
+          })}
         </div>
 
         <div className="ml-auto flex items-center gap-2">
@@ -709,211 +426,116 @@ export function ActionBoard({
             </DropdownMenuContent>
           </DropdownMenu>
           {/* Its icon alone on a phone, where the strip has no room for the words */}
-          <Button variant="ghost" aria-label={t("addContent")} onClick={() => setAddOpen(true)} className="@max-md:size-8 @max-md:px-0">
+          <Button variant="outline" aria-label={t("addContent")} onClick={() => setAddOpen(true)} className="bg-background @max-md:size-8 @max-md:px-0">
             <Plus aria-hidden data-icon="inline-start" />
             <span className="hidden @md:inline">{t("addContent")}</span>
           </Button>
-          {!split && (
-            <Button disabled={newShown.length === 0 || saveMany.isPending} onClick={() => changeMany(newShown.map((action) => action.id), "in_progress")}>
-              <Check aria-hidden data-icon="inline-start" />
-              {t("acceptAll")}
-            </Button>
-          )}
         </div>
       </div>
 
-      {/* The heading with the goals: the first step of the tour frames them together, as Peec's */}
-      {!split && (
-        <div data-tour="goals">
-          <div className="flex flex-col gap-1 px-4 pt-5 pb-4 sm:px-6">
-            <h2 className="text-xl font-semibold tracking-tight text-pretty">{t("heading")}</h2>
-            <p className="max-w-3xl text-sm text-pretty text-muted-foreground">{t("subtitle")}</p>
-          </div>
-          <GoalTiles counts={counts} value={goal} onChange={narrow(setGoal)} />
-        </div>
-      )}
-
       <div className="flex flex-1">
         <div className="@container flex min-w-0 flex-1 flex-col">
-          <div className="flex flex-1 flex-col gap-0.5 px-2 py-3 sm:px-4">
+          <div className="flex flex-1 flex-col gap-6 px-4 py-5 sm:px-6">
+            {!split && (
+              <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-1">
+                  <h2 className="text-xl font-semibold tracking-tight text-pretty">{t("heading")}</h2>
+                  <p className="max-w-3xl text-sm text-pretty text-muted-foreground">{t("subtitle")}</p>
+                </div>
+                {/* How far the plan has come: what's done of all not declined */}
+                {kept > 0 && (
+                  <div className="flex max-w-md items-center gap-3">
+                    <span aria-hidden className="block h-2 flex-1 overflow-hidden rounded-full bg-muted">
+                      <span className="block h-full rounded-full bg-positive transition-[width] duration-500" style={{ width: `${(done / kept) * 100}%` }} />
+                    </span>
+                    <span className="shrink-0 text-sm text-muted-foreground tabular-nums">{t("progress", { done, total: kept })}</span>
+                  </div>
+                )}
+              </div>
+            )}
+
             {(save.isError || saveMany.isError) && (
-              <p role="alert" className="px-2 pb-2 text-sm text-destructive">
+              <p role="alert" className="text-sm text-destructive">
                 {t("saveFailed")}
               </p>
             )}
 
-            {shown.length === 0 ? (
-              <div className="flex flex-col items-center gap-3 px-4 py-12 text-center">
-                <p className="text-sm text-muted-foreground">{goal ? t("emptyGoal") : t("emptyFiltered")}</p>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setFilters(NO_FILTERS);
-                    setGoal(null);
-                  }}
-                >
-                  {t("clearFilters")}
-                </Button>
-              </div>
-            ) : (
-              STATUS_GROUPS.filter((status) => statuses.includes(status)).map((status) => {
-                const branches = branchesOf(shown, status, groupBy, order, topicFor);
-                const count = branches.reduce((sum, branch) => sum + branch.rows.length, 0);
-                const statusOpen = isOpen(statusKey(status), status === firstStatus);
-                return (
-                  <section key={status} id={`actions-${status}`} aria-labelledby={`actions-${status}-title`} className="scroll-mt-28">
-                    <h3 id={`actions-${status}-title`}>
-                      <button
-                        type="button"
-                        aria-expanded={statusOpen}
-                        onClick={() => flip(statusKey(status), status === firstStatus)}
-                        className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-sm transition-colors outline-none hover:bg-muted/40 focus-visible:ring-3 focus-visible:ring-ring/50"
-                      >
-                        <Caret open={statusOpen} />
-                        <StatusIcon status={status} />
-                        <span className={cn("font-medium", !statusOpen && "text-muted-foreground")}>{t(`status.${status}`)}</span>
-                        <span className="text-muted-foreground tabular-nums">{count}</span>
-                      </button>
-                    </h3>
-                    {statusOpen &&
-                      (count === 0 ? (
-                        <p className="py-2 pl-10 text-sm text-muted-foreground">{t("emptyGroup")}</p>
-                      ) : (
-                        <div className="flex flex-col gap-0.5 pb-2 pl-2">
-                          {branches.map((branch, index) => {
-                            const branchOpen = isOpen(branch.key, index === 0);
-                            const Icon = groupIcon(branch.group);
-                            return (
-                              <div key={branch.key} className="flex flex-col">
-                                <button
-                                  type="button"
-                                  aria-expanded={branchOpen}
-                                  onClick={() => flip(branch.key, index === 0)}
-                                  className={cn(
-                                    "flex w-fit max-w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm transition-colors outline-none hover:bg-muted/40 focus-visible:ring-3 focus-visible:ring-ring/50",
-                                    !branchOpen && "text-muted-foreground",
-                                  )}
-                                >
-                                  <Caret open={branchOpen} />
-                                  <Icon aria-hidden className="size-4 shrink-0 text-muted-foreground" />
-                                  <span className={cn("truncate", branchOpen && "font-medium")}>{groupLabel(branch.group)}</span>
-                                  <Count value={branch.rows.length} />
-                                </button>
-                                {branchOpen &&
-                                  (branch.categories ? (
-                                    <div className="ml-3.25 flex flex-col gap-0.5 border-l pl-2">
-                                      {branch.categories.map((leaf, leafIndex) => {
-                                        const leafOpen = isOpen(leaf.key, leafIndex === 0);
-                                        const ids = leaf.rows.map((action) => action.id);
-                                        const pickedHere = ids.filter((id) => picked.includes(id)).length;
-                                        return (
-                                          <div key={leaf.key} className="flex flex-col">
-                                            <div className={cn("flex items-center gap-1 rounded-lg pr-2 pl-1 transition-colors", leafOpen ? "bg-muted/60" : "hover:bg-muted/40")}>
-                                              <button
-                                                type="button"
-                                                aria-expanded={leafOpen}
-                                                aria-label={t(leafOpen ? "fold" : "unfold", { group: t(`categories.${leaf.category}`) })}
-                                                onClick={() => flip(leaf.key, leafIndex === 0)}
-                                                className="flex size-6 items-center justify-center rounded-md outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
-                                              >
-                                                <Caret open={leafOpen} />
-                                              </button>
-                                              <input
-                                                type="checkbox"
-                                                aria-label={t("pickGroup", { group: t(`categories.${leaf.category}`) })}
-                                                checked={pickedHere === ids.length}
-                                                ref={(box) => {
-                                                  if (box) box.indeterminate = pickedHere > 0 && pickedHere < ids.length;
-                                                }}
-                                                onChange={() => pick(ids, pickedHere < ids.length)}
-                                                className="size-4 shrink-0 cursor-pointer rounded accent-you"
-                                              />
-                                              <button
-                                                type="button"
-                                                onClick={() => flip(leaf.key, leafIndex === 0)}
-                                                className={cn("flex min-w-0 flex-1 items-center gap-2 py-1.5 pl-1.5 text-left text-sm outline-none", !leafOpen && "text-muted-foreground")}
-                                              >
-                                                <span className="truncate">{t(`categories.${leaf.category}`)}</span>
-                                                <Count value={leaf.rows.length} />
-                                              </button>
-                                            </div>
-                                            {leafOpen && rowList(leaf.rows, leaf.key)}
-                                          </div>
-                                        );
-                                      })}
-                                    </div>
-                                  ) : (
-                                    rowList(branch.rows, branch.key)
-                                  ))}
-                              </div>
-                            );
-                          })}
-                        </div>
-                      ))}
-                  </section>
-                );
-              })
+            {first.length > 0 && (
+              <section data-tour="first" aria-labelledby="actions-first" className="flex flex-col gap-3">
+                <div className="flex flex-col gap-0.5">
+                  <h3 id="actions-first" className="text-base font-semibold">
+                    {t("first.title")}
+                  </h3>
+                  <p className="text-sm text-muted-foreground">{t("first.text")}</p>
+                </div>
+                <ol className={cn("grid gap-3", !split && "@3xl:grid-cols-3")}>
+                  {first.map((action) => (
+                    <ActionCard key={action.id} {...rowProps(action)} competitors={namesById} />
+                  ))}
+                </ol>
+              </section>
             )}
 
-            {after && !split && <div className="mt-auto px-2 pt-6 pb-2">{after}</div>}
-          </div>
-
-          {(!split || picked.length > 0) && (
-            <div className="sticky bottom-0 z-2 flex min-h-14 flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t bg-background px-4 py-2.5 text-sm sm:px-6">
-              {picked.length > 0 ? (
-                <>
-                  <div className="flex items-center gap-3">
-                    <span className="font-medium tabular-nums">{t("picked", { count: picked.length })}</span>
-                    <button type="button" onClick={() => setPicked([])} className="text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
-                      {t("clearPicks")}
-                    </button>
+            <section aria-labelledby="actions-list" className="flex flex-col gap-3">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                <h3 id="actions-list" className="text-base font-semibold">
+                  {first.length > 0 ? t("rest") : t(`tabs.${tab}`)}
+                  <span className="ml-2 font-normal text-muted-foreground tabular-nums">{first.length > 0 ? rest.length : listed.length}</span>
+                </h3>
+                {/* The goals as a filter, when the tab holds more than one */}
+                {goalsHere.length > 1 && (
+                  <div role="group" aria-label={t("goalFilter")} className="flex flex-wrap items-center gap-1">
+                    {([null, ...goalsHere] as (ActionKind | null)[]).map((kind) => {
+                      const Icon = kind ? ACTION_KIND_ICONS[kind] : null;
+                      const on = goal === kind;
+                      return (
+                        <button
+                          key={kind ?? "all"}
+                          type="button"
+                          aria-pressed={on}
+                          onClick={() => setGoal(kind)}
+                          className={cn(
+                            "inline-flex h-7 items-center gap-1.5 rounded-md border px-2 text-xs transition-colors",
+                            on ? "border-foreground/30 bg-muted font-medium text-foreground" : "bg-background text-muted-foreground hover:bg-muted/50 hover:text-foreground",
+                          )}
+                        >
+                          {Icon && <Icon aria-hidden className="size-3.5" />}
+                          {kind ? t(`goals.${kind}`) : t("allGoals")}
+                          <span className="tabular-nums">{kind ? inTab.filter((action) => action.kind === kind).length : inTab.length}</span>
+                        </button>
+                      );
+                    })}
                   </div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    {toRestore.length > 0 && (
-                      <Button variant="outline" disabled={saveMany.isPending} onClick={() => changeMany(toRestore, "new")}>
-                        <Undo2 aria-hidden data-icon="inline-start" />
-                        {t("restore")}
-                      </Button>
-                    )}
-                    {toReopen.length > 0 && (
-                      <Button variant="outline" disabled={saveMany.isPending} onClick={() => changeMany(toReopen, "in_progress")}>
-                        <RotateCcw aria-hidden data-icon="inline-start" />
-                        {t("reopen")}
-                      </Button>
-                    )}
-                    {toDecline.length > 0 && (
-                      <Button variant="outline" disabled={saveMany.isPending} onClick={() => changeMany(toDecline, "declined")}>
-                        <X aria-hidden data-icon="inline-start" />
-                        {t("decline")}
-                      </Button>
-                    )}
-                    {toFinish.length > 0 && (
-                      <Button variant="outline" disabled={saveMany.isPending} onClick={() => changeMany(toFinish, "done")}>
-                        <Check aria-hidden data-icon="inline-start" />
-                        {t("markDone")}
-                      </Button>
-                    )}
-                    {toAccept.length > 0 && (
-                      <Button disabled={saveMany.isPending} onClick={() => changeMany(toAccept, "in_progress")}>
-                        <Check aria-hidden data-icon="inline-start" />
-                        {t("accept")}
-                      </Button>
-                    )}
-                  </div>
-                </>
-              ) : (
-                <>
-                  <span className="text-muted-foreground tabular-nums">{t("openCount", { count: openShown })}</span>
-                  {newShown.length > 0 && (
-                    <Button variant="secondary" disabled={saveMany.isPending} onClick={() => setDeclining(true)}>
+                )}
+                {tab === "new" && newListed.length > 1 && (
+                  <div className="flex items-center gap-2 @lg:ml-auto">
+                    <Button variant="ghost" size="sm" disabled={saveMany.isPending} onClick={() => setDeclining(true)} className="text-muted-foreground">
                       <X aria-hidden data-icon="inline-start" />
                       {t("declineAll")}
                     </Button>
-                  )}
-                </>
+                    <Button variant="outline" size="sm" disabled={saveMany.isPending} onClick={() => changeMany(newListed.map((action) => action.id), "in_progress")} className="bg-background">
+                      <Check aria-hidden data-icon="inline-start" />
+                      {t("acceptAll")}
+                    </Button>
+                  </div>
+                )}
+              </div>
+
+              {listed.length === 0 ? (
+                <p className="rounded-xl border border-dashed px-4 py-6 text-center text-sm text-pretty text-muted-foreground">{t(`emptyTab.${tab}`)}</p>
+              ) : (
+                rest.length > 0 && (
+                  <ul className="flex flex-col divide-y overflow-hidden rounded-xl border bg-card">
+                    {rest.map((action) => (
+                      <ActionRow key={action.id} {...rowProps(action)} />
+                    ))}
+                  </ul>
+                )
               )}
-            </div>
-          )}
+            </section>
+
+            {after && !split && <div className="mt-auto pt-2">{after}</div>}
+          </div>
         </div>
 
         {/* The opened action beside the list, staying in view while the list scrolls */}
@@ -941,10 +563,7 @@ export function ActionBoard({
         onOpenChange={setAddOpen}
         onCreated={(action) => {
           setActions((list) => [...list, action]);
-          setGoal(null);
-          setFilters(NO_FILTERS);
-          setStatuses((list) => (list.includes("new") ? list : [...list, "new"]));
-          reveal(action, [...actions, action]);
+          showTab(action.status);
           setSelectedId(action.id);
           setAnnouncement(t("added", { title: title(action) }));
         }}
@@ -953,14 +572,14 @@ export function ActionBoard({
       <ConfirmModal
         open={declining}
         onOpenChange={setDeclining}
-        title={t("declineAllTitle", { count: newShown.length })}
+        title={t("declineAllTitle", { count: newListed.length })}
         description={t("declineAllText")}
         confirm={t("declineAll")}
         cancel={t("cancel")}
         danger
         onConfirm={() => {
           changeMany(
-            newShown.map((action) => action.id),
+            newListed.map((action) => action.id),
             "declined",
           );
           setDeclining(false);
@@ -971,7 +590,7 @@ export function ActionBoard({
 
       <Tour steps={tourSteps} open={tourOpen} onClose={() => setTourOpen(false)} onStep={(index) => index <= opensAt && setSelectedId(undefined)} />
 
-      {/* Says what changed, also when a row moves to another group */}
+      {/* Says what changed, also when an action moves to another tab */}
       <p aria-live="polite" className="sr-only">
         {announcement}
       </p>
@@ -979,28 +598,55 @@ export function ActionBoard({
   );
 }
 
-/** Peec's small triangle that turns down when a group is open. */
-function Caret({ open }: { open: boolean }) {
+/**
+ * One of the three to do first, as a card: what kind of work it is and its effect, what to do, the evidence
+ * from AI's answers, and Start beside the way into it.
+ */
+function ActionCard({
+  action,
+  open,
+  tour,
+  busy,
+  competitors,
+  onOpen,
+  onStatus,
+}: {
+  action: Action;
+  open: boolean;
+  tour?: boolean;
+  busy: boolean;
+  competitors: Map<string, string>;
+  onOpen: () => void;
+  onStatus: (status: ActionStatus) => void;
+}) {
+  const t = useTranslations("Actions");
+  const title = useActionTitle();
+  const Icon = ACTION_KIND_ICONS[action.kind];
   return (
-    <svg viewBox="0 0 8 8" aria-hidden className={cn("size-2 shrink-0 text-muted-foreground transition-transform motion-reduce:transition-none", open && "rotate-90")}>
-      <path d="M2 1l4 3-4 3z" fill="currentColor" />
-    </svg>
-  );
-}
-
-/** How many rows a group holds, in a small box beside its name. */
-function Count({ value }: { value: number }) {
-  return <span className="shrink-0 rounded-md border bg-background px-1.5 text-xs leading-5 font-normal text-muted-foreground tabular-nums">{value}</span>;
-}
-
-/** A menu choice with its box on the left, as in Peec's filters; the menu stays open for the next one. */
-function CheckRow({ checked, onToggle, children }: { checked: boolean; onToggle: () => void; children: React.ReactNode }) {
-  return (
-    <DropdownMenuCheckboxItem checked={checked} onCheckedChange={onToggle} className="pr-2 **:data-[slot=dropdown-menu-checkbox-item-indicator]:hidden">
-      <span aria-hidden className={cn("flex size-4 shrink-0 items-center justify-center rounded-[4px] border", checked ? "border-you bg-you text-background" : "border-input bg-background")}>
-        {checked && <Check className="size-3" strokeWidth={3} />}
-      </span>
-      {children}
-    </DropdownMenuCheckboxItem>
+    <li
+      data-action-row={action.id}
+      data-tour={tour ? "row" : undefined}
+      className={cn("flex min-w-0 flex-col gap-3 rounded-xl border bg-card p-4 transition-colors", open ? "border-foreground/30 bg-muted/40" : "hover:border-foreground/20")}
+    >
+      <div className="flex items-center justify-between gap-2">
+        <span className="inline-flex min-w-0 items-center gap-1.5 text-xs font-medium text-muted-foreground">
+          <Icon aria-hidden className="size-4 shrink-0" />
+          <span className="truncate">{t(`goals.${action.kind}`)}</span>
+        </span>
+        <ImpactBadge impact={action.impact} />
+      </div>
+      <button type="button" data-open aria-haspopup="dialog" onClick={onOpen} className="text-left text-[0.9375rem] leading-snug font-semibold text-pretty underline-offset-4 outline-none hover:underline focus-visible:underline">
+        {title(action)}
+      </button>
+      <ActionWhy action={action} competitors={competitors} />
+      <div className="mt-auto flex items-center gap-2 pt-1">
+        <Button size="sm" disabled={busy} onClick={() => onStatus("in_progress")}>
+          {t("start")}
+        </Button>
+        <Button size="sm" variant="ghost" onClick={onOpen}>
+          {t("details")}
+        </Button>
+      </div>
+    </li>
   );
 }

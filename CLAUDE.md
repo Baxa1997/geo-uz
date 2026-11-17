@@ -195,6 +195,24 @@ that is committed.
 
 ## Done (as of 17 November 2026)
 
+- **Built, waiting for the user's look: Harakatlar made simple (17 Nov), on the branch `actions-simpler`, not
+  committed.** After "what is next" the user chose Harakatlar of four ("logic is good, but UI is not very
+  understandable"). Same logic, a plainer screen: the statuses as tabs with their counts, how far the plan has
+  come, the three most effective actions to do first as cards with the evidence behind each and Start, then
+  the rest as a flat list narrowed by goal; every row carries its one next step (start, done, reopen, restore)
+  and a done one what it changed; the opened action is as before, without the line that said "ChatGPT" (an
+  action serves every assistant). Gone: the status, filter and grouping menus, the goal tiles, the tree and the
+  boxes to pick rows. Looked at in a browser in Uzbek on desktop and phone width on this computer, Start tried
+  (the toast, the tab, the action opened beside the list). Not tried: Russian and English. Also that day, asked:
+  the paid project's six brand questions on the server rewritten in the one-question style (the trial project
+  on the server keeps the old ones). Then, the user: "make a prompt for the user that can be collapsed or copied and
+  put into their Claude or coding AI … or the post can be just recommended": every opened action has "AI bilan
+  bajaring", the task for the owner's own AI written for its kind of work (a site fix for a coding AI or a
+  developer, a page, a correction, a listing's profile, letter or post), with the business's facts and its
+  customers' questions, folded with Copy; the top "Copy for AI" copies the same. Written by the frontend from
+  the data, no paid request; the post itself is written by the owner's AI, not by us. Looked at in a browser in
+  Uzbek for a post and a page. No new variable.
+
 - **Built, waiting for the user's look: the name Seenova AI and its logo (17 Nov), on the branch
   `feedback-17-nov`; merged, pushed and deployed the same day, when the user said "commit, push and deploy".** The user: "change the logo, Seenova AI the branding, and make the logo
   appropriately". Every text that named the product says Seenova AI in the three languages (titles, the

@@ -111,6 +111,7 @@ export default async function ActionsPage({ params, searchParams }: Props) {
           topics={topics}
           competitors={project.competitors.map(({ id: competitorId, name }) => ({ id: competitorId, name }))}
           brand={{ name: project.brand.name, domain: project.brand.domain }}
+          profile={{ category: project.category, city: project.city, country: project.country, description: project.description, services: project.services, languages: project.languages }}
           nextRunAt={report.nextRunAt}
           filename={`${project.brand.domain}-actions-${report.method.collectedAt.slice(0, 10)}`}
           after={managed}

@@ -768,7 +768,6 @@
     "cardTitle": "Tavsiya etilgan harakatlar",
     "cardDescription": "{total} ta harakatdan {done} tasi bajarildi. Eng katta taʼsir qiladiganlari:",
     "cardEmpty": "Hozircha qiladigan ish yoʻq.",
-    "goalsLabel": "Yoʻnalish boʻyicha saralash",
     "goals": {
       "fact": "Xato faktlarni tuzatish",
       "listing": "Boshqa saytlarga chiqish",
@@ -781,10 +780,7 @@
       "content": "{count} ta sahifa yozish kerak",
       "technical": "{count} ta tuzatish kiritish kerak"
     },
-    "showAll": "Hammasini koʻrsatish ({count})",
-    "showLess": "Kamroq koʻrsatish",
     "stepsProgress": "{total} ta qadamdan {done} tasi bajarildi",
-    "emptyGoal": "Bu yoʻnalishda bajarilmagan harakat yoʻq.",
     "csvHeaders": {
       "action": "Harakat",
       "goal": "Maqsad",
@@ -817,12 +813,6 @@
       "access": "AI botlarga ruxsat",
       "markup": "Matn va belgilash"
     },
-    "siteKinds": {
-      "directory": "Katalog va xaritalar",
-      "news": "Nashrlar",
-      "social": "Ijtimoiy tarmoqlar",
-      "other": "Boshqa saytlar"
-    },
     "owners": {
       "own": "Oʻz saytingizda",
       "earned": "Boshqa saytlarda",
@@ -838,27 +828,6 @@
       "earned": "Bu ish boshqa saytda qilinadi: u yerda roʻyxatdan oʻting yoki siz haqingizda yozishlariga erishing.",
       "everywhere": "Toʻgʻri maʼlumotni saytingizga ham, AI oʻqigan boshqa saytlarga ham yozing."
     },
-    "groupBy": {
-      "goal": "Maqsad",
-      "category": "Ish turi",
-      "impact": "Taʼsir",
-      "owner": "Qayerda",
-      "topic": "Mavzu"
-    },
-    "groupByLabel": "Guruhlash: {by}",
-    "filterGroups": {
-      "topics": "Mavzular",
-      "owners": "Qayerda qilinadi",
-      "sourceTypes": "Sayt turi",
-      "categories": "Ish turi"
-    },
-    "filterBy": "Filtrlash",
-    "filterAll": "Barchasi",
-    "filtersAll": "Barcha filtrlar",
-    "filtersSome": "Filtrlar: {count}",
-    "clearFilters": "Filtrlarni tozalash",
-    "statusAll": "Barcha holatlar",
-    "statusSome": "{count} ta holat",
     "guide": "Qanday ishlaydi",
     "guideHint": "Sahifa boʻylab qisqa tur: maqsadlar, taʼsir, harakat ichida nima bor va uni qanday bajarish",
     "export": "Yuklab olish",
@@ -871,15 +840,6 @@
     "declineAll": "Hammasini rad etish",
     "declineAllTitle": "{count} ta yangi harakatni rad etasizmi?",
     "declineAllText": "Ular «Rad etilgan» guruhiga oʻtadi. Istalganini u yerdan qaytarish mumkin.",
-    "openCount": "{count} ta ochiq harakat",
-    "picked": "{count} ta tanlandi",
-    "clearPicks": "Tanlovni tozalash",
-    "pickOne": "Tanlash: {title}",
-    "pickGroup": "Hammasini tanlash: {group}",
-    "fold": "Yigʻish: {group}",
-    "unfold": "Ochish: {group}",
-    "emptyGroup": "Bu yerda hozircha hech narsa yoʻq",
-    "emptyFiltered": "Bu filtrlarga mos harakat yoʻq.",
     "noTopic": "Mavzusiz",
     "changedMany": "{count} ta harakat: {status}",
     "added": "Yangi harakat qoʻshildi: {title}",
@@ -891,7 +851,6 @@
     "sections": {
       "overview": "Umumiy",
       "topic": "Mavzu",
-      "model": "AI yordamchi",
       "why": "Nima uchun muhim",
       "brief": "Topshiriq",
       "steps": "Qanday qilinadi",
@@ -933,15 +892,6 @@
       "medium": "Oʻrtacha",
       "low": "Past"
     },
-    "prompt": {
-      "intro": "Men {brand} ({domain}) biznesini yuritaman. AI javoblarida koʻproq tilga olinishim uchun quyidagi ishni qilishim kerak.",
-      "task": "Vazifa: {title}",
-      "why": "Nima uchun: {why}",
-      "steps": "Qadamlar:",
-      "brief": "Sahifa topshirigʻi:",
-      "questions": "Mijozlar AI’dan soʻraydigan savollar:",
-      "ask": "Har bir qadamni qanday bajarishni oddiy tilda batafsil tushuntirib ber; sahifa kerak boʻlsa, uning matnini yozib ber."
-    },
     "toast": {
       "titles": {
         "new": "{count, plural, one {Harakat yangilarga qaytdi} other {# ta harakat yangilarga qaytdi}}",
@@ -950,10 +900,10 @@
         "declined": "{count, plural, one {Harakat rad etildi} other {# ta harakat rad etildi}}"
       },
       "texts": {
-        "new": "{count, plural, one {Uni} other {Ularni}} <link>{group}</link> guruhida topasiz.",
-        "in_progress": "Qadamlarini belgilab boring. {count, plural, one {Uni} other {Ularni}} <link>{group}</link> guruhida topasiz.",
-        "done": "Natijasi keyingi haftalik tekshiruvdan keyin koʻrinadi. {count, plural, one {Uni} other {Ularni}} <link>{group}</link> guruhida topasiz.",
-        "declined": "{count, plural, one {Uni} other {Ularni}} <link>{group}</link> guruhidan qaytarish mumkin."
+        "new": "{count, plural, one {Uni} other {Ularni}} <link>{group}</link> yorligʻida topasiz.",
+        "in_progress": "Qadamlarini belgilab boring. {count, plural, one {Uni} other {Ularni}} <link>{group}</link> yorligʻida topasiz.",
+        "done": "Natijasi keyingi tekshiruvdan keyin koʻrinadi. {count, plural, one {Uni} other {Ularni}} <link>{group}</link> yorligʻida topasiz.",
+        "declined": "{count, plural, one {Uni} other {Ularni}} <link>{group}</link> yorligʻidan qaytarish mumkin."
       }
     },
     "add": {
@@ -994,26 +944,26 @@
       "other": "Boshqa"
     },
     "tour": {
-      "goals": {
-        "title": "Qayerdan boshlashni tanlang",
-        "text": "Toʻrt maqsad: tuzatiladigan xato faktlar, chiqish kerak boʻlgan saytlar, yoziladigan sahifalar va saytingizdagi tuzatishlar. Bittasini bossangiz, faqat uning harakatlari qoladi; doira ular bajarilgan sari toʻladi."
-      },
-      "status": {
-        "title": "Holat boʻyicha saralang",
-        "text": "Yangi, jarayondagi, bajarilgan yoki rad etilgan harakatlarni — yoki ularning istalgan jamlanmasini koʻrsating."
-      },
-      "impact": {
-        "title": "Eng foydalisini koʻring",
-        "text": "Ustunchalar kutilayotgan taʼsirni boshqa harakatlaringizga nisbatan koʻrsatadi: uchta ustuncha eng koʻp yordam beradi."
-      },
       "row": {
         "title": "Harakatni oching",
         "text": "Harakat roʻyxat yonida ochiladi: nima uchun muhim, qadamlar va u koʻtarishi kerak boʻlgan savollar.",
         "action": "Ochish"
       },
+      "first": {
+        "title": "Avval shularni qiling",
+        "text": "Taʼsiri eng katta uchta harakat: nega muhimligi va «Boshlash» tugmasi."
+      },
+      "tabs": {
+        "title": "Holat boʻyicha",
+        "text": "Qilish kerak, jarayonda, bajarilgan va rad etilgan harakatlar — har biri oʻz yorligʻida."
+      },
       "why": {
         "title": "Nima uchun muhim",
         "text": "AI javoblaridan olingan dalil: u tayangan sayt, notoʻgʻri aytgan gapi yoki faqat raqobatchilar tilga olingan savollar."
+      },
+      "prompt": {
+        "title": "AI bilan bajaring",
+        "text": "Bu harakat uchun tayyor topshiriq: nusxalab, Claude, ChatGPT yoki kod yozadigan AI’ga qoʻying — u ishni bajarib yoki matnni yozib beradi."
       },
       "brief": {
         "title": "Topshiriq boʻyicha yozing",
@@ -1029,7 +979,131 @@
       }
     },
     "impactHint": "{impact}: boshqa harakatlaringizga nisbatan kutilayotgan taʼsir. Ustuncha qancha koʻp boʻlsa, foydasi shuncha katta.",
-    "uploadedText": "Yuklangan matn"
+    "uploadedText": "Yuklangan matn",
+    "tabsLabel": "Harakatlar holati boʻyicha",
+    "tabs": {
+      "new": "Qilish kerak",
+      "in_progress": "Jarayonda",
+      "done": "Bajarilgan",
+      "declined": "Rad etilgan"
+    },
+    "progress": "{total} ta harakatdan {done} tasi bajarildi",
+    "first": {
+      "title": "Avval shularni qiling",
+      "text": "Taʼsiri eng katta uchtasi — har birining sababi bilan."
+    },
+    "rest": "Qolgan harakatlar",
+    "goalFilter": "Maqsad boʻyicha",
+    "allGoals": "Barchasi",
+    "emptyTab": {
+      "new": "Hozircha qilinadigan harakat yoʻq. Yangilari keyingi tekshiruvdan keyin chiqadi.",
+      "in_progress": "Hali hech narsa boshlanmagan: «Qilish kerak» yorligʻidan birini boshlang.",
+      "done": "Bajarilgan harakat hali yoʻq. Bajarilganining natijasi keyingi tekshiruvda koʻrinadi.",
+      "declined": "Rad etilgan harakat yoʻq."
+    },
+    "start": "Boshlash",
+    "details": "Batafsil",
+    "aiPrompt": {
+      "title": "AI bilan bajaring",
+      "where": {
+        "code": "Saytingiz kodi ochiq turgan kod yozuvchi AI’ga (Claude Code, Cursor, Codex) qoʻying yoki dasturchingizga yuboring.",
+        "page": "Claude yoki ChatGPT’ga qoʻying: u sahifa matnini yozib beradi.",
+        "fact": "Claude yoki ChatGPT’ga qoʻying: u saytingiz uchun toʻgʻri matnni va saytlarga xatni yozib beradi.",
+        "directory": "Claude yoki ChatGPT’ga qoʻying: u {domain} uchun profilingiz matnini yozib beradi.",
+        "news": "Claude yoki ChatGPT’ga qoʻying: u {domain} muharrirlariga xat yozib beradi.",
+        "social": "Claude yoki ChatGPT’ga qoʻying: u {domain} uchun tayyor post yozib beradi.",
+        "other": "Claude yoki ChatGPT’ga qoʻying: u {domain} uchun matnni yozib beradi."
+      },
+      "copy": "Nusxalash",
+      "expand": "Toʻliq koʻrsatish",
+      "collapse": "Yigʻish",
+      "inLanguages": "{count, plural, one {{langs} tilida} other {{langs} tillarida}}",
+      "lang": {
+        "uz": "oʻzbek",
+        "ru": "rus",
+        "en": "ingliz"
+      },
+      "and": " va ",
+      "about": "{brand} ({domain}) — {category}, {place}.",
+      "services": "Xizmatlar: {services}.",
+      "questions": "Mijozlar AI yordamchilardan soʻraydi:",
+      "noInventing": "{brand} haqida faqat men bergan yoki {domain} saytida bor faktlardan foydalaning; biror fakt (narx, manzil, raqam) yetishmasa, uni oʻylab topmang — oʻrniga [TOʻLDIRISH] deb yozing.",
+      "code": {
+        "intro": "Siz mening {domain} saytim kodida ishlayapsiz ({brand}, {category}, {place}).",
+        "done": "Bajarilganini qanday tekshirish: {check}",
+        "careful": "Faqat shu ish uchun keraklisini oʻzgartiring; dizayn va boshqa matnlarga tegmang. Biror narsa qayerdaligini bilmasangiz (masalan, robots.txt qaysi fayldan beriladi), oʻzgartirishdan oldin mendan soʻrang.",
+        "ai_bots_blocked": {
+          "task": "AI yordamchilarning botlari saytimga kira olmayapti, shuning uchun ChatGPT va boshqalar uni oʻqiy olmaydi.",
+          "s1": "https://{domain}/robots.txt ni nima berishini toping va quyidagi botlarga ruxsat bering: OAI-SearchBot, ChatGPT-User, GPTBot, Google-Extended, Googlebot, Bingbot, PerplexityBot, ClaudeBot, Claude-SearchBot. Ularni toʻsadigan Disallow qatorlarini (yoki «User-agent: *» ostidagi «Disallow: /» ni) olib tashlang; yopiq sahifalar (admin, savat, kabinet) qoidalarini qoldiring.",
+          "s2": "Hech bir sahifa bu botlarga noindex yoki noai yozilgan meta robots tegi yoki X-Robots-Tag sarlavhasini yubormasligini, hosting yoki CDN (masalan, Cloudflare’dagi «Block AI bots») ularni toʻsmasligini tekshiring.",
+          "s3": "Bosh sahifa, xizmatlar va narxlar sahifalari 200 javob berishi va matni HTML ichida boʻlishiga ishonch hosil qiling.",
+          "done": "https://{domain}/robots.txt bu botlarga ruxsat beradi, sahifalar esa kirishsiz ochiladi."
+        },
+        "prices_as_images": {
+          "task": "Saytimda narxlar rasm sifatida koʻrsatilgan — AI ularni oʻqiy olmaydi.",
+          "s1": "Narxlar rasm (yoki PDF) boʻlgan sahifalarni toping va oʻsha narxlarni sahifaga HTML matn qilib qoʻying: har bir xizmat va narxi bilan jadval yoki roʻyxat.",
+          "s2": "Dizaynni saqlang: jadvalni saytning qolgan qismi uslubida bezang; xohlasangiz, rasm uning ostida qolishi mumkin.",
+          "s3": "Buni sahifaning har bir til versiyasida qiling ({languages}).",
+          "done": "sahifadagi narxlarni matn sifatida belgilab, nusxalash mumkin."
+        },
+        "no_business_markup": {
+          "task": "Saytimda biznes nima ekanini aytadigan tuzilgan maʼlumot (structured data) yoʻq — AI taxmin qilishga majbur.",
+          "s1": "Bosh sahifaga JSON-LD (schema.org) qoʻshing: «{category}» uchun mos tur (LocalBusiness yoki unga eng yaqin turi) bilan name, url, logo, description, telephone, email, address ({place}), openingHoursSpecification, priceRange va sameAs (ijtimoiy tarmoqlardagi sahifalarim).",
+          "s2": "Qiymatlarni saytning oʻzidan oling; biror qiymat yoʻq boʻlsa, oʻylab topmang — men uchun aniq TODO qoldiring.",
+          "s3": "Xuddi shu blokni aloqa sahifasiga ham qoʻying; saytda Organization bloki boʻlmasa, uni ham qoʻshing.",
+          "done": "sahifa https://validator.schema.org da xatosiz oʻtadi."
+        },
+        "contacts_missing": {
+          "task": "AI saytimdan aloqa maʼlumotlarini matn sifatida topa olmayapti.",
+          "s1": "HTML matn koʻrinishida (rasm emas) aloqa blokini qoʻshing: manzil, telefon (tel: havolasi bilan), email, ish vaqti va xaritaga havola.",
+          "s2": "Uni har bir sahifaning pastki qismiga (footer) va menyudan ochiladigan «Aloqa» sahifasiga qoʻying.",
+          "s3": "Xuddi shu maʼlumotlarni saytning JSON-LD qismiga ham qoʻshing (schema.org PostalAddress, telephone).",
+          "done": "manzil va telefonni har bir sahifada matn sifatida belgilab boʻladi."
+        }
+      },
+      "page": {
+        "write": "Mening {domain} saytim uchun «{topic}» mavzusida sahifa yozing.",
+        "rework": "Mening {url} sahifamni (avval uni oʻqing) «{topic}» mavzusini toʻliq yoritadigan qilib qayta yozing.",
+        "brief": "Topshiriq (Seenova AI’dan):",
+        "headlines": "Sarlavha variantlari",
+        "metaTitle": "Meta sarlavha",
+        "metaDescription": "Meta tavsif",
+        "argue": "Sahifa nimani isbotlashi kerak",
+        "proof": "Qoʻshiladigan dalillar",
+        "rules": "Talablar:",
+        "r1": "Uni {languages} yozing — har bir til uchun toʻliq variant.",
+        "r2": "2–3 gapdagi toʻgʻridan-toʻgʻri javob bilan boshlang, keyin aniq sarlavhali boʻlimlar; narxlar, manzil va ish vaqtini rasm emas, matn qilib bering.",
+        "r3": "Oxirida yuqoridagi har bir savolga 2–3 gapda javob beradigan FAQ boʻlsin.",
+        "r5": "Har bir til uchun meta sarlavha (60 belgigacha) va meta tavsif (155 belgigacha) bering, FAQ’ni esa FAQPage JSON-LD koʻrinishida."
+      },
+      "fact": {
+        "said": "AI yordamchilar mijozlarga {brand} ({domain}) haqida shunday deydi: «{claim}». Bu notoʻgʻri; toʻgʻrisi: «{correct}».",
+        "s1": "Saytim uchun toʻgʻri maʼlumotni aniq aytadigan qisqa matn yozing, {languages}: mijozlar uni izlaydigan sahifa (biz haqimizda, narxlar yoki aloqa) uchun va FAQ’dagi savol-javob sifatida.",
+        "s2": "Eski maʼlumotni hali koʻrsatayotgan sayt va kataloglarga yuborish uchun uni tuzatishni soʻraydigan qisqa, xushmuomala xat yozing.",
+        "s3": "Bu maʼlumot yana qayerlarda chiqishi mumkinligini (xaritalar, kataloglar, ijtimoiy tarmoqlar) sanab bering — har birini tekshirib chiqaman."
+      },
+      "listing": {
+        "about": "Biznesim haqida: {about}",
+        "competitors": "{domain} saytida allaqachon tilga olinganlar: {names}.",
+        "pages": "{domain} saytining AI yordamchilar tayangan sahifalari:",
+        "directory": {
+          "task": "{domain} uchun biznesim profilini yozing — mijozlar va AI yordamchilar u yerda oʻqiydigan kartochka.",
+          "write": "Yozing: biz kim ekanimiz va qayerdaligimizni yuqoridagi mijozlar savollaridagi soʻzlar bilan aytadigan 2–3 gaplik tavsif; tanlanadigan kategoriyalar; xizmatlar roʻyxati; manzil, telefon va ish vaqti maydonlari. Uni {languages} yozing. Soʻng {domain} da kartochkani qanday ochish yoki oʻzingizniki qilib olishni 3 qadamda ayting."
+        },
+        "news": {
+          "task": "{domain} muharrirlariga qisqa xat yozing — bu AI yordamchilar tayanadigan sayt.",
+          "write": "Yuqoridagi savollarni beradigan oʻquvchilar uchun {brand} fakt, narx yoki maslahat bera oladigan 2–3 ta foydali mavzu taklif qiling (reklama emas); bizni bir gapda tanishtiring; 150 soʻzdan oshmasin; {languages} yozing."
+        },
+        "social": {
+          "task": "{domain} uchun post yozing — u yerdagi sahifamizga joylash yoki kanal adminiga yuborish uchun.",
+          "write": "80–120 soʻz, samimiy va aniq: nima qilamiz, asosiy xizmatlarimiz, qayerdamiz va qanday bogʻlanish mumkin — yuqoridagi savollarga javob boʻladigan qilib; 3–5 ta hashtag. Uni {languages} yozing — har bir til uchun alohida."
+        },
+        "other": {
+          "task": "Biznes {domain} saytiga qanday qoʻshilishini aniqlang, soʻng u yerdagi kartochka yoki soʻrovimiz matnini yozing.",
+          "write": "Matnni yuqoridagi savollarga javob boʻladigan qilib {languages} yozing va uni {domain} da yuborish qadamlarini ayting."
+        }
+      }
+    }
   },
   "WrongFacts": {
     "title": "Siz haqingizdagi notoʻgʻri maʼlumotlar",

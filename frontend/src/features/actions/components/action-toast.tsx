@@ -45,7 +45,8 @@ export function ActionToast({ toast, onOpenGroup, onDismiss }: { toast: ToastSta
           <p className="text-sm text-pretty text-muted-foreground">
             {t.rich(`toast.texts.${toast.status}`, {
               count: toast.count,
-              group: t(`status.${toast.status}`),
+              // The tab's own name: the page's tabs since 17 Nov 2026
+              group: t(`tabs.${toast.status}`),
               link: (chunks) => (
                 <button
                   type="button"
