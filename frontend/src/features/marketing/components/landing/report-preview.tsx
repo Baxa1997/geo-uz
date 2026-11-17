@@ -1,6 +1,7 @@
 import { useLocale, useTimeZone, useTranslations } from "next-intl";
 import { DEMO_REPORT } from "@/mocks/demo";
 import { ConditionGauge } from "@/shared/components/condition-gauge";
+import { Wordmark } from "@/shared/components/logo";
 import { TIME_ZONE } from "@/shared/constants";
 import { CONDITION_AREAS, conditionStatus, STATUS_FILL } from "@/shared/helpers/condition";
 import { formatLongDate } from "@/shared/helpers/dates";
@@ -29,7 +30,7 @@ export function ReportPreview() {
             <div className="flex flex-col gap-5 rounded-[3px] border border-foreground/20 bg-card p-5 shadow-xs sm:p-7">
               <div className="flex items-end justify-between gap-3 border-b-[3px] border-double border-foreground/40 pb-3">
                 <span className="flex flex-col">
-                  <span className="text-sm font-bold">GEO</span>
+                  <Wordmark className="text-sm" />
                   <span className="text-xs text-muted-foreground">{report("letterhead")}</span>
                 </span>
                 <span className="flex flex-col items-end text-xs text-muted-foreground tabular-nums">

@@ -8,6 +8,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
+import { fieldClass } from "@/shared/components/ui/field-style";
 import { cn } from "@/shared/helpers/utils";
 import type { AppIcon } from "@/shared/types/icon";
 
@@ -37,15 +38,19 @@ export function FilterMenu<T extends string>({
     <DropdownMenu>
       <DropdownMenuTrigger
         aria-label={`${label}: ${current?.label ?? ""}`}
-        className={cn(
-          "inline-flex h-8 min-w-0 items-center gap-1.5 rounded-lg border bg-background px-2.5 text-sm shadow-xs transition-colors outline-none hover:bg-muted/50 focus-visible:ring-3 focus-visible:ring-ring/50 data-[popup-open]:bg-muted/60",
-          active && "border-foreground/25 font-medium",
-          className,
+        // The fields' look (ui/field-style), as a button the width of its choice
+        className={fieldClass(
+          "sm",
+          cn(
+            "group/filter inline-flex w-auto cursor-pointer items-center gap-1.5 text-sm md:text-sm data-popup-open:border-primary/60 data-popup-open:ring-4 data-popup-open:ring-primary/10",
+            active && "border-foreground/30 font-medium",
+            className,
+          ),
         )}
       >
         <Icon aria-hidden className="size-4 shrink-0 text-muted-foreground" />
         <span className="max-w-44 truncate">{current?.label}</span>
-        <ChevronDown aria-hidden className="size-3.5 shrink-0 text-muted-foreground" />
+        <ChevronDown aria-hidden weight="bold" className="size-3 shrink-0 text-muted-foreground transition-transform duration-150 group-data-popup-open/filter:rotate-180" />
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-auto min-w-48">
         <DropdownMenuRadioGroup value={value} onValueChange={(next: T) => onChange(next)}>

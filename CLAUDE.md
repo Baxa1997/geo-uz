@@ -1,4 +1,4 @@
-# GEO platform for Uzbekistan (working name; repository `geo-uz`)
+# Seenova AI: AI visibility for businesses in Uzbekistan (repository `geo-uz`)
 
 Start here in a new session: this file says what the project is, how the work is organized, what is done and
 what comes next. "Where the project stands" below is the place to pick the work up from. The details live in three other places, and each should be read before the work it covers:
@@ -19,6 +19,9 @@ Keep "Done" and "To do" below current. When a page is finished or a decision is 
 same piece of work, with the date.
 
 ## What the project is
+
+**Seenova AI** (the user's name for it, 17 Nov 2026; until then the working name GEO, which the repository, the
+server and the code's internal names keep).
 
 A tool that shows a business how AI assistants talk about it, and what to do about it.
 
@@ -100,6 +103,13 @@ Read this section first in a new session: it says what exists, how to run it, an
    result and leave the one live run for when the keys arrive.
 
 **Waiting on the user (ask once, don't block on it):**
+
+- (17 Nov) From the list of 17 Nov: the screenshots it names for the report's competitors and sources, the
+  Savollar page and the bug in the dynamics window (only Brend savollari's arrived); the next page after
+  Manbalar (Notoʻgʻri faktlar, Harakatlar, Savollar); a Supabase project in the Frankfurt region (the user's
+  choice), its connection string in `backend/.env.server` as one line `NEW_DATABASE_URL=…`, never in chat,
+  then the data is copied across and the server switched; whether the six brand questions of the project on
+  the server are rewritten in the new way.
 
 - "Next" for the first-run page, and whether a saved run may be replayed in development to build it.
 - (Settled by the landing page's rebuild, 16 Nov, waiting for the user's look.) The weekly Telegram report is
@@ -184,6 +194,54 @@ that is committed.
    that no key and no client's name is in it.
 
 ## Done (as of 17 November 2026)
+
+- **Built, waiting for the user's look: the name Seenova AI and its logo (17 Nov), on the branch
+  `feedback-17-nov`, not committed.** The user: "change the logo, Seenova AI the branding, and make the logo
+  appropriately". Every text that named the product says Seenova AI in the three languages (titles, the
+  report's letterhead and sign-off, the assistant panel, support, the footer, the emails' sender, subjects and
+  headers); "GEO" stays as the practice's name ("What is GEO?", "Managed GEO"). The mark is an eye whose pupil
+  is a gold star (`frontend/CLAUDE.md`, "Our look"), in the app's header, sidebar, login, first check, report
+  and pilot report, and as the favicon (Next's default one until now), `icon.svg` and the phone's home-screen
+  icon. The login panel became the brand's navy with the eye drawn faint behind it, and its claims were made
+  true (ChatGPT and Gemini, a report after every check by email; it said ChatGPT alone, three answers a
+  question and reports in Telegram). Two other directions were drawn for the user to compare (the answer's
+  lines with a star; a star rising over an arc). No new variable: emails come from "Seenova AI <SMTP_USER>".
+
+- **Built, waiting for the user's look: the first part of the user's list of 17 Nov (sixteen points), on the
+  branch `feedback-17-nov`, not committed.** Done from the list: (6) the login page no longer stands empty
+  for seconds: with a session cookie `proxy.ts` sends `/login` straight on, an ended session comes back as
+  `/login?expired=1` with a line saying so, and without a cookie the backend isn't asked; (8) speed: measured
+  on the server, one database statement costs 0.12 s (Supabase is in Mumbai, the server in Germany) and
+  opening a connection 2 s; the backend now skips BEGIN/ROLLBACK on reads, checks a pooled connection only
+  after it rested two minutes, keeps a session a minute and a report or the actions until the project
+  changes (`app/cache.py`): the report 3.4 s → 0.14 s, actions 2.0 s → 0.14 s, the session check 0.56 s → 0.14 s
+  (tried on the server as a second instance, the live service untouched); the workspace layout asks for the
+  user and the projects together; `frontend/vercel.json` puts Vercel's server in Frankfurt (it was
+  Washington); (13) one field style (`ui/field-style`) for inputs, text areas, the filter chips and a new
+  `Select` (Base UI) in the place of all eight browser selects; there is no date field in the app; (14) no
+  model name in the method line, the report or the pilot report, and no "API"; (9) the general brand
+  question is one plain question ("… haqida nima bilasiz?") and the writing rules ask for one thing per
+  question, short, naming businesses, with good and bad examples (not tried: a paid request); (1) loading:
+  skeletons shaped like a data page with a light passing over, a bar across the panel from a click until
+  the page is there, the check's navy screen in motion (an orbit, questions running to the assistants,
+  ripples, the stage under way turning), the live results with a bar, the website's reading with outlines
+  of what comes; (7) in the chart's large window (Dinamika), the client's dot and line are drawn on top,
+  dots of equal value side by side, each end number with its color, and "since last week" became "since the
+  previous check" (two checks a day were called a week); (2) Hisobotlar has "Why 40?": the five areas as
+  points out of 20, then what costs points, the costliest first, each with its fact and the open actions
+  that raise it; the project cards name the two lowest areas; report (1–2): a new section 4 "Each AI
+  assistant": each assistant's share over its own answers beside whom it names most, a line that Google's
+  AI Overview isn't checked yet, and what each says about the business, every statement against the
+  website. Then, asked with three choices, the user chose: the database to a Supabase project in Frankfurt
+  (theirs to create), Manbalar first, and one paid request. The request: the new rules on the user's own
+  site, $0.009, 27 seconds: ten customers' questions and four brand questions, each asking one thing. (10)
+  Manbalar now opens on where the client is missing ("AI keltirgan havolalarning 82% qismi — siz yoʻq
+  saytlar"), the citations as one bar by whom they work for, and the three sites to get onto first with the
+  way onto each; the table has "are you there?" as a filter and a column with "Qoʻshilish"; the chart and
+  what changed come last, from the second week and the second check (`frontend/CLAUDE.md`, sources). Looked
+  at in a browser in Uzbek on desktop and phone width on this computer. Not done, waiting for the user: report
+  (3–4) and the pages Savollar (5), Notoʻgʻri faktlar (11), Harakatlar (12); the Supabase project in
+  Frankfurt; deploying. No new variable.
 
 - **Built, waiting for the user's look: the new screens gone through in Russian and English and at phone
   width (17 Nov), on the branch `languages-and-phone`; merged and pushed the same day, when the user said "commit, push and

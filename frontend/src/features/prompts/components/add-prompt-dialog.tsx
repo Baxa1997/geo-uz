@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { PlusIcon as Plus } from "@phosphor-icons/react/dist/ssr/Plus";
 import { useMessages, useTranslations } from "next-intl";
 import { useId, useState, type FormEvent } from "react";
-import { FormSelect } from "@/shared/components/form-select";
+import { Select } from "@/shared/components/ui/select";
 import { Button } from "@/shared/components/ui/button";
 import { api } from "@/shared/api/client";
 import { queryKeys } from "@/shared/api/query-keys";
@@ -139,14 +139,7 @@ export function AddPromptDialog({
       <label htmlFor={`${id}-topic`} className="text-sm text-muted-foreground">
         {t("topic")}
       </label>
-      <FormSelect id={`${id}-topic`} value={topic} onChange={setTopic}>
-        {topics.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-        <option value={NEW_TOPIC}>{t("newTopicOption")}</option>
-      </FormSelect>
+      <Select id={`${id}-topic`} size="lg" value={topic} onValueChange={setTopic} options={[...topics, { value: NEW_TOPIC, label: t("newTopicOption") }]} />
       {topic === NEW_TOPIC && (
         <input
           aria-label={t("newTopic")}
@@ -166,13 +159,7 @@ export function AddPromptDialog({
       <label htmlFor={`${id}-location`} className="text-sm text-muted-foreground">
         {t("location")}
       </label>
-      <FormSelect id={`${id}-location`} value={location} onChange={setLocation}>
-        {Object.entries(messages.Cities).map(([value, label]) => (
-          <option key={value} value={value}>
-            {label}
-          </option>
-        ))}
-      </FormSelect>
+      <Select id={`${id}-location`} size="lg" value={location} onValueChange={setLocation} options={Object.entries(messages.Cities).map(([value, label]) => ({ value, label }))} />
     </div>
   );
 
@@ -247,12 +234,16 @@ export function AddPromptDialog({
                 <label htmlFor={`${id}-language`} className="text-sm text-muted-foreground">
                   {t("language")}
                 </label>
-                <FormSelect id={`${id}-language`} value={language} onChange={(value) => setLanguage(value as LanguageChoice)}>
-                  {!prompt && <option value="auto">{t("languageAuto")}</option>}
-                  <option value="uz">{languages("uz")}</option>
-                  <option value="ru">{languages("ru")}</option>
-                  <option value="en">{languages("en")}</option>
-                </FormSelect>
+                <Select<LanguageChoice>
+                  id={`${id}-language`}
+                  size="lg"
+                  value={language}
+                  onValueChange={setLanguage}
+                  options={[
+                    ...(prompt ? [] : [{ value: "auto" as const, label: t("languageAuto") }]),
+                    ...(["uz", "ru", "en"] as const).map((code) => ({ value: code, label: languages(code) })),
+                  ]}
+                />
               </div>
             </div>
           </>

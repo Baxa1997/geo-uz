@@ -1,14 +1,14 @@
 {
   "Metadata": {
-    "title": "GEO — ChatGPT’da brendingiz koʻrinishi",
-    "description": "ChatGPT mijozlaringiz savollariga javob berganda brendingizni qanchalik koʻp tilga olishini oʻlchang."
+    "title": "Seenova AI — AI javoblarida brendingiz koʻrinishi",
+    "description": "ChatGPT va Gemini mijozlaringiz savollariga javob berganda brendingizni qanchalik koʻp tilga olishini oʻlchang."
   },
   "Common": {
     "loading": "Yuklanmoqda…",
     "error": "Xatolik yuz berdi",
     "retry": "Qayta urinish",
     "logout": "Chiqish",
-    "home": "GEO — bosh sahifa",
+    "home": "Seenova AI — bosh sahifa",
     "about": "Bu nima?",
     "expand": "Kattalashtirish",
     "close": "Yopish",
@@ -34,7 +34,7 @@
     "en": "English"
   },
   "Method": {
-    "label": "{engine} · {webSearch, select, yes {API + veb-qidiruv} other {API}} · {model} · har savolga {samples} ta javob · {date}",
+    "label": "{engine} · {webSearch, select, yes {veb-qidiruv bilan} other {veb-qidiruvsiz}} · har savolga {samples} ta javob · {date}",
     "title": "Usul"
   },
   "Tone": {
@@ -74,7 +74,7 @@
     "print": "Chop etish yoki PDF",
     "copy": "Havolani nusxalash",
     "copied": "Havola nusxalandi",
-    "footer": "GEO tomonidan AI’ning {date} dagi javoblari asosida tayyorlandi. Raqamlar shu javoblarni tasvirlaydi; bu prognoz emas.",
+    "footer": "Seenova AI tomonidan AI’ning {date} dagi javoblari asosida tayyorlandi. Raqamlar shu javoblarni tasvirlaydi; bu prognoz emas.",
     "meta": {
       "period": "Davr",
       "periodRange": "{from} – {to}",
@@ -85,12 +85,13 @@
       "assistantValue": "{engine}, veb-qidiruv bilan",
       "number": "Hisobot raqami",
       "preparedBy": "Tayyorladi",
-      "preparedByValue": "GEO platformasi"
+      "preparedByValue": "Seenova AI platformasi"
     },
     "sections": {
       "summary": "Rahbar uchun xulosa",
       "scorecard": "Asosiy koʻrsatkichlar",
       "changes": "Oldingi hisobotdan beri nima oʻzgardi",
+      "assistants": "Har bir AI yordamchi",
       "competitors": "Raqobatdagi oʻrin",
       "topics": "Mavzular va savollar",
       "sources": "AI tayanadigan manbalar",
@@ -242,7 +243,7 @@
     "method": {
       "lead": "Raqamlar qanday yigʻilgani: hisobotni tekshirish va takrorlash mumkin boʻlishi uchun.",
       "assistant": "AI yordamchi",
-      "assistantValue": "{engine} ({model}), API orqali, veb-qidiruv yoqilgan holda",
+      "assistantValue": "{engine}, veb-qidiruv yoqilgan holda",
       "location": "Kim nomidan",
       "locationValue": "{city}dagi mijoz nomidan",
       "questions": "Savollar",
@@ -465,10 +466,50 @@
     "partTitle": "{number} qism. {title}",
     "signoff": {
       "preparedBy": "Hisobotni tayyorladi",
-      "preparedByValue": "GEO — AI koʻrinish monitoringi platformasi",
+      "preparedByValue": "Seenova AI — AI koʻrinish monitoringi platformasi",
       "acknowledged": "Hisobot bilan tanishdim",
       "signature": "imzo",
       "nameDate": "F.I.Sh., sana"
+    },
+    "assistants": {
+      "lead": "Har bir yordamchi oʻz javoblari boʻyicha alohida sanaladi: sizni qanchalik tez-tez tilga oladi va biznesingiz haqida nimani biladi.",
+      "sharesTitle": "A. Har biri sizni qanchalik tez-tez tilga oladi",
+      "columns": {
+        "assistant": "Yordamchi",
+        "answers": "Javoblar",
+        "you": "Sizni tilga olgan",
+        "leader": "Eng koʻp tilga olingan",
+        "says": "Nima deydi",
+        "check": "Saytingiz bilan solishtirganda"
+      },
+      "named": "{total} tadan {count} · {percent}",
+      "leaderNamed": "{total} tadan {count}",
+      "youLead": "siz",
+      "nobody": "Hech kim tilga olinmagan",
+      "notYet": "Google qidiruvidagi AI javoblari (AI Overview) hali tekshirilmaydi: tez orada.",
+      "knowsTitle": "B. Har biri {brand} haqida nimani biladi",
+      "notAsked": "Bu tekshiruvda yordamchilardan biznesingiz haqida nomi bilan soʻralmagan. Brend savollarini Sozlamalarda qoʻshing.",
+      "asked": "soʻralgan: «{question}»",
+      "saidNothing": "Biznes haqida aniq hech narsa aytmadi.",
+      "website": "Saytda: {text}",
+      "known": {
+        "knows": "sizni biladi",
+        "confuses": "sizni boshqasi bilan adashtiradi",
+        "unknown": "sizni bilmaydi"
+      },
+      "checks": {
+        "confirmed": "Saytdagidek",
+        "contradicted": "Saytdagidan farq qiladi",
+        "unverified": "Saytda yoʻq"
+      },
+      "topics": {
+        "what": "Nima qiladi",
+        "prices": "Narxlar",
+        "place": "Joylashuv",
+        "contacts": "Aloqa",
+        "reputation": "Obroʻ",
+        "other": "Boshqa"
+      }
     }
   },
   "Headline": {
@@ -477,9 +518,9 @@
     "topCompetitor": "Asosiy raqobatchi",
     "summary": "{assistant} har 10 ta javobdan {you} tasida sizni tilga oladi ({percent}). Asosiy raqobatchingiz {competitor} — {them} tasida.",
     "summaryAlone": "{assistant} har 10 ta javobdan {you} tasida sizni tilga oladi ({percent}).",
-    "trendUp": "Oʻtgan haftaga nisbatan +{points} punkt",
-    "trendDown": "Oʻtgan haftaga nisbatan −{points} punkt",
-    "trendFlat": "Oʻtgan haftadagidek",
+    "trendUp": "Oldingi tekshiruvga nisbatan +{points} punkt",
+    "trendDown": "Oldingi tekshiruvga nisbatan −{points} punkt",
+    "trendFlat": "Oldingi tekshiruvdagidek",
     "shareOfVoice": "Ovoz ulushi",
     "avgPosition": "Oʻrtacha oʻrin",
     "avgPositionHint": "1 = birinchi boʻlib tilga olingan",
@@ -534,7 +575,7 @@
   },
   "BrandTable": {
     "title": "{brand} va raqobatchilari",
-    "description": "Toʻrt koʻrsatkich boʻyicha taqqoslash va oʻtgan haftaga nisbatan oʻzgarish.",
+    "description": "Toʻrt koʻrsatkich boʻyicha taqqoslash va oldingi tekshiruvga nisbatan oʻzgarish.",
     "descriptionFirst": "Toʻrt koʻrsatkich boʻyicha taqqoslash.",
     "rank": "Reyting",
     "brand": "Brend",
@@ -543,8 +584,8 @@
     "position": "Oʻrni",
     "you": "(siz)",
     "notNamed": "Tilga olinmagan",
-    "better": "oʻtgan haftadan {amount} ga yaxshiroq",
-    "worse": "oʻtgan haftadan {amount} ga yomonroq",
+    "better": "oldingi tekshiruvdan {amount} ga yaxshiroq",
+    "worse": "oldingi tekshiruvdan {amount} ga yomonroq",
     "shareOfVoice": "Ovoz ulushi",
     "titleShort": "Brendlar reytingi",
     "guide": "Har bir qator — bitta brend. Ustun sarlavhasini bossangiz, jadval shu koʻrsatkich boʻyicha saralanadi. Raqam yonidagi strelka — oʻtgan haftaga nisbatan oʻzgarish.",
@@ -876,7 +917,7 @@
       "metaDescription": "Meta tavsif (description)",
       "argue": "Sahifa nimani isbotlashi kerak",
       "proofPoints": "Sahifaga qoʻyiladigan dalillar",
-      "assistant": "GEO AI bilan yozish",
+      "assistant": "Seenova AI bilan yozish",
       "metaTitleHint": "Qidiruv va AI natijalarida taxminan {max} belgigacha koʻrinadi; uzunini qisqartiring.",
       "metaDescriptionHint": "Qidiruv natijalarida taxminan {max} belgigacha koʻrinadi; uzunini qisqartiring."
     },
@@ -979,8 +1020,8 @@
         "text": "Yoziladigan sahifaning topshirigʻi bor: sarlavha variantlari, qidiruvda koʻrinadigan sarlavha va tavsif, sahifa nimani isbotlashi va qaysi dalillarni qoʻyish kerakligi."
       },
       "assistant": {
-        "title": "GEO AI bilan yozing",
-        "text": "GEO AI topshiriqni va uning ortidagi raqamlarni allaqachon biladi: undan sahifa matnini soʻrang."
+        "title": "Seenova AI bilan yozing",
+        "text": "Seenova AI topshiriqni va uning ortidagi raqamlarni allaqachon biladi: undan sahifa matnini soʻrang."
       },
       "decide": {
         "title": "Qabul qiling, keyin bajaring",
@@ -1163,14 +1204,6 @@
       }
     },
     "presence": {
-      "title": {
-        "sites": "Siz bormisiz?",
-        "pages": "Sizni aytadimi?"
-      },
-      "hint": {
-        "sites": "AI havolalarining qancha qismi sizning saytingizga, siz bor saytlarga, siz yoʻq saytlarga va raqobatchilar saytlariga toʻgʻri keladi. «Siz yoʻq saytlar» ulushi — qoʻshilishingiz mumkin boʻlgan joylar.",
-        "pages": "AI havolalarining qancha qismi sizni tilga olgan sahifalarga, faqat raqobatchilarni tilga olgan sahifalarga va kuzatilayotgan brendlardan hech birini tilga olmagan sahifalarga toʻgʻri keladi."
-      },
       "groups": {
         "own": "Sizning saytingiz",
         "listed": "Siz bor saytlar",
@@ -1190,8 +1223,50 @@
         "rivals": "Raqobatchilarni tilga olgan, sizni esa yoʻq sahifalarga havolalar: shu sahifalarga qoʻshilish kerak.",
         "nobody": "Kuzatilayotgan brendlardan hech birini tilga olmagan sahifalarga havolalar.",
         "unknown": "Oʻqib boʻlmagan sahifalarga havolalar: ularda kim tilga olingani nomaʼlum."
+      }
+    },
+    "summary": {
+      "title": {
+        "sites": "Siz qayerda yoʻqsiz",
+        "pages": "Sahifalar sizni aytadimi"
       },
-      "total": "Jami {count} ta havola"
+      "description": {
+        "sites": "AI javob yozishda tayangan saytlar kimga ishlaydi: siz bor saytlar, siz yoʻq saytlar, raqobatchilar saytlari va sizning saytingiz. Siz yoʻq saytlar — qoʻshilishingiz mumkin boʻlgan joylar.",
+        "pages": "AI tayangan sahifalar kimni aytadi: sizni, faqat raqobatchilarni yoki hech kimni."
+      },
+      "headline": {
+        "sites": "AI keltirgan havolalarning {percent} qismi — siz yoʻq saytlar",
+        "pages": "AI keltirgan havolalarning {percent} qismi — faqat raqobatchilarni aytadigan sahifalar"
+      },
+      "headlineNone": {
+        "sites": "AI keltirgan, biznes qoʻshilishi mumkin boʻlgan barcha saytlarda siz borsiz",
+        "pages": "AI keltirgan sahifalarning hech biri faqat raqobatchilarni aytmaydi"
+      },
+      "text": {
+        "sites": "Oxirgi tekshiruvda: {answers} ta javob, {sources} ta sayt, {citations} ta havola.",
+        "pages": "Oxirgi tekshiruvda: {answers} ta javob, {sources} ta sahifa, {citations} ta havola."
+      },
+      "first": {
+        "sites": "Avval shu saytlarga chiqing",
+        "pages": "Faqat raqobatchilarni aytadigan, eng koʻp keltirilgan sahifalar"
+      },
+      "citedIn": "{total} ta javobdan {count} tasida",
+      "names": "Tilga oladi:",
+      "getListed": "Qanday qoʻshilish mumkin",
+      "openSite": "Saytni ochish",
+      "openAnswers": "Javoblarni koʻrish"
+    },
+    "overTimeLater": {
+      "sites": "Saytlar vaqt davomida keyingi haftadagi tekshiruvdan keyin chizma boʻlib koʻrinadi.",
+      "pages": "Sahifalar vaqt davomida keyingi haftadagi tekshiruvdan keyin chizma boʻlib koʻrinadi."
+    },
+    "allSites": "Barchasi",
+    "getListed": "Qoʻshilish",
+    "status": {
+      "own": "Sizning saytingiz",
+      "competitor": "Raqobatchi sayti",
+      "listed": "Siz borsiz",
+      "missing": "Siz yoʻqsiz"
     }
   },
   "Prompts": {
@@ -1209,7 +1284,7 @@
     "sources": "Manbalar"
   },
   "App": {
-    "name": "GEO"
+    "name": "Seenova AI"
   },
   "Topics": {
     "best": "Eng yaxshisi",
@@ -1251,7 +1326,8 @@
       "good": "Yaxshi",
       "fair": "Oʻrtacha",
       "weak": "Zaif"
-    }
+    },
+    "lowest": "Bahoni tushiryapti: {areas} →"
   },
   "Overview": {
     "noDataTitle": "Hali oʻlchov yoʻq",
@@ -1800,7 +1876,7 @@
     "agency": "Enterprise"
   },
   "Landing": {
-    "metaTitle": "AI mijozlaringizga kimni tavsiya qiladi? — GEO",
+    "metaTitle": "AI mijozlaringizga kimni tavsiya qiladi? — Seenova AI",
     "metaDescription": "Mijozlaringiz ChatGPT va Gemini’ga beradigan savollarni tekshiramiz, sizni raqobatchilar bilan solishtiramiz va nimani tuzatish kerakligini koʻrsatamiz. Birinchi tekshiruv bepul.",
     "siteLabel": "Sayt manzili",
     "sitePlaceholder": "saytingiz.uz",
@@ -2090,7 +2166,7 @@
       "description": "Brendingiz ChatGPT va Gemini javoblarida qanchalik koʻrinishini oʻlchaymiz va nimani tuzatish kerakligini koʻrsatamiz.",
       "soon": "tez orada",
       "madeIn": "Toshkentda yaratilgan",
-      "rights": "© 2026 GEO",
+      "rights": "© 2026 Seenova AI",
       "links": {
         "demo": "Demo soʻrash",
         "login": "Kirish",
@@ -2270,7 +2346,7 @@
         },
         "answers": {
           "title": "Haqiqiy javoblar",
-          "text": "Har bir raqam ortida AI’ning haqiqiy javoblari turadi — har birini oʻqiy olasiz. Hisobotda model va sana yozilgan."
+          "text": "Har bir raqam ortida AI’ning haqiqiy javoblari turadi — har birini oʻqiy olasiz. Hisobotda AI yordamchi va sana yozilgan."
         },
         "install": {
           "title": "Hech narsa oʻrnatilmaydi",
@@ -2748,22 +2824,23 @@
     "resendIn": "Qayta yuborish: {time}",
     "mockHint": "Sinov rejimi: istalgan 6 xonali kod mos keladi. Maʼlumotli namuna hisob: {email}.",
     "heading": "Hisobingizga kiring",
+    "expired": "Kirish muddati tugagan: emailingizni qayta kiriting.",
     "noAccount": "Hisobingiz yoʻqmi?",
     "startFree": "Bepul tekshiruvdan boshlang",
     "panel": {
-      "title": "ChatGPT sizni tavsiya qilyaptimi — har hafta bilib turing.",
+      "title": "AI sizni tavsiya qilyaptimi — har tekshiruvda koʻrib turing.",
       "items": {
         "real": {
-          "title": "Haqiqiy ChatGPT javoblari",
-          "text": "Oʻzbek va rus tillarida, har savolga 3 ta javob."
+          "title": "ChatGPT va Gemini’ning haqiqiy javoblari",
+          "text": "Mijozlaringiz tilida, ular tayangan saytlar bilan."
         },
         "competitors": {
           "title": "Raqobatchilar bilan solishtirish",
           "text": "Kim koʻproq tilga olinadi va kim birinchi."
         },
         "telegram": {
-          "title": "Hisobotlar Telegram’da",
-          "text": "Har hafta qisqa hisobot va PDF."
+          "title": "Har tekshiruvdan keyin hisobot",
+          "text": "Holat hisoboti havolasi emailga; Telegram — tez orada."
         }
       }
     }
@@ -2869,7 +2946,7 @@
     "topicFilter": "Qaysi mavzu savollari koʻrsatilsin",
     "allTopics": "Barcha mavzular · {count}",
     "loggedInAs": "Kirgan: {who}",
-    "copyright": "© {year} GEO",
+    "copyright": "© {year} Seenova AI",
     "preview": {
       "yourBrand": "Brendingiz",
       "site": "saytingiz.uz",
@@ -2933,17 +3010,17 @@
     "ai": "AI"
   },
   "Assistant": {
-    "label": "GEO AI yordamchi",
+    "label": "Seenova AI yordamchisi",
     "close": "Yopish",
     "new": "Yangi suhbat",
     "newChat": "Yangi suhbat",
     "expand": "Kengaytirish",
     "shrink": "Kichraytirish",
-    "hello": "Salom! Men GEO AI",
+    "hello": "Salom! Men — Seenova AI",
     "intro": "Natijalaringiz, raqobatchilar, manbalar va notoʻgʻri faktlar boʻyicha yordam beraman. Soʻrang yoki misollardan birini tanlang:",
     "placeholder": "Biror narsa soʻrang…",
     "send": "Yuborish",
-    "demoReply": "Bu hozircha dizayn namunasi: GEO AI hali ulanmagan. Tez orada hisobotingiz maʼlumotlari asosida javob beradi.",
+    "demoReply": "Bu hozircha dizayn namunasi: yordamchi hali ulanmagan. Tez orada hisobotingiz maʼlumotlari asosida javob beradi.",
     "suggestions": {
       "s1": "Bu hafta tilga olinishim qanday oʻzgardi?",
       "s2": "Qaysi savollarda raqobatchilar oldinda?",
@@ -2953,10 +3030,10 @@
     }
   },
   "Support": {
-    "title": "GEO qoʻllab-quvvatlash",
-    "subtitle": "GEO boʻyicha savollar, muammolar va takliflar",
+    "title": "Seenova AI qoʻllab-quvvatlash",
+    "subtitle": "Seenova AI boʻyicha savollar, muammolar va takliflar",
     "heading": "Qanday yordam bera olamiz?",
-    "text": "GEO qanday ishlashini soʻrang, nosozlik haqida xabar bering yoki funksiya taklif qiling. Jamoamiz javob beradi.",
+    "text": "Seenova AI qanday ishlashini soʻrang, nosozlik haqida xabar bering yoki funksiya taklif qiling. Jamoamiz javob beradi.",
     "examples": "Masalan",
     "items": {
       "e1": "ChatGPT natijalari qachon yangilanadi?",
@@ -3073,8 +3150,8 @@
   },
   "Kpi": {
     "about": "{label} haqida",
-    "better": "oʻtgan haftadan {amount} ga yaxshiroq",
-    "worse": "oʻtgan haftadan {amount} ga yomonroq",
+    "better": "oldingi tekshiruvdan {amount} ga yaxshiroq",
+    "worse": "oldingi tekshiruvdan {amount} ga yomonroq",
     "labels": {
       "visibility": "Tilga olinish",
       "shareOfVoice": "Ovoz ulushi",
@@ -3117,9 +3194,9 @@
     "only": "{metric} boʻyicha natijangiz: {value}.",
     "unnamed": "{metric}: AI javoblarida hali tilga olinmagansiz. Yetakchi — {leader}: {leaderValue}.",
     "nobody": "AI javoblarida kuzatilayotgan brendlardan hech biri hali tilga olinmagan.",
-    "better": "Oʻtgan haftaga nisbatan {amount} ga yaxshilandi.",
-    "worse": "Oʻtgan haftaga nisbatan {amount} ga yomonlashdi.",
-    "same": "Oʻtgan haftaga nisbatan oʻzgarmadi."
+    "better": "Oldingi tekshiruvga nisbatan {amount} ga yaxshilandi.",
+    "worse": "Oldingi tekshiruvga nisbatan {amount} ga yomonlashdi.",
+    "same": "Oldingi tekshiruvga nisbatan oʻzgarmadi."
   },
   "SourcePage": {
     "visit": "Saytni ochish",
@@ -3377,8 +3454,8 @@
         "text": "Har bir savol uchta javobi bilan keladi. Bosilsa, javob chat koʻrinishida, keltirilgan saytlari bilan ochiladi."
       },
       "analyze": {
-        "title": "GEO AI’dan soʻrang",
-        "text": "GEO AI bu javoblarni siz uchun oʻqib, nimasi koʻzga tashlanishini va nima qilish kerakligini aytadi."
+        "title": "Seenova AI’dan soʻrang",
+        "text": "Seenova AI bu javoblarni siz uchun oʻqib, nimasi koʻzga tashlanishini va nima qilish kerakligini aytadi."
       }
     },
     "competitors": {
@@ -3408,13 +3485,9 @@
         "title": "Saytlar yoki sahifalar",
         "text": "AI keltirgan saytlarni yoki ularning sahifalarini birma-bir koʻring."
       },
-      "chart": {
-        "title": "Eng koʻp keltirilganlar",
-        "text": "Eng koʻp keltirilgan beshta sayt, har haftalik tekshiruvda."
-      },
-      "movers": {
-        "title": "Nima oʻzgardi",
-        "text": "Birinchi marta, oldingi tekshiruvdan koʻproq yoki kamroq keltirilgan saytlar va bu havolalar siz uchun ishlayaptimi."
+      "presence": {
+        "title": "Siz qayerda yoʻqsiz",
+        "text": "AI tayangan saytlarning qanchasida siz yoʻqligingiz va avval qaysilariga chiqish kerakligi."
       },
       "gaps": {
         "title": "Chiqish kerak boʻlgan joylar",
@@ -3423,6 +3496,14 @@
       "site": {
         "title": "Bitta sayt",
         "text": "Bosilsa, saytning sahifasi ochiladi: qanchalik koʻp keltiriladi, u yerda kim tilga olinadi va qanday chiqish mumkin."
+      },
+      "chart": {
+        "title": "Eng koʻp keltirilganlar",
+        "text": "Eng koʻp keltirilgan beshta sayt, har haftalik tekshiruvda."
+      },
+      "movers": {
+        "title": "Nima oʻzgardi",
+        "text": "Birinchi marta, oldingi tekshiruvdan koʻproq yoki kamroq keltirilgan saytlar va bu havolalar siz uchun ishlayaptimi."
       }
     },
     "source": {
@@ -3674,6 +3755,25 @@
     "detail": {
       "title": "{date} hisoboti",
       "contents": "Mundarija"
+    },
+    "reasons": {
+      "title": "Nega {score}?",
+      "text": "Umumiy baho — besh yoʻnalishning oʻrtachasi: har biri {points} ballgacha beradi. Quyida har biri qancha bergani va bahoni nima tushirayotgani.",
+      "earned": "{points} / {max}",
+      "total": "Jami",
+      "lowersTitle": "Bahoni nima tushiryapti",
+      "lost": "−{points} ball",
+      "areaScore": "yoʻnalish: {score}/100",
+      "todo": "Nima qilish kerak",
+      "more": "Yana {count} ta harakat",
+      "nothingLost": "Barcha yoʻnalishlar 100 dan 100: bahoni hech narsa tushirmayapti.",
+      "advice": {
+        "visibility": "Sizni tilga olishlari uchun nima qilish kerak — Harakatlar",
+        "competition": "Yetakchi qaysi savollarda oldinda — Raqobatchilar",
+        "coverage": "Sizni tilga olmagan savollar — Savollar",
+        "sources": "AI tayanadigan, lekin sizni koʻrsatmaydigan saytlar — Manbalar",
+        "accuracy": "Brend faktlarini kiriting: javoblar shular bilan solishtiriladi"
+      }
     }
   },
   "Pilot": {
@@ -3887,7 +3987,6 @@
       "checks": "Qarordan oldin tekshiring",
       "sources": "Manbalar",
       "raw": "Dastlabki maʼlumot: {engine}ning {answers} ta javobi. Toʻliq matnlar saqlangan va soʻrov boʻyicha beriladi.",
-      "method": "Usul: {engine}, API orqali, veb-qidiruv bilan, model {model}, {date}.",
       "methodManual": "Usul: {engine}, veb-qidiruv bilan, {date}.",
       "cta": "Biz bu rejani bajarib, oʻlchovni takrorlashimiz mumkin."
     }

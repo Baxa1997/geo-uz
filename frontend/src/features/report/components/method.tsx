@@ -43,7 +43,7 @@ export function Method({ report }: { report: Report }) {
   return (
     <Rows
       rows={[
-        { key: "assistant", label: t("assistant"), value: t("assistantValue", { engine: engines(engineOf(method.engine)), model: method.model }) },
+        { key: "assistant", label: t("assistant"), value: t("assistantValue", { engine: engines(engineOf(method.engine)) }) },
         { key: "location", label: t("location"), value: t("locationValue", { city: placeLabel(messages.Cities, locale, project) }) },
         { key: "questions", label: t("questions"), value: t("questionsValue", { count: report.prompts.length, split: PROMPT_LANGUAGES.filter((language) => inLanguage(language) > 0).map((language) => t("questionsPart", { count: inLanguage(language), language: languages(language) })).join(", ") }) },
         { key: "samples", label: t("samples"), value: t("samplesValue", { samples: method.samples }) },

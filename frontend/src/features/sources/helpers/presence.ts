@@ -30,10 +30,12 @@ function rowsOf<T extends string>(items: { key: T; count: number }[]): PresenceR
  * site they are missing from.
  */
 export function sitePresence(sources: Source[]): PresenceRow<SitePresence>[] {
-  const groupOf = (source: Source): SitePresence =>
-    source.type === "own" ? "own" : source.type === "competitor" ? "competitor" : source.brandListed ? "listed" : "missing";
-  return rowsOf(sources.map((source) => ({ key: groupOf(source), count: source.count })));
+  return rowsOf(sources.map((source) => ({ key: presenceOf(source), count: source.count })));
 }
+
+/** Whom one cited site works for. */
+export const presenceOf = (source: Source): SitePresence =>
+  source.type === "own" ? "own" : source.type === "competitor" ? "competitor" : source.brandListed ? "listed" : "missing";
 
 /** The same for the cited pages: whether each names the client, only competitors, or no tracked brand. */
 export function pagePresence(sources: Source[], youId: string): PresenceRow<PagePresence>[] {

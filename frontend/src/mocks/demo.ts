@@ -24,7 +24,7 @@ export const DEMO_BRAND_VIEW: BrandView[] = [
     engine: "chatgpt",
     name: "ChatGPT",
     language: "ru",
-    question: "Что известно о «Oq Tabassum» (Ташкент)? Чем занимается, какие цены, где находится и какие о нём отзывы?",
+    question: "Что вы знаете о «Oq Tabassum» (Ташкент)?",
     known: "knows",
     citations: [],
     statements: [
@@ -70,7 +70,7 @@ export const DEMO_BRAND_VIEW: BrandView[] = [
     engine: "gemini",
     name: "Gemini",
     language: "uz",
-    question: "Oq Tabassum (Tashkent) haqida nima maʼlum? Nima bilan shugʻullanadi, narxlari qanday, qayerda joylashgan va u haqda qanday fikrlar bor?",
+    question: "Oq Tabassum (Tashkent) haqida nima bilasiz?",
     known: "knows",
     citations: [],
     statements: [

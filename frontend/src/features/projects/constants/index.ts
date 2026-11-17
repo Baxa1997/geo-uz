@@ -24,10 +24,10 @@ export const MAX_DESCRIPTION_LENGTH = 400;
 
 /** Topic of questions typed in during onboarding (the Questions page lets users set their own). */
 export const OWN_QUESTION_TOPIC = "other";
-/** The two general brand questions, as the backend writes them (`firstrun.BRAND_QUESTIONS`). */
+/** The general brand question, as the backend writes it (`firstrun.BRAND_QUESTIONS`): one plain question. */
 export const BRAND_QUESTION_TEMPLATES = {
-  ru: "Что известно о «{name}»{place}? Чем занимается, какие цены, где находится и какие о нём отзывы?",
-  uz: "{name}{place} haqida nima maʼlum? Nima bilan shugʻullanadi, narxlari qanday, qayerda joylashgan va u haqda qanday fikrlar bor?",
+  ru: "Что вы знаете о «{name}»{place}?",
+  uz: "{name}{place} haqida nima bilasiz?",
 } as const;
 
 /** The questions step's topic list: every ticked topic at once. */

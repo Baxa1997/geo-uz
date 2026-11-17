@@ -6,6 +6,7 @@ import { XIcon as X } from "@phosphor-icons/react/dist/ssr/X";
 import { useTranslations } from "next-intl";
 import { useId, useState } from "react";
 import { Button } from "@/shared/components/ui/button";
+import { Select } from "@/shared/components/ui/select";
 import { Link } from "@/i18n/navigation";
 import { api } from "@/shared/api/client";
 import { MAX_BRAND_QUESTIONS, PROMPT_TEXT_MAX_LENGTH, PROMPT_TEXT_MIN_LENGTH } from "@/shared/constants";
@@ -23,6 +24,7 @@ const LANGUAGES: PromptLanguage[] = ["uz", "ru", "en"];
  */
 export function BrandQuestionsEditor({ projectId, brand, initial, overviewHref }: { projectId: string; brand: string; initial: BrandQuestion[]; overviewHref: string }) {
   const t = useTranslations("Settings.brandQuestions");
+  const languageNames = useTranslations("Locales");
   const id = useId();
   const [saved, setSaved] = useState(initial);
   const [questions, setQuestions] = useState(initial);
@@ -56,13 +58,15 @@ export function BrandQuestionsEditor({ projectId, brand, initial, overviewHref }
   }
 
   const languagePicker = (value: PromptLanguage, onChange: (language: PromptLanguage) => void, label: string) => (
-    <select aria-label={label} value={value} onChange={(event) => onChange(event.target.value as PromptLanguage)} className={cn(FIELD, "h-9 w-16 shrink-0 px-2 font-medium uppercase")}>
-      {LANGUAGES.map((code) => (
-        <option key={code} value={code}>
-          {code}
-        </option>
-      ))}
-    </select>
+    <Select
+      aria-label={label}
+      value={value}
+      onValueChange={onChange}
+      size="sm"
+      className="h-9 w-[4.75rem] shrink-0 font-medium"
+      popupClassName="min-w-44"
+      options={LANGUAGES.map((code) => ({ value: code, label: code.toUpperCase(), text: languageNames(code), hint: languageNames(code) }))}
+    />
   );
 
   return (

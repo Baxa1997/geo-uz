@@ -307,6 +307,22 @@ function segments(values: (number | null)[], x: (index: number) => number, scale
   return runs;
 }
 
+/** Dots this close (in % of the plot's height) count as one place, and stand side by side. */
+const SAME_PLACE = 1.5;
+const DOT_STEP_PX = 12;
+
+/** How far (px) a line's dot at `index` moves sideways so the dots of equal values all show, centered. */
+function sideBySide(series: Series[], index: number, id: string, scale: Scale) {
+  const own = series.find((line) => line.id === id)?.values[index] ?? null;
+  if (own === null) return 0;
+  const here = series.filter((line) => {
+    const value = line.values[index] ?? null;
+    return value !== null && Math.abs(yOf(value, scale) - yOf(own, scale)) < SAME_PLACE;
+  });
+  if (here.length < 2) return 0;
+  return (here.findIndex((line) => line.id === id) - (here.length - 1) / 2) * DOT_STEP_PX;
+}
+
 /**
  * Where each brand's latest number goes beside its line's end: at the line's height, moved down (then
  * back up from the bottom) where two lines end too close for both numbers to be read.
@@ -406,7 +422,8 @@ export function LinePlot({
           {/* The lines and their dots appear from left to right */}
           <div aria-hidden className="absolute inset-0 motion-safe:animate-chart-draw">
             <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 size-full overflow-visible">
-              {series.map((line) =>
+              {/* The client's line last, on top of a competitor's that runs along it */}
+              {[...series.filter((line) => !line.isYou), ...series.filter((line) => line.isYou)].map((line) =>
                 segments(line.values, x, scale).map((run, index) => (
                   <path
                     key={`${line.id}-${index}`}
@@ -443,24 +460,27 @@ export function LinePlot({
               <span className="absolute inset-y-0 left-0 w-0 border-l border-dashed border-foreground/40" />
             </span>
           )}
-          {series.map((line) => {
+          {/* The client's dot is drawn last, on top; dots at the same value stand side by side, not one under another */}
+          {[...series.filter((line) => !line.isYou), ...series.filter((line) => line.isYou)].map((line) => {
             const value = line.values[marked] ?? null;
             return (
               value !== null && (
                 <span key={line.id} aria-hidden className={FOLLOWS} style={{ translate: `${x(marked)}% ${yOf(value, scale)}%` }}>
-                  <span className="absolute top-0 left-0 size-2.5 -translate-1/2 rounded-full ring-2 ring-card" style={{ background: line.color }} />
+                  <span className="absolute top-0 left-0 size-2.5 -translate-1/2 rounded-full ring-2 ring-card" style={{ background: line.color, marginLeft: `${sideBySide(series, marked, line.id, scale)}px` }} />
                 </span>
               )
             );
           })}
           {/* Each brand's latest number, where its line ends (beside its dot, when there is one run) */}
+          {/* With its line's color beside it: two numbers moved apart must still say whose they are */}
           {endLabels(series, last, scale, size.px).map(({ id, value, top }) => (
             <span
               key={id}
               aria-hidden
-              className="absolute ml-2.5 -translate-y-1/2 text-xs font-medium whitespace-nowrap tabular-nums"
-              style={{ left: `${x(last)}%`, top: `${top}%` }}
+              className="absolute flex -translate-y-1/2 items-center gap-1 text-xs font-medium whitespace-nowrap tabular-nums"
+              style={{ left: `${x(last)}%`, top: `${top}%`, marginLeft: `${12 + Math.max(0, ...series.map((line) => sideBySide(series, last, line.id, scale)))}px` }}
             >
+              <span className="size-1.5 shrink-0 rounded-full" style={{ background: series.find((line) => line.id === id)?.color }} />
               {text(value)}
             </span>
           ))}

@@ -21,6 +21,20 @@ export default function proxy(request: NextRequest) {
     login.searchParams.set("next", `${path}${search}`);
     return NextResponse.redirect(login);
   }
+  // Logged in already: the login page goes straight on, without waiting for the backend (the user, 17 Nov
+  // 2026: the login page stood empty for 3–5 seconds before the dashboard opened). A session that has ended
+  // comes back here with ?expired=1 (requireUser), which is let through to the form, so this can't loop.
+  if (
+    hasLocale(routing.locales, locale) &&
+    path === "/login" &&
+    request.cookies.has(SESSION_COOKIE) &&
+    !request.nextUrl.searchParams.has("expired")
+  ) {
+    const next = request.nextUrl.searchParams.get("next");
+    // Only a path on this site: "/projects/x", never "//evil.com"
+    const target = next && /^\/(?![/\\])/.test(next) ? next : "/dashboard";
+    return NextResponse.redirect(new URL(`/${locale}${target}`, request.url));
+  }
   return intl(request);
 }
 

@@ -7,7 +7,7 @@ import { LanguageToggle } from "@/shared/components/language-toggle";
 import { Button } from "@/shared/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";
-import { NativeSelect, NativeSelectOption } from "@/shared/components/ui/native-select";
+import { Select } from "@/shared/components/ui/select";
 import { MAX_PROMPTS, MIN_PROMPTS, PROMPT_TEXT_MAX_LENGTH, PROMPT_TEXT_MIN_LENGTH } from "@/shared/constants";
 import { labelFor } from "@/shared/helpers/labels";
 import { cn } from "@/shared/helpers/utils";
@@ -92,19 +92,17 @@ export function QuestionPicker({
         <label htmlFor={`${id}-topic`} className="sr-only">
           {t("topicFilter")}
         </label>
-        <NativeSelect
+        <Select
           id={`${id}-topic`}
+          size="lg"
           value={shown}
-          onChange={(e) => onShow(e.target.value)}
-          className="w-full border-b [&_select]:h-11 [&_select]:rounded-none [&_select]:border-0 [&_select]:pl-3 [&_select]:text-base [&_select]:font-medium md:[&_select]:text-sm"
-        >
-          <NativeSelectOption value={ALL_TOPICS}>{t("allTopics", { count: inTopics.length })}</NativeSelectOption>
-          {ticked.map((topic) => (
-            <NativeSelectOption key={topic.topic} value={topic.topic}>
-              {label(topic)} · {inTopics.filter((question) => question.topic === topic.topic).length}
-            </NativeSelectOption>
-          ))}
-        </NativeSelect>
+          onValueChange={onShow}
+          className="rounded-none border-0 border-b font-medium shadow-none hover:border-b-input focus-visible:ring-0"
+          options={[
+            { value: ALL_TOPICS, label: t("allTopics", { count: inTopics.length }) },
+            ...ticked.map((topic) => ({ value: topic.topic, label: `${label(topic)} · ${inTopics.filter((question) => question.topic === topic.topic).length}` })),
+          ]}
+        />
         {visible.length > 0 ? (
           <ul className="max-h-[26rem] overflow-y-auto bg-muted/30 py-1">
             {visible.map((question) => (

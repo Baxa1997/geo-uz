@@ -1,10 +1,11 @@
-# GEO Platform (working name) — project context for Claude Code
+# Seenova AI — project context for Claude Code
 
 What is done, what comes next and how the work is organized: `../CLAUDE.md`. This file holds the rules for
 the frontend.
 
 ## What we are building
-An AI-visibility (GEO) platform for brands in Uzbekistan and Central Asia.
+Seenova AI (the product's name since 17 Nov 2026; until then the working name GEO): an AI-visibility (GEO)
+platform for brands in Uzbekistan and Central Asia.
 It asks ChatGPT the questions customers ask ("best dental clinic in Tashkent?"),
 in Uzbek and Russian, and measures how often a brand appears versus competitors,
 which sources ChatGPT cites, and whether facts about the brand are wrong.
@@ -194,8 +195,16 @@ paper", the pilot report's look). The tokens are in `globals.css`:
     phone's menu on the landing page keeps the three short links (`row`).
   - An icon on the public pages sits in a filled rounded square, white on a color of its own (`TILE_COLORS`): the
     navbar's menus and the "why us" cards.
-- **The logo** (`LogoMark`): three lines of an answer on navy, the middle one bright among the faint ones: the
-  line that names you. A working mark, like the name.
+- **The name and the logo** (17 Nov 2026, the user: "change the logo, Seenova AI the branding"). The name is
+  **Seenova AI** everywhere it was GEO; "GEO" stays only as the practice's name (Generative Engine
+  Optimization: the FAQ's "What is GEO?", the plan "Managed GEO"). Internal names keep `geo` (the repository,
+  the `geo_session` cookie, `geo-tour:` keys, the server's service and subdomain). The wordmark (`Wordmark`):
+  "Seenova" bold, "AI" semibold in blue (`#3f63c8`, `#9fb4ff` on navy: `tone="dark"`). The mark (`LogoMark`):
+  an eye whose pupil is a four-pointed star, "see" and "nova": a white eye on a navy tile, the iris navy, the
+  nova gold (`#f6c453`, the brand's one accent, used nowhere else); it reads as an eye at 16px. `app/icon.svg`
+  is the same drawing, `app/favicon.ico` holds it at 16, 32 and 48px, `app/apple-icon.png` is it on full-bleed
+  navy (180px). The login panel and the first check's panel are the brand's navy gradient with the eye drawn
+  huge and faint. Emails write the name in `mail.BRAND` and `mail.WORDMARK_HTML`.
 - **Icons** (14 Nov). Two sources, no Lucide (the set Peec uses; the package is removed):
   - **Our own** (`shared/components/own-icons.tsx`), where a visitor looks most: the sidebar's pages, the four
     metrics (`IconMentions`, `IconVoiceShare`, `IconPlace`, `IconRating`) and the action goals. Drawn on a 24
@@ -246,6 +255,22 @@ from Chrome's trace): 8 layers, no dropped frames while scrolling, and the page 
   marker line, dots and tooltip: `FOLLOWS` in metric-chart.tsx). The website field types its examples
   straight into the input's placeholder, not through React state.
 
+## Fields and loading (17 Nov 2026)
+The user: "Select, input … need to be corrected, the smooth, cleaner component" and "make the loading effect
+better, with animations".
+
+- **One field style** (`shared/components/ui/field-style`: `fieldClass(size)`, `areaClass`): 32, 40 (the
+  default) or 44px, a hairline border that darkens on hover, a navy border with a soft halo in focus, 16px
+  text on a phone (no zoom) and 14px from md. `Input`, `Textarea`, the settings' `FIELD`, the search boxes and
+  `FilterMenu`'s chips use it. A choice from a list is `ui/select` (Base UI's Select drawn in that style, its
+  list in the menus' look with a check): never the browser's `<select>` (`NativeSelect` and `FormSelect` are
+  gone). A choice's value can't be "": use a word of your own for "none" (`WHOLE_COUNTRY`).
+- **Loading**: `PageSkeleton` is shaped like a data page and appears after 150 ms; its blocks are the
+  `skeleton` utility (a light passing over). `NavigationProgress` runs a bar across the panel's top from a
+  click on a link until the page (not its skeleton, `data-skeleton`) is there. The check's navy screen
+  moves while the assistants are asked. These are the one exception to "every animation ends" below: they
+  repeat while something loads and go with the screen that shows them; they stand still under reduced motion.
+
 ## Page layout
 Every workspace page's top follows Peec's (the user's correction, Oct 8: "page top breadcrumb must also be the
 same"), through `Page` (shared/components/page.tsx):
@@ -277,7 +302,8 @@ A strip of facts across the whole panel (a site's page) steps out of the page's 
 - All mock data lives in `frontend/src/mocks/` and uses the same TypeScript types as the real API.
   One exception runs in production too: `mocks/demo.ts` feeds the landing page's product preview (sample data).
 - UI text in three languages: Uzbek (Latin), Russian, English. Default: Uzbek.
-- Label the collection method (API + web search, model name, date) on every report.
+- Label the collection method (the assistant, web search, the date) on every report. Never the model's name
+  (the user, 17 Nov 2026: "we don't have to show which models we used"), and not "API".
 
 ## Stack
 Two separate folders, one git repository:
@@ -312,7 +338,7 @@ frontend/src/
     auth/                 # login screen (auth-layout + auth-panel): an email, then the code sent to it; where to go after login
     workspace/            # shell: sidebar by task in sections (collapsible) with a "start here" checklist at its foot
                           #   (progress kept in the browser), project card, account, help sheet, placeholder (Reports),
-                          #   GEO AI panel (design only, opened from a page, e.g. "Analyze" in Answers)
+                          #   the Seenova AI assistant panel (design only, opened from a page, e.g. "Analyze" in Answers)
     answers/              # Answers: numbers about the answers themselves (naming the client, negative about it,
                           #   naming nobody, with a web search), then every answer as a table row, the answers to
                           #   one question grouped under the question written once (search; filters by brand
@@ -325,16 +351,18 @@ frontend/src/
                           #   aren't tracked, like Peec's brand suggestions (track one while the plan has room:
                           #   Project.limits.competitors; or hide it, and show it again), and a card per competitor
                           #   with the questions it wins (each opens the question's page) and a stop-tracking button
-    sources/              # Sources, laid out like Peec's Sources › Domains and › URLs (the user's correction,
-                          #   Oct 8: "page top breadcrumb must also be the same"): Sites and Pages as the page's
-                          #   tabs (?view=pages). Each view: "Overview", the five most cited over the checks
-                          #   (SourcesChart); "What changed", MoversCard (cited for the first time, more, less, as
-                          #   tabs; helpers/history.ts) beside PresenceCard (how the citations split by whether they
-                          #   work for the client: its own site, sites it is on, sites it is missing from,
-                          #   competitors'; for pages: naming the client, only competitors, nobody); then the table
-                          #   (SitesTable / PagesTable) with Peec's gap switch (the places where a competitor is
-                          #   named and the client isn't, then a filter by competitor), search, kind filter, CSV and
-                          #   the row count. &type= starts the sites on one kind. A site anywhere opens its own page.
+    sources/              # Sources: Sites and Pages as the page's tabs (?view=pages). Since 17 Nov (the user:
+                          #   "sourcing … must be more understandable") each view opens on PresenceSummary: how much
+                          #   of what AI cites leaves the client out (sites it is missing from; pages naming only
+                          #   competitors), every citation as one bar split by whom it works for (its own site,
+                          #   sites it is on, missing from, competitors'; for pages: naming it, only competitors,
+                          #   nobody), and the three to start with, each with whom it names and the way onto it (the
+                          #   listing action when the plan has one). Then the table (SitesTable / PagesTable): "are
+                          #   you there?" as a filter over it and a column (under the name on a narrow card) with
+                          #   "Get listed", Peec's gap switch, search, kind filter, CSV and the row count. Last
+                          #   "Overview", the five most cited over the checks (SourcesChart, from the second week),
+                          #   and "What changed" (MoversCard, from the second check). &type= starts the sites on
+                          #   one kind. A site anywhere opens its own page.
                           #   pages/source-page: one cited site (/sources/[domain], the domain as written, "2gis.uz"),
                           #   with Pages / Answers as its tabs (?tab=answers&page= opens the answers citing one
                           #   page). Pages: the site's mark and link, its facts in a strip across the panel, a
@@ -356,14 +384,14 @@ frontend/src/
                           #   "Decline all", or what to do with the rows picked. ActionPanel (?action= opens one):
                           #   "Copy for ChatGPT" (the action written as a prompt), what it is, topic, assistant, why
                           #   it matters, the brief for a page (headlines, meta title and description against their
-                          #   length, what it must prove, evidence; "Write with GEO AI"), the steps to tick, the pages
+                          #   length, what it must prove, evidence; "Write with Seenova AI"), the steps to tick, the pages
                           #   ChatGPT reads (a listing's site, or the client's own), the questions it should move,
                           #   the expected effect or fix → proof; at the bottom Decline / Accept, then Cancel / Done.
                           #   Accepting opens "In progress" on the action and folds "New", as Peec's; every change
                           #   shows a toast with a link to its group (ActionToast). Changes show at once and go back
                           #   if saving fails. Left out of Peec's: models, platforms and page types as filters (one
                           #   assistant; the backend doesn't classify pages), XLSX (CSV opens in Excel), Peec Agent
-                          #   (our GEO AI panel takes its place)
+                          #   (our Seenova AI panel takes its place)
     dashboard/            # project list
     projects/             # project setup: new project form, onboarding wizard (website → brand profile → competitors
                           #   → topics → questions; form left, live preview of the app right from lg) and the first
@@ -462,7 +490,7 @@ frontend/src/
                           #   Page (a workspace page: see "Page layout"), PageTabs (a page's views as tabs, in
                           #   Page's `tabs` strip), PageSection (a heading and a grey line over a part's cards),
                           #   EmptyState, Logo, …
-    hooks/                # use-assistant (open GEO AI from any page), use-logout, use-in-view, use-reduced-motion
+    hooks/                # use-assistant (open the Seenova AI panel from any page), use-logout, use-in-view, use-reduced-motion
     helpers/              # domain (also shortUrl, pathOf, and siteHref + SITE_SLOT: the address of a cited site's
                           #   page as a pattern a server page can hand to a client component), dates, labels, phone,
                           #   scores (pure functions), condition (the status report's score: its facts, formula and
@@ -759,7 +787,9 @@ It runs in four parts, every section numbered (`REPORT_PARTS`, `REPORT_SECTIONS`
   plan's first three actions). 2 Key figures: the five numbers, each with this check, the previous one, the change,
   the strongest competitor, how far ahead or behind, and its line over the checks. 3 What changed since the last
   report: the events behind the numbers.
-- **II. Analysis**, a section per area, each with its status beside its title, opening with its conclusion
+- **II. Analysis** opens (since 17 Nov) with "Each AI assistant" (`Assistants`): each assistant's share over its
+  own answers beside whom it names most, a line that Google's AI Overview isn't checked yet, and what each
+  said about the business by name, every statement against the website. Then a section per area, each with its status beside its title, opening with its conclusion
   (`Verdict`) and closing with the plan's action that answers it (`NextStep`): 4 Competitive position (the brands
   table with bars, visibility over the checks), 5 Topics and questions (the client over the strongest competitor
   as two bars per topic and per language, the questions where only competitors are named), 6 Sources (whom the
@@ -785,7 +815,9 @@ The sections are drawn by one component (`ReportBody`), so the shared report and
 differ.
 
 **Hisobotlar** (`/projects/[id]/reports`) opens with the latest report's condition (`LatestReport`: its number,
-period and scope, the same gauge and areas as the report's summary, "Open the report", and its link, Telegram and
+period and scope, the same gauge and areas as the report's summary, "Why 40?" under them (`ScoreReasons`, 17
+Nov: the areas as points out of 20 each, then what costs points, each with its fact and the open actions that
+raise it), "Open the report", and its link, Telegram and
 PDF). Then every report as a register: number, period, the condition it found (score, status, change), the five
 areas as marks, what happened that week (`weekEvents`), its PDF; a row opens its report; CSV with every area's
 score. Last, one line on where the report goes, with Telegram in one click and the rest (email, language, the

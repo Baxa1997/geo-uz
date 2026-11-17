@@ -8,10 +8,11 @@ that need it.
 from __future__ import annotations
 
 import datetime
+import time
 import uuid
 from typing import Any, Optional
 
-from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Integer, String, Text, create_engine, inspect, text
+from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Integer, String, Text, create_engine, event, exc, inspect, text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
 
 from .config import settings
@@ -250,8 +251,43 @@ class Citation(Base):
     title: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
 
-engine = create_engine(settings.database_url, pool_pre_ping=True, connect_args={"check_same_thread": False} if settings.database_url.startswith("sqlite") else {})
+_SQLITE = settings.database_url.startswith("sqlite")
+# Every statement is a round trip to the database, which on the server is far away (Supabase's region, 17 Nov
+# 2026: about 0.12 s each, and 2 s to open a connection). So the pool keeps its connections open (TCP
+# keepalives stop them going stale behind a router) and checks one only when it has rested a while, not before
+# every request as `pool_pre_ping` did: that was a round trip on each.
+engine = create_engine(
+    settings.database_url,
+    pool_size=8,
+    max_overflow=8,
+    connect_args={"check_same_thread": False} if _SQLITE else {"keepalives": 1, "keepalives_idle": 30, "keepalives_interval": 10, "keepalives_count": 3},
+)
+IDLE_CHECK_SECONDS = 120
+
+
+@event.listens_for(engine, "checkin")
+def _rested(dbapi_connection: Any, record: Any) -> None:
+    record.info["rested_at"] = time.monotonic()
+
+
+@event.listens_for(engine, "checkout")
+def _still_open(dbapi_connection: Any, record: Any, proxy: Any) -> None:
+    """A connection that rested long is tried before use; a dead one is replaced (the pool retries)."""
+    rested = record.info.get("rested_at")
+    if _SQLITE or rested is None or time.monotonic() - rested < IDLE_CHECK_SECONDS:
+        return
+    try:
+        cursor = dbapi_connection.cursor()
+        cursor.execute("select 1")
+        cursor.close()
+        dbapi_connection.rollback()
+    except Exception as error:
+        raise exc.DisconnectionError() from error
+
+
 SessionLocal = sessionmaker(engine, expire_on_commit=False)
+# For requests that only read: no BEGIN and ROLLBACK around them, two round trips fewer. Same pool.
+ReadSession = sessionmaker(engine if _SQLITE else engine.execution_options(isolation_level="AUTOCOMMIT"), expire_on_commit=False)
 
 
 def create_tables() -> None:

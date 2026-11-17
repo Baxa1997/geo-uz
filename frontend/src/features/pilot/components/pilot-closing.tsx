@@ -58,7 +58,8 @@ export function PilotClosing({ pilot, t, number, table, date }: { pilot: Pilot; 
           </ol>
           <p className="mt-3 text-xs leading-relaxed text-(--p-mute)">
             {t("limits.raw", { answers: method.answers, engine: method.engine })}{" "}
-            {method.model ? t("limits.method", { engine: method.engine, model: method.model, date }) : t("limits.methodManual", { engine: method.engine, date })}
+            {/* The model is never named (the user, 17 Nov 2026: "we don't have to show which models we used") */}
+            {t("limits.methodManual", { engine: method.engine, date })}
           </p>
         </div>
       </div>
@@ -66,7 +67,7 @@ export function PilotClosing({ pilot, t, number, table, date }: { pilot: Pilot; 
       <div className="mt-9 flex flex-wrap items-center justify-between gap-x-8 gap-y-3 bg-(--p-navy) px-7 py-6 text-white break-inside-avoid">
         <div>
           <p className="font-bold tracking-tight">
-            GEO<span className="opacity-60">uz</span>
+            Seenova<span className="ml-[0.22em] opacity-60">AI</span>
           </p>
           <p className="mt-1.5">{t("limits.cta")}</p>
         </div>

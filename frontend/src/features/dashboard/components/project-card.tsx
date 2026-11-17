@@ -3,7 +3,7 @@ import { useLocale, useMessages, useTranslations } from "next-intl";
 import { Trend } from "@/shared/components/scores/trend";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/shared/components/ui/card";
 import { Link } from "@/i18n/navigation";
-import { conditionStatus, type ConditionStatus } from "@/shared/helpers/condition";
+import { CONDITION_AREAS, conditionStatus, type ConditionStatus } from "@/shared/helpers/condition";
 import { labelFor, placeLabel } from "@/shared/helpers/labels";
 import { formatPercent } from "@/shared/helpers/numbers";
 import { scoreOf, topCompetitor } from "@/shared/helpers/scores";
@@ -26,12 +26,20 @@ export function ProjectCard({
   promptCount: number;
 }) {
   const t = useTranslations("Dashboard");
+  const areas = useTranslations("Report.areas");
   const messages = useMessages();
   const locale = useLocale();
   const you = report && report.prompts.length > 0 ? scoreOf(report.scores, project.brand.id) : undefined;
   const rival = you && report ? topCompetitor(project.competitors, report.scores) : undefined;
   // The condition score (the report's headline, out of 100) where the report has one
-  const condition = you ? report?.conditionHistory.at(-1)?.score : undefined;
+  const latest = you ? report?.conditionHistory.at(-1) : undefined;
+  const condition = latest?.score;
+  // What holds the score down most (the user, 17 Nov 2026: "reason of scoring"): the two lowest areas below 100
+  const lowest = latest
+    ? CONDITION_AREAS.filter((area) => latest.areas[area] < 100)
+        .sort((a, b) => latest.areas[a] - latest.areas[b])
+        .slice(0, 2)
+    : [];
 
   return (
     <Card className="relative transition-colors hover:bg-muted/30">
@@ -62,6 +70,11 @@ export function ProjectCard({
                 </span>
               )}
             </p>
+            {lowest.length > 0 && (
+              <Link href={`/projects/${project.id}/reports`} className="relative z-10 w-fit text-xs text-pretty text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
+                {t("lowest", { areas: lowest.map((area) => `${areas(area)} ${latest?.areas[area]}`).join(", ") })}
+              </Link>
+            )}
             {/* A first run has no week before it to compare with */}
             {report && report.history.length > 1 && <Trend trend={you.trend} />}
             {rival && (

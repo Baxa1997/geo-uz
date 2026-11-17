@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useMessages, useTranslations } from "next-intl";
 import { useId, useState, type FormEvent } from "react";
 import { DropZone } from "@/shared/components/drop-zone";
-import { FormSelect } from "@/shared/components/form-select";
+import { Select } from "@/shared/components/ui/select";
 import { Modal } from "@/shared/components/modal";
 import { Button } from "@/shared/components/ui/button";
 import { api } from "@/shared/api/client";
@@ -173,32 +173,14 @@ export function AddContentDialog({
           <label htmlFor={`${id}-type`} className="text-sm font-medium">
             {t("pageType")}
           </label>
-          <FormSelect id={`${id}-type`} value={pageType} required onChange={(value) => setPageType(value as PageType)}>
-            <option value="" disabled>
-              {t("pageTypePlaceholder")}
-            </option>
-            {PAGE_TYPES.map((type) => (
-              <option key={type} value={type}>
-                {types(type)}
-              </option>
-            ))}
-          </FormSelect>
+          <Select<PageType> id={`${id}-type`} size="lg" value={pageType} required placeholder={t("pageTypePlaceholder")} onValueChange={setPageType} options={PAGE_TYPES.map((type) => ({ value: type, label: types(type) }))} />
         </div>
 
         <div className="flex flex-col gap-2">
           <label htmlFor={`${id}-topic`} className="text-sm font-medium">
             {t("topic")}
           </label>
-          <FormSelect id={`${id}-topic`} value={topic} required onChange={setTopic}>
-            <option value="" disabled>
-              {t("topicPlaceholder")}
-            </option>
-            {topics.map((option) => (
-              <option key={option} value={option}>
-                {labelFor(messages.Topics, option)}
-              </option>
-            ))}
-          </FormSelect>
+          <Select id={`${id}-topic`} size="lg" value={topic} required placeholder={t("topicPlaceholder")} onValueChange={setTopic} options={topics.map((option) => ({ value: option, label: labelFor(messages.Topics, option) }))} />
         </div>
 
         {error && (

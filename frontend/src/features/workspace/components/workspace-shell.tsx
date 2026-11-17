@@ -1,7 +1,8 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { NavigationProgress } from "@/shared/components/navigation-progress";
 import { AssistantProvider } from "@/shared/hooks/use-assistant";
 import type { Project, User } from "@/shared/types/api";
 import { SIDEBAR_COOKIE } from "../constants";
@@ -65,6 +66,9 @@ export function WorkspaceShell({
         <div className="flex min-w-0 flex-1 flex-col lg:py-2 lg:pr-2">
           <MobileTopBar {...sidebarProps} />
           <main ref={main} className="relative flex min-h-0 flex-1 flex-col overflow-y-auto bg-background lg:rounded-xl lg:border lg:shadow-xs">
+            <Suspense fallback={null}>
+              <NavigationProgress />
+            </Suspense>
             {children}
           </main>
         </div>

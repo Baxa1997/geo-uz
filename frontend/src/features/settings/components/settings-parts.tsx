@@ -4,6 +4,7 @@ import { InfoIcon as Info } from "@phosphor-icons/react/dist/ssr/Info";
 import { useTranslations } from "next-intl";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/helpers/utils";
+import { fieldClass } from "@/shared/components/ui/field-style";
 
 /** The fields of a settings form: a white card of rows, a line between them, its title over the first. */
 export function SettingsCard({
@@ -110,4 +111,5 @@ export function SaveBar({
 }
 
 /** The standard field of a settings form. */
-export const FIELD = "h-10 w-full min-w-0 rounded-lg border bg-background px-3 text-sm outline-none placeholder:text-muted-foreground focus-visible:ring-3 focus-visible:ring-ring/50 aria-invalid:border-destructive";
+/** The settings' fields: the app's one field style (`ui/field-style`). */
+export const FIELD = fieldClass("md");

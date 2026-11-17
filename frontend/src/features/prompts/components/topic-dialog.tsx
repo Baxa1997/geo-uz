@@ -4,8 +4,9 @@ import { useTranslations } from "next-intl";
 import { useId, useState, type FormEvent } from "react";
 import { Modal } from "@/shared/components/modal";
 import { Button } from "@/shared/components/ui/button";
+import { fieldClass } from "@/shared/components/ui/field-style";
 
-const FIELD = "h-11 w-full rounded-xl border px-3 text-sm outline-none";
+const FIELD = fieldClass("lg");
 
 /**
  * A topic in a window, as Peec's: its name, how many tracked questions it holds, and "Delete topic" at the

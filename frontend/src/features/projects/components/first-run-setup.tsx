@@ -11,7 +11,7 @@ import { ChipInput } from "@/shared/components/chip-input";
 import { CountrySelect } from "@/shared/components/country-select";
 import { EngineIcon } from "@/shared/components/engine-icon";
 import { LocaleSwitcher } from "@/shared/components/locale-switcher";
-import { Logo, LogoMark } from "@/shared/components/logo";
+import { Logo, LogoMark, Wordmark } from "@/shared/components/logo";
 import { LogoutButton } from "@/shared/components/logout-button";
 import { Button } from "@/shared/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
@@ -71,10 +71,14 @@ export function FirstRunSetup({ run, site = "", ...frame }: Frame & { run: First
         </p>
       ) : (
         <ul className="flex flex-col rounded-xl border">
-          {READING.map((item) => (
-            <li key={item} className="flex items-center gap-3 border-t px-4 py-3.5 text-sm first:border-t-0">
-              <LoaderCircle aria-hidden className="size-4 shrink-0 animate-spin text-brand motion-reduce:animate-none" />
-              {t(`reading.${item}`)}
+          {READING.map((item, index) => (
+            <li key={item} className="flex animate-rise flex-col gap-3 border-t px-4 py-3.5 text-sm first:border-t-0" style={{ animationDelay: `${index * 120}ms` }}>
+              <span className="flex items-center gap-3">
+                <LoaderCircle aria-hidden className="size-4 shrink-0 animate-spin text-brand motion-reduce:animate-none" />
+                {t(`reading.${item}`)}
+              </span>
+              {/* What is being prepared, in outline: the shape of the next steps, not a measure of progress */}
+              <ReadingPreview item={item} />
             </li>
           ))}
         </ul>
@@ -83,6 +87,40 @@ export function FirstRunSetup({ run, site = "", ...frame }: Frame & { run: First
         {t("reading.title")}
       </p>
     </Shell>
+  );
+}
+
+/** The outline under a line of the website's reading: a profile, competitor rows, question cards. */
+function ReadingPreview({ item }: { item: (typeof READING)[number] }) {
+  if (item === "profile") {
+    return (
+      <span aria-hidden className="flex flex-col gap-2 pl-7">
+        <span className="skeleton h-3 w-2/3" />
+        <span className="skeleton h-3 w-1/2" />
+      </span>
+    );
+  }
+  if (item === "competitors") {
+    return (
+      <span aria-hidden className="flex flex-wrap gap-2 pl-7">
+        {[28, 36, 24].map((width) => (
+          <span key={width} className="flex items-center gap-1.5">
+            <span className="skeleton size-5 rounded-full" />
+            <span className="skeleton h-3" style={{ width: `${width * 3}px` }} />
+          </span>
+        ))}
+      </span>
+    );
+  }
+  return (
+    <span aria-hidden className="flex flex-col gap-2 pl-7">
+      {[0, 1].map((line) => (
+        <span key={line} className="flex items-center gap-2 rounded-lg border px-2.5 py-2">
+          <span className="skeleton size-4 shrink-0 rounded-sm" />
+          <span className={cn("skeleton h-3", line ? "w-1/2" : "w-3/4")} />
+        </span>
+      ))}
+    </span>
   );
 }
 
@@ -422,7 +460,7 @@ function Shell({
         <div className="flex flex-col items-center gap-5 text-center">
           <span className="flex items-center gap-3.5">
             <LogoMark className="size-14 rounded-2xl ring-1 ring-white/25" />
-            <span className="text-5xl font-bold tracking-tight">GEO</span>
+            <Wordmark tone="dark" className="text-5xl" />
           </span>
           <p className="max-w-sm text-lg text-pretty text-white/75">{panel("tagline")}</p>
         </div>

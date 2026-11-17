@@ -9,6 +9,7 @@ import { openActions } from "../helpers/report";
 import { ACTIONS_SHOWN } from "../helpers/risks";
 import { useAreaFindings } from "../hooks/use-area-findings";
 import { Accuracy } from "./accuracy";
+import { Assistants } from "./assistants";
 import { CompetitivePosition } from "./competitive-position";
 import { ExecutiveSummary } from "./executive-summary";
 import { Glossary, Method } from "./method";
@@ -23,7 +24,7 @@ import { Sources } from "./sources";
 import { Topics } from "./topics";
 
 /** The sections with a line under their title on what they show and how to read them. */
-const WITH_LEAD = ["scorecard", "changes", "competitors", "topics", "sources", "accuracy", "risks", "actions", "method", "appendix"] as const;
+const WITH_LEAD = ["scorecard", "changes", "assistants", "competitors", "topics", "sources", "accuracy", "risks", "actions", "method", "appendix"] as const;
 
 /** The part after which the report proper ends and is signed off; the reference follows. */
 const SIGNED_AFTER = "decisions";
@@ -68,6 +69,7 @@ export function ReportBody({ report, actions, fill = false }: { report: Report; 
     ),
     scorecard: <Scorecard report={report} />,
     changes: <ReportChanges report={report} actions={actions} />,
+    assistants: <Assistants report={report} />,
     competitors: <CompetitivePosition report={report} />,
     topics: <Topics report={report} />,
     sources: <Sources report={report} />,

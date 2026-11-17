@@ -35,11 +35,20 @@ export function FirstRunLive({ run, partial }: { run: FirstRun; partial: FirstRu
           {t("heroButton")}
           <ArrowRight aria-hidden data-icon="inline-end" />
         </Button>
-        <div className="flex flex-col gap-1">
+        <div className="flex w-full max-w-md flex-col items-center gap-2">
           <p aria-live="polite" className="flex items-center justify-center gap-2 font-medium text-brand">
             <LoaderCircle aria-hidden className="size-4 animate-spin motion-reduce:animate-none" />
             {reading ? t("live.reading") : t("live.collecting", { answered, total: partial.total })}
           </p>
+          {/* The answers in hand of all asked, with a light passing over: the wait is alive (17 Nov 2026) */}
+          <div aria-hidden className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+            <div
+              className="relative h-full overflow-hidden rounded-full bg-brand transition-[width] duration-700 ease-out motion-reduce:transition-none"
+              style={{ width: `${reading ? 96 : partial.total ? Math.max(6, (answered / partial.total) * 92) : 6}%` }}
+            >
+              <span className="absolute inset-y-0 left-0 w-1/3 animate-sheen bg-linear-to-r from-transparent via-white/60 to-transparent" />
+            </div>
+          </div>
           <p className="text-sm text-muted-foreground">{t("live.note")}</p>
         </div>
       </div>

@@ -20,5 +20,6 @@ export const getCurrentUser = cache(async (): Promise<User | null> => {
  */
 export async function requireUser(): Promise<User> {
   const user = await getCurrentUser();
-  return user ?? redirect({ href: "/login", locale: await getLocale() });
+  // `expired`: the cookie is still there, so proxy.ts would send the login page straight back here
+  return user ?? redirect({ href: { pathname: "/login", query: { expired: "1" } }, locale: await getLocale() });
 }
