@@ -183,7 +183,19 @@ that is committed.
    time: a branch for the work, a commit, a merge into `main`, and a push of both. Before any commit, check
    that no key and no client's name is in it.
 
-## Done (as of 16 November 2026)
+## Done (as of 17 November 2026)
+
+- **Built, waiting for the user's look: results that fill in while the check runs (17 Nov), on the branch
+  `live-results`; merged, pushed and deployed the same day, when the user said "commit, push and deploy".** After "what is next" the user chose "live results" of four:
+  the one part of their pictures left unbuilt. A running check now publishes what it has after every answer
+  (`firstrun.partial_of`, `GET /first-runs/{id}/partial`): who the answers in hand name, the cited sites and
+  pages, the answers' beginnings. The page shows the navy screen until the first answer, then the headline,
+  "still collecting · 4/15 answers" and the four tabs filling in; the finished statistics take its place
+  (`frontend/CLAUDE.md`, "The first check's screens"). Looked at in a browser in Uzbek on desktop and phone
+  width on a replayed check, which now hands its saved answers out one by one. Compared on a saved check:
+  the live count and the final one agree for the client and the leader (6 and 6); a competitor the answers
+  write another way than its name was 0 live and 4 at the end. Not tried: a real check, Russian and
+  English. No new variable; the table gains a column (`first_runs.partial`), added at start.
 
 - **Built, waiting for the user's look: the first check's screens laid out as the user's pictures (16 Nov),
   on the branch `setup-like-screens`; merged, pushed and deployed the same day, when the user said "commit,

@@ -4093,7 +4093,14 @@
     "siteListed": "Siz bu saytda borsiz",
     "siteMissing": "Siz bu saytda yoʻqsiz",
     "answerNamed": "Sizni tilga oldi",
-    "answerNotNamed": "Sizni tilga olmadi"
+    "answerNotNamed": "Sizni tilga olmadi",
+    "live": {
+      "text": "Birinchi javoblar keldi. Qolganlari yigʻilmoqda.",
+      "collecting": "Hali yigʻilmoqda · {answered}/{total} javob",
+      "reading": "Javoblar oʻqilmoqda: yakuniy sonlar hozir chiqadi",
+      "note": "Natijalar kelishi bilan quyidagi jadvalda koʻrinadi. Yakuniy sonlar tekshiruv tugagach hisoblanadi.",
+      "empty": "Kelgan javoblarda hali manba koʻrsatilmagan."
+    }
   },
   "Trial": {
     "title": "Bepul birinchi tekshiruvingiz tayyor",

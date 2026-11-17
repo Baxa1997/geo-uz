@@ -838,6 +838,8 @@ export const mockApi: ApiClient = {
     return respond(firstRunOf(id));
   },
 
+  getFirstRunPartial: async () => respond(null),
+
   getFirstRunDraft: async (id) => {
     const user = await currentUser();
     const run = state.firstRuns.get(id);

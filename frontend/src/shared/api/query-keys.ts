@@ -6,6 +6,7 @@ export const queryKeys = {
   snapshot: (domain: string) => ["snapshot", domain] as const,
   runProgress: (runId: string) => ["runs", runId, "progress"] as const,
   firstRun: (runId: string) => ["first-runs", runId] as const,
+  firstRunPartial: (runId: string) => ["first-runs", runId, "partial"] as const,
   firstRunDraft: (runId: string) => ["first-runs", runId, "draft"] as const,
   firstRunResult: (runId: string) => ["first-runs", runId, "result"] as const,
 };

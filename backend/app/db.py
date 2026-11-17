@@ -67,6 +67,8 @@ class FirstRun(Base):
     domain: Mapped[str] = mapped_column(String(255), index=True)
     # queued, reading_site, ready (read, waiting for the owner to confirm), asking, reading_answers, done, failed
     status: Mapped[str] = mapped_column(String(20), default="queued")
+    # While the check runs: what the answers in hand say (`firstrun.partial_of`), for the page to show at once
+    partial: Mapped[Optional[Any]] = mapped_column(JSON, nullable=True)
     # What the website gave (`firstrun.prepare`): the profile, competitors and questions the owner corrects
     draft: Mapped[Optional[Any]] = mapped_column(JSON, nullable=True)
     answered: Mapped[int] = mapped_column(Integer, default=0)

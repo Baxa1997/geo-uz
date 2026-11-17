@@ -213,7 +213,7 @@ def _saved_run(db: Any, run_id: str) -> Optional[FirstRun]:
     return db.scalar(select(FirstRun).where(FirstRun.status == "done", FirstRun.id != run_id).order_by(FirstRun.raw.is_(None), FirstRun.created_at.desc()))
 
 
-def replay(run_id: str, progress: Any) -> Dict[str, Any]:
+def replay(run_id: str, progress: Any, live: Any = None) -> Dict[str, Any]:
     """Development (`FIRST_RUN_REPLAY`): the latest saved run again, at a watchable pace, asking nobody."""
     with SessionLocal() as db:
         saved = _saved_run(db, run_id)
@@ -221,8 +221,14 @@ def replay(run_id: str, progress: Any) -> Dict[str, Any]:
             raise firstrun.FirstRunError("no_saved_run")
         result, raw = dict(saved.result), saved.raw
     total = int(result.get("answers") or 0) or sum(len(item["answers"]) for item in result.get("prompts", []))
+    # The saved answers come in one by one, as a live check's do, so the page that fills in can be looked at
+    saved_answers = [answer for answer in (raw or {}).get("answers", []) if "question" in answer and "text" in answer]
+    questions = [item["prompt"] for item in result.get("prompts", [])]
+    brand, rivals = result["brand"], [rival["name"] for rival in result.get("competitors", [])]
     for answered in range(1, total + 1):
-        time.sleep(0.6)
+        time.sleep(1.5)
+        if live and len(saved_answers) >= answered:
+            live(firstrun.partial_of(brand["name"], [brand["name"], *(brand.get("aliases") or [])], rivals, questions, saved_answers[:answered], total))
         progress("asking", answered, total)
     progress("reading_answers", total, total)
     time.sleep(2)
@@ -295,11 +301,15 @@ def work_prepare(run_id: str, domain: str, category: Optional[str], city: Option
 def work_check(run_id: str, draft: Dict[str, Any], confirmed: Dict[str, Any], spent: float) -> None:
     """Asks what the owner confirmed, outside the request that started it, writing its progress as it goes."""
     progress = _progress(run_id)
+
+    def live(partial: Dict[str, Any]) -> None:
+        _finish(run_id, {"partial": partial}, over=False)
+
     try:
         if settings.first_run_replay:
-            outcome: Dict[str, Any] = replay(run_id, progress)
+            outcome: Dict[str, Any] = replay(run_id, progress, live)
         else:
-            snapshot, raw, cost = firstrun.check(draft, confirmed, progress)
+            snapshot, raw, cost = firstrun.check(draft, confirmed, progress, live=live)
             outcome = {"status": "done", "result": {"id": run_id, **snapshot}, "raw": raw, "cost_usd": round(spent + cost, 4)}
     except firstrun.FirstRunError as error:
         outcome = {"status": "failed", "error": error.code}
@@ -489,6 +499,12 @@ def own_run(run_id: str, user: User) -> FirstRun:
 @app.get("/first-runs/{run_id}")
 def first_run_progress(run_id: str, user: User = Depends(current_user)) -> Dict[str, Any]:
     return run_json(own_run(run_id, user))
+
+
+@app.get("/first-runs/{run_id}/partial")
+def first_run_partial(run_id: str, user: User = Depends(current_user)) -> Any:
+    """What a running check has so far; null until its first answer. The finished check's numbers are `/result`."""
+    return own_run(run_id, user).partial
 
 
 @app.get("/first-runs/{run_id}/result")
