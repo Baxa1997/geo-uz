@@ -371,27 +371,29 @@ frontend/src/
                           #   names when it cites the site, its pages' table. Answers: SiteAnswers. A site the
                           #   latest check no longer cites keeps its page from the history, without tabs
     wrong-facts/          # Wrong facts: numbers, then claim, correct value, question, date found as a table
-    actions/              # Harakatlar: recommended fixes (wrong facts, sites to get onto, pages to write, site fixes),
-                          #   laid out like Peec's Actions across the panel (Page `bleed`; the user's screenshots of
-                          #   Oct 10): ActionBoard's strip of tools (statuses, All filters: topics, where the work is,
-                          #   kind of site, kind of work; Group by: goal, kind of work, impact, where, topic; the
-                          #   guided tour (shared Tour; see "Guided tours"), export as CSV or JSON,
-                          #   "Add a page" (AddContentDialog: a page's address or a Markdown/text file, its type and
-                          #   topic → an action with its brief), "Accept all"); a heading and GoalTiles; the list by
-                          #   status, then group, then kind of work when a goal has two or more (helpers/grouping.ts),
-                          #   the first group of each level open, five rows then "Show all"; boxes to pick rows (one
-                          #   kind of work at once with its box) and a footer that stays in view: the open count and
-                          #   "Decline all", or what to do with the rows picked. ActionPanel (?action= opens one):
-                          #   "Copy for ChatGPT" (the action written as a prompt), what it is, topic, assistant, why
-                          #   it matters, the brief for a page (headlines, meta title and description against their
-                          #   length, what it must prove, evidence; "Write with Seenova AI"), the steps to tick, the pages
-                          #   ChatGPT reads (a listing's site, or the client's own), the questions it should move,
-                          #   the expected effect or fix → proof; at the bottom Decline / Accept, then Cancel / Done.
-                          #   Accepting opens "In progress" on the action and folds "New", as Peec's; every change
-                          #   shows a toast with a link to its group (ActionToast). Changes show at once and go back
-                          #   if saving fails. Left out of Peec's: models, platforms and page types as filters (one
-                          #   assistant; the backend doesn't classify pages), XLSX (CSV opens in Excel), Peec Agent
-                          #   (our Seenova AI panel takes its place)
+    actions/              # Harakatlar: recommended fixes (wrong facts, sites to get onto, pages to write, site fixes).
+                          #   Since 17 Nov made simple (the user: "logic is good, but UI is not very understandable";
+                          #   until then Peec's Actions: three menus, goal tiles, a tree of status, goal and kind of
+                          #   work with boxes to pick rows). ActionBoard: the statuses as tabs with their counts (to
+                          #   do, in progress, done, declined; STATUS_TABS) beside the tools (the guided tour, export
+                          #   as CSV or JSON, "Add a page": AddContentDialog); the heading with how far the plan has
+                          #   come; on "to do" the three most effective as cards (ActionCard: the kind of work, its
+                          #   effect, what to do, the evidence (ActionWhy), Start and Details), then the rest as a flat
+                          #   list (ActionRow) narrowed by goal, with "Accept all" and "Decline all"; each row has the
+                          #   one step its status calls for (start, done, reopen, restore) and, done, what it changed
+                          #   once measured. ActionPanel (?action= opens one, on its tab): "Copy for AI", what it is,
+                          #   topic, why it matters, "Do it with AI" (17 Nov, the user: a prompt "that can be collapsed
+                          #   or copied and put into their Claude or coding AI … or the post can be just recommended":
+                          #   useAiPrompt writes it from the action and the business's profile, by kind: a site fix
+                          #   for a coding AI or a developer, with how to check it is done; a page from its brief and
+                          #   the questions; a wrong fact's correction and a letter to the sites; a listing's profile
+                          #   (directory), letter to the editors (news) or post (social); the AI is told to write
+                          #   [TO FILL] rather than invent a fact; PromptBox shows it folded, with Copy), the brief for
+                          #   a page (headlines, meta title and description
+                          #   against their length, what it must prove, evidence; "Write with Seenova AI"), the steps
+                          #   to tick, the pages AI reads, the questions it should move, the expected effect or fix →
+                          #   proof; at the bottom Decline / Accept, then Cancel / Done. Every change shows a toast
+                          #   with a link to its tab (ActionToast). Changes show at once and go back if saving fails
     dashboard/            # project list
     projects/             # project setup: new project form, onboarding wizard (website → brand profile → competitors
                           #   → topics → questions; form left, live preview of the app right from lg) and the first
@@ -960,8 +962,8 @@ scrolls. Hint bubbles stay hidden while a tour is open.
   ("answer"), `PageSection`'s and `LinkRow`'s `tour` prop.
 - Each settings section has its own (`settings` for Profile, `settingsFacts` and so on); the Profile's first step
   frames the settings' menu in the sidebar (`data-tour="settingsNav"`).
-- Harakatlar keeps its own tour in `ActionBoard` (its steps open an action), started from the book button
-  in its strip of tools, as on Peec. Hisobotlar's tour points at the latest report, the register and the
+- Harakatlar keeps its own tour in `ActionBoard` (the cards to do first, the tabs, a row, then the opened
+  action's steps), started from the book button in its strip of tools. Hisobotlar's tour points at the latest report, the register and the
   delivery line; a report's page at its tools, contents, condition and decisions.
 
 ## Commands (frontend, from `frontend/`)

@@ -1,5 +1,6 @@
 "use client";
 
+import { CaretDownIcon as ChevronDown } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import { CheckIcon as Check } from "@phosphor-icons/react/dist/ssr/Check";
 import { CaretDoubleRightIcon as ChevronsRight } from "@phosphor-icons/react/dist/ssr/CaretDoubleRight";
 import { CopyIcon as Copy } from "@phosphor-icons/react/dist/ssr/Copy";
@@ -12,7 +13,6 @@ import { useLocale, useMessages, useTranslations } from "next-intl";
 import { useState } from "react";
 import { ActionWhy } from "@/shared/components/actions/action-why";
 import { ImpactBadge } from "@/shared/components/actions/impact-badge";
-import { EngineIcon } from "@/shared/components/engine-icon";
 import { Hint } from "@/shared/components/hint";
 import { Button } from "@/shared/components/ui/button";
 import { Link } from "@/i18n/navigation";
@@ -26,6 +26,7 @@ import type { Action, ActionStatus, PromptLanguage } from "@/shared/types/api";
 import { useActionTitle, listingKind } from "@/shared/components/actions/action-title";
 import { META_DESCRIPTION_MAX, META_TITLE_MAX, STEPS } from "../constants";
 import { categoryOf, topicOf } from "../helpers/grouping";
+import { type PromptProfile, type PromptTarget, useAiPrompt } from "../hooks/use-ai-prompt";
 import { ActionProof } from "./action-proof";
 
 /** A question an action should move, with how the client does on it now. */
@@ -46,9 +47,9 @@ export interface SitePages {
 }
 
 /**
- * One action opened beside the list, laid out like Peec's: "Copy as prompt" (the action written as a
- * prompt to paste into ChatGPT or another assistant), the title, what it is, its topic and model, why it
- * matters, the brief for a page to write or rework (with GEO AI to draft it), the steps to check off, the
+ * One action opened beside the list: "Copy for AI", the title, what it is, its topic, why it matters, then
+ * "Do it with AI" (since 17 Nov 2026: the task for the owner's own AI, written for the kind of work and
+ * shown folded; `useAiPrompt`), the brief for a page to write or rework (with GEO AI to draft it), the steps to check off, the
  * questions it should move (and, for a listing, the site's pages ChatGPT reads), and the expected
  * outcome; a done one shows what changed since. At the bottom, as on Peec, the buttons that move it on:
  * Decline or Accept, then Cancel or Done.
@@ -59,6 +60,7 @@ export function ActionPanel({
   sites,
   competitors,
   brand,
+  profile,
   nextRunAt,
   questionHref,
   busy,
@@ -72,6 +74,8 @@ export function ActionPanel({
   sites: Record<string, SitePages>;
   competitors: Map<string, string>;
   brand: { name: string; domain: string };
+  /** What the business is, for the AI prompt. */
+  profile: PromptProfile;
   nextRunAt: string | null;
   questionHref: (promptId: string) => string;
   busy: boolean;
@@ -82,7 +86,6 @@ export function ActionPanel({
   onStep: (step: number) => void;
 }) {
   const t = useTranslations("Actions");
-  const why = useTranslations("Actions.why");
   const messages = useMessages();
   const locale = useLocale();
   const title = useActionTitle();
@@ -100,47 +103,12 @@ export function ActionPanel({
   const siteDomain = action.kind === "listing" ? action.domain : action.kind === "content" ? null : brand.domain;
   const site = siteDomain ? sites[siteDomain] : undefined;
 
-  /** Why, in words, for the prompt (ActionWhy shows the same on screen). */
-  function whyText(): string {
-    switch (action.kind) {
-      case "listing": {
-        const names = action.competitorIds.flatMap((id) => competitors.get(id) ?? []);
-        return names.length
-          ? why("listing", { answers: action.answers, domain: action.domain, competitors: names.join(", ") })
-          : why("listingAlone", { answers: action.answers, domain: action.domain });
-      }
-      case "fact":
-        return `${why("factSaid")}: “${action.claim}”. ${why("factCorrect")}: “${action.correct}”.`;
-      case "content":
-        return why("content", { count: action.promptIds.length });
-      case "technical":
-        return why(action.check);
-    }
-  }
+  // The task for the owner's own AI (Claude, ChatGPT, a coding AI), shown below and copied by the top button
+  const aiPrompt = useAiPrompt({ brand, profile, competitors, sites })(action, asked.map((question) => question.text));
 
   async function copyPrompt() {
-    const lines = [
-      t("prompt.intro", { brand: brand.name, domain: brand.domain }),
-      t("prompt.task", { title: title(action) }),
-      t("prompt.why", { why: whyText() }),
-      t("prompt.steps"),
-      ...STEPS.map((step, index) => `${index + 1}. ${stepText(step)}`),
-      ...(brief
-        ? [
-            t("prompt.brief"),
-            brief.summary,
-            `${t("brief.headlines")}: ${brief.headlines.join(" / ")}`,
-            `${t("brief.metaTitle")}: ${brief.metaTitle}`,
-            `${t("brief.metaDescription")}: ${brief.metaDescription}`,
-            `${t("brief.argue")}: ${brief.argue}`,
-            `${t("brief.proofPoints")}: ${brief.proofPoints.join("; ")}`,
-          ]
-        : []),
-      ...(asked.length > 0 ? [t("prompt.questions"), ...asked.map((question) => `- ${question.text}`)] : []),
-      t("prompt.ask"),
-    ];
     try {
-      await navigator.clipboard.writeText(lines.join("\n"));
+      await navigator.clipboard.writeText(aiPrompt.text);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
@@ -184,18 +152,12 @@ export function ActionPanel({
           <p className={BODY}>{topic ? labelFor(messages.Topics, topic) : t("noTopic")}</p>
         </Section>
 
-        <Section label={t("sections.model")}>
-          <p className={cn(BODY, "flex items-center gap-2")}>
-            {/* A dark tile, as Peec marks the assistant; the icon is a generic one, not the company's logo */}
-            <span aria-hidden className="flex size-6 items-center justify-center rounded-md bg-foreground text-background">
-              <EngineIcon engine="chatgpt" className="size-4" />
-            </span>
-            ChatGPT
-          </p>
-        </Section>
-
         <Section label={t("sections.why")} tour="why">
           <ActionWhy action={action} competitors={competitors} prominent />
+        </Section>
+
+        <Section label={t("aiPrompt.title")} tour="prompt">
+          <PromptBox key={action.id} target={aiPrompt.target} text={aiPrompt.text} domain={action.kind === "listing" ? action.domain : brand.domain} copied={copied} onCopy={() => void copyPrompt()} />
         </Section>
 
         {brief && (
@@ -399,6 +361,40 @@ export function ActionPanel({
 const BODY = "text-[0.9375rem] leading-[1.45]";
 
 /** A part of the panel: a gray label over its content, as on Peec. */
+/** Lines of the prompt shown while it is folded; the rest opens with "Show all". */
+const PROMPT_FOLDED_LINES = 6;
+
+/**
+ * The task for the owner's AI as a box: where to paste it, Copy, the text itself (folded to its first lines
+ * until opened), and a button that opens or folds it.
+ */
+function PromptBox({ target, text, domain, copied, onCopy }: { target: PromptTarget; text: string; domain: string; copied: boolean; onCopy: () => void }) {
+  const t = useTranslations("Actions");
+  const [open, setOpen] = useState(false);
+  const long = text.split("\n").length > PROMPT_FOLDED_LINES;
+  return (
+    <div className="overflow-hidden rounded-xl border bg-card">
+      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-b bg-muted/40 px-4 py-2.5">
+        <p className="min-w-0 flex-1 basis-56 text-sm text-pretty text-muted-foreground">{t(`aiPrompt.where.${target}`, { domain })}</p>
+        <Button variant="outline" size="sm" onClick={onCopy} className="shrink-0 bg-background">
+          {copied ? <Check aria-hidden data-icon="inline-start" /> : <Copy aria-hidden data-icon="inline-start" />}
+          {copied ? t("copied") : t("aiPrompt.copy")}
+        </Button>
+      </div>
+      <div className="relative">
+        <pre className={cn("px-4 py-3 font-mono text-[0.8125rem] leading-relaxed whitespace-pre-wrap text-foreground", !open && long && "max-h-[9.5rem] overflow-hidden")}>{text}</pre>
+        {!open && long && <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-linear-to-t from-card to-transparent" />}
+      </div>
+      {long && (
+        <button type="button" aria-expanded={open} onClick={() => setOpen(!open)} className="flex w-full items-center justify-center gap-1.5 border-t px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground">
+          <ChevronDown aria-hidden className={cn("size-3.5 transition-transform", open && "rotate-180")} />
+          {open ? t("aiPrompt.collapse") : t("aiPrompt.expand")}
+        </button>
+      )}
+    </div>
+  );
+}
+
 function Section({ label, hint, aside, tour, children }: { label: string; hint?: string; aside?: string; tour?: string; children: React.ReactNode }) {
   return (
     <section data-tour={tour} className="flex flex-col gap-3">

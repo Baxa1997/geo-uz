@@ -768,7 +768,6 @@
     "cardTitle": "Recommended actions",
     "cardDescription": "{done} of {total} done. The most useful ones:",
     "cardEmpty": "Nothing to do for now.",
-    "goalsLabel": "Filter by goal",
     "goals": {
       "fact": "Correct wrong facts",
       "listing": "Get onto other sites",
@@ -781,10 +780,7 @@
       "content": "{count, plural, one {# page to write} other {# pages to write}}",
       "technical": "{count, plural, one {# fix to make} other {# fixes to make}}"
     },
-    "showAll": "Show all {count}",
-    "showLess": "Show fewer",
     "stepsProgress": "{done} of {total} steps done",
-    "emptyGoal": "Nothing left to do for this goal.",
     "csvHeaders": {
       "action": "Action",
       "goal": "Goal",
@@ -817,12 +813,6 @@
       "access": "Access for AI bots",
       "markup": "Text and markup"
     },
-    "siteKinds": {
-      "directory": "Directories and maps",
-      "news": "Publications",
-      "social": "Social networks",
-      "other": "Other sites"
-    },
     "owners": {
       "own": "On your site",
       "earned": "On other sites",
@@ -838,27 +828,6 @@
       "earned": "This is done on another site: get listed there or get written about.",
       "everywhere": "Write the correct details on your site and on the other sites AI read."
     },
-    "groupBy": {
-      "goal": "Goal",
-      "category": "Kind of work",
-      "impact": "Impact",
-      "owner": "Where",
-      "topic": "Topic"
-    },
-    "groupByLabel": "Group by: {by}",
-    "filterGroups": {
-      "topics": "Topics",
-      "owners": "Where the work is",
-      "sourceTypes": "Kind of site",
-      "categories": "Kind of work"
-    },
-    "filterBy": "Filter by",
-    "filterAll": "All",
-    "filtersAll": "All filters",
-    "filtersSome": "Filters: {count}",
-    "clearFilters": "Clear filters",
-    "statusAll": "All statuses",
-    "statusSome": "{count} statuses",
     "guide": "How it works",
     "guideHint": "A short tour of the page: the goals, the impact, what an action holds and how to get it done",
     "export": "Export",
@@ -871,15 +840,6 @@
     "declineAll": "Decline all",
     "declineAllTitle": "Decline {count, plural, one {# new action} other {# new actions}}?",
     "declineAllText": "They move to the Declined group, where you can restore any of them.",
-    "openCount": "{count, plural, one {# open action} other {# open actions}}",
-    "picked": "{count} selected",
-    "clearPicks": "Clear selection",
-    "pickOne": "Select: {title}",
-    "pickGroup": "Select all: {group}",
-    "fold": "Fold: {group}",
-    "unfold": "Unfold: {group}",
-    "emptyGroup": "Nothing here for now",
-    "emptyFiltered": "No actions match these filters.",
     "noTopic": "No topic",
     "changedMany": "{count} actions: {status}",
     "added": "New action added: {title}",
@@ -891,7 +851,6 @@
     "sections": {
       "overview": "Summary",
       "topic": "Topic",
-      "model": "AI assistant",
       "why": "Why it matters",
       "brief": "Brief",
       "steps": "How to do it",
@@ -933,15 +892,6 @@
       "medium": "Medium",
       "low": "Low"
     },
-    "prompt": {
-      "intro": "I run {brand} ({domain}). To be named more often in AI’s answers, I need to do the following.",
-      "task": "Task: {title}",
-      "why": "Why: {why}",
-      "steps": "Steps:",
-      "brief": "The page’s brief:",
-      "questions": "Questions customers ask AI:",
-      "ask": "Explain in plain words how to do each step; if a page is needed, write its text."
-    },
     "toast": {
       "titles": {
         "new": "{count, plural, one {Action back in New} other {# actions back in New}}",
@@ -952,7 +902,7 @@
       "texts": {
         "new": "{count, plural, one {You’ll find it} other {You’ll find them}} under <link>{group}</link>.",
         "in_progress": "Tick off the steps as you go. {count, plural, one {You’ll find it} other {You’ll find them}} under <link>{group}</link>.",
-        "done": "The effect shows after the next weekly check. {count, plural, one {You’ll find it} other {You’ll find them}} under <link>{group}</link>.",
+        "done": "The effect shows after the next check. {count, plural, one {You’ll find it} other {You’ll find them}} under <link>{group}</link>.",
         "declined": "{count, plural, one {You can restore it} other {You can restore them}} from <link>{group}</link>."
       }
     },
@@ -994,26 +944,26 @@
       "other": "Other"
     },
     "tour": {
-      "goals": {
-        "title": "Pick where to start",
-        "text": "Four goals: wrong facts to correct, sites to get onto, pages to write and fixes on your site. Click one to keep only its actions; the ring fills as they get done."
-      },
-      "status": {
-        "title": "Filter by status",
-        "text": "Show the new actions, the ones in progress, done or declined, or any mix of them."
-      },
-      "impact": {
-        "title": "See what helps most",
-        "text": "The bars show the expected effect compared with your other actions: three bars help most."
-      },
       "row": {
         "title": "Open an action",
         "text": "An action opens beside the list: why it matters, its steps and the questions it should move.",
         "action": "Open it"
       },
+      "first": {
+        "title": "Start with these",
+        "text": "The three actions with the most effect: why each matters, and a Start button."
+      },
+      "tabs": {
+        "title": "By status",
+        "text": "To do, in progress, done and declined, each on a tab of its own."
+      },
       "why": {
         "title": "Why it matters",
         "text": "The evidence from AI’s answers: the site it relied on, what it said that is wrong, or the questions where only competitors are named."
+      },
+      "prompt": {
+        "title": "Do it with AI",
+        "text": "A ready task for this action: copy it into Claude, ChatGPT or a coding AI, and it does the work or writes the text."
       },
       "brief": {
         "title": "Write from the brief",
@@ -1029,7 +979,131 @@
       }
     },
     "impactHint": "{impact}: the expected effect compared with your other actions. The more bars, the more it helps.",
-    "uploadedText": "Uploaded text"
+    "uploadedText": "Uploaded text",
+    "tabsLabel": "Actions by status",
+    "tabs": {
+      "new": "To do",
+      "in_progress": "In progress",
+      "done": "Done",
+      "declined": "Declined"
+    },
+    "progress": "{done} of {total} done",
+    "first": {
+      "title": "Do these first",
+      "text": "The three with the most effect, and why each matters."
+    },
+    "rest": "The rest",
+    "goalFilter": "By goal",
+    "allGoals": "All",
+    "emptyTab": {
+      "new": "Nothing to do right now. New actions appear after the next check.",
+      "in_progress": "Nothing started yet: start one on the To do tab.",
+      "done": "Nothing done yet. What a done action changed shows after the next check.",
+      "declined": "Nothing declined."
+    },
+    "start": "Start",
+    "details": "Details",
+    "aiPrompt": {
+      "title": "Do it with AI",
+      "where": {
+        "code": "Paste it into a coding AI (Claude Code, Cursor, Codex) opened in your website’s code, or send it to your developer.",
+        "page": "Paste it into Claude or ChatGPT: it writes the page’s text.",
+        "fact": "Paste it into Claude or ChatGPT: it writes the correct text for your site and a message to the sites.",
+        "directory": "Paste it into Claude or ChatGPT: it writes your profile for {domain}.",
+        "news": "Paste it into Claude or ChatGPT: it writes a letter to the editors of {domain}.",
+        "social": "Paste it into Claude or ChatGPT: it writes a ready post for {domain}.",
+        "other": "Paste it into Claude or ChatGPT: it writes the text for {domain}."
+      },
+      "copy": "Copy",
+      "expand": "Show all",
+      "collapse": "Show less",
+      "inLanguages": "in {langs}",
+      "lang": {
+        "uz": "Uzbek",
+        "ru": "Russian",
+        "en": "English"
+      },
+      "and": " and ",
+      "about": "{brand} ({domain}) — {category}, {place}.",
+      "services": "Services: {services}.",
+      "questions": "Customers ask AI assistants:",
+      "noInventing": "Use only facts about {brand} that I give you or that are on {domain}; where a fact is missing (a price, an address, a number), write [TO FILL] instead of inventing it.",
+      "code": {
+        "intro": "You are working in the code of my website {domain} ({brand}, {category}, {place}).",
+        "done": "Done when: {check}",
+        "careful": "Change only what this needs; don’t touch the design or other content. If you can’t tell where something lives (for example which file serves robots.txt), ask me before changing it.",
+        "ai_bots_blocked": {
+          "task": "AI assistants’ crawlers are blocked from my site, so ChatGPT and the others can’t read it.",
+          "s1": "Find what serves https://{domain}/robots.txt and allow these user agents: OAI-SearchBot, ChatGPT-User, GPTBot, Google-Extended, Googlebot, Bingbot, PerplexityBot, ClaudeBot, Claude-SearchBot. Remove the Disallow rules that block them (or a “Disallow: /” under “User-agent: *”); keep the rules for private pages (admin, cart, account).",
+          "s2": "Check that no page sends these bots a meta robots tag or an X-Robots-Tag header with noindex or noai, and that the hosting or CDN (for example Cloudflare’s “Block AI bots”) doesn’t block them.",
+          "s3": "Make sure the home page and the service and price pages answer 200 with their text in the HTML.",
+          "done": "https://{domain}/robots.txt allows those bots, and those pages open without a login."
+        },
+        "prices_as_images": {
+          "task": "My prices are shown as pictures, which AI can’t read.",
+          "s1": "Find the pages where prices are images (or PDFs) and put the same prices on the page as HTML text: a table or a list with each service and its price.",
+          "s2": "Keep the design: style the table like the rest of the site; the picture can stay under it if you like.",
+          "s3": "Do it on every language version of the page ({languages}).",
+          "done": "the prices on the page can be selected and copied as text."
+        },
+        "no_business_markup": {
+          "task": "My site has no structured data saying what the business is, so AI has to guess.",
+          "s1": "Add JSON-LD (schema.org) to the home page: the type that fits “{category}” (LocalBusiness or its closest subtype) with name, url, logo, description, telephone, email, address ({place}), openingHoursSpecification, priceRange and sameAs (my social profiles).",
+          "s2": "Take the values from the site itself; where one is missing, don’t invent it: leave me a clear TODO.",
+          "s3": "Add the same block to the contacts page, and an Organization block if the site has none.",
+          "done": "the page passes https://validator.schema.org without errors."
+        },
+        "contacts_missing": {
+          "task": "AI can’t find my contacts on the site as text.",
+          "s1": "Add a contacts block as HTML text (not an image): the address, the phone as a tel: link, email, opening hours and a link to the map.",
+          "s2": "Put it in the footer of every page and on a Contacts page linked from the menu.",
+          "s3": "Add the same details to the site’s JSON-LD (schema.org PostalAddress, telephone).",
+          "done": "the address and the phone can be selected as text on every page."
+        }
+      },
+      "page": {
+        "write": "Write a page for my website {domain} on the topic “{topic}”.",
+        "rework": "Rework my page {url} (read it first) so that it fully covers the topic “{topic}”.",
+        "brief": "The brief (from Seenova AI):",
+        "headlines": "Headline options",
+        "metaTitle": "Meta title",
+        "metaDescription": "Meta description",
+        "argue": "What the page must prove",
+        "proof": "Evidence to include",
+        "rules": "Requirements:",
+        "r1": "Write it {languages}, a full version for each language.",
+        "r2": "Open with a direct answer in 2–3 sentences, then sections with clear headings; give prices, the address and opening hours as text, not images.",
+        "r3": "End with an FAQ that answers each question above in 2–3 sentences.",
+        "r5": "Give a meta title (up to 60 characters) and a meta description (up to 155) for each language, and the FAQ as FAQPage JSON-LD."
+      },
+      "fact": {
+        "said": "AI assistants tell customers this about {brand} ({domain}): “{claim}”. It is wrong; the truth is: “{correct}”.",
+        "s1": "Write a short paragraph for my website that states the correct information plainly, {languages}: for the page where customers look for it (about, prices or contacts) and as an FAQ entry.",
+        "s2": "Write a short, polite message I can send to the sites and directories that still show the old information, asking them to correct it.",
+        "s3": "List where else this information is likely to appear (maps, directories, social profiles), so I can check each."
+      },
+      "listing": {
+        "about": "About my business: {about}",
+        "competitors": "Already named on {domain}: {names}.",
+        "pages": "The pages of {domain} that AI assistants relied on:",
+        "directory": {
+          "task": "Write my business’s profile for {domain}: the listing customers and AI assistants read there.",
+          "write": "Write: a 2–3 sentence description that says what we are and where, in the words of the customers’ questions above; the categories to choose; the services as a list; the address, phone and opening hours as fields. Write it {languages}. Then tell me in 3 steps how to create or claim the listing on {domain}."
+        },
+        "news": {
+          "task": "Write a short letter to the editors of {domain}, a site AI assistants rely on.",
+          "write": "Offer 2–3 useful story ideas where {brand} can give facts, prices or tips (not an advert) for readers who ask the questions above; introduce us in one sentence; keep it under 150 words; write it {languages}."
+        },
+        "social": {
+          "task": "Write a post for {domain}: to publish on our page there, or to send to the channel’s admin.",
+          "write": "80–120 words, friendly and concrete: what we do, our main services, where we are and how to reach us, written so it answers the questions above; 3–5 hashtags. Write it {languages}, a version for each language."
+        },
+        "other": {
+          "task": "Find out how a business gets added to {domain}, then write the text for our listing or request there.",
+          "write": "Write the text {languages} so that it answers the questions above, and tell me the steps to submit it on {domain}."
+        }
+      }
+    }
   },
   "WrongFacts": {
     "title": "Wrong facts about you",
