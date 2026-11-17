@@ -185,6 +185,22 @@ that is committed.
 
 ## Done (as of 17 November 2026)
 
+- **Built, waiting for the user's look: the new screens gone through in Russian and English and at phone
+  width (17 Nov), on the branch `languages-and-phone`; merged and pushed the same day, when the user said "commit, push and
+  deploy" (no backend change to deploy).** After "what is next" the
+  user chose "languages and phone" of four. The whole flow was walked in a browser twice on a replayed check:
+  in Russian at phone width and in English on desktop, from the first step to the saved project's questions
+  and plan pages, with every screen measured against the window (none is wider than it). Corrected: numbers
+  now take their word's right form in Russian and English ("in 1 answer", "в 1 ответе", "2 ответа"); an
+  assistant we ask that didn't answer a check no longer reads "soon" in the pages' switcher (it was Gemini
+  on a project checked on ChatGPT alone); the plan page and the cancel message said "write to us in
+  Telegram", which we have no account for, and now say email; "other spellings" spoke of ChatGPT alone.
+  Seen and left: the business's own texts (description, services, topics) stay in the language of its
+  country, so an English page shows Russian ones for a business in Uzbekistan; on a phone the statistics'
+  businesses table scrolls sideways inside its card for its last column, and the questions page's foot
+  button is cut ("archive all"); the old setup wizard, which only sample data opens, still says ChatGPT.
+  Not walked: Uzbek at phone width past the questions step, a real check. No new variable.
+
 - **Built, waiting for the user's look: results that fill in while the check runs (17 Nov), on the branch
   `live-results`; merged, pushed and deployed the same day, when the user said "commit, push and deploy".** After "what is next" the user chose "live results" of four:
   the one part of their pictures left unbuilt. A running check now publishes what it has after every answer
