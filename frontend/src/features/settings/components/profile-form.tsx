@@ -7,7 +7,7 @@ import { useMessages, useTranslations } from "next-intl";
 import { useId, useState } from "react";
 import { ChipInput } from "@/shared/components/chip-input";
 import { CountrySelect } from "@/shared/components/country-select";
-import { FormSelect } from "@/shared/components/form-select";
+import { Select } from "@/shared/components/ui/select";
 import { InfoTip } from "@/shared/components/info-tip";
 import { Modal } from "@/shared/components/modal";
 import { Button } from "@/shared/components/ui/button";
@@ -21,6 +21,8 @@ import { FIELD, SaveBar } from "./settings-parts";
 
 /** The most chips a list of the profile keeps. */
 const MAX_CHIPS = 12;
+/** "The whole country" in the city list: a list's choice can't be empty */
+const WHOLE_COUNTRY = "__country";
 
 type Form = Required<Pick<UpdateProjectRequest, "description" | "category" | "identity" | "services" | "customers" | "city" | "country">>;
 
@@ -140,13 +142,7 @@ export function ProfileForm({ project, categories, cities }: { project: Project;
             />
           </Field>
           <Field id={`${id}-category`} label={t("category")} hint={t("categoryHint")} info={t("categoryInfo")}>
-            <FormSelect id={`${id}-category`} value={form.category} onChange={(value) => set("category", value)}>
-              {categories.map((key) => (
-                <option key={key} value={key}>
-                  {label(messages.Categories, key)}
-                </option>
-              ))}
-            </FormSelect>
+            <Select id={`${id}-category`} value={form.category} onValueChange={(value) => set("category", value)} options={categories.map((key) => ({ value: key, label: label(messages.Categories, key) }))} />
           </Field>
           <Field id={`${id}-identity`} label={t("identity")} hint={t("identityHint")} info={t("identityInfo")} control={false}>
             <ChipInput bare id={`${id}-identity`} label={t("identity")} hint={t("identityHint")} values={form.identity} max={MAX_CHIPS} onChange={(values) => set("identity", values)} />
@@ -190,14 +186,15 @@ export function ProfileForm({ project, categories, cities }: { project: Project;
               {inUzbekistan ? (
                 <div className="flex items-center gap-2">
                   <div className="min-w-0 flex-1">
-                    <FormSelect id={`${id}-city`} value={form.city} onChange={(value) => set("city", value)}>
-                      <option value="">{t("wholeCountry")}</option>
-                      {(form.city && !cities.includes(form.city) ? [form.city, ...cities] : cities).map((key) => (
-                        <option key={key} value={key}>
-                          {label(messages.Cities, key)}
-                        </option>
-                      ))}
-                    </FormSelect>
+                    <Select
+                      id={`${id}-city`}
+                      value={form.city || WHOLE_COUNTRY}
+                      onValueChange={(value) => set("city", value === WHOLE_COUNTRY ? "" : value)}
+                      options={[
+                        { value: WHOLE_COUNTRY, label: t("wholeCountry") },
+                        ...(form.city && !cities.includes(form.city) ? [form.city, ...cities] : cities).map((key) => ({ value: key, label: label(messages.Cities, key) })),
+                      ]}
+                    />
                   </div>
                   <Button variant="outline" size="icon" aria-label={t("mapLarge")} onClick={() => setMapOpen(true)} className="size-10 shrink-0 rounded-lg bg-background">
                     <Maximize2 aria-hidden />

@@ -1,14 +1,14 @@
 {
   "Metadata": {
-    "title": "GEO — your brand’s visibility in ChatGPT",
-    "description": "Measure how often ChatGPT names your brand when it answers your customers’ questions."
+    "title": "Seenova AI — your brand’s visibility in AI answers",
+    "description": "Measure how often ChatGPT and Gemini name your brand when they answer your customers’ questions."
   },
   "Common": {
     "loading": "Loading…",
     "error": "Something went wrong",
     "retry": "Try again",
     "logout": "Log out",
-    "home": "GEO — home",
+    "home": "Seenova AI — home",
     "about": "What is this?",
     "expand": "Expand",
     "close": "Close",
@@ -34,7 +34,7 @@
     "en": "English"
   },
   "Method": {
-    "label": "{engine} · {webSearch, select, yes {API + web search} other {API}} · {model} · {samples, plural, one {# answer} other {# answers}} per prompt · {date}",
+    "label": "{engine} · {webSearch, select, yes {with web search} other {without web search}} · {samples, plural, one {# answer} other {# answers}} per question · {date}",
     "title": "Method"
   },
   "Tone": {
@@ -74,7 +74,7 @@
     "print": "Print or save as PDF",
     "copy": "Copy link",
     "copied": "Link copied",
-    "footer": "Prepared by GEO from AI’s answers of {date}. The numbers describe those answers; they are not a forecast.",
+    "footer": "Prepared by Seenova AI from AI’s answers of {date}. The numbers describe those answers; they are not a forecast.",
     "meta": {
       "period": "Period",
       "periodRange": "{from} – {to}",
@@ -85,12 +85,13 @@
       "assistantValue": "{engine}, web search on",
       "number": "Report number",
       "preparedBy": "Prepared by",
-      "preparedByValue": "GEO platform"
+      "preparedByValue": "Seenova AI platform"
     },
     "sections": {
       "summary": "Executive summary",
       "scorecard": "Key figures",
       "changes": "What changed since the last report",
+      "assistants": "Each AI assistant",
       "competitors": "Competitive position",
       "topics": "Topics and questions",
       "sources": "Sources AI relies on",
@@ -242,7 +243,7 @@
     "method": {
       "lead": "How the numbers were collected, so the report can be checked and repeated.",
       "assistant": "AI assistant",
-      "assistantValue": "{engine} ({model}), asked through its API with web search on",
+      "assistantValue": "{engine}, with web search on",
       "location": "Asked as",
       "locationValue": "A customer in {city}",
       "questions": "Questions",
@@ -465,10 +466,50 @@
     "partTitle": "Part {number}. {title}",
     "signoff": {
       "preparedBy": "Prepared by",
-      "preparedByValue": "GEO, the AI visibility monitoring platform",
+      "preparedByValue": "Seenova AI, the AI visibility monitoring platform",
       "acknowledged": "Read and acknowledged",
       "signature": "signature",
       "nameDate": "name, date"
+    },
+    "assistants": {
+      "lead": "Each assistant is counted apart, over its own answers: how often it names you, and what it knows about your business.",
+      "sharesTitle": "A. How often each names you",
+      "columns": {
+        "assistant": "Assistant",
+        "answers": "Answers",
+        "you": "Name you",
+        "leader": "Names most",
+        "says": "What it says",
+        "check": "Against your website"
+      },
+      "named": "{count} of {total} · {percent}",
+      "leaderNamed": "{count} of {total}",
+      "youLead": "you",
+      "nobody": "Names nobody",
+      "notYet": "Google's AI answers in Search (AI Overview) are not checked yet: coming soon.",
+      "knowsTitle": "B. What each knows about {brand}",
+      "notAsked": "This check didn't ask the assistants about your business by name. Add brand questions in Settings.",
+      "asked": "asked: “{question}”",
+      "saidNothing": "Said nothing specific about the business.",
+      "website": "The website says: {text}",
+      "known": {
+        "knows": "knows you",
+        "confuses": "confuses you with another",
+        "unknown": "doesn't know you"
+      },
+      "checks": {
+        "confirmed": "Matches",
+        "contradicted": "Differs",
+        "unverified": "Not on the website"
+      },
+      "topics": {
+        "what": "What it does",
+        "prices": "Prices",
+        "place": "Where",
+        "contacts": "Contacts",
+        "reputation": "Reputation",
+        "other": "Other"
+      }
     }
   },
   "Headline": {
@@ -477,9 +518,9 @@
     "topCompetitor": "Top competitor",
     "summary": "{assistant} names you in {you} of every 10 answers ({percent}). Your top competitor, {competitor}, is named in {them}.",
     "summaryAlone": "{assistant} names you in {you} of every 10 answers ({percent}).",
-    "trendUp": "+{points} pts vs last week",
-    "trendDown": "−{points} pts vs last week",
-    "trendFlat": "No change vs last week",
+    "trendUp": "+{points} pts vs the previous check",
+    "trendDown": "−{points} pts vs the previous check",
+    "trendFlat": "No change vs the previous check",
     "shareOfVoice": "Share of voice",
     "avgPosition": "Average position",
     "avgPositionHint": "1 = named first",
@@ -534,7 +575,7 @@
   },
   "BrandTable": {
     "title": "{brand} and its competitors",
-    "description": "Compared on four numbers, with the change since last week.",
+    "description": "Compared on four numbers, with the change since the previous check.",
     "descriptionFirst": "Compared on four numbers.",
     "rank": "Rank",
     "brand": "Brand",
@@ -543,8 +584,8 @@
     "position": "Position",
     "you": "(you)",
     "notNamed": "Not named",
-    "better": "{amount} better than last week",
-    "worse": "{amount} worse than last week",
+    "better": "{amount} better than the previous check",
+    "worse": "{amount} worse than the previous check",
     "shareOfVoice": "Share of voice",
     "titleShort": "Brand ranking",
     "guide": "Each row is one brand. Click a column heading to sort the table by that number. The arrow beside a number is the change since last week.",
@@ -876,7 +917,7 @@
       "metaDescription": "Meta description",
       "argue": "What the page must prove",
       "proofPoints": "Evidence to include",
-      "assistant": "Write with GEO AI",
+      "assistant": "Write with Seenova AI",
       "metaTitleHint": "Search and AI results show about {max} characters; shorten anything longer.",
       "metaDescriptionHint": "Search results show about {max} characters; shorten anything longer."
     },
@@ -979,8 +1020,8 @@
         "text": "A page to write comes with its brief: possible headlines, the title and description search shows, what the page must prove and the evidence to put in it."
       },
       "assistant": {
-        "title": "Draft it with GEO AI",
-        "text": "GEO AI already knows the brief and the numbers behind it: ask it for the page’s text."
+        "title": "Draft it with Seenova AI",
+        "text": "Seenova AI already knows the brief and the numbers behind it: ask it for the page’s text."
       },
       "decide": {
         "title": "Accept it, then get it done",
@@ -1163,14 +1204,6 @@
       }
     },
     "presence": {
-      "title": {
-        "sites": "Are you on them?",
-        "pages": "Do they name you?"
-      },
-      "hint": {
-        "sites": "How AI’s citations split between your own site, sites you’re on, sites you’re missing from and competitors’ sites. The “missing” share is where you could get added.",
-        "pages": "How AI’s citations split between pages that name you, pages that name only competitors and pages that name no tracked brand."
-      },
       "groups": {
         "own": "Your site",
         "listed": "Sites you’re on",
@@ -1190,8 +1223,50 @@
         "rivals": "Citations of pages that name competitors and not you: the pages to get onto.",
         "nobody": "Citations of pages that name none of the tracked brands.",
         "unknown": "Citations of pages that couldn’t be read: who they name is unknown."
+      }
+    },
+    "summary": {
+      "title": {
+        "sites": "Where you're missing",
+        "pages": "Do the pages name you"
       },
-      "total": "{count} citations in all"
+      "description": {
+        "sites": "Whom the sites AI relies on work for: sites you're on, sites you're missing from, competitors' sites and your own. The sites you're missing from are where you can get listed.",
+        "pages": "Whom the pages AI relies on name: you, only your competitors, or nobody."
+      },
+      "headline": {
+        "sites": "{percent} of what AI cites is sites you're missing from",
+        "pages": "{percent} of what AI cites is pages that name only your competitors"
+      },
+      "headlineNone": {
+        "sites": "You're on every site AI cites where a business can be listed",
+        "pages": "No page AI cites names only your competitors"
+      },
+      "text": {
+        "sites": "In the latest check: {answers} answers, {sources} sites, {citations} citations.",
+        "pages": "In the latest check: {answers} answers, {sources} pages, {citations} citations."
+      },
+      "first": {
+        "sites": "Start with these sites",
+        "pages": "The most cited pages that name only your competitors"
+      },
+      "citedIn": "in {count} of {total} answers",
+      "names": "Names:",
+      "getListed": "How to get listed",
+      "openSite": "Open the site",
+      "openAnswers": "See the answers"
+    },
+    "overTimeLater": {
+      "sites": "The chart of sites over time appears after next week's check.",
+      "pages": "The chart of pages over time appears after next week's check."
+    },
+    "allSites": "All",
+    "getListed": "Get listed",
+    "status": {
+      "own": "Your site",
+      "competitor": "A competitor's site",
+      "listed": "You're listed",
+      "missing": "You're missing"
     }
   },
   "Prompts": {
@@ -1209,7 +1284,7 @@
     "sources": "Sources"
   },
   "App": {
-    "name": "GEO"
+    "name": "Seenova AI"
   },
   "Topics": {
     "best": "Best overall",
@@ -1251,7 +1326,8 @@
       "good": "Good",
       "fair": "Fair",
       "weak": "Weak"
-    }
+    },
+    "lowest": "Holding the score down: {areas} →"
   },
   "Overview": {
     "noDataTitle": "No measurements yet",
@@ -1800,7 +1876,7 @@
     "agency": "Enterprise"
   },
   "Landing": {
-    "metaTitle": "Who does AI recommend to your customers? — GEO",
+    "metaTitle": "Who does AI recommend to your customers? — Seenova AI",
     "metaDescription": "We check the questions your customers ask ChatGPT and Gemini, compare you with your competitors and show you what to fix. The first check is free.",
     "siteLabel": "Website address",
     "sitePlaceholder": "yoursite.uz",
@@ -2090,7 +2166,7 @@
       "description": "We measure how visible your brand is in ChatGPT’s and Gemini’s answers, and show you what to fix.",
       "soon": "soon",
       "madeIn": "Made in Tashkent",
-      "rights": "© 2026 GEO",
+      "rights": "© 2026 Seenova AI",
       "links": {
         "demo": "Book a demo",
         "login": "Log in",
@@ -2270,7 +2346,7 @@
         },
         "answers": {
           "title": "Real answers",
-          "text": "Behind every number are AI’s real answers, and you can read each one. Every report states the model and the date."
+          "text": "Behind every number are AI’s real answers, and you can read each one. Every report states the assistant and the date."
         },
         "install": {
           "title": "Nothing to install",
@@ -2748,22 +2824,23 @@
     "resendIn": "Resend in {time}",
     "mockHint": "Test mode: any 6-digit code works. Demo account with data: {email}.",
     "heading": "Log in to your account",
+    "expired": "Your session has ended: enter your email again.",
     "noAccount": "No account yet?",
     "startFree": "Start with a free check",
     "panel": {
-      "title": "Does ChatGPT recommend you? Know every week.",
+      "title": "Does AI recommend you? See it after every check.",
       "items": {
         "real": {
-          "title": "Real ChatGPT answers",
-          "text": "In Uzbek and Russian, 3 answers per question."
+          "title": "Real answers from ChatGPT and Gemini",
+          "text": "In your customers’ languages, with the sites they rely on."
         },
         "competitors": {
           "title": "Competitor comparison",
           "text": "Who gets mentioned more, and who comes first."
         },
         "telegram": {
-          "title": "Reports in Telegram",
-          "text": "A short report and a PDF every week."
+          "title": "A report after every check",
+          "text": "A link to the status report by email; Telegram soon."
         }
       }
     }
@@ -2869,7 +2946,7 @@
     "topicFilter": "Topic to show",
     "allTopics": "All topics · {count}",
     "loggedInAs": "Logged in as {who}",
-    "copyright": "© {year} GEO",
+    "copyright": "© {year} Seenova AI",
     "preview": {
       "yourBrand": "Your brand",
       "site": "yoursite.uz",
@@ -2933,17 +3010,17 @@
     "ai": "AI"
   },
   "Assistant": {
-    "label": "GEO AI assistant",
+    "label": "Seenova AI assistant",
     "close": "Close",
     "new": "New chat",
     "newChat": "New chat",
     "expand": "Expand",
     "shrink": "Shrink",
-    "hello": "Hi! I’m GEO AI",
+    "hello": "Hi! I’m Seenova AI",
     "intro": "I help with your results, competitors, sources and wrong facts. Ask anything or pick an example:",
     "placeholder": "Ask anything…",
     "send": "Send",
-    "demoReply": "This is a design preview: GEO AI isn’t connected yet. Soon it will answer from your report data.",
+    "demoReply": "This is a design preview: the assistant isn’t connected yet. Soon it will answer from your report data.",
     "suggestions": {
       "s1": "How did my visibility change this week?",
       "s2": "Where are competitors ahead of me?",
@@ -2953,10 +3030,10 @@
     }
   },
   "Support": {
-    "title": "GEO support",
-    "subtitle": "Questions, problems and ideas about GEO",
+    "title": "Seenova AI support",
+    "subtitle": "Questions, problems and ideas about Seenova AI",
     "heading": "How can we help?",
-    "text": "Ask how GEO works, report a problem or suggest a feature. Our team will reply.",
+    "text": "Ask how Seenova AI works, report a problem or suggest a feature. Our team will reply.",
     "examples": "For example",
     "items": {
       "e1": "When do ChatGPT results update?",
@@ -3073,8 +3150,8 @@
   },
   "Kpi": {
     "about": "About {label}",
-    "better": "{amount} better than last week",
-    "worse": "{amount} worse than last week",
+    "better": "{amount} better than the previous check",
+    "worse": "{amount} worse than the previous check",
     "labels": {
       "visibility": "Visibility",
       "shareOfVoice": "Share of voice",
@@ -3117,9 +3194,9 @@
     "only": "{metric}: you score {value}.",
     "unnamed": "{metric}: AI answers don’t name you yet. {leader} leads with {leaderValue}.",
     "nobody": "AI answers don’t name any of the tracked brands yet.",
-    "better": "That is {amount} better than last week.",
-    "worse": "That is {amount} worse than last week.",
-    "same": "No change since last week."
+    "better": "That is {amount} better than the previous check.",
+    "worse": "That is {amount} worse than the previous check.",
+    "same": "No change since the previous check."
   },
   "SourcePage": {
     "visit": "Open the site",
@@ -3377,8 +3454,8 @@
         "text": "Each question comes with its three answers. A click opens one like a chat, with the sites it cites."
       },
       "analyze": {
-        "title": "Ask GEO AI",
-        "text": "GEO AI reads these answers for you and says what stands out and what to do about it."
+        "title": "Ask Seenova AI",
+        "text": "Seenova AI reads these answers for you and says what stands out and what to do about it."
       }
     },
     "competitors": {
@@ -3408,13 +3485,9 @@
         "title": "Sites or pages",
         "text": "See the sites AI cites, or their pages one by one."
       },
-      "chart": {
-        "title": "The most cited",
-        "text": "The five sites cited most, at each weekly check."
-      },
-      "movers": {
-        "title": "What changed",
-        "text": "Sites cited for the first time, more or less than at the last check, and whether those citations work for you."
+      "presence": {
+        "title": "Where you're missing",
+        "text": "How much of what AI relies on leaves you out, and which sites to get onto first."
       },
       "gaps": {
         "title": "Places to get listed",
@@ -3423,6 +3496,14 @@
       "site": {
         "title": "One site",
         "text": "A click opens the site's page: how often it's cited, who's named there and how to get listed."
+      },
+      "chart": {
+        "title": "The most cited",
+        "text": "The five sites cited most, at each weekly check."
+      },
+      "movers": {
+        "title": "What changed",
+        "text": "Sites cited for the first time, more or less than at the last check, and whether those citations work for you."
       }
     },
     "source": {
@@ -3674,6 +3755,25 @@
     "detail": {
       "title": "Report of {date}",
       "contents": "Contents"
+    },
+    "reasons": {
+      "title": "Why {score}?",
+      "text": "The score is the average of the five areas: each gives up to {points} points. Below, what each gave and what holds the score down.",
+      "earned": "{points} / {max}",
+      "total": "Total",
+      "lowersTitle": "What holds the score down",
+      "lost": "−{points} pts",
+      "areaScore": "area: {score}/100",
+      "todo": "What to do",
+      "more": "{count, plural, one {# more action} other {# more actions}}",
+      "nothingLost": "Every area is at 100: nothing holds the score down.",
+      "advice": {
+        "visibility": "What would get you named — Actions",
+        "competition": "Where the leader wins — Competitors",
+        "coverage": "The questions that don't name you — Questions",
+        "sources": "Sites AI relies on that don't list you — Sources",
+        "accuracy": "Add your brand's facts: the answers are checked against them"
+      }
     }
   },
   "Pilot": {
@@ -3887,7 +3987,6 @@
       "checks": "Check before deciding",
       "sources": "Sources",
       "raw": "Raw data: {answers, plural, one {# answer} other {# answers}} from {engine}. The full texts are kept and available on request.",
-      "method": "Method: {engine} through the API with web search, model {model}, {date}.",
       "methodManual": "Method: {engine} with web search, {date}.",
       "cta": "We can carry out this plan and measure again."
     }

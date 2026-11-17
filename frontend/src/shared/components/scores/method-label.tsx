@@ -20,7 +20,6 @@ export function MethodLabel({ method }: { method: ReportMethod }) {
         {t("label", {
           engine: ENGINE_NAMES[method.engine] ?? method.engine,
           webSearch: method.webSearch ? "yes" : "no",
-          model: method.model,
           samples: method.samples,
           date: formatLongDate(method.collectedAt, locale, timeZone),
         })}

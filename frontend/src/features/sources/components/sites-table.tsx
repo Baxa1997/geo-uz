@@ -12,13 +12,19 @@ import { PageSection } from "@/shared/components/page-section";
 import { Link } from "@/i18n/navigation";
 import { siteHref } from "@/shared/helpers/domain";
 import { formatDecimal, formatPercent } from "@/shared/helpers/numbers";
-import type { Source, SourceType } from "@/shared/types/api";
+import { ArrowRightIcon as ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight";
+import type { Action, Source, SourceType } from "@/shared/types/api";
+import { cn } from "@/shared/helpers/utils";
+import { presenceOf, type SitePresence } from "../helpers/presence";
+import { PRESENCE_COLORS } from "./presence-summary";
 import type { SeriesBrand } from "@/shared/types/scores";
 import { SOURCE_TYPES } from "../constants";
 import { GapSwitch } from "./gap-switch";
 import { BrandChips, Heading, Initial, Mark, SearchBox, Table, TableCard, TypePill } from "./parts";
 
 type TypeFilter = SourceType | "";
+/** The order of "are you there?" as a filter: where to act first. */
+const PRESENCE_ORDER: SitePresence[] = ["missing", "listed", "competitor", "own"];
 
 /** The client's own website, or a competitor's: "listed?" and "who it names" go without saying there. */
 const isBrandSite = (source: Source) => source.type === "own" || source.type === "competitor";
@@ -39,6 +45,8 @@ export function SitesTable({
   filename,
   initialType = "",
   sitePattern,
+  actions = [],
+  actionsHref,
 }: {
   sources: Source[];
   totalAnswers: number;
@@ -48,6 +56,9 @@ export function SitesTable({
   initialType?: TypeFilter;
   /** The address of a cited site's page, with SITE_SLOT where its domain goes. */
   sitePattern: string;
+  /** The plan's actions: a site the client is missing from links to the one that gets it listed there. */
+  actions?: Action[];
+  actionsHref?: string;
 }) {
   const t = useTranslations("SourcesPage");
   const types = useTranslations("SourcesPage.types");
@@ -56,12 +67,18 @@ export function SitesTable({
   const [type, setType] = useState<TypeFilter>(initialType);
   const [gaps, setGaps] = useState(false);
   const [rival, setRival] = useState("");
+  const [presence, setPresence] = useState<SitePresence | "">("");
+  const listing = (domain: string) =>
+    actions.find((action) => action.kind === "listing" && action.domain === domain && (action.status === "new" || action.status === "in_progress"));
+  const presenceLabel = useTranslations("SourcesPage.presence.groups");
+  const status = useTranslations("SourcesPage.status");
   const share = (count: number) => formatPercent(totalAnswers ? count / totalAnswers : 0, locale);
   const rivals = brands.filter((brand) => !brand.isYou);
   const namedOn = (source: Source) => brands.filter((brand) => source.pages.some((page) => page.mentions?.includes(brand.id)));
   const isGap = (source: Source) => !isBrandSite(source) && !source.brandListed && namedOn(source).some((brand) => !brand.isYou);
 
-  const matching = sources.filter((source) => source.domain.includes(query.trim().toLowerCase()) && (!gaps || isGap(source)));
+  const searched = sources.filter((source) => source.domain.includes(query.trim().toLowerCase()) && (!gaps || isGap(source)));
+  const matching = searched.filter((source) => !presence || presenceOf(source) === presence);
   const ofKind = matching.filter((source) => !type || source.type === type);
   const visible = ofKind.filter((source) => !gaps || !rival || namedOn(source).some((brand) => brand.id === rival));
   const kinds = matching.map((source) => source.type);
@@ -101,6 +118,27 @@ export function SitesTable({
         toolbar={
           <>
             <SearchBox id="sites-search" label={t("searchSites")} value={query} onChange={setQuery} />
+            {/* "Are you there?" as the first filter: the question the page answers */}
+            <div role="group" aria-label={t("columns.listed")} className="flex flex-wrap items-center gap-1">
+              {(["", ...PRESENCE_ORDER.filter((key) => searched.some((source) => presenceOf(source) === key))] as const).map((key) => (
+                <button
+                  key={key || "all"}
+                  type="button"
+                  aria-pressed={presence === key}
+                  onClick={() => setPresence(key)}
+                  className={cn(
+                    "inline-flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-sm transition-colors",
+                    presence === key ? "bg-foreground font-medium text-background" : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                  )}
+                >
+                  {key && <span aria-hidden className="size-2 rounded-full" style={{ background: PRESENCE_COLORS[key] }} />}
+                  {key ? presenceLabel(key) : t("allSites")}
+                  <span className={cn("tabular-nums", presence === key ? "text-background/70" : "text-muted-foreground")}>
+                    {key ? searched.filter((source) => presenceOf(source) === key).length : searched.length}
+                  </span>
+                </button>
+              ))}
+            </div>
             <div className="flex flex-wrap items-center gap-2 sm:ml-auto">
               {gaps && rivals.length > 0 && (
                 <FilterMenu
@@ -152,7 +190,7 @@ export function SitesTable({
               <Heading label={t("columns.named")} hint={t("hints.named")} className="hidden w-44 px-3 @4xl:table-cell" />
               <Heading label={t("columns.used")} hint={t("hints.used")} className="w-24 px-3" />
               <Heading label={t("columns.citations")} hint={t("hints.citations")} className="hidden w-24 px-3 @2xl:table-cell" />
-              <Heading label={t("columns.listed")} hint={t("hints.listed")} className="hidden w-28 pr-4 pl-3 @lg:table-cell" />
+              <Heading label={t("columns.listed")} hint={t("hints.listed")} className="hidden w-36 pr-4 pl-3 @md:table-cell @lg:w-44" />
             </>
           }
         >
@@ -170,14 +208,16 @@ export function SitesTable({
                       {source.domain}
                     </Link>
                   </span>
-                  {/* Narrow card: the kind and "are you listed?" move under the site's name, where their columns are hidden */}
+                  {/* Narrow card: the kind and "are you there?" move under the site's name, where their columns are hidden */}
                   <span className="mt-1 flex flex-wrap items-center gap-x-2.5 gap-y-1 font-normal @xl:hidden">
                     <TypePill type={source.type} />
-                    {!isBrandSite(source) && (
-                      <span className="@lg:hidden">
+                    <span className="@md:hidden">
+                      {isBrandSite(source) ? (
+                        <span className="text-xs text-muted-foreground">{status(presenceOf(source))}</span>
+                      ) : (
                         <Mark value={source.brandListed} yes={t("isListed")} no={t("notListed")} />
-                      </span>
-                    )}
+                      )}
+                    </span>
                   </span>
                 </th>
                 <td className="hidden px-3 py-3 @xl:table-cell">
@@ -190,12 +230,23 @@ export function SitesTable({
                 <td className="hidden px-3 py-3 tabular-nums @2xl:table-cell">
                   {source.count ? formatDecimal(source.pages.reduce((sum, page) => sum + page.count, 0) / source.count, locale) : "—"}
                 </td>
-                <td className="hidden py-3 pr-4 pl-3 @lg:table-cell">
-                  {isBrandSite(source) ? (
-                    <span className="text-muted-foreground">—</span>
-                  ) : (
-                    <Mark value={source.brandListed} yes={t("isListed")} no={t("notListed")} />
-                  )}
+                <td className="hidden py-3 pr-4 pl-3 @md:table-cell">
+                  <span className="flex flex-col items-start gap-1">
+                    {isBrandSite(source) ? (
+                      <span className="text-xs text-muted-foreground">{status(presenceOf(source))}</span>
+                    ) : (
+                      <Mark value={source.brandListed} yes={t("isListed")} no={t("notListed")} className="font-medium" />
+                    )}
+                    {presenceOf(source) === "missing" && listing(source.domain) && actionsHref && (
+                      <Link
+                        href={{ pathname: actionsHref, query: { action: listing(source.domain)?.id ?? "" } }}
+                        className="inline-flex items-center gap-1 text-xs font-medium text-brand underline-offset-4 hover:underline"
+                      >
+                        {t("getListed")}
+                        <ArrowRight aria-hidden className="size-3" />
+                      </Link>
+                    )}
+                  </span>
                 </td>
               </LinkRow>
             );

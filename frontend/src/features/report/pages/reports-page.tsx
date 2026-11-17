@@ -64,6 +64,7 @@ export default async function ReportsPage({ params }: Props) {
       <div className="flex flex-col gap-6 sm:gap-7">
         <LatestReport
           report={report}
+          actions={actions}
           href={`${base}/${encodeURIComponent(latest.runId)}`}
           share={<ReportShare path={shared} text={tReports("share.text", { brand: project.brand.name, date })} />}
         />

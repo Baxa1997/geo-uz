@@ -7,13 +7,14 @@ import { EnvelopeIcon as Mail } from "@phosphor-icons/react/dist/ssr/Envelope";
 import { PaperPlaneTiltIcon as Send } from "@phosphor-icons/react/dist/ssr/PaperPlaneTilt";
 import { useTranslations } from "next-intl";
 import { useId, useState } from "react";
-import { FormSelect } from "@/shared/components/form-select";
+import { Select } from "@/shared/components/ui/select";
 import { Button } from "@/shared/components/ui/button";
 import { api, ApiError } from "@/shared/api/client";
 import { cn } from "@/shared/helpers/utils";
 import type { Plan, ReportSettings, UpdateReportSettingsRequest } from "@/shared/types/api";
+import { fieldClass } from "@/shared/components/ui/field-style";
 
-const FIELD = "h-9 w-full min-w-0 rounded-lg border bg-background px-3 text-sm outline-none placeholder:text-muted-foreground focus-visible:ring-3 focus-visible:ring-ring/50 disabled:bg-muted disabled:text-muted-foreground";
+const FIELD = fieldClass("md");
 
 /**
  * Where the weekly report goes after each check, one row each: a Telegram chat through our bot, an email
@@ -117,13 +118,12 @@ export function ReportDelivery({
             <label htmlFor={`${id}-language`} className="sr-only">
               {t("language.title")}
             </label>
-            <FormSelect id={`${id}-language`} value={settings.language} onChange={(value) => save.mutate({ language: value as ReportSettings["language"] })}>
-              {(["uz", "ru", "en"] as const).map((locale) => (
-                <option key={locale} value={locale}>
-                  {locales(locale)}
-                </option>
-              ))}
-            </FormSelect>
+            <Select<ReportSettings["language"]>
+              id={`${id}-language`}
+              value={settings.language}
+              onValueChange={(language) => save.mutate({ language })}
+              options={(["uz", "ru", "en"] as const).map((locale) => ({ value: locale, label: locales(locale) }))}
+            />
           </div>,
           "language",
         )}

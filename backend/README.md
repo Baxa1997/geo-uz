@@ -227,3 +227,21 @@ repository.
 - A live weekly check (the timer is installed); a browser on the server for the PDF; the report in
   Telegram; suggested questions; facts read from the website; and everything else in `PLAN.md`.
 - A first run is done in a thread of the web process: fine for a start, a queue when there is traffic.
+
+## Speed (17 Nov 2026)
+
+The server is in Germany and Supabase's database in Mumbai: a statement costs about 0.12 s and a new connection
+2 s. So every request counts its round trips:
+
+- Requests that only read use `ReadSession` (autocommit: no BEGIN and ROLLBACK), through `in_project(…, read=True)`.
+- The pool keeps its connections open (TCP keepalives) and tries one only after it rested two minutes (`db.py`),
+  not before every request.
+- `app/cache.py` keeps a session's user for a minute (logging out and renaming drop it) and a project's report and
+  actions until the project changes: a middleware marks a project changed after any request that writes to it,
+  and a report is reused only for the same latest check, two minutes at most (the weekly check writes from its
+  own process). One uvicorn process, so a dictionary is enough; with several workers this needs a shared store.
+
+Measured on the server against Supabase: the report 3.4 s → 0.14 s when kept (2.2 s after a change), the actions
+2.0 s → 0.14 s, the session check 0.56 s → 0.14 s and nothing while kept. A database next to the server would
+make each statement a few milliseconds.
+

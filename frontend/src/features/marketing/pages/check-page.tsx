@@ -15,7 +15,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   const locale = setPageLocale((await params).locale);
   const [{ domain }, t] = await Promise.all([searchParams.then((sp) => parseSiteParam(sp.site)), getTranslations({ locale, namespace: "Check" })]);
   // Results for arbitrary websites shouldn't end up in search engines
-  return { title: t("metaTitle", { site: domain || "GEO" }), robots: { index: false } };
+  return { title: t("metaTitle", { site: domain || "Seenova AI" }), robots: { index: false } };
 }
 
 export default async function CheckPage({ params, searchParams }: Props) {

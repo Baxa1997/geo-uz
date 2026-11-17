@@ -47,7 +47,7 @@ WORDS = {
         "first": "birinchi tekshiruv",
         "open": "Toʻliq hisobotni ochish",
         "attached": "Hisobot PDF koʻrinishida xatga ilova qilingan.",
-        "why": "Bu xat sizga GEO loyihangiz sozlamalarida koʻrsatilgan manzil boʻyicha yuborildi.",
+        "why": "Bu xat sizga Seenova AI loyihangiz sozlamalarida koʻrsatilgan manzil boʻyicha yuborildi.",
         "points": "punkt",
     },
     "ru": {
@@ -62,7 +62,7 @@ WORDS = {
         "first": "первая проверка",
         "open": "Открыть полный отчёт",
         "attached": "Отчёт в PDF приложен к письму.",
-        "why": "Письмо отправлено на адрес, указанный в настройках вашего проекта GEO.",
+        "why": "Письмо отправлено на адрес, указанный в настройках вашего проекта Seenova AI.",
         "points": "п.",
     },
     "en": {
@@ -77,7 +77,7 @@ WORDS = {
         "first": "the first check",
         "open": "Open the full report",
         "attached": "The report is attached as a PDF.",
-        "why": "This email was sent to the address in your GEO project's settings.",
+        "why": "This email was sent to the address in your Seenova AI project's settings.",
         "points": "points",
     },
 }
@@ -148,7 +148,7 @@ def message(facts: Dict[str, Any], language: str, url: str, attachment: Optional
     ]
     email = EmailMessage()
     email["Subject"] = words["subject"].format(brand=facts["brand"], date=facts["date"])
-    text = [f"GEO · {facts['brand']}", "", words["intro"], ""] + [f"{name}: {value}" + (f" ({note})" if note else "") for name, value, note in rows]
+    text = [f"{mail.BRAND} · {facts['brand']}", "", words["intro"], ""] + [f"{name}: {value}" + (f" ({note})" if note else "") for name, value, note in rows]
     text += ["", f"{words['open']}: {url}"] + ([words["attached"]] if attachment else []) + ["", words["why"]]
     email.set_content("\n".join(text))
     cells = "".join(
@@ -159,8 +159,8 @@ def message(facts: Dict[str, Any], language: str, url: str, attachment: Optional
     )
     email.add_alternative(
         f'<div style="font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;color:#14182b;max-width:520px">'
-        f'<p style="font-size:18px;font-weight:700;margin:0 0 4px">GEO</p>'
-        f'<p style="font-size:16px;margin:0 0 16px">{html.escape(facts["brand"])} · {html.escape(facts["date"])}</p>'
+        + mail.WORDMARK_HTML.replace("margin:0 0 16px", "margin:0 0 4px")
+        + f'<p style="font-size:16px;margin:0 0 16px">{html.escape(facts["brand"])} · {html.escape(facts["date"])}</p>'
         f'<p style="margin:0 0 8px;color:#666b7a">{html.escape(words["intro"])}</p>'
         f'<table style="width:100%;border-collapse:collapse;margin:0 0 20px">{cells}</table>'
         f'<p style="margin:0 0 16px"><a href="{html.escape(url)}" style="display:inline-block;background:#1c2e6e;color:#ffffff;text-decoration:none;padding:10px 18px;border-radius:6px;font-weight:600">{html.escape(words["open"])}</a></p>'

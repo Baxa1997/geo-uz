@@ -416,3 +416,105 @@
   --animate-rise: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) backwards;
   --animate-ring: ring 1s cubic-bezier(0, 0, 0.2, 1) 4;
 }
+
+/* Loading, and only loading (the user, 17 Nov 2026: "make the loading effect better, with animations").
+   These run for as long as a page or a check is loading, and go with the screen that shows them: a skeleton
+   is replaced by the page, the check's screen by its result. So they repeat, unlike the rest of this file,
+   but nothing is left moving once the wait is over. Under reduced motion they stand still. */
+/* The light is half the block wide: from 200% it starts just past the right edge, at -100% it has left */
+@keyframes shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+/* A dot travels the check's ring */
+@keyframes orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* A question goes out along a line from our mark to an assistant: a short dash runs the line (pathLength 100) */
+@keyframes signal {
+  0% {
+    stroke-dashoffset: 108;
+    opacity: 0;
+  }
+  15%,
+  80% {
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+}
+
+/* A light passes over a filled bar */
+@keyframes sheen {
+  from {
+    transform: translateX(-120%);
+  }
+  to {
+    transform: translateX(320%);
+  }
+}
+
+/* An assistant being asked sends out a soft ring */
+@keyframes ripple {
+  from {
+    transform: scale(1);
+    opacity: 0.45;
+  }
+  to {
+    transform: scale(1.7);
+    opacity: 0;
+  }
+}
+
+/* The bar across the top of the panel runs from nothing toward the width it is given while a page loads */
+@keyframes nav-grow {
+  from {
+    width: 0;
+  }
+}
+
+/* A skeleton appears after a beat, so a quick page doesn't flash gray */
+@keyframes arrive {
+  from {
+    opacity: 0;
+  }
+}
+
+@theme inline {
+  --animate-shimmer: shimmer 1.6s linear infinite;
+  --animate-orbit: orbit 6s linear infinite;
+  --animate-signal: signal 2.4s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  --animate-sheen: sheen 1.8s ease-in-out infinite;
+  --animate-ripple: ripple 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+  --animate-arrive: arrive 0.3s ease-out 0.15s backwards;
+}
+
+/* A block of a page that is still loading: the muted ground with a light passing over it */
+@utility skeleton {
+  border-radius: var(--radius-lg);
+  background-color: var(--muted);
+  background-image: linear-gradient(90deg, transparent 0%, rgb(255 255 255 / 0.55) 50%, transparent 100%);
+  background-size: 50% 100%;
+  background-repeat: no-repeat;
+  animation: var(--animate-shimmer);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton,
+  .animate-orbit,
+  .animate-signal,
+  .animate-sheen,
+  .animate-ripple {
+    animation: none;
+  }
+}

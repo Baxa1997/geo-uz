@@ -146,9 +146,17 @@ From the text, give:
 - city: the city it mainly serves, and cityEn, the same in English; both empty when it serves a whole country or several, or works online.
 - description: one sentence on what it offers.
 - services: up to six of its main services.
-- questions: exactly {count} questions a customer there (in that city, or in that country when no city is given) would ask an AI assistant when choosing such a business, before knowing any business's name, in the languages set below. Cover: the best in the city or country, how to choose, prices, the business's main services or specialities, and its district if the site names one. Each with a `topic` of one or two words. Natural, short, the way people type. Never name this business or any other in a question.
+- questions: exactly {count} questions a customer there (in that city, or in that country when no city is given) would ask an AI assistant when choosing such a business, before knowing any business's name, in the languages set below. Each with a `topic` of one or two words. Follow QUESTION RULES below.
 - competitors: up to five businesses a customer there would compare this one with: real ones you are sure exist and work for the same customers in the same country (or city), the best known first. `domain` is the competitor's own website without "https://", or empty when you are not sure of it. None rather than an invented one. Never this business itself.
-- brandQuestions: exactly four questions a customer who has already heard of this business would ask an AI assistant about it by its name, in the languages set below (two and two where there are two languages). Each names the business as customers write it, and each asks about one thing: its prices, whether it is good and what people say, one of its main services, how to reach or find it. Natural and short.
+- brandQuestions: exactly four questions a customer who has already heard of this business would ask an AI assistant about it by its name, in the languages set below (two and two where there are two languages). Each names the business as customers write it and asks about one of: its prices; whether it is good (or what people say about it); one of its main services; where it is or how to reach it (only when it has a place customers visit). Follow QUESTION RULES below.
+
+QUESTION RULES (every question, customers' and brand ones):
+- One question, about one thing, with one question mark. Never two questions joined by "and" / "и" / "va", never a list of things to answer ("what does it do, what are the prices, where is it").
+- Short: four to twelve words, the way a person types into ChatGPT. Plain words; no marketing words or jargon from the website.
+- Concrete: say the service and the place ("IELTS courses in Tashkent", not "education services").
+- A customer's question must be one whose good answer names businesses: which is best, where to go, who does a service, which is cheaper or better for someone. Not "how to choose" or "what is X" questions, which answer without naming anybody. Cover different needs: the best overall, a main service, the price level, a kind of customer, the district when the site names one.
+- Examples, good: "Toshkentda IELTS ga tayyorlash uchun qaysi markaz yaxshi?", "Где в Ташкенте недорогие курсы английского для детей?", "Which dental clinics in Tashkent do implants?", "Oq Tabassum narxlari qancha?", "Хорошая ли клиника «Oq Tabassum» для имплантов?".
+- Examples, bad: "Что известно об «Oq Tabassum»? Чем занимается, какие цены, где находится и какие отзывы?" (five questions), "Oq Tabassum bilan qanday bogʻlanish va uni qayerdan topish mumkin?" (two questions), "How to choose a good IELTS course and how much does it cost?" (two questions, and names nobody).
 
 """ + LANGUAGE_RULES
 
@@ -214,10 +222,13 @@ NAMES_RULES = (
 
 # Asked beside the customers' questions, by the business's name: what an assistant says of the business
 # itself. Their answers are never counted in the scores: a question that names the business names it.
+# The general brand question: one plain question, as people type it (the user, 17 Nov 2026: "not complex but
+# clean exact prompt questions"; until then it asked five things at once: what it does, prices, where, reviews).
+# An assistant asked what it knows tells all of that it knows anyway.
 BRAND_QUESTIONS = {
-    "ru": "Что известно о «{name}»{place}? Чем занимается, какие цены, где находится и какие о нём отзывы?",
-    "uz": "{name}{place} haqida nima maʼlum? Nima bilan shugʻullanadi, narxlari qanday, qayerda joylashgan va u haqda qanday fikrlar bor?",
-    "en": "What is known about {name}{place}? What does it do, what are its prices, where is it, and what do people say about it?",
+    "ru": "Что вы знаете о «{name}»{place}?",
+    "uz": "{name}{place} haqida nima bilasiz?",
+    "en": "What do you know about {name}{place}?",
 }
 
 BRAND_RULES = """An AI assistant was asked about one business by its name. You are given the business as its own website describes it, and the assistant's answer. Say what the assistant states about the business, for its owner, who is not technical.

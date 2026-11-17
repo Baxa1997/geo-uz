@@ -24,6 +24,7 @@ import type { Prompt, Report, ReportFilters } from "@/shared/types/api";
 import type { SeriesBrand } from "@/shared/types/scores";
 import { answerRows, citedSites, matchesBrand, matchesQuery, matchesSource, matchesStatus, NO_BRAND } from "../helpers/filters";
 import type { AnswersFilter } from "../types";
+import { fieldClass } from "@/shared/components/ui/field-style";
 
 const STATUSES: AnswersFilter[] = ["all", "missing", "negative"];
 
@@ -127,7 +128,7 @@ export function AnswersTable({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={t("search")}
-            className="h-8 w-full rounded-lg border bg-background pr-2 pl-8 text-sm shadow-xs outline-none placeholder:text-muted-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
+            className={fieldClass("sm", "pr-2 pl-8")}
           />
         </div>
         <FilterMenu

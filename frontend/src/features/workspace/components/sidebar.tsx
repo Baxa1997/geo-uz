@@ -287,7 +287,7 @@ export function MobileTopBar(props: SidebarProps) {
           <SidebarContent {...props} onNavigate={() => setOpen(false)} />
         </SheetContent>
       </Sheet>
-      <span className="min-w-0 flex-1 truncate pr-2 font-semibold">{current?.brand.name ?? "GEO"}</span>
+      <span className="min-w-0 flex-1 truncate pr-2 font-semibold">{current?.brand.name ?? "Seenova AI"}</span>
     </header>
   );
 }

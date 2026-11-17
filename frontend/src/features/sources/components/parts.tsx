@@ -8,6 +8,7 @@ import { SourceTypeDot } from "@/shared/components/scores/source-type-dot";
 import { cn } from "@/shared/helpers/utils";
 import type { SourceType } from "@/shared/types/api";
 import type { SeriesBrand } from "@/shared/types/scores";
+import { fieldClass } from "@/shared/components/ui/field-style";
 
 /** The small parts the sources tables share: the list of sites and pages, and a site's own page. */
 
@@ -36,7 +37,7 @@ export function SearchBox({ id, label, value, onChange }: { id: string; label: s
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={label}
-        className="h-8 w-full rounded-lg border bg-background pr-2 pl-8 text-sm shadow-xs outline-none placeholder:text-muted-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
+        className={fieldClass("sm", "pr-2 pl-8")}
       />
     </div>
   );

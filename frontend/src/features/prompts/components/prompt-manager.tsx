@@ -55,6 +55,7 @@ import { SuggestionsTable } from "./suggestions-table";
 import { TagsCell } from "./tags-cell";
 import { TopicDialog } from "./topic-dialog";
 import { TopicsColumn, type TopicItem } from "./topics-column";
+import { fieldClass } from "@/shared/components/ui/field-style";
 
 const dash = <span className="text-muted-foreground">—</span>;
 
@@ -754,7 +755,7 @@ export function PromptManager({
         value={query}
         onChange={(event) => setQuery(event.target.value)}
         placeholder={t("search")}
-        className="h-9 w-full rounded-lg border bg-background pr-2 pl-8 text-sm shadow-xs outline-none placeholder:text-muted-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
+        className={fieldClass("sm", "h-9 pr-2 pl-8")}
       />
     </div>
   );

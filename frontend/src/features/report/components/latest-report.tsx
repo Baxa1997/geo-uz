@@ -6,17 +6,18 @@ import { Link } from "@/i18n/navigation";
 import { engineOf, TIME_ZONE } from "@/shared/constants";
 import { formatLongDate, formatShortDate } from "@/shared/helpers/dates";
 import { totalAnswers } from "@/shared/helpers/scores";
-import type { Report } from "@/shared/types/api";
+import type { Action, Report } from "@/shared/types/api";
 import { REPORT_PARTS, REPORT_SECTIONS } from "../constants";
 import { useAreaFindings } from "../hooks/use-area-findings";
 import { ConditionSummary } from "./condition-summary";
+import { ScoreReasons } from "./score-reasons";
 
 /**
  * The latest weekly report as Hisobotlar opens: what it is (its number, the period, how much was asked),
  * the condition it found (the overall score with its status and change, and the five areas with the fact
  * behind each), and the ways on: the whole report, its link, Telegram and its PDF (`share`).
  */
-export function LatestReport({ report, href, share }: { report: Report; /** The report's own page. */ href: string; share: React.ReactNode }) {
+export function LatestReport({ report, actions, href, share }: { report: Report; actions: Action[]; /** The report's own page. */ href: string; share: React.ReactNode }) {
   const t = useTranslations("Reports.latest");
   const document = useTranslations("Report");
   const engines = useTranslations("Engines");
@@ -26,6 +27,14 @@ export function LatestReport({ report, href, share }: { report: Report; /** The 
   const findings = useAreaFindings(report);
   const before = report.history.at(-2)?.collectedAt;
   const issued = formatLongDate(report.method.collectedAt, locale, timeZone);
+  const condition = report.conditionHistory.at(-1);
+  const sentences = {
+    visibility: findings.visibility.finding,
+    competition: findings.competition.finding,
+    coverage: findings.coverage.finding,
+    sources: findings.sources.finding,
+    accuracy: findings.accuracy.finding,
+  };
 
   return (
     <section aria-labelledby={id} data-tour="latest" className="overflow-hidden rounded-xl bg-card shadow-xs ring-1 ring-foreground/10">
@@ -47,17 +56,14 @@ export function LatestReport({ report, href, share }: { report: Report; /** The 
       </header>
 
       <div className="px-4 py-4 sm:px-5">
-        <ConditionSummary
-          report={report}
-          findings={{
-            visibility: findings.visibility.finding,
-            competition: findings.competition.finding,
-            coverage: findings.coverage.finding,
-            sources: findings.sources.finding,
-            accuracy: findings.accuracy.finding,
-          }}
-        />
+        <ConditionSummary report={report} findings={sentences} />
       </div>
+
+      {condition && (
+        <div className="border-t px-4 py-4 sm:px-5">
+          <ScoreReasons condition={condition} findings={sentences} actions={actions} projectId={report.project.id} />
+        </div>
+      )}
 
       <footer className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t bg-muted/50 px-4 py-3 sm:px-5">
         <p className="min-w-0 flex-1 basis-72 text-sm text-pretty text-muted-foreground">{t("inside", { parts: REPORT_PARTS.length, sections: REPORT_SECTIONS.length })}</p>

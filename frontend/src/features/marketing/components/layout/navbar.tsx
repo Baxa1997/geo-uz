@@ -65,10 +65,10 @@ export function Navbar() {
         <Link href="/login" className="hidden h-11 items-center rounded-xl px-4 text-base font-semibold transition-colors hover:bg-muted lg:inline-flex">
           {t("login")}
         </Link>
-        {/* On the narrowest phones the button doesn't fit beside the logo; the menu has it too */}
+        {/* Under 380px the button doesn't fit beside the logo and the menu; the menu has it too */}
         <SectionLink
           hash={SECTION.check}
-          className={cn(buttonVariants({ variant: "brand" }), "h-11 rounded-xl px-4 text-base font-semibold max-[359px]:hidden")}
+          className={cn(buttonVariants({ variant: "brand" }), "h-11 rounded-xl px-4 text-base font-semibold max-sm:px-3 max-[379px]:hidden")}
         >
           {t("cta")}
         </SectionLink>

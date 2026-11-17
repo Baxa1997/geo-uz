@@ -2,7 +2,7 @@
 
 import { useLocale } from "next-intl";
 import { useMemo } from "react";
-import { NativeSelect, NativeSelectOption } from "@/shared/components/ui/native-select";
+import { Select } from "@/shared/components/ui/select";
 import { COUNTRY_CODES } from "@/shared/constants/countries";
 import { countryName } from "@/shared/helpers/labels";
 
@@ -17,12 +17,6 @@ export function CountrySelect({ id, value, onChange }: { id: string; value: stri
   );
 
   return (
-    <NativeSelect id={id} value={value} onChange={(e) => onChange(e.target.value)} className="w-full [&_select]:h-10 [&_select]:text-base md:[&_select]:text-sm">
-      {countries.map(({ code, name }) => (
-        <NativeSelectOption key={code} value={code}>
-          {name}
-        </NativeSelectOption>
-      ))}
-    </NativeSelect>
+    <Select id={id} value={value} onValueChange={onChange} options={countries.map(({ code, name }) => ({ value: code, label: name }))} />
   );
 }

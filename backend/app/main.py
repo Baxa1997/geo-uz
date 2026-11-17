@@ -22,23 +22,36 @@ import urllib.request
 from email.message import EmailMessage
 from typing import Any, Dict, List, Optional
 
-from fastapi import Body, Cookie, Depends, FastAPI, HTTPException, Response
+from fastapi import Body, Cookie, Depends, FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sqlalchemy import func, select
 
-from . import delivery, firstrun, fixes, mail, projects
+from . import cache, delivery, firstrun, fixes, mail, projects
 from .config import settings
-from .db import Brand, DemoRequest, FirstRun, LoginCode, Project, Run, Session, SessionLocal, User, create_tables, now
+from .db import Brand, DemoRequest, FirstRun, LoginCode, Project, ReadSession, Run, Session, SessionLocal, User, create_tables, now
 
 SESSION_COOKIE = "geo_session"
 CODE_MINUTES = 10
 RESEND_SECONDS = 60
 MAX_ATTEMPTS = 5
 
-app = FastAPI(title="GEO backend")
+app = FastAPI(title="Seenova AI backend")
 app.add_middleware(CORSMiddleware, allow_origins=[settings.frontend_origin], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 create_tables()
+
+_PROJECT_PATH = re.compile(r"^/projects/([^/]+)")
+
+
+@app.middleware("http")
+async def mark_changed(request: Request, call_next: Any) -> Any:
+    """A request that changes a project makes its kept reports stale (`app/cache.py`), once it is done."""
+    response = await call_next(request)
+    if request.method != "GET":
+        found = _PROJECT_PATH.match(request.url.path)
+        if found:
+            cache.touch(found.group(1))
+    return response
 
 
 def digest(value: str) -> str:
@@ -149,14 +162,17 @@ def verify_code(body: VerifyRequest, response: Response) -> Dict[str, Any]:
 def current_user(geo_session: Optional[str] = Cookie(default=None)) -> User:
     if not geo_session:
         raise HTTPException(401, "not_logged_in")
-    with SessionLocal() as db:
-        session = db.get(Session, digest(geo_session))
-        if session is None or session.expires_at < now():
+    token_hash = digest(geo_session)
+    # Every call of every page asks this: kept a minute (`app/cache.py`)
+    kept = cache.session_user(token_hash)
+    if kept is not None:
+        return kept
+    with ReadSession() as db:
+        found = db.execute(select(User, Session.expires_at).join(Session, Session.user_id == User.id).where(Session.token_hash == token_hash)).first()
+        if found is None or found[1] < now():
             raise HTTPException(401, "not_logged_in")
-        user = db.get(User, session.user_id)
-        if user is None:
-            raise HTTPException(401, "not_logged_in")
-        return user
+        cache.keep_session(token_hash, found[0])
+        return found[0]
 
 
 @app.get("/auth/me")
@@ -177,12 +193,14 @@ def update_me(body: MeUpdate, user: User = Depends(current_user)) -> Dict[str, A
         found = db.get(User, user.id)
         found.name = name or None
         db.commit()
+        cache.drop_user(user.id)
         return user_json(found)
 
 
 @app.post("/auth/logout", status_code=204)
 def logout(response: Response, geo_session: Optional[str] = Cookie(default=None)) -> None:
     if geo_session:
+        cache.drop_session(digest(geo_session))
         with SessionLocal() as db:
             session = db.get(Session, digest(geo_session))
             if session:
@@ -520,20 +538,38 @@ def first_run_result(run_id: str, user: User = Depends(current_user)) -> Any:
 # check itself is `app/weekly.py`, started by the server's timer.
 
 
-def in_project(work: Any) -> Any:
-    """Runs `work(db)` and turns a ProjectError into its HTTP answer."""
+def in_project(work: Any, read: bool = False) -> Any:
+    """Runs `work(db)` and turns a ProjectError into its HTTP answer. `read`: nothing is written, so no transaction."""
     try:
-        with SessionLocal() as db:
+        with (ReadSession if read else SessionLocal)() as db:
             done = work(db)
-            db.commit()
+            if not read:
+                db.commit()
             return done
     except projects.ProjectError as error:
         raise HTTPException(error.status, error.code) from error
 
 
+def kept(project_id: str, user: Optional[User], what: str, make: Any, **args: Any) -> Any:
+    """A project's report or actions, kept until the project changes or has a new check (`app/cache.py`).
+
+    The project and its latest check are read in one statement; the rest only when they changed."""
+
+    def work(db: Any) -> Any:
+        latest = select(Run.id).where(Run.project_id == Project.id, Run.status == "done").order_by(Run.collected_at.desc()).limit(1).scalar_subquery()
+        found = db.execute(select(Project, latest).where(Project.id == project_id)).first()
+        if found is None or (user is not None and found[0].user_id != user.id):
+            raise projects.ProjectError(404, "not_found")
+        project = found[0]
+        key = (what, project_id, tuple(sorted(args.items())))
+        return cache.report(key, (cache.version(project_id), found[1]), lambda: make(db, project, **args))
+
+    return in_project(work, read=True)
+
+
 @app.get("/projects")
 def list_projects(user: User = Depends(current_user)) -> Any:
-    return in_project(lambda db: [projects.project_json(db, project) for project in db.scalars(select(Project).where(Project.user_id == user.id).order_by(Project.created_at))])
+    return in_project(lambda db: [projects.project_json(db, project) for project in db.scalars(select(Project).where(Project.user_id == user.id).order_by(Project.created_at))], read=True)
 
 
 @app.post("/projects")
@@ -547,13 +583,19 @@ def create_project(body: Dict[str, Any] = Body(...), user: User = Depends(curren
     made = in_project(work)
     if made["runId"]:
         # The cited pages are read after the answer is sent: who each names, and whether the client is on them
-        threading.Thread(target=fixes.after_creation, args=(made["project"]["id"], made["runId"]), daemon=True).start()
+        threading.Thread(target=_after_creation, args=(made["project"]["id"], made["runId"]), daemon=True).start()
     return made
+
+
+def _after_creation(project_id: str, run_id: str) -> None:
+    fixes.after_creation(project_id, run_id)
+    # It wrote the actions and who the cited pages name: the kept report is stale
+    cache.touch(project_id)
 
 
 @app.get("/projects/{project_id}")
 def get_project(project_id: str, user: User = Depends(current_user)) -> Any:
-    return in_project(lambda db: projects.project_json(db, projects.own(db, user, project_id)))
+    return in_project(lambda db: projects.project_json(db, projects.own(db, user, project_id)), read=True)
 
 
 @app.delete("/projects/{project_id}", status_code=204)
@@ -564,24 +606,24 @@ def delete_project(project_id: str, user: User = Depends(current_user)) -> None:
 
 @app.get("/projects/{project_id}/prompts")
 def get_prompts(project_id: str, user: User = Depends(current_user)) -> Any:
-    return in_project(lambda db: [projects.prompt_json(prompt) for prompt in projects.prompts_of(db, projects.own(db, user, project_id).id)])
+    return in_project(lambda db: [projects.prompt_json(prompt) for prompt in projects.prompts_of(db, projects.own(db, user, project_id).id)], read=True)
 
 
 # The report is read without login: its page is the link a client shares (`/projects/{id}/report`), and the
 # server prints the same page as a PDF. The project's id, 32 random characters, is what the link's holder knows.
 @app.get("/projects/{project_id}/report")
 def get_report(project_id: str, language: Optional[str] = None, topic: Optional[str] = None, engine: Optional[str] = None) -> Any:
-    return in_project(lambda db: projects.report(db, projects.shared(db, project_id), language=language, topic=topic, engine=engine))
+    return kept(project_id, None, "report", projects.report, language=language, topic=topic, engine=engine)
 
 
 @app.get("/projects/{project_id}/prompts/{prompt_id}/report")
 def get_prompt_report(project_id: str, prompt_id: str, user: User = Depends(current_user)) -> Any:
-    return in_project(lambda db: projects.report(db, projects.own(db, user, project_id), prompt_id=prompt_id))
+    return kept(project_id, user, "report", projects.report, prompt_id=prompt_id)
 
 
 @app.get("/projects/{project_id}/reports/{run_id}")
 def get_run_report(project_id: str, run_id: str) -> Any:
-    return in_project(lambda db: projects.report(db, projects.shared(db, project_id), run_id=run_id))
+    return kept(project_id, None, "report", projects.report, run_id=run_id)
 
 
 @app.get("/projects/{project_id}/reports/{run_id}/pdf")
@@ -597,24 +639,24 @@ def get_report_pdf(project_id: str, run_id: str, lang: str = "uz", user: User = 
 
 @app.get("/projects/{project_id}/topics")
 def get_topics(project_id: str, user: User = Depends(current_user)) -> Any:
-    return in_project(lambda db: projects.topics(db, projects.own(db, user, project_id)))
+    return in_project(lambda db: projects.topics(db, projects.own(db, user, project_id)), read=True)
 
 
 @app.get("/projects/{project_id}/tags")
 def get_tags(project_id: str, user: User = Depends(current_user)) -> Any:
-    return in_project(lambda db: projects.tags(db, projects.own(db, user, project_id)))
+    return in_project(lambda db: projects.tags(db, projects.own(db, user, project_id)), read=True)
 
 
 # Nothing is kept for these yet; an empty answer lets their pages open on a real project
 @app.get("/projects/{project_id}/prompt-suggestions")
 def nothing_yet(project_id: str, user: User = Depends(current_user)) -> Any:
-    return in_project(lambda db: [] if projects.own(db, user, project_id) else [])
+    return in_project(lambda db: [] if projects.own(db, user, project_id) else [], read=True)
 
 
 @app.get("/projects/{project_id}/actions")
 def get_actions(project_id: str) -> Any:
     """Read without login, like the report: the report lists its recommendations."""
-    return in_project(lambda db: fixes.listed(db, projects.shared(db, project_id)))
+    return kept(project_id, None, "actions", fixes.listed)
 
 
 Json = Dict[str, Any]
@@ -724,7 +766,7 @@ def update_action(project_id: str, action_id: str, body: Json = Body(...), user:
 
 @app.get("/projects/{project_id}/facts")
 def get_facts(project_id: str, user: User = Depends(current_user)) -> Any:
-    return in_project(lambda db: list(projects.own(db, user, project_id).facts or []))
+    return in_project(lambda db: list(projects.own(db, user, project_id).facts or []), read=True)
 
 
 @app.put("/projects/{project_id}/facts")
@@ -734,7 +776,7 @@ def set_facts(project_id: str, body: Json = Body(...), user: User = Depends(curr
 
 @app.get("/projects/{project_id}/report-settings")
 def get_report_settings(project_id: str, user: User = Depends(current_user)) -> Any:
-    return in_project(lambda db: projects.report_settings(projects.own(db, user, project_id)))
+    return in_project(lambda db: projects.report_settings(projects.own(db, user, project_id)), read=True)
 
 
 @app.patch("/projects/{project_id}/report-settings")
@@ -754,7 +796,7 @@ def request_plan(project_id: str, body: Json = Body(...), user: User = Depends(c
         print(f"PLAN REQUEST: project {project.id}, account {user.id}: {plan} ({cycle})")
         if settings.own_email:
             message = EmailMessage()
-            message["Subject"] = f"GEO: plan request — {plan}"
+            message["Subject"] = f"{mail.BRAND}: plan request — {plan}"
             message.set_content(f"Account: {user.email}\nProject: {brand.name if brand else '?'} ({brand.domain if brand else '?'})\nProject id: {project.id}\nNow: {project.plan}, {'paid' if project.paid else 'trial'}\nAsked for: {plan} ({cycle})\n\nTo switch it on: python -m app.admin plan {project.id} <start|business|agency>\n")
             try:
                 mail.send(settings.smtp_from or settings.smtp_user or "", message)
@@ -801,7 +843,7 @@ def tell_team(request: Dict[str, str]) -> None:
     if not settings.own_email:
         return
     message = EmailMessage()
-    message["Subject"] = f"GEO: demo — {request['name']}"
+    message["Subject"] = f"{mail.BRAND}: demo — {request['name']}"
     message.set_content(f"Ism / Имя / Name: {request['name']}\nTelefon / Телефон / Phone: {request['phone']}\nSoha / Сфера / Field: {request['sector']}\n")
     try:
         mail.send(settings.smtp_from or settings.smtp_user or "", message)

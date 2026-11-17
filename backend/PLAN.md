@@ -222,6 +222,17 @@ That is roughly one to two US cents per answer, and it has to cover the answer w
 
 ## Change log
 
+- **17 Nov 2026. Why the pages were slow (the user: "overall speed of APIs is very slow"; the login page
+  stood 3–5 seconds).** Measured on the server: `/health` 3 ms, `/auth/me` with a cookie 1.2 s (12.7 s the
+  first time), the report 2.35 s for 11 statements. One statement to Supabase costs 0.12 s (its database is in
+  AWS Mumbai, the server in Germany), a new connection 2 s, and every request added three more round trips
+  (the pool's check, BEGIN, ROLLBACK). A page made four or five calls, two of them one after the other, and
+  Vercel's server called the backend from Washington. Changed: reads without a transaction, the pool's check
+  only after a rest, a session kept a minute, the report and the actions kept until the project changes
+  (`backend/README.md`, "Speed"); the layout's two calls together; Vercel in Frankfurt. After: the report
+  0.14 s when kept, the session check 0.14 s. Not changed, the user's decision: a database in the server's
+  region (a Supabase project in Frankfurt, or Postgres on the server) would make a statement a few ms.
+
 - **16 Nov 2026. The first real weekly check, and the first check on both assistants in the new flow
   (measured on the server, the user's own site, a project of ten questions and six brand questions).** The
   first check: the website read with the competitor search on Gemini in 73 seconds; ten questions on Gemini

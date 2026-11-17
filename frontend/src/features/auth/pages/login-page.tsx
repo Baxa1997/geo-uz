@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import { cookies } from "next/headers";
 import { Logo } from "@/shared/components/logo";
 import { Link, redirect } from "@/i18n/navigation";
 import { setPageLocale } from "@/i18n/page-locale";
 import { AUTH_LIVE } from "@/shared/api/client";
 import { getCurrentUser } from "@/shared/api/session";
+import { SESSION_COOKIE } from "@/shared/constants";
 import { EmailLogin } from "../components/email-login";
 import { parseLoginTarget } from "../helpers/login-target";
 
@@ -18,13 +20,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function LoginPage({ params, searchParams }: Props) {
   const locale = setPageLocale((await params).locale);
-  const [target, t] = await Promise.all([
-    searchParams.then(parseLoginTarget),
+  const [query, t, cookieStore] = await Promise.all([
+    searchParams,
     getTranslations({ locale, namespace: "Login" }),
+    cookies(),
   ]);
-  // Logged in already (the session lasts 30 days): straight to where they were going, never the form again.
-  // Asked of the backend, not read off the cookie: a cookie whose session has ended must still get the form.
-  if (await getCurrentUser().catch(() => null)) redirect({ href: target.next ?? "/dashboard", locale });
+  const target = parseLoginTarget(query);
+  // With a session cookie proxy.ts sends the visitor on before this page, unless a page found the session
+  // ended (?expired=1). Without a cookie the backend isn't asked at all: the form shows at once. With one, it
+  // is asked, since another tab may have logged in again meanwhile.
+  const expired = cookieStore.has(SESSION_COOKIE);
+  if (expired && (await getCurrentUser().catch(() => null))) redirect({ href: target.next ?? "/dashboard", locale });
   // Mock login only: the sample account's address, since any code works there
   const demoEmail = AUTH_LIVE ? null : (await import("@/mocks/accounts")).DEMO_USER.email;
 
@@ -34,6 +40,7 @@ export default async function LoginPage({ params, searchParams }: Props) {
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-semibold tracking-tight">{t("heading")}</h1>
         {target.snapshot && <p className="text-sm text-pretty text-muted-foreground">{t("descriptionCheck")}</p>}
+        {expired && query.expired && <p className="text-sm text-pretty text-muted-foreground">{t("expired")}</p>}
       </div>
 
       <EmailLogin target={target} />
