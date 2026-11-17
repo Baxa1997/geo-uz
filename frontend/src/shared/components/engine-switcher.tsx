@@ -52,7 +52,8 @@ export function EngineSwitcher({ available }: { available?: ReportEngine[] }) {
             {/* Icons from sm up: on a phone the names just fit in a row */}
             <EngineIcon engine={key} className="hidden size-3.5 sm:block" />
             {t(key)}
-            {!on && <span className="rounded bg-background/70 px-1 py-0.5 text-[0.65rem] leading-none text-foreground/60">{t("soon")}</span>}
+            {/* "Soon" only for an assistant we don't ask yet; one we do ask that didn't answer this check is just off */}
+            {!on && !live && <span className="rounded bg-background/70 px-1 py-0.5 text-[0.65rem] leading-none text-foreground/60">{t("soon")}</span>}
           </label>
         );
       })}

@@ -2599,7 +2599,7 @@
     },
     "plan": {
       "plansTitle": "Plans",
-      "plansText": "For every stage of your business. If you can’t find what you need, write to us in Telegram.",
+      "plansText": "For every stage of your business. Pick a plan and send a request: we answer by email within one working day.",
       "yourPlan": "Your plan",
       "current": "Current",
       "pricePlain": "{amount} a month",
@@ -2649,7 +2649,7 @@
       },
       "notIncluded": "not included",
       "requested": "Your request for {plan} has reached us. We’ll be in touch within one working day, at your account's email.",
-      "cancelRequested": "Your request to cancel has reached us. We’ll confirm in Telegram; the reports keep coming until the paid period ends.",
+      "cancelRequested": "Your request to cancel has reached us. We’ll confirm by email; the reports keep coming until the paid period ends.",
       "askTitle": "Switch to {plan}?",
       "askText": "Billing: {cycle}. Online payment isn’t ready yet: your request comes to us, and we switch the plan and send the payment details.",
       "askConfirm": "Send the request",
@@ -2782,7 +2782,7 @@
     "category": "Industry",
     "city": "City",
     "aliases": "Other spellings",
-    "aliasesHint": "We find your brand even when ChatGPT spells it differently, in Latin or Cyrillic letters.",
+    "aliasesHint": "We find your brand even when AI spells it differently, in Latin or Cyrillic letters.",
     "competitorsFull": "{max} at most. Untick one to choose another.",
     "competitorsMax": "You can choose up to {max} competitors.",
     "addManually": "Add a competitor",
@@ -4075,9 +4075,9 @@
       "collecting": "Collecting the answers and the sources they cite",
       "checking": "Checking which answers name you"
     },
-    "heroKicker": "We analysed your brand with {count} AI assistants",
+    "heroKicker": "We analysed your brand with {count, plural, one {# AI assistant} other {# AI assistants}}",
     "heroTitle": "Your AI visibility for",
-    "heroText": "First real results on your {questions} questions: {answers} answers.",
+    "heroText": "First real results on your {questions, plural, one {question} other {# questions}}: {answers, plural, one {# answer} other {# answers}}.",
     "heroButton": "See my full analysis",
     "tabsLabel": "Results",
     "tabs": {
@@ -4087,7 +4087,7 @@
       "answers": "Answers"
     },
     "tabsEmpty": "The answers cited no source.",
-    "citedIn": "in {count} answers",
+    "citedIn": "{count, plural, one {in # answer} other {in # answers}}",
     "siteOwn": "Your website",
     "siteRival": "A competitor's site",
     "siteListed": "You are on this site",
