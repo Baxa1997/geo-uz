@@ -196,7 +196,7 @@ that is committed.
 ## Done (as of 17 November 2026)
 
 - **Built, waiting for the user's look: the name Seenova AI and its logo (17 Nov), on the branch
-  `feedback-17-nov`, not committed.** The user: "change the logo, Seenova AI the branding, and make the logo
+  `feedback-17-nov`; merged, pushed and deployed the same day, when the user said "commit, push and deploy".** The user: "change the logo, Seenova AI the branding, and make the logo
   appropriately". Every text that named the product says Seenova AI in the three languages (titles, the
   report's letterhead and sign-off, the assistant panel, support, the footer, the emails' sender, subjects and
   headers); "GEO" stays as the practice's name ("What is GEO?", "Managed GEO"). The mark is an eye whose pupil
@@ -208,7 +208,10 @@ that is committed.
   lines with a star; a star rising over an arc). No new variable: emails come from "Seenova AI <SMTP_USER>".
 
 - **Built, waiting for the user's look: the first part of the user's list of 17 Nov (sixteen points), on the
-  branch `feedback-17-nov`, not committed.** Done from the list: (6) the login page no longer stands empty
+  branch `feedback-17-nov`; merged, pushed and deployed the same day, when the user said "commit, push and
+  deploy" (a production build passed first; the server's previous `app/` is kept as `app.bak-before-speed`;
+  measured on the live service after: the report 2.06 s the first time, then 0.13 s; the actions and the
+  session check 0.13 s).** Done from the list: (6) the login page no longer stands empty
   for seconds: with a session cookie `proxy.ts` sends `/login` straight on, an ended session comes back as
   `/login?expired=1` with a line saying so, and without a cookie the backend isn't asked; (8) speed: measured
   on the server, one database statement costs 0.12 s (Supabase is in Mumbai, the server in Germany) and
@@ -909,7 +912,7 @@ that is committed.
   then `hisobotlar-correction` (the report as an official status document with a condition score, Hisobotlar
   opening on the latest condition), then `report-detail-width` (the report fills the panel's width), then
   `settings-and-overview` (Sozlamalar in Peec's layout, the Overview tightened, Savollar and a question's page in
-  Peec's design, brands' logos), then `plan-billing-correction` (Tarif's plans four in a row, as Peec's); on 14 Nov `pilot-report`, `pilot-first-run`, `models-and-site`, `backend-first-slice`, then `restyle` (the look of our own, the Uzbek metric names, the icons), then `email-login` (the login by email, wired to the backend); on 15 Nov `own-login-email` (the backend sends the login code itself; Supabase's tables locked) after `first-run-page` (the first run's page, the setup filled in from it, the backend on the server, API calls through the frontend). Each time the user chose "commit, push" when asked (for Harakatlar: "push everything"). Each page gets its
+  Peec's design, brands' logos), then `plan-billing-correction` (Tarif's plans four in a row, as Peec's); on 14 Nov `pilot-report`, `pilot-first-run`, `models-and-site`, `backend-first-slice`, then `restyle` (the look of our own, the Uzbek metric names, the icons), then `email-login` (the login by email, wired to the backend); on 15 Nov `own-login-email` (the backend sends the login code itself; Supabase's tables locked) after `first-run-page` (the first run's page, the setup filled in from it, the backend on the server, API calls through the frontend); on 17 Nov `feedback-17-nov` (the user's list of 17 Nov, Manbalar rebuilt, the name Seenova AI and its logo). Each time the user chose "commit, push" when asked (for Harakatlar: "push everything"). Each page gets its
   own branch, merged when the user says so.
 
 ## To do, in order
