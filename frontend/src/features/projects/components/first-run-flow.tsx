@@ -9,7 +9,8 @@ import { api } from "@/shared/api/client";
 import { queryKeys } from "@/shared/api/query-keys";
 import { cn } from "@/shared/helpers/utils";
 import type { FirstRun } from "@/shared/types/api";
-import { RUN_POLL_MS } from "../constants";
+import { PARTIAL_POLL_MS, RUN_POLL_MS } from "../constants";
+import { FirstRunLive } from "./first-run-live";
 import { FirstRunProgress } from "./first-run-progress";
 import { FirstRunResultView } from "./first-run-result";
 import { FirstRunSetup } from "./first-run-setup";
@@ -46,6 +47,14 @@ function FirstRunStarted({ initial, ...frame }: Frame & { initial: FirstRun }) {
     enabled: run.status === "done",
     staleTime: Infinity,
   });
+  const running = run.status === "asking" || run.status === "reading_answers";
+  // What the check has so far, once it is asking: the statistics fill in before the check ends
+  const partial = useQuery({
+    queryKey: queryKeys.firstRunPartial(run.id),
+    queryFn: () => api.getFirstRunPartial(run.id),
+    enabled: running,
+    refetchInterval: running ? PARTIAL_POLL_MS : false,
+  });
   const again = () => router.replace("/onboarding/first-run");
 
   if (BEFORE_CHECK.includes(run.status)) return <FirstRunSetup run={run} {...frame} />;
@@ -70,6 +79,14 @@ function FirstRunStarted({ initial, ...frame }: Frame & { initial: FirstRun }) {
             {t("tryAgain")}
           </Button>
         </section>
+      </Centered>
+    );
+  }
+
+  if (partial.data && partial.data.answered > 0) {
+    return (
+      <Centered who={frame.who} wide>
+        <FirstRunLive run={run} partial={partial.data} />
       </Centered>
     );
   }

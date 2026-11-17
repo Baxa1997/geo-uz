@@ -60,7 +60,11 @@ slices change in the contract below:
   ring with the assistants on it, three lines with the current one bright, the answers counted. The
   statistics open with a headline ("Your AI visibility for …"), the button to the full analysis, and four
   tabs (competitors, pages, sites, answers) over the conclusion and the rest. Not taken from the pictures:
-  their colors and logo, and results that fill in while the check still runs (ours appear when it is done).
+  their colors and logo. Since 17 Nov the results fill in while the check runs (`FirstRunLive`): the navy
+  screen stands until the first answer, then the headline with "still collecting · 4/15" and the four tabs,
+  asked for every three seconds (`getFirstRunPartial`); the finished check's page takes its place. The live
+  counts come from the answers' own words, so a competitor the answers spell another way is counted only at
+  the end, and the page says the final numbers come when the check ends.
 
 ## MVP scope
 1. Brand setup: name, aliases (Latin + Cyrillic spellings), domain, description, category, city, services,

@@ -36,6 +36,9 @@ export const ALL_TOPICS = "";
 /** 40px tall inputs: comfortable touch targets on phones. */
 export const INPUT_CLASS = "h-10";
 
+/** How often a running check is asked what it has so far. */
+export const PARTIAL_POLL_MS = 3000;
+
 /** How often the progress screen asks how the first run is going. */
 export const RUN_POLL_MS = 1000;
 

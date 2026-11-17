@@ -485,7 +485,58 @@ def run(domain: str, category: Optional[str], city: Optional[str], progress: Pro
     return snapshot, raw, round(cost + usd, 4)
 
 
-def check(draft: Dict[str, Any], confirmed: Dict[str, Any], progress: Progress, engine_names: Optional[List[str]] = None) -> Tuple[Dict[str, Any], Dict[str, Any], float]:
+JOINING = {"by", "of", "and", "the", "for", "in", "va", "и", "в", "для"}
+
+
+def _named_so_far(text: str, name: str) -> bool:
+    """Whether an answer's words name a competitor, before any model has read it: its name as given, or the
+    name's first words (two at least) written exactly so, capitals too: "British Council" for "British
+    Council IELTS Ready". A shortened name must not end on a joining word or be short enough to be a phrase."""
+    if web.names(text, [name]):
+        return True
+    words = name.split()
+    for count in range(len(words) - 1, 1, -1):
+        short = " ".join(words[:count])
+        if len(short) >= 8 and words[count - 1].lower() not in JOINING and re.search(rf"(?<!\w){re.escape(short)}(?!\w)", text):
+            return True
+    return False
+
+
+def partial_of(name: str, spellings: List[str], rivals: List[str], questions: List[Dict[str, Any]], answers: List[Dict[str, Any]], total: int) -> Dict[str, Any]:
+    """What a check has so far, for the page to show while it still runs (the user's picture, 16 Nov 2026:
+    "still collecting"): who the answers in hand name, the sites and pages they cite, and their beginnings.
+    Counted from the answers' own words, with no model: a business is named when its name stands in the
+    text. The finished check counts again, with the answers read, and may differ by a spelling."""
+    brands = [{"name": name, "isYou": True, "named": sum(1 for answer in answers if web.names(answer["text"], spellings))}]
+    brands += [{"name": rival, "isYou": False, "named": sum(1 for answer in answers if _named_so_far(answer["text"], rival))} for rival in rivals]
+    sites: Counter = Counter()
+    pages: Counter = Counter()
+    titles: Dict[str, Optional[str]] = {}
+    for answer in answers:
+        cited = {citation["url"]: citation.get("title") for citation in answer["citations"]}
+        sites.update({web.domain_of(url) for url in cited})
+        pages.update(cited.keys())
+        for url, title in cited.items():
+            titles.setdefault(url, title)
+    return {
+        "brand": name,
+        "answered": len(answers),
+        "total": total,
+        "brands": brands,
+        "sites": [{"domain": domain, "count": count} for domain, count in sites.most_common(15)],
+        "pages": [{"url": url, "title": titles.get(url), "count": count} for url, count in pages.most_common(15)],
+        # The latest first
+        "answers": [
+            {"question": questions[answer["question"]]["text"], "engine": answer["engine"], "name": engines.ENGINE_NAMES.get(answer["engine"], answer["engine"]), "text": answer["text"][:600], "named": web.names(answer["text"], spellings)}
+            for answer in reversed(answers[-20:])
+        ],
+    }
+
+
+Live = Callable[[Dict[str, Any]], None]
+
+
+def check(draft: Dict[str, Any], confirmed: Dict[str, Any], progress: Progress, engine_names: Optional[List[str]] = None, live: Optional[Live] = None) -> Tuple[Dict[str, Any], Dict[str, Any], float]:
     """The second half: the questions the owner confirmed asked to every assistant, and the answers counted.
     `confirmed` is the draft as the owner left it (`confirmed_of` gives its shape). Returns the Snapshot, the
     raw answers and the cost in US dollars."""
@@ -541,6 +592,8 @@ def check(draft: Dict[str, Any], confirmed: Dict[str, Any], progress: Progress, 
             if answer and answer["text"].strip():
                 answers.append({"question": q, **answer})
                 cost += answer["usd"] or 0.0
+                if live:
+                    live(partial_of(who["name"], spellings, [rival["name"] for rival in chosen], who["questions"], answers, len(jobs)))
             progress("asking", done, len(jobs))
         for future, engine, language, text in named_futures:
             try:

@@ -720,6 +720,19 @@ export interface FirstRunDraft {
   replayed: boolean;
 }
 
+/** What a running check has so far, counted from the answers' own words: GET /first-runs/{id}/partial. */
+export interface FirstRunPartial {
+  brand: string;
+  answered: number;
+  total: number;
+  /** The client and the competitors it confirmed, each with the answers in hand that name it. */
+  brands: { name: string; isYou: boolean; named: number }[];
+  sites: { domain: string; count: number }[];
+  pages: { url: string; title: string | null; count: number }[];
+  /** The latest first; `text` is the answer's beginning. */
+  answers: { question: string; engine: string; name: string; text: string; named: boolean }[];
+}
+
 /** The draft as the owner left it: POST /first-runs/{id}/start. The check asks exactly this. */
 export type FirstRunConfirm = Omit<CreateProjectRequest, "firstRunId">;
 

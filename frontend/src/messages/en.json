@@ -4093,7 +4093,14 @@
     "siteListed": "You are on this site",
     "siteMissing": "You are not on this site",
     "answerNamed": "Named you",
-    "answerNotNamed": "Did not name you"
+    "answerNotNamed": "Did not name you",
+    "live": {
+      "text": "The first answers are in. The rest are being collected.",
+      "collecting": "Still collecting · {answered}/{total} answers",
+      "reading": "Reading the answers: the final numbers are about to appear",
+      "note": "Results appear in the table below as they come in. The final numbers are counted when the check ends.",
+      "empty": "The answers in hand cite no source yet."
+    }
   },
   "Trial": {
     "title": "Your free first check is ready",
