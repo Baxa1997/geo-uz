@@ -195,8 +195,10 @@ that is committed.
 
 ## Done (as of 18 November 2026)
 
-- **Built, waiting for the user's look: a real PDF download for reports (18 Nov), on the branch `report-pdf`,
-  not committed.** The user: "pdf download is not working, there are no pdf download button". Every PDF button
+- **Built, waiting for the user's look: a real PDF download for reports (18 Nov), on the branch `report-pdf`;
+  merged, pushed and deployed the same day, when the user said "push deploy everything in main branch" (Vercel's
+  build passed; the server's previous `app/` is kept as `app.bak-before-pdf`; its `/health` says `"pdf": false`
+  until Chromium is installed).** The user: "pdf download is not working, there are no pdf download button". Every PDF button
   opened the browser's print dialog, which phones and Telegram's browser often can't use. Now "PDF yuklab olish"
   on the shared report, Hisobotlar's latest report, a report's page and each row of the register downloads a PDF
   file the backend makes (Chrome prints the report page; by the report's link; kept until the project changes),
@@ -207,7 +209,7 @@ that is committed.
   report's link). Asked, the user chose: turn off Vercel's login (theirs to do in Vercel), and not yet to
   Chromium on the server; until it is installed the buttons open the print dialog. No new variable.
 - **Built, waiting for the user's look: the report without the reader's signature (18 Nov), on the branch
-  `report-pdf` (it was `report-no-signature`), not committed.** The user: "from report need to remove the signature for bosses
+  `report-pdf` (it was `report-no-signature`); merged, pushed and deployed with the PDF download.** The user: "from report need to remove the signature for bosses
   part". The sign-off keeps who prepared the report and when; the lines for the reader to sign (signature,
   name and date) are gone, in the shared report, a report's page in Hisobotlar and the PDF alike.
 
@@ -967,7 +969,7 @@ that is committed.
   then `hisobotlar-correction` (the report as an official status document with a condition score, Hisobotlar
   opening on the latest condition), then `report-detail-width` (the report fills the panel's width), then
   `settings-and-overview` (Sozlamalar in Peec's layout, the Overview tightened, Savollar and a question's page in
-  Peec's design, brands' logos), then `plan-billing-correction` (Tarif's plans four in a row, as Peec's); on 14 Nov `pilot-report`, `pilot-first-run`, `models-and-site`, `backend-first-slice`, then `restyle` (the look of our own, the Uzbek metric names, the icons), then `email-login` (the login by email, wired to the backend); on 15 Nov `own-login-email` (the backend sends the login code itself; Supabase's tables locked) after `first-run-page` (the first run's page, the setup filled in from it, the backend on the server, API calls through the frontend); on 17 Nov `feedback-17-nov` (the user's list of 17 Nov, Manbalar rebuilt, the name Seenova AI and its logo), then `actions-simpler` (Harakatlar made simple, a task for the owner's own AI on every action); on 18 Nov `logo-rounds` (the logo as two rounds), then `wrong-facts-rebuild` (Notoʻgʻri faktlar rebuilt). Each time the user chose "commit, push" when asked (for Harakatlar: "push everything"). Each page gets its
+  Peec's design, brands' logos), then `plan-billing-correction` (Tarif's plans four in a row, as Peec's); on 14 Nov `pilot-report`, `pilot-first-run`, `models-and-site`, `backend-first-slice`, then `restyle` (the look of our own, the Uzbek metric names, the icons), then `email-login` (the login by email, wired to the backend); on 15 Nov `own-login-email` (the backend sends the login code itself; Supabase's tables locked) after `first-run-page` (the first run's page, the setup filled in from it, the backend on the server, API calls through the frontend); on 17 Nov `feedback-17-nov` (the user's list of 17 Nov, Manbalar rebuilt, the name Seenova AI and its logo), then `actions-simpler` (Harakatlar made simple, a task for the owner's own AI on every action); on 18 Nov `logo-rounds` (the logo as two rounds), then `wrong-facts-rebuild` (Notoʻgʻri faktlar rebuilt), then `report-pdf` (a real PDF download, no signature lines). Each time the user chose "commit, push" when asked (for Harakatlar: "push everything"). Each page gets its
   own branch, merged when the user says so.
 
 ## To do, in order
