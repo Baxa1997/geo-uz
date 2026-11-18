@@ -459,7 +459,7 @@ function Shell({
         <span />
         <div className="flex flex-col items-center gap-5 text-center">
           <span className="flex items-center gap-3.5">
-            <LogoMark className="size-14 rounded-2xl ring-1 ring-white/25" />
+            <LogoMark className="size-12 text-white" />
             <Wordmark tone="dark" className="text-5xl" />
           </span>
           <p className="max-w-sm text-lg text-pretty text-white/75">{panel("tagline")}</p>

@@ -9,9 +9,9 @@ from email.utils import formataddr
 
 from .config import settings
 
-# The product's name (17 Nov 2026; it was GEO), and how an email's header writes it: "Seenova" bold, "AI" in blue
+# The product's name (17 Nov 2026; it was GEO), and how an email's header writes it: one color, semibold (18 Nov)
 BRAND = "Seenova AI"
-WORDMARK_HTML = '<p style="font-size:18px;font-weight:700;letter-spacing:-0.3px;margin:0 0 16px">Seenova<span style="color:#3f63c8;font-weight:600"> AI</span></p>'
+WORDMARK_HTML = '<p style="font-size:18px;font-weight:600;letter-spacing:-0.5px;margin:0 0 16px">Seenova AI</p>'
 
 TEXT = """Seenova AI
 

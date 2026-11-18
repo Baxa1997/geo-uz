@@ -71,7 +71,7 @@ export function FirstRunProgress({ run, stale, who }: { run: FirstRun; stale: bo
             ))}
           </svg>
           <span className="absolute inset-[32%] flex items-center justify-center rounded-full bg-white shadow-[0_0_0_10px_rgb(255_255_255/0.12)]">
-            <LogoMark className="size-10 rounded-xl" />
+            <LogoMark className="size-9 text-[#1c2e6e]" />
           </span>
           {SEATS.map(({ engine, at }, index) => (
             <span key={engine} className={cn("absolute flex size-12 items-center justify-center rounded-full bg-white text-[#14182b] shadow-lg", at)}>

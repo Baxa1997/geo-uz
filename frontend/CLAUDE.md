@@ -199,12 +199,13 @@ paper", the pilot report's look). The tokens are in `globals.css`:
   **Seenova AI** everywhere it was GEO; "GEO" stays only as the practice's name (Generative Engine
   Optimization: the FAQ's "What is GEO?", the plan "Managed GEO"). Internal names keep `geo` (the repository,
   the `geo_session` cookie, `geo-tour:` keys, the server's service and subdomain). The wordmark (`Wordmark`):
-  "Seenova" bold, "AI" semibold in blue (`#3f63c8`, `#9fb4ff` on navy: `tone="dark"`). The mark (`LogoMark`):
-  an eye whose pupil is a four-pointed star, "see" and "nova": a white eye on a navy tile, the iris navy, the
-  nova gold (`#f6c453`, the brand's one accent, used nowhere else); it reads as an eye at 16px. `app/icon.svg`
-  is the same drawing, `app/favicon.ico` holds it at 16, 32 and 48px, `app/apple-icon.png` is it on full-bleed
-  navy (180px). The login panel and the first check's panel are the brand's navy gradient with the eye drawn
-  huge and faint. Emails write the name in `mail.BRAND` and `mail.WORDMARK_HTML`.
+  "Seenova AI" in one color, semibold, tight (white with `tone="dark"`). The mark (`LogoMark`, since 18 Nov: the
+  user disliked the eye of 17 Nov and asked, with Peec's mark as the picture, for "the same … but rounds"):
+  two solid rounds, a small one rising above and to the right of a large one (`ROUNDS`), flat, in the color of
+  the text around it (ink on light, white on navy). Peec's mark is two bars; ours is two rounds in our own
+  colors, never Peec's shape. `app/icon.svg`, `app/favicon.ico` (16, 32, 48px) and `app/apple-icon.png` (180px,
+  full-bleed) are the rounds in white on the brand's navy tile. The login panel and the first check's panel
+  are the brand's navy gradient, the login panel with the two rounds drawn huge and faint. Emails write the name in `mail.BRAND` and `mail.WORDMARK_HTML`.
 - **Icons** (14 Nov). Two sources, no Lucide (the set Peec uses; the package is removed):
   - **Our own** (`shared/components/own-icons.tsx`), where a visitor looks most: the sidebar's pages, the four
     metrics (`IconMentions`, `IconVoiceShare`, `IconPlace`, `IconRating`) and the action goals. Drawn on a 24
