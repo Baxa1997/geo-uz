@@ -6,14 +6,14 @@ the frontend.
 ## What we are building
 Seenova AI (the product's name since 17 Nov 2026; until then the working name GEO): an AI-visibility (GEO)
 platform for brands in Uzbekistan and Central Asia.
-It asks ChatGPT the questions customers ask ("best dental clinic in Tashkent?"),
-in Uzbek and Russian, and measures how often a brand appears versus competitors,
-which sources ChatGPT cites, and whether facts about the brand are wrong.
+It asks ChatGPT and Gemini the questions customers ask ("best dental clinic in Tashkent?"),
+in the languages of the business's country (Uzbek and Russian in Uzbekistan), and measures how often a brand
+appears versus competitors, which sources AI cites, and whether facts about the brand are wrong.
 
-## Current phase: the frontend on mocks, the backend begun (14 Nov 2026)
-Every page here still runs on MOCK data that matches the API contract below, switched for the whole app with one
-setting (`NEXT_PUBLIC_USE_MOCKS`). The backend has begun in `backend/app/` (`backend/README.md`): login by a code
-sent to an email, and a new account's first run. The login is wired (14 Nov); no other page calls the backend.
+## Current phase: real projects on the backend, sample data beside them (18 Nov 2026)
+On a real project every page reads and writes the backend (`backend/app/`, `backend/README.md`) through the
+slices below. The MOCK data, which matches the API contract below, stays for the landing page's preview, for
+the calls the backend doesn't serve yet, and for working with the slices off (`NEXT_PUBLIC_USE_MOCKS`).
 
 **A slice at a time.** `NEXT_PUBLIC_LIVE` (in `.env.local`) lists the parts of the API the backend serves while
 the rest are mocks; `shared/api/client.ts` builds `api` from the mocks with those calls replaced. So far "auth"
@@ -22,8 +22,9 @@ the rest are mocks; `shared/api/client.ts` builds `api` from the mocks with thos
 15 Nov "projects": every call about a project (all but login, the first run, the free check, the setup's
 suggestions and the landing page's forms). Since 16 Nov "first-run" implies "projects", `/onboarding` without a
 first run and `/check` both go to `/onboarding/first-run`, and a logged-in visitor of `/login` goes to the
-dashboard: on the Vercel site (`auth,first-run`) real accounts were getting the sample dental clinic. The backend serves the reads (`backend/README.md`); the writes it
-doesn't have yet fail on a real project. `Report.factsChecked` false means nobody checked the answers against
+dashboard: on the Vercel site (`auth,first-run`) real accounts were getting the sample dental clinic. The backend
+serves the reads and, since 15 Nov, the writes (`backend/README.md`); suggested questions and members answer
+empty, and the calls it doesn't serve (Discovery, keywords, Telegram) fail on a real project. `Report.factsChecked` false means nobody checked the answers against
 the brand's facts: an empty list of wrong facts then reads "not checked yet", never "none found". The setup
 sends `firstRunId` with `POST /projects`. With it on, the session cookie is the backend's; the
 mocks ask the backend once who a token belongs to (`mocks/api.ts`, `backendUser`) and let every such account
@@ -68,6 +69,8 @@ slices change in the contract below:
   the end, and the page says the final numbers come when the check ends.
 
 ## MVP scope
+Written in October; the MVP as it stands now is `../PLAN.md`, "What the MVP is", and wins where the two differ.
+
 1. Brand setup: name, aliases (Latin + Cyrillic spellings), domain, description, category, city, services,
    up to 5 competitors (onboarding pre-fills all of it from the website, then suggests competitors, the
    topics of the suggested questions, and the questions)
@@ -86,6 +89,8 @@ and "Peec AI Teardown & Our Plan for Central Asia.md" (every Peec feature, our s
 Read them before adding a feature or a pricing claim. `backend/PLAN.md` holds the backend plan made from the
 pages built so far (tables, the weekly run, how each number is calculated, what each page needs, cost per plan,
 open questions): add to it each time a page is finished.
+
+The list below is the state of October 2026; what was built since is in `../CLAUDE.md`, "Done".
 
 - Built in the frontend (mock data), every page laid out like Peec's app: onboarding (5 steps: website, brand
   profile, competitors, topics, questions; the form on the left, a live picture of the app on the right); the
@@ -125,9 +130,12 @@ open questions): add to it each time a page is finished.
 - Not planned: AI shopping, prompt volumes, ads library, lift predictor, SSO, MCP, Looker Studio,
   a rearrangeable overview.
 
-Plans (soʻm per month): Bepul tekshiruv 0 (10 prompts, one run) · Start 199,000 (25 prompts, 3 competitors) ·
-Biznes 490,000 (75 prompts, 5 competitors) · Agentlik 1,490,000 (300 prompts, up to 5 brands) ·
-Managed GEO from 3,000,000. Weekly runs, ChatGPT, 3 samples per prompt, unlimited users.
+Plans (the user's decision, 15 Nov 2026, in dollars; they replace October's soʻm plans): the first check free,
+once an account (ten questions on Gemini, five of them on ChatGPT) · Standard (`start`) $39.99 a month, weekly,
+25 questions · Pro (`business`) $89.99, twice a week, 50 questions, wrong facts against the owner's facts ·
+Enterprise (`agency`) by agreement, several projects · Managed GEO by agreement. Every competitor limit is 5;
+one answer a question. The table is in `../PLAN.md`; the limits are `PLAN_LIMITS`, in shared/constants and in
+`backend/app/projects.py` alike.
 
 ## Landing page
 Rebuilt on 16 Nov 2026 after the user's look at vizibleai.com ("our landing page is not accurate and not
@@ -327,10 +335,12 @@ frontend/src/
     [locale]/             #   export { default, generateMetadata } from "@/features/<f>/pages/<page>";
       (marketing)/        # public, with site navbar + footer: / (landing), /check?site=…
       (auth)/             # /login?snapshot=…&next=… on its own: dark panel + form, no site navbar
-      (app)/              # workspace, login required: /dashboard, /settings, /projects/new, /projects/[id]/…
-                          #   (overview, prompts, prompts/[promptId], answers, competitors, sources,
-                          #   sources/[domain], wrong-facts, reports, settings)
-      onboarding/         # first-login wizard, login required, no sidebar; runs/[id]: first run's progress
+      (app)/              # workspace, login required: /dashboard, /settings, /projects/new (sends to the first
+                          #   check), /projects/[id]/… (overview, prompts, prompts/[promptId], answers, competitors,
+                          #   sources, sources/[domain], wrong-facts, reports, settings)
+      onboarding/         # login required, no sidebar: first-run (the first check: its four steps, the check, the
+                          #   statistics); / without a first run goes there; the old wizard and runs/[id] (its
+                          #   progress) open on sample data only
       projects/[id]/report/   # client-facing report, public, no sidebar
   features/               # one folder per product area
     marketing/            # landing (components/landing/: one file per section), free check,
@@ -407,9 +417,11 @@ frontend/src/
                           #   proof; at the bottom Decline / Accept, then Cancel / Done. Every change shows a toast
                           #   with a link to its tab (ActionToast). Changes show at once and go back if saving fails
     dashboard/            # project list
-    projects/             # project setup: new project form, onboarding wizard (website → brand profile → competitors
-                          #   → topics → questions; form left, live preview of the app right from lg) and the first
-                          #   run's progress screen (the engines in a ring that fills with the answers)
+    projects/             # project setup. The first check (FirstRunFlow: FirstRunSetup's four steps with
+                          #   CompetitorRows and QuestionList, FirstRunProgress's navy screen, FirstRunLive while it
+                          #   runs, FirstRunResultView; see "Current phase"). The old onboarding wizard (website →
+                          #   brand profile → competitors → topics → questions, with a live preview) is kept for
+                          #   sample data; the new project form was deleted on 15 Nov
     settings/             # Settings, laid out like Peec's (the user's screenshots of Oct 10: "take what we need"):
                           #   on /projects/[id]/settings/* the sidebar becomes the settings' own menu (workspace
                           #   SettingsMenu: "‹ Overview" back, Project · its name: Profile, Facts, Brands with its
@@ -424,7 +436,7 @@ frontend/src/
                           #   (BrandsManager: Peec's brands table with ⋯ edit / stop tracking, "Add a brand" in a
                           #   window, the brand suggestions beside it, ✓ / ✕), tags-page (TagsManager: the
                           #   questions' tags with counts, create several, rename, delete; a row opens Savollar on
-                          #   `?tag=`), general-page (AccountCard: the user's name, phone and Telegram; the interface
+                          #   `?tag=`), general-page (AccountCard: the user's name and email; the interface
                           #   language), members-page (MembersTable: role, status, projects; invite by phone,
                           #   remove), plan-page (Peec's Plans & Billing, as the user asked twice on Oct 10:
                           #   PlanOverview, the plan "Current", its price, cycle and renewal, beside how many
@@ -656,8 +668,8 @@ Types:
   alerts; `dismissed` ones were hidden by the client and are listed apart),
   nextRunAt | null (next weekly run; runs start Monday 06:00 Tashkent; shown on the Overview as a date, not a countdown) }
 - HistoryPoint { runId, collectedAt, scores: BrandScore without trend [] }
-- ProjectLimits { prompts, competitors, facts } (from PLAN_LIMITS in shared/constants: 25/3/0, 75/5/20, 300/5/50;
-  Start checks no wrong facts, so it keeps no facts)
+- ProjectLimits { prompts, competitors, facts } (from PLAN_LIMITS in shared/constants and the backend: 25/5/0,
+  50/5/20, 300/5/50 since 15 Nov; Standard (`start`) checks no wrong facts against the owner's, so it keeps no facts)
 - TagSummary { name, prompts }; Member { id, name | null, phone | null, telegramUsername | null, role: "owner"|
   "member", status: "active"|"invited", projectIds[] }
 - Condition { score (0–100, the mean of the areas), areas: { visibility, competition, coverage, sources, accuracy } (each

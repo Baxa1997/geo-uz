@@ -20,24 +20,23 @@ One business can do all of this by itself, on real data, and pay for it:
 The MVP is finished when a first client goes through steps 1–7 without us touching the database by hand.
 
 **Not in the MVP** (each exists as a design, or is planned for after it): the Telegram bot, Yandex, Google login,
-team members, automatic billing, the GEO AI assistant, Discovery and keyword import, the agency's own branding,
-a full site audit.
+team members, automatic billing, the Seenova AI assistant, Discovery and keyword import, the agency's own
+branding, a full site audit.
 
-## Where it stands (15 Nov 2026)
+## Where it stands (18 Nov 2026)
 
 | Part | State |
 | --- | --- |
-| Every page's design | Built on sample data, in three languages, with our own look |
-| Login by email | **Real**: the backend sends the code; reached a real inbox. Entering the code on the deployed site is untried |
-| First check | **Real** on ChatGPT (run once, $0.47) and, since 15 Nov, on Gemini alone (three runs on the server, about $0.55 each). Both together, started from the site, untried. Since 15–16 Nov it also writes a conclusion and asks the brand questions |
-| Setup from the first check | Fills in from the run; the project it creates is still sample data |
-| Dashboard (read only) | **Built on this computer (15 Nov), waiting for the user's look**: a first run saved as a real project, every page reading it |
-| The pages' buttons, the weekly check | **Built on this computer (15 Nov), waiting for the user's look**; the check has never asked an assistant |
-| The report by link, as a PDF and by email | **Built on this computer (15 Nov), waiting for the user's look** |
-| Fixes and wrong facts | **Built, waiting for the user's look**. Since 16 Nov wrong facts come from the brand answers against the website, with no facts typed in; the check against the client's own facts and the page briefs have never run on a model |
-| Backend on the server | Running at `geo-api.shopsready.com` with Supabase's database, the OpenAI key and Google credentials (since 15 Nov) |
-| Frontend on Vercel | Deployed; behind Vercel's own login |
-| The pilot report (a one-off report made by script) | Works; run once for a first client |
+| Every page's design | Built, in three languages, with our own look (the name Seenova AI since 17 Nov) |
+| Login by email | **Real**: the backend sends the code; used on this computer and on the Vercel site |
+| First check | **Real** on ChatGPT and Gemini together since 16 Nov, as "confirm, then check" (the website read, the owner confirms the business, competitors and questions, then the check): $0.84 and about five minutes on the user's own site. It also finds competitors by a web search, asks the brand questions, writes a conclusion and shows results while it runs |
+| Projects and the dashboard | **Built, deployed, waiting for the user's look**: a first check saved as a real project, every page reading and writing it |
+| Checks by plan | **Ran live once** (16 Nov, Standard, the user's own site: 20 answers of 20, $1.63, about seven minutes). The server's timer checks paid projects on their days; one is paid |
+| The report by link, as a PDF and by email | **Built, waiting for the user's look**. The PDF download (18 Nov) works on this computer; on the live site it waits for Vercel's login to go and for Chromium on the server. No report email has reached a real inbox yet |
+| Fixes and wrong facts | **Built, waiting for the user's look**. Wrong facts come from the brand answers against the website (16 Nov, no model); a page's brief ran in the live check of 16 Nov; the check against the owner's own facts (Pro) has never run |
+| Backend on the server | Running at `geo-api.shopsready.com` with Supabase's database (in Mumbai), the OpenAI key and Google credentials (since 15 Nov) |
+| Frontend on Vercel | Deployed, its server in Frankfurt (17 Nov); behind Vercel's own login |
+| The pilot report (a one-off report made by script) | Works; run once for a first client; on hold until the platform's flow is set up |
 
 ## Prices and the free first check (the user's decision, 15 Nov 2026)
 
@@ -68,9 +67,10 @@ The setup's last button saves a real project, and the dashboard opens on its num
   Manbalar read the backend. With one check, charts show dots and "what changed" is empty.
 - Needs: nothing from the user. No paid request (the replayed run is saved as the project).
 - **State (15 Nov): built, waiting for the user's look.** Tried on this computer in Uzbek, desktop and phone
-  width: the setup saves the project and every page opens on it. Not on the server or Vercel yet. Left for
-  later stages: the pages' buttons (stage 2); the report's link for someone not logged in, and its sentence
-  "no wrong fact found" on a project nobody checked (stage 3).
+  width: the setup saves the project and every page opens on it. On the server and Vercel since 16 Nov (with
+  the corrections from the user's first real use). Left for later stages: the pages' buttons (stage 2); the
+  report's link for someone not logged in, and its sentence "no wrong fact found" on a project nobody checked
+  (stage 3).
 - Check: log in → website → first check → setup → the Overview shows that business, not the sample clinic.
 
 ### Stage 2. Weekly checks
@@ -84,10 +84,12 @@ Every project is checked again each Monday, and a question added on Tuesday is a
 - Needs: **the prices decision** (below): it sets how many questions, samples and assistants a run has. The
   OpenAI and Gemini keys on the server, and permission to spend.
 - Check: start a run by hand for one project; the second point appears on its charts.
-- **State (15 Nov): built, waiting for the user's look and a first live check.** The buttons work on a real
-  project and the plan's limits on questions, competitors and facts hold. The check is written and was tried
-  only as a replay (no assistant asked). The timer is on the server since 15 Nov (it checks only paid
-  projects; none is paid). Still owed: a live check (permission to spend), questions per plan and samples (the prices decision), suggested questions.
+- **State (16 Nov): built, waiting for the user's look; first live check done.** The buttons work on a real
+  project and the plan's limits on questions, competitors and facts hold. The timer is on the server since
+  15 Nov and checks only paid projects. On 16 Nov the user's own site was switched to Standard by hand and
+  checked live (20 answers of 20 on both assistants, the six brand questions, $1.63): the charts got their
+  second point. Questions per plan follow the prices (25, 50, 300), one answer a question (`RUN_SAMPLES`).
+  Still owed: suggested questions.
 
 ### Stage 3. The report
 
@@ -101,8 +103,10 @@ After each check the client gets its status report.
 - Check: the report of a real project opens, prints as a PDF, and arrives by email after a run.
 - **State (15 Nov): built, waiting for the user's look.** On this computer the report's link opens without
   login, the server prints it as a 10-page PDF, and the email (summary, link, PDF) reached a local test mail
-  server. Still owed: a browser on the server, the site's public address in `FRONTEND_ORIGIN` (Vercel's own
-  login is in the way), one email to a real inbox, and later a mail service on our own domain.
+  server. Since 18 Nov the report's PDF buttons download that file, and open the print dialog where the
+  backend can't make it. Still owed: a browser on the server (the user: not yet), the site's public address in
+  `FRONTEND_ORIGIN` (Vercel's own login is in the way: the user is to turn it off), one email to a real inbox,
+  and later a mail service on our own domain.
 
 ### Stage 4. Fixes and wrong facts
 
@@ -114,9 +118,10 @@ The "what to do" half: the part that keeps a small business paying.
 - Frontend: Harakatlar, Notoʻgʻri faktlar and Sozlamalar › Faktlar read the backend.
 - Check: a real project has a list of fixes that names real sites and real questions.
 - **State (15 Nov): built, waiting for the user's look and a live check.** A real project has its list of
-  fixes (real sites, real questions), statuses and steps are kept, proof appears after the next check. Wrong
-  facts and the briefs of pages use a model: written, never run. Still owed: a live check with facts filled
-  in, suggested questions, facts read from the website.
+  fixes (real sites, real questions), statuses and steps are kept, proof appears after the next check. Since
+  16 Nov wrong facts also come from the brand answers against the website, with no model, and a page's brief
+  ran in the live check of 16 Nov. The check against the owner's own facts (a model, Pro only) has never run.
+  Still owed: a live Pro check with facts filled in, suggested questions, facts read from the website.
 
 ### Stage 5. Ready for a paying client
 
@@ -130,25 +135,28 @@ The "what to do" half: the part that keeps a small business paying.
 
 ## Every value the product shows
 
+"Yes" below means counted from real answers on a real project, from its first check and at every check after
+(one live weekly check so far, 16 Nov).
+
 | Value | What it is | Where it comes from | Real today |
 | --- | --- | --- | --- |
-| Tilga olinish (visibility) | Answers naming the brand ÷ all answers | counted from the answers | first check only |
-| Tavsiya qilindi (recommended) | Answers that advise choosing the brand | a model reads each answer | first check only |
-| Ovoz ulushi (share of voice) | The brand's mentions ÷ all tracked brands' mentions | counted | first check only |
-| Oʻrni (position) | The brand's mean place among the businesses an answer names | counted | first check only |
-| Baho (tone) | Mean of positive 100, neutral 50, negative 0 over its mentions | a model reads each answer | first check only |
-| Manba sifatida (used as a source) | Answers citing the client's own site ÷ all answers | counted from citations | first check only |
-| Each assistant apart | The same numbers per assistant (ChatGPT, Gemini) | counted | ChatGPT only |
-| Change since last week | This check minus the one before | needs two checks | counted; real after a second live check |
-| Cited sites and pages | Which sites the answers rely on, their kind, how often | citations of the answers | first check only |
+| Tilga olinish (visibility) | Answers naming the brand ÷ all answers | counted from the answers | yes |
+| Tavsiya qilindi (recommended) | Answers that advise choosing the brand | a model reads each answer | yes |
+| Ovoz ulushi (share of voice) | The brand's mentions ÷ all tracked brands' mentions | counted | yes |
+| Oʻrni (position) | The brand's mean place among the businesses an answer names | counted | yes |
+| Baho (tone) | Mean of positive 100, neutral 50, negative 0 over its mentions | a model reads each answer | yes |
+| Manba sifatida (used as a source) | Answers citing the client's own site ÷ all answers | counted from citations | yes |
+| Each assistant apart | The same numbers per assistant (ChatGPT, Gemini) | counted | yes, both (the pages' switcher, 16 Nov) |
+| Change since last week | This check minus the one before | needs two checks | yes, since the live check of 16 Nov |
+| Cited sites and pages | Which sites the answers rely on, their kind, how often | citations of the answers | yes |
 | "Are you on them" | Whether a cited site lists the client | reading the cited pages | yes, for the most cited pages |
-| What the assistant searched | The web searches behind an answer | the search tool's report | kept, not shown yet |
-| Untracked brands | Businesses the answers name that aren't tracked | names in the answers | first check only |
+| What the assistant searched | The web searches behind an answer | the search tool's report | yes: a question's page and an opened answer |
+| Untracked brands | Businesses the answers name that aren't tracked | names in the answers | yes (AI assistants named among them are not yet left out) |
 | Site checks | AI bots blocked, prices as pictures, no business markup, contacts missing | reading the client's site | first check |
 | Wrong facts | Claims about the client that contradict its website or its own facts | the brand answers against the website (since 16 Nov); a model against the client's facts | from the website: yes, from the first check; from the client's facts: written, never run |
 | Condition score | One number from 0 to 100 over five areas | a formula over the values above | counted for every check |
-| Risks and opportunities | The report's register | written from the numbers in the frontend | no (stage 3) |
-| Recommended actions | Fixes with impact, steps, questions and proof | rules over the answers and sites | yes, from the first check; briefs need a live check |
+| Risks and opportunities | The report's register | written from the numbers in the frontend | yes, in a real project's report |
+| Recommended actions | Fixes with impact, steps, questions and proof | rules over the answers and sites | yes, from the first check; a page's brief first ran in the live check of 16 Nov |
 
 ## Decisions the user owes
 
@@ -156,20 +164,24 @@ The "what to do" half: the part that keeps a small business paying.
 | --- | --- | --- |
 | Prices against cost | Decided 15 Nov (the table above), with Pro as twice a week and 50 questions, confirmed by the user | — |
 | The Google credentials for Gemini | Set on the server on 15 Nov ("do it"): for now the IELTS project's Google Cloud project, with a copy of its credentials file. A project of GEO's own, to keep the bills apart, is still owed | Stage 5 |
-| Permission to spend, and the keys on the server | No check can run on the server without them | Stage 2 |
-| The product's name and domain | The emails' sender, the site's address, the logo | Stage 5 |
+| Permission to spend, and the keys on the server | The keys are on the server since 15 Nov. The user chooses each paid request; the one paid project is checked every Monday (about $1.63) until it is switched back | — |
+| The product's name and domain | The name is Seenova AI (17 Nov) and the logo two rounds (18 Nov). The domain is still owed: the emails' sender, the site's address | Stage 5 |
+| Vercel's own login | Until it is off, the server can't print a report and a client's report link asks for a Vercel login (the user is to turn it off, 18 Nov) | Stage 3 on the live site |
 | Pilots or self-serve first | Whether to sell hand-made reports while the platform is built | any time |
-| Where personal data is stored | Supabase is in Frankfurt | Stage 5 |
+| Where personal data is stored | Supabase's database is in Mumbai today; the user chose a new project in Frankfurt (17 Nov), theirs to create. The lawyer's answer is still owed | Stage 5 |
 
 ## What can go wrong
 
-- **Cost.** The largest risk. If the prices don't change, every plan loses money on checks alone.
+- **Cost.** The largest risk. The dollar prices of 15 Nov cover it as measured on 16 Nov (Standard about $15 a
+  month in checks against $39.99), but the brand questions are a fixed share whatever the plan, and Gemini
+  Flash's price doubles on 1 Jan 2027.
 - **Answers differ between runs** (about half the businesses in common). Three answers per question hide some
   of it; one answer per question, the cheap option, hides none.
 - **The API is not the ChatGPT app.** A client may see different answers in the app. Every report says how
   the answers were collected; a side-by-side measurement is still owed.
 - **Gemini ran for the first time on 15 Nov 2026** (two first checks of ten questions, Gemini alone, on the server): about
-  $0.52 and two and a half minutes each, its tokens not yet priced in. Since then Gemini also reads the answers and
-  writes the profile, the questions and the conclusion (`backend/README.md`). ChatGPT and Gemini together in
-  one first check, from the site, is still untried.
-- **Sample data on Vercel** resets between requests, so until stage 1 the deployed dashboard is for looking only.
+  $0.52 and two and a half minutes each. Since then Gemini also reads the answers and writes the profile, the
+  questions and the conclusion (`backend/README.md`). ChatGPT and Gemini together in one first check first ran
+  on 16 Nov ($0.84). Gemini runs on another project's Google credentials until GEO has its own.
+- **The database is far from the server** (Supabase in Mumbai, the server in Germany): a statement costs about
+  0.12 s. The caches of 17 Nov hide most of it; a database in Frankfurt would remove it.
