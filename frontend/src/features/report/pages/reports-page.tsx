@@ -66,7 +66,7 @@ export default async function ReportsPage({ params }: Props) {
           report={report}
           actions={actions}
           href={`${base}/${encodeURIComponent(latest.runId)}`}
-          share={<ReportShare path={shared} text={tReports("share.text", { brand: project.brand.name, date })} />}
+          share={<ReportShare path={shared} text={tReports("share.text", { brand: project.brand.name, date })} projectId={project.id} runId={latest.runId} />}
         />
 
         <PageSection tour="archive" title={tReports("archive.title")} description={tReports("archive.description")}>
@@ -79,6 +79,7 @@ export default async function ReportsPage({ params }: Props) {
             doneDates={actions.flatMap((action) => (action.doneAt ? [action.doneAt] : []))}
             base={base}
             shared={shared}
+            projectId={project.id}
             filename={`${project.brand.domain}-reports`}
           />
         </PageSection>

@@ -195,6 +195,22 @@ that is committed.
 
 ## Done (as of 18 November 2026)
 
+- **Built, waiting for the user's look: a real PDF download for reports (18 Nov), on the branch `report-pdf`,
+  not committed.** The user: "pdf download is not working, there are no pdf download button". Every PDF button
+  opened the browser's print dialog, which phones and Telegram's browser often can't use. Now "PDF yuklab olish"
+  on the shared report, Hisobotlar's latest report, a report's page and each row of the register downloads a PDF
+  file the backend makes (Chrome prints the report page; by the report's link; kept until the project changes),
+  and falls back to the print dialog wherever the backend can't (`/health` `pdf`). Tried on this computer: the
+  file downloads (8 A4 pages, 6.5 s the first time), the fallback shows when the server can't. **On the live site
+  it can't work yet**: the server has no Chrome, its `FRONTEND_ORIGIN` is `localhost`, and every Vercel address
+  of the site asks for a Vercel login, so the server can't open the report page (nor can a client who gets a
+  report's link). Asked, the user chose: turn off Vercel's login (theirs to do in Vercel), and not yet to
+  Chromium on the server; until it is installed the buttons open the print dialog. No new variable.
+- **Built, waiting for the user's look: the report without the reader's signature (18 Nov), on the branch
+  `report-pdf` (it was `report-no-signature`), not committed.** The user: "from report need to remove the signature for bosses
+  part". The sign-off keeps who prepared the report and when; the lines for the reader to sign (signature,
+  name and date) are gone, in the shared report, a report's page in Hisobotlar and the PDF alike.
+
 - **Built, waiting for the user's look: Notoʻgʻri faktlar rebuilt (18 Nov), on the branch `wrong-facts-rebuild`;
   merged, pushed and deployed the same day, when the user said "commit, push and deploy" (Vercel's build passed).** After "what is next" the user chose it of four (their list of 17 Nov: "wrong facts … must be
   analyzed carefully"). Analyzed on the live paid project: its latest check held about 70 statements from the

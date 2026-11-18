@@ -2,16 +2,16 @@
 
 import { CheckIcon as Check } from "@phosphor-icons/react/dist/ssr/Check";
 import { LinkIcon as Link2 } from "@phosphor-icons/react/dist/ssr/Link";
-import { PrinterIcon as Printer } from "@phosphor-icons/react/dist/ssr/Printer";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Button } from "@/shared/components/ui/button";
+import { PdfButton } from "./pdf-button";
 
 /**
- * The report's two tools, on screen only: copy its link (anyone with it can read the report) and print it,
- * which is also how it is saved as a PDF. The page is laid out for A4.
+ * The report's two tools, on screen only: copy its link (anyone with it can read the report) and its PDF, a
+ * file the backend makes, or the print window where it can't (`PdfButton`). The page is laid out for A4.
  */
-export function ReportTools() {
+export function ReportTools({ projectId, runId }: { projectId: string; runId: string }) {
   const t = useTranslations("Report");
   const [copied, setCopied] = useState(false);
 
@@ -34,10 +34,7 @@ export function ReportTools() {
         </span>
         <span className="sr-only sm:hidden">{copied ? t("copied") : t("copy")}</span>
       </Button>
-      <Button onClick={() => window.print()}>
-        <Printer aria-hidden data-icon="inline-start" />
-        {t("print")}
-      </Button>
+      <PdfButton projectId={projectId} runId={runId} onPrint={() => window.print()} />
     </div>
   );
 }

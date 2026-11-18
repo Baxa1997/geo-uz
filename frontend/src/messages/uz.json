@@ -466,10 +466,7 @@
     "partTitle": "{number} qism. {title}",
     "signoff": {
       "preparedBy": "Hisobotni tayyorladi",
-      "preparedByValue": "Seenova AI — AI koʻrinish monitoringi platformasi",
-      "acknowledged": "Hisobot bilan tanishdim",
-      "signature": "imzo",
-      "nameDate": "F.I.Sh., sana"
+      "preparedByValue": "Seenova AI — AI koʻrinish monitoringi platformasi"
     },
     "assistants": {
       "lead": "Har bir yordamchi oʻz javoblari boʻyicha alohida sanaladi: sizni qanchalik tez-tez tilga oladi va biznesingiz haqida nimani biladi.",
@@ -510,6 +507,16 @@
         "reputation": "Obroʻ",
         "other": "Boshqa"
       }
+    },
+    "pdf": {
+      "download": "PDF yuklab olish",
+      "preparing": "PDF tayyorlanmoqda…",
+      "downloadHint": "Hisobotni A4 PDF fayl qilib yuklab oladi. Birinchi marta bir necha soniya oladi.",
+      "print": "Chop etish",
+      "printOrPdf": "Chop etish yoki PDF",
+      "printInstead": "Chop etish oynasidan saqlash",
+      "printHint": "Hisobot A4 koʻrinishida ochiladi va chop etish oynasi chiqadi: «PDF sifatida saqlash»ni tanlang.",
+      "failedHint": "PDF fayl tayyorlanmadi. Chop etish oynasida «PDF sifatida saqlash»ni tanlang."
     }
   },
   "Headline": {

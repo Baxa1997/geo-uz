@@ -466,10 +466,7 @@
     "partTitle": "Part {number}. {title}",
     "signoff": {
       "preparedBy": "Prepared by",
-      "preparedByValue": "Seenova AI, the AI visibility monitoring platform",
-      "acknowledged": "Read and acknowledged",
-      "signature": "signature",
-      "nameDate": "name, date"
+      "preparedByValue": "Seenova AI, the AI visibility monitoring platform"
     },
     "assistants": {
       "lead": "Each assistant is counted apart, over its own answers: how often it names you, and what it knows about your business.",
@@ -510,6 +507,16 @@
         "reputation": "Reputation",
         "other": "Other"
       }
+    },
+    "pdf": {
+      "download": "Download PDF",
+      "preparing": "Preparing the PDF…",
+      "downloadHint": "Downloads the report as an A4 PDF file. The first time takes a few seconds.",
+      "print": "Print",
+      "printOrPdf": "Print or PDF",
+      "printInstead": "Save from the print window",
+      "printHint": "The report opens as A4 with the print window: choose “Save as PDF”.",
+      "failedHint": "The PDF file didn’t come through. In the print window, choose “Save as PDF”."
     }
   },
   "Headline": {
