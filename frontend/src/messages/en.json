@@ -3242,25 +3242,43 @@
     }
   },
   "WrongFactsPage": {
-    "kpi": {
-      "count": "Wrong facts",
-      "countHint": "Claims about you in AI answers that aren’t true.",
-      "questions": "Questions affected",
-      "questionsHint": "How many questions a wrong fact came up in.",
-      "since": "First found",
-      "sinceHint": "When the oldest wrong fact was first found."
+    "summary": {
+      "headlineWrong": "{count, plural, one {AI says # wrong thing about you} other {AI says # wrong things about you}}",
+      "headlineNone": "AI says nothing wrong about you",
+      "text": "In the latest check the assistants said {total} things about {brand}: {wrong} wrong, {unverified} not on your website, {confirmed} matching it.",
+      "legend": {
+        "wrong": "Wrong",
+        "unverified": "Not on your site",
+        "confirmed": "Matches your site"
+      },
+      "againstSite": "The answers were checked against your website.",
+      "againstFacts": "The answers were checked against your website and {count, plural, one {# fact} other {# facts}} of yours.",
+      "addFacts": "Add a fact",
+      "editFacts": "Edit your facts"
     },
-    "table": {
-      "title": "Wrong facts about you",
-      "hint": "What AI says, what’s true, the question it came up in and when it was found.",
+    "wrong": {
+      "title": "Wrong — to correct",
+      "text": "What AI tells customers that your website or your facts contradict. Each has a fix in Actions, with a ready task for your AI.",
       "says": "AI says",
-      "correct": "In fact",
-      "question": "Question",
-      "found": "Found"
+      "correct": "The truth",
+      "found": "First found: {date}",
+      "fix": "How to fix",
+      "none": "In this check AI said nothing wrong about you."
     },
-    "fix": "Plan the fixes",
-    "notChecked": "The answers haven’t been checked against your facts yet. Write the true facts about your business in Settings › Facts: the next check compares the answers with them.",
-    "empty": "No wrong facts found."
+    "unverified": {
+      "title": "Not on your website — check these",
+      "text": "AI says these, but your website doesn’t. If true, put it on your site so AI can rely on it. If wrong, add the correct fact to your facts: the next check will flag it.",
+      "addFacts": "Add to your facts"
+    },
+    "confirmed": {
+      "title": "Correct — matches your website",
+      "text": "AI gets these right: the same as your website."
+    },
+    "showAll": "Show all {count}",
+    "showLess": "Show less",
+    "notChecked": "Not checked yet: the assistants weren’t asked about your business by name, and there are no facts in Settings. Add brand questions or facts, and the next check compares AI’s answers with them.",
+    "noBrandAnswers": "The assistants weren’t asked about your business by name, so this page can’t fully show what AI gets right or wrong about you.",
+    "brandQuestionsLink": "Add brand questions"
   },
   "Standing": {
     "behind": "{metric}: you rank {rank} of {of} brands with {value}. {leader} leads with {leaderValue}.",
@@ -3603,17 +3621,21 @@
       }
     },
     "wrongFacts": {
-      "kpis": {
-        "title": "Wrong facts in numbers",
-        "text": "How many wrong things AI says about you, in how many questions, and since when."
+      "summary": {
+        "title": "What AI says about you",
+        "text": "Everything the assistants said, checked against your website: how much is wrong, how much isn’t on your site, how much is right."
       },
-      "table": {
-        "title": "Each wrong fact",
-        "text": "What AI said, what is true, and the question it came up in. The question opens its answers."
+      "wrong": {
+        "title": "Correct the wrong first",
+        "text": "What AI got wrong, and the truth. “How to fix” opens its plan in Actions, with a task for your AI."
       },
-      "fix": {
-        "title": "Plan the fixes",
-        "text": "Each wrong fact has an action: where to correct it and how. They wait for you in Actions."
+      "unverified": {
+        "title": "Not on your website",
+        "text": "What AI says that your site doesn’t: put it on your site, or add the correct fact to your facts."
+      },
+      "confirmed": {
+        "title": "What’s right",
+        "text": "What AI gets right about you, as on your website."
       }
     },
     "settings": {

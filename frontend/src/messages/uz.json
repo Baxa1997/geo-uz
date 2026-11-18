@@ -3242,25 +3242,43 @@
     }
   },
   "WrongFactsPage": {
-    "kpi": {
-      "count": "Notoʻgʻri faktlar",
-      "countHint": "AI javoblaridagi siz haqingizda haqiqatga toʻgʻri kelmaydigan daʼvolar.",
-      "questions": "Taʼsirlangan savollar",
-      "questionsHint": "Notoʻgʻri fakt chiqqan savollar soni.",
-      "since": "Birinchi topilgan",
-      "sinceHint": "Eng eski notoʻgʻri fakt birinchi marta qachon topilgani."
+    "summary": {
+      "headlineWrong": "AI siz haqingizda {count} ta notoʻgʻri gap aytmoqda",
+      "headlineNone": "AI siz haqingizda notoʻgʻri gap aytmayapti",
+      "text": "Oxirgi tekshiruvda yordamchilar {brand} haqida {total} ta fikr aytdi: {wrong} tasi notoʻgʻri, {unverified} tasi saytingizda yoʻq, {confirmed} tasi saytingizdagidek.",
+      "legend": {
+        "wrong": "Notoʻgʻri",
+        "unverified": "Saytingizda yoʻq",
+        "confirmed": "Saytingizdagidek"
+      },
+      "againstSite": "Javoblar saytingiz bilan solishtirildi.",
+      "againstFacts": "Javoblar saytingiz va {count} ta faktingiz bilan solishtirildi.",
+      "addFacts": "Fakt qoʻshish",
+      "editFacts": "Faktlarni tahrirlash"
     },
-    "table": {
-      "title": "Siz haqingizdagi notoʻgʻri maʼlumotlar",
-      "hint": "AI nima deyapti, aslida qanday, qaysi savolda chiqdi va qachon topildi.",
+    "wrong": {
+      "title": "Notoʻgʻri — tuzatish kerak",
+      "text": "AI mijozlarga aytayotgan, lekin saytingiz yoki faktlaringizga zid gaplar. Har birining Harakatlarda tuzatish rejasi va AI uchun tayyor topshirigʻi bor.",
       "says": "AI aytadi",
       "correct": "Aslida",
-      "question": "Savol",
-      "found": "Topilgan"
+      "found": "Birinchi topilgan: {date}",
+      "fix": "Qanday tuzatish",
+      "none": "Bu tekshiruvda AI siz haqingizda notoʻgʻri gap aytmadi."
     },
-    "fix": "Tuzatish rejasi",
-    "notChecked": "Javoblar hali faktlaringiz bilan solishtirilmagan. Sozlamalar › Faktlar boʻlimiga biznesingiz haqidagi toʻgʻri maʼlumotlarni yozing: keyingi tekshiruvda javoblar ular bilan solishtiriladi.",
-    "empty": "Notoʻgʻri maʼlumot topilmadi."
+    "unverified": {
+      "title": "Saytingizda yoʻq — tekshirib chiqing",
+      "text": "AI buni aytmoqda, lekin saytingizda bunday maʼlumot yoʻq. Toʻgʻri boʻlsa, saytga yozing — AI unga tayanadi. Notoʻgʻri boʻlsa, toʻgʻrisini faktlaringizga qoʻshing: keyingi tekshiruv uni notoʻgʻri deb belgilaydi.",
+      "addFacts": "Faktlarga qoʻshish"
+    },
+    "confirmed": {
+      "title": "Toʻgʻri — saytingizdagidek",
+      "text": "AI bularni toʻgʻri aytmoqda: saytingiz bilan bir xil."
+    },
+    "showAll": "Hammasini koʻrsatish ({count})",
+    "showLess": "Yigʻish",
+    "notChecked": "Hali tekshirilmagan: yordamchilardan biznesingiz haqida nomi bilan soʻralmagan va Sozlamalarda faktlar yoʻq. Brend savollari yoki faktlarni qoʻshing — keyingi tekshiruvda AI javoblari ular bilan solishtiriladi.",
+    "noBrandAnswers": "Yordamchilardan biznesingiz haqida nomi bilan soʻralmagan, shuning uchun AI siz haqingizda nimani toʻgʻri va nimani notoʻgʻri bilishi bu yerda toʻliq koʻrinmaydi.",
+    "brandQuestionsLink": "Brend savollarini qoʻshish"
   },
   "Standing": {
     "behind": "{metric} boʻyicha {of} ta brend ichida {rank}-oʻrindasiz: {value}. Yetakchi — {leader}: {leaderValue}.",
@@ -3603,17 +3621,21 @@
       }
     },
     "wrongFacts": {
-      "kpis": {
-        "title": "Notoʻgʻri faktlar raqamlarda",
-        "text": "AI siz haqingizda nechta notoʻgʻri gap aytadi, nechta savolda va qachondan beri."
+      "summary": {
+        "title": "AI siz haqingizda nima deydi",
+        "text": "Yordamchilar aytgan hamma narsa saytingiz bilan solishtirilgan: qanchasi notoʻgʻri, qanchasi saytda yoʻq, qanchasi toʻgʻri."
       },
-      "table": {
-        "title": "Har bir notoʻgʻri fakt",
-        "text": "AI nima dedi, toʻgʻrisi qanday va bu qaysi savolda chiqdi. Savol bosilsa, uning javoblari ochiladi."
+      "wrong": {
+        "title": "Avval notoʻgʻrisini tuzating",
+        "text": "AI aytgan notoʻgʻri gap va toʻgʻrisi. «Qanday tuzatish» uning Harakatlardagi rejasi va AI uchun topshirigʻini ochadi."
       },
-      "fix": {
-        "title": "Tuzatishni rejalang",
-        "text": "Har bir notoʻgʻri fakt uchun harakat bor: uni qayerda va qanday tuzatish kerak. Ular Harakatlarda sizni kutmoqda."
+      "unverified": {
+        "title": "Saytingizda yoʻqlari",
+        "text": "AI aytayotgan, lekin saytingizda yoʻq gaplar: toʻgʻrisini saytga yozing yoki faktlaringizga qoʻshing."
+      },
+      "confirmed": {
+        "title": "Toʻgʻrilari",
+        "text": "AI siz haqingizda toʻgʻri aytayotganlari — saytingizdagidek."
       }
     },
     "settings": {

@@ -371,7 +371,18 @@ frontend/src/
                           #   the whole site and its pages over the checks, its pages' movers beside who ChatGPT
                           #   names when it cites the site, its pages' table. Answers: SiteAnswers. A site the
                           #   latest check no longer cites keeps its page from the history, without tabs
-    wrong-facts/          # Wrong facts: numbers, then claim, correct value, question, date found as a table
+    wrong-facts/          # Notoʻgʻri faktlar, rebuilt 18 Nov (the user: "wrong facts … must be analyzed carefully"):
+                          #   from the latest check's brand answers and wrong facts. AccuracySummary: everything the
+                          #   assistants said as one bar (wrong, not on the website, matching it), whether each knows
+                          #   the business (knownBy: the worst of its answers), what the answers were checked against
+                          #   (the website, and the owner's facts, with the way to them). Then the wrong ones
+                          #   (WrongFactCard: what AI says beside the truth, the assistant and the question, since
+                          #   when, "How to fix" opening its action in Harakatlar); what AI says that the website
+                          #   doesn't (StatementGroups by topic, to check: put it on the site, or add the correct
+                          #   fact); what it gets right, folded. A statement said by several answers or assistants is
+                          #   shown once with all their names (statementsOf). "Checked" means brand answers exist or
+                          #   the answers were read against the owner's facts: it said "not checked" before whenever
+                          #   no facts were typed, though the brand answers had been checked against the website
     actions/              # Harakatlar: recommended fixes (wrong facts, sites to get onto, pages to write, site fixes).
                           #   Since 17 Nov made simple (the user: "logic is good, but UI is not very understandable";
                           #   until then Peec's Actions: three menus, goal tiles, a tree of status, goal and kind of

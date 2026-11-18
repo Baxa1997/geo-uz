@@ -101,7 +101,8 @@ export function useAiPrompt({
         return {
           target: "fact",
           text: [
-            t("fact.said", { brand: brand.name, domain: brand.domain, claim: action.claim, correct: action.correct }),
+            // Quoted inside a sentence: their own closing stop would double the sentence's
+            t("fact.said", { brand: brand.name, domain: brand.domain, claim: action.claim.replace(/[.!]\s*$/, ""), correct: action.correct.replace(/[.!]\s*$/, "") }),
             about,
             "",
             ...[1, 2, 3].map((step) => `${step}. ${t(`fact.s${step}` as "fact.s1", { languages: inLanguages })}`),
