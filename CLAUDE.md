@@ -195,6 +195,18 @@ that is committed.
 
 ## Done (as of 18 November 2026)
 
+- **Built, waiting for the user's look: Notoʻgʻri faktlar rebuilt (18 Nov), on the branch `wrong-facts-rebuild`,
+  not committed.** After "what is next" the user chose it of four (their list of 17 Nov: "wrong facts … must be
+  analyzed carefully"). Analyzed on the live paid project: its latest check held about 70 statements from the
+  brand answers (about 49 matching the website, 20 not on it, 1 against it), and the page showed the one wrong
+  fact as a table under three numbers, and "not checked yet" for any project without typed facts though its
+  brand answers had been checked against the website. Now: a summary (one sentence, the three as a bar, how
+  each assistant knows the business, what it was checked against), the wrong ones as cards with the truth, the
+  assistant, the question and "How to fix" opening their action, then what AI says that the site doesn't, by
+  topic, and what it gets right, folded (`frontend/CLAUDE.md`, wrong-facts). Looked at in a browser in Uzbek on
+  desktop and phone width with made-up brand answers on the local sample project, removed after. Not tried:
+  Russian and English, the live project's own data in the page. No new variable.
+
 - **Built, waiting for the user's look: the logo as two rounds (18 Nov), on the branch `logo-rounds`; merged,
   pushed and deployed the same day, when the user said "commit, push and deploy" (Vercel's build passed; the
   server's previous `app/` is kept as `app.bak-before-rounds`).** The user: "I don't like the brand logo, eye, I need the same as in the screenshot but rounds
