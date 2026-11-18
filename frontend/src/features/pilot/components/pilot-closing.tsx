@@ -67,7 +67,7 @@ export function PilotClosing({ pilot, t, number, table, date }: { pilot: Pilot; 
       <div className="mt-9 flex flex-wrap items-center justify-between gap-x-8 gap-y-3 bg-(--p-navy) px-7 py-6 text-white break-inside-avoid">
         <div>
           <p className="font-bold tracking-tight">
-            Seenova<span className="ml-[0.22em] opacity-60">AI</span>
+            Seenova AI
           </p>
           <p className="mt-1.5">{t("limits.cta")}</p>
         </div>

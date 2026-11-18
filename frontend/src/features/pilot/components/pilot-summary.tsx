@@ -43,7 +43,7 @@ export function PilotCover({ pilot, t, month, date, previousDate }: Props) {
       <div className="flex min-w-0 grow flex-col gap-12 px-5 py-8 sm:px-12 sm:py-12 print:justify-between print:px-[21mm] print:py-[22mm]">
         <div className="flex items-baseline justify-between gap-4">
           <p className="text-lg font-bold tracking-tight text-(--p-ink)">
-            Seenova<span className="ml-[0.22em] text-(--p-navy)">AI</span>
+            Seenova AI
           </p>
           <Eyebrow>{t("kicker")}</Eyebrow>
         </div>

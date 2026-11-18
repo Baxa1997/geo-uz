@@ -193,7 +193,15 @@ that is committed.
    time: a branch for the work, a commit, a merge into `main`, and a push of both. Before any commit, check
    that no key and no client's name is in it.
 
-## Done (as of 17 November 2026)
+## Done (as of 18 November 2026)
+
+- **Built, waiting for the user's look: the logo as two rounds (18 Nov), on the branch `logo-rounds`, not
+  committed.** The user: "I don't like the brand logo, eye, I need the same as in the screenshot but rounds
+  instead", with Peec's mark (two stacked bars and "Peec AI") as the picture. The mark is now two solid rounds,
+  a small one rising above and to the right of a large one, flat, in the text's color; the name beside it in
+  one color, semibold (it had "AI" in blue). Our own shape and colors: the project's rule is never to copy
+  Peec's logo. The favicon, `icon.svg` and the phone's icon are the rounds in white on the navy tile; the
+  login panel draws them huge and faint; the emails' header writes the name in one color. No new variable.
 
 - **Built, waiting for the user's look: Harakatlar made simple (17 Nov), on the branch `actions-simpler`;
   merged, pushed and deployed the same day, when the user said "commit, push and deploy" (Vercel's build passed).** After "what is next" the user chose Harakatlar of four ("logic is good, but UI is not very

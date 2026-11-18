@@ -1,25 +1,28 @@
 import { useTranslations } from "next-intl";
-import { EYE, NOVA, Wordmark } from "@/shared/components/logo";
+import { LogoMark, ROUNDS, Wordmark } from "@/shared/components/logo";
 import { PANEL_POINTS } from "../constants";
 
 /**
  * Navy panel beside the login form (desktop only), in the brand's gradient: the name, what the product does
- * in one line and three points, and the mark's eye drawn huge and faint behind them.
+ * in one line and three points, and the mark's two rounds drawn huge and faint behind them.
  */
 export function AuthPanel() {
   const t = useTranslations("Login.panel");
 
   return (
     <div className="relative isolate flex w-full flex-col justify-between gap-16 overflow-hidden rounded-3xl bg-[linear-gradient(155deg,#0b1335_0%,#1c2e6e_52%,#3f63c8_100%)] p-10 text-white shadow-2xl xl:p-14">
-      {/* The mark's eye with its nova, drawn huge and faint */}
-      <svg aria-hidden viewBox="0 0 32 32" className="absolute -right-72 -bottom-28 -z-10 size-[42rem]">
-        <path d={EYE} fill="none" stroke="#fff" strokeOpacity="0.08" strokeWidth="0.45" />
-        <circle cx="16" cy="16" r="5.3" fill="none" stroke="#fff" strokeOpacity="0.08" strokeWidth="0.45" />
-        <path d={NOVA} fill="#f6c453" fillOpacity="0.16" />
+      {/* The mark's two rounds, drawn huge and faint */}
+      <svg aria-hidden viewBox="0 0 32 32" fill="#fff" fillOpacity="0.06" className="absolute -right-56 -bottom-40 -z-10 size-[40rem]">
+        {ROUNDS.map((round) => (
+          <circle key={round.cx} cx={round.cx} cy={round.cy} r={round.r} />
+        ))}
       </svg>
 
       <div className="flex flex-col gap-10">
-        <Wordmark tone="dark" className="text-2xl" />
+        <span className="flex items-center gap-2.5">
+          <LogoMark className="size-8 text-white" />
+          <Wordmark tone="dark" className="text-2xl" />
+        </span>
         <p className="max-w-lg text-4xl/[1.1] font-semibold tracking-tight text-balance text-white/90 xl:text-5xl/[1.08]">
           {t("title")}
         </p>
