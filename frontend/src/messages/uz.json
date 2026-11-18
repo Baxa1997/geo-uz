@@ -2008,10 +2008,11 @@
       }
     },
     "hero": {
-      "pill": "ChatGPT va Gemini · Birinchi tekshiruv bepul",
+      "badge": "Jonli",
+      "news": "Gemini kuzatuvi qoʻshildi",
       "title": "Brendingiz AI javoblarida",
       "titleMuted": "qanday koʻrinadi?",
-      "subtitle": "Sayt manzilingizni kiriting. Mijozlaringiz beradigan savollarni ChatGPT va Gemini’ga beramiz va koʻrsatamiz: sizni qanchalik tez-tez tilga olishadi, kimni tavsiya qilishadi, qaysi saytlarga tayanishadi va nimani tuzatish kerak.",
+      "subtitle": "Saytingizni kiriting va ChatGPT hamda Gemini sizni qanday koʻrishini bilib oling: <visibility>Tilga olinish</visibility>, <position>Oʻrni</position>, <sources>Manbalar</sources> va nimani tuzatish kerakligi.",
       "demo": "Demo soʻrash",
       "micro": "Bepul · Email orqali kirasiz · Natija 2–3 daqiqada"
     },

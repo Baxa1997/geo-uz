@@ -142,8 +142,10 @@ Rebuilt on 16 Nov 2026 after the user's look at vizibleai.com ("our landing page
 structured correctly … make it clear everything"): the structure of a clear product page, in our own look and
 words. In order (`SECTION` in marketing/constants, `pages/landing-page.tsx`):
 
-1. **Hero**: the label (ChatGPT and Gemini, the first check free), the headline, one sentence on what a visitor
-   gets, and **the website field itself** (`SiteForm` → `/check?site=`, which goes to the real first check,
+1. **Hero**: the indicator (since 18 Nov: a pill with a dark "Jonli" badge and its live dot, a sparkle, what is
+   new and an arrow to the assistants' section; it says only what the product does, so "Gemini kuzatuvi
+   qoʻshildi", never Google's AI answers until they are checked), the headline, one short sentence with the
+   metrics as chips, and **the website field itself** (`SiteForm` → `/check?site=`, which goes to the real first check,
    login by email first, when `first-run` is live), a line "free · email · 2–3 minutes · book a demo", then
    the dashboard preview.
 2. **Assistants** (`Engines`): ChatGPT and Gemini "every check", Google's AI answers and Yandex "soon", then why
@@ -189,11 +191,15 @@ paper", the pilot report's look). The tokens are in `globals.css`:
   the languages as a dropdown, icons in tiles):
   - The headline is a heavy sans line, tight (`font-bold`, `tracking-[-0.04em]`), with its last words in the
     serif italic in navy, not a black line over a gray one. Section headings are the same sans, bold.
-  - The sentence under it says what we measure in plain words ("how often you are named, in what place and in
-    what light") and speaks of AI in general. It does not use the three terms: the user finds "Koʻrinish, Oʻrin,
-    Ohang" hard to understand even in Uzbek.
+  - The sentence under it (since 18 Nov; the user, with two other products' heroes as the pictures: "sub text
+    make as in the screenshot, but appropriately of our, but not many text, and style make the same") is one
+    short line: enter your website and find out how ChatGPT and Gemini see you, then three metrics as chips in
+    the line, then "what to fix". A chip (`metricChip` in hero.tsx) is our own icon and the app's own name for
+    the metric, white with a hairline border and a soft shadow: Tilga olinish, Oʻrni, Manbalar (Видимость,
+    Позиция, Источники; Visibility, Position, Sources). The chips are tags in the message (`t.rich`), so each
+    language keeps its own word order. The old terms Koʻrinish, Oʻrin, Ohang stay out: the user found them hard.
   - A section's label is a numbered kicker (`Kicker`: "01 —— AI METRICS", counted by CSS from the marketing
-    layout's `counter-reset`), not a bordered pill with an icon.
+    layout's `counter-reset`), not a bordered pill with an icon. The hero's indicator is the one pill.
   - Plain paper behind the hero (no dotted texture, no glows), no hairlines down the page's sides, flat cards (a
     line, no shadow) with a smaller radius, a navy closing band with a white button.
   - The navbar is 80px tall with text in the body's size; the language is a button (globe, "UZ", chevron) that

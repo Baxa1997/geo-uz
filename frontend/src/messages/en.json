@@ -2008,10 +2008,11 @@
       }
     },
     "hero": {
-      "pill": "ChatGPT and Gemini · First check free",
+      "badge": "New",
+      "news": "Gemini tracking added",
       "title": "How your brand shows up",
       "titleMuted": "in AI answers",
-      "subtitle": "Enter your website. We ask ChatGPT and Gemini the questions your customers ask and show you how often you are named, who gets recommended, which sites they rely on and what to fix.",
+      "subtitle": "Enter your website and find out how ChatGPT and Gemini see you: <visibility>Visibility</visibility>, <position>Position</position>, <sources>Sources</sources> and what to fix.",
       "demo": "Book a demo",
       "micro": "Free · Sign in with your email · Results in 2–3 minutes"
     },

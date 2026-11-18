@@ -1,4 +1,9 @@
+import type { ReactNode } from "react";
 import { useTranslations } from "next-intl";
+import { ArrowRightIcon as ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight";
+import { SparkleIcon as Sparkle } from "@phosphor-icons/react/dist/ssr/Sparkle";
+import { IconMentions, IconPlace, IconSources } from "@/shared/components/own-icons";
+import type { AppIcon } from "@/shared/types/icon";
 import { SECTION } from "../../constants";
 import { SectionLink } from "../section-link";
 import { SiteForm } from "../site-form";
@@ -6,12 +11,26 @@ import { DashboardPreview } from "./dashboard-preview";
 
 const EXAMPLES = ["e1", "e2", "e3", "e4"] as const;
 
+/** A metric named in the sentence, as a small card in the line: its own icon and its name (the user, 18 Nov). */
+function metricChip(Icon: AppIcon) {
+  function MetricChip(chunks: ReactNode) {
+    return (
+      <span className="mx-0.5 inline-flex items-center gap-1.5 rounded-lg border bg-background px-2 py-0.5 align-middle text-base/6 font-medium whitespace-nowrap text-foreground shadow-xs sm:text-lg/7">
+        <Icon aria-hidden className="size-4 sm:size-4.5" />
+        {chunks}
+      </span>
+    );
+  }
+  return MetricChip;
+}
+
 /**
- * What the product is, and the one thing to do: a label (the assistants asked, the free first check), the
- * headline, a sentence that says in plain words what a visitor gets, and the website field itself, which
- * starts the free check (login by email first). Under it the product: the dashboard preview with the
- * sample clinic's report, labelled as sample data. The headline is never animated: it is what the page
- * paints first. Nothing here sits under a blur or a mask, and nothing moves forever.
+ * What the product is, and the one thing to do: the indicator (what is new, live: it opens the assistants'
+ * section), the headline, one short sentence with the metrics as chips in the line, and the website field
+ * itself, which starts the free check (login by email first). Under it the product: the dashboard preview
+ * with the sample clinic's report, labelled as sample data. The headline is never animated: it is what the
+ * page paints first. Nothing here sits under a blur or a mask, and nothing moves forever: the live dot rings
+ * four times and rests.
  */
 export function Hero() {
   const t = useTranslations("Landing.hero");
@@ -20,21 +39,33 @@ export function Hero() {
   return (
     <section aria-labelledby="hero-title" className="relative isolate overflow-hidden">
       <div className="mx-auto flex max-w-7xl flex-col items-center gap-6 px-4 pt-12 pb-10 text-center sm:px-8 sm:pt-20">
+        {/* The indicator: what is new, as a claim the product makes true today (Google's AI answers are "soon") */}
         <SectionLink
           hash={SECTION.engines}
-          className="inline-flex items-center gap-3 font-mono text-xs font-medium tracking-[0.14em] text-muted-foreground uppercase transition-colors hover:text-foreground motion-safe:animate-rise"
+          className="group inline-flex max-w-full items-center gap-2.5 rounded-full border bg-background py-1 pr-3.5 pl-1 text-sm text-foreground shadow-xs transition-colors hover:border-foreground/25 motion-safe:animate-rise"
         >
-          <span aria-hidden className="hidden h-px w-8 bg-brand/40 sm:block" />
-          {t("pill")}
-          <span aria-hidden className="hidden h-px w-8 bg-brand/40 sm:block" />
+          <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-foreground px-2.5 py-1 text-xs font-semibold text-background">
+            <span aria-hidden className="relative flex size-2">
+              <span className="absolute inset-0 rounded-full bg-positive opacity-60 motion-safe:animate-ring" />
+              <span className="relative size-2 rounded-full bg-positive" />
+            </span>
+            {t("badge")}
+          </span>
+          <Sparkle weight="fill" aria-hidden className="size-3.5 shrink-0 text-brand" />
+          <span className="truncate">{t("news")}</span>
+          <ArrowRight aria-hidden className="size-3.5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
         </SectionLink>
-        <h1 id="hero-title" className="text-4xl/[1.05] font-bold tracking-[-0.04em] text-balance sm:text-6xl/[1.05] lg:text-[5.25rem]/[1.02]">
+        <h1 id="hero-title" className="text-[2rem]/[1.08] font-bold tracking-[-0.04em] text-balance sm:text-5xl/[1.05] lg:text-[4rem]/[1.04]">
           {t("title")}{" "}
           {/* The accent: the line's last words in the serif italic, lighter than the sans around them */}
           <span className="block font-display font-normal tracking-[-0.02em] text-brand italic">{t("titleMuted")}</span>
         </h1>
-        <p className="max-w-3xl text-lg/8 text-pretty text-muted-foreground sm:text-xl/9 motion-safe:animate-rise [animation-delay:80ms]">
-          {t("subtitle")}
+        <p className="max-w-3xl text-lg/9 text-pretty text-muted-foreground sm:text-xl/10 motion-safe:animate-rise [animation-delay:80ms]">
+          {t.rich("subtitle", {
+            visibility: metricChip(IconMentions),
+            position: metricChip(IconPlace),
+            sources: metricChip(IconSources),
+          })}
         </p>
         <div
           id={SECTION.check}
