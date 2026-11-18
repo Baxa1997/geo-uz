@@ -195,6 +195,19 @@ that is committed.
 
 ## Done (as of 18 November 2026)
 
+- **Built, waiting for the user's look: the landing page's indicator and the sentence with chips (18 Nov), on
+  the branch `hero-indicator`; merged and pushed the same day, when the user said "commit, push and deploy",
+  after the docs brought up to date (`docs-current`).** The user, with two other products' heroes and an indicator as
+  the pictures: "Put the Indicator for the top of main text", "Sub text make as in the screenshot, but
+  appropriately of our, but not many text, and style make the same". Over the headline, in the place of the
+  small mono label, a pill: a dark badge "Jonli" (ru "Новое", en "New") with the live green dot (it rings four
+  times and rests), a sparkle, "Gemini kuzatuvi qoʻshildi" and an arrow; it opens the assistants' section. The
+  picture's text, Google AI Overviews tracking added, would be untrue: Google's AI answers are "tez orada". The
+  sentence is now one short line with three chips (our own icon and the app's name: Tilga olinish, Oʻrni,
+  Manbalar), in the three languages (`frontend/CLAUDE.md`, "Our look"). Looked at in a browser in Uzbek and
+  Russian on desktop and in Uzbek and English at 390px. Then ("main text make it less"): the headline is
+  smaller, 64px on a wide screen (was 84), 48 from `sm` (was 60), 32 on a phone (was 36). No new variable.
+
 - **Built, waiting for the user's look: a real PDF download for reports (18 Nov), on the branch `report-pdf`;
   merged, pushed and deployed the same day, when the user said "push deploy everything in main branch" (Vercel's
   build passed; the server's previous `app/` is kept as `app.bak-before-pdf`; its `/health` says `"pdf": false`
@@ -969,7 +982,7 @@ that is committed.
   then `hisobotlar-correction` (the report as an official status document with a condition score, Hisobotlar
   opening on the latest condition), then `report-detail-width` (the report fills the panel's width), then
   `settings-and-overview` (Sozlamalar in Peec's layout, the Overview tightened, Savollar and a question's page in
-  Peec's design, brands' logos), then `plan-billing-correction` (Tarif's plans four in a row, as Peec's); on 14 Nov `pilot-report`, `pilot-first-run`, `models-and-site`, `backend-first-slice`, then `restyle` (the look of our own, the Uzbek metric names, the icons), then `email-login` (the login by email, wired to the backend); on 15 Nov `own-login-email` (the backend sends the login code itself; Supabase's tables locked) after `first-run-page` (the first run's page, the setup filled in from it, the backend on the server, API calls through the frontend); on 17 Nov `feedback-17-nov` (the user's list of 17 Nov, Manbalar rebuilt, the name Seenova AI and its logo), then `actions-simpler` (Harakatlar made simple, a task for the owner's own AI on every action); on 18 Nov `logo-rounds` (the logo as two rounds), then `wrong-facts-rebuild` (Notoʻgʻri faktlar rebuilt), then `report-pdf` (a real PDF download, no signature lines). Each time the user chose "commit, push" when asked (for Harakatlar: "push everything"). Each page gets its
+  Peec's design, brands' logos), then `plan-billing-correction` (Tarif's plans four in a row, as Peec's); on 14 Nov `pilot-report`, `pilot-first-run`, `models-and-site`, `backend-first-slice`, then `restyle` (the look of our own, the Uzbek metric names, the icons), then `email-login` (the login by email, wired to the backend); on 15 Nov `own-login-email` (the backend sends the login code itself; Supabase's tables locked) after `first-run-page` (the first run's page, the setup filled in from it, the backend on the server, API calls through the frontend); on 17 Nov `feedback-17-nov` (the user's list of 17 Nov, Manbalar rebuilt, the name Seenova AI and its logo), then `actions-simpler` (Harakatlar made simple, a task for the owner's own AI on every action); on 18 Nov `logo-rounds` (the logo as two rounds), then `wrong-facts-rebuild` (Notoʻgʻri faktlar rebuilt), then `report-pdf` (a real PDF download, no signature lines), then `docs-current` (the docs brought up to date with each other and the code), then `hero-indicator` (the landing page's indicator, the sentence with chips, a smaller headline). Each time the user chose "commit, push" when asked (for Harakatlar: "push everything"). Each page gets its
   own branch, merged when the user says so.
 
 ## To do, in order
