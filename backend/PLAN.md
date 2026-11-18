@@ -6,7 +6,7 @@ It does not repeat the API contract. The endpoints and types are in `frontend/CL
 
 Keep it current: when a page of the frontend is finished and corrected, add what it needs to "What each page needs" and a line to the change log at the end.
 
-Status: written from the pages built by 5 October 2026 and kept current in the change log at the end. Built so far (14 Nov 2026, `backend/app/`, see `README.md`): login by email code and a new account's first run. The sections below still describe the first plan where the change log says otherwise: login is by email, not phone or Telegram, and the stack is Supabase and a server at Contabo.
+Status: written from the pages built by 5 October 2026 and kept current in the change log at the end. What is built (`backend/app/`) is in `README.md`: by 18 Nov 2026 the login by email code, the first check, real projects behind every page, checks by plan, fixes and wrong facts, the report by link, PDF and email, all deployed. The sections below still describe the first plan where the change log says otherwise: login is by email, not phone or Telegram; the stack is Supabase and a server at Contabo; ChatGPT and Gemini are asked, one answer a question; the prices are the dollar plans of 15 Nov (the root `PLAN.md`), not the soʻm plans under "Cost per plan".
 
 ## What the backend does
 
@@ -186,6 +186,10 @@ A listing action also carries the number of answers citing the site and the comp
 
 ## Cost per plan
 
+**Replaced on 15 Nov 2026** by the dollar plans (the root `PLAN.md`) and measured on 16 Nov (change log: about
+$1.63 a weekly check of ten questions on both assistants, so Standard's 25 questions cost about $15 a month).
+Kept as the first estimate.
+
 The teardown document sets the rule: a plan must cost us less than a third of its price. With four runs a month and three samples per question:
 
 | Plan | Price a month | Answers a month | Budget per answer |
@@ -205,12 +209,12 @@ That is roughly one to two US cents per answer, and it has to cover the answer w
 5. **Editing a question.** Today an edit keeps the question's id. Its old answers were given to the old wording. Either an edit makes a new question, or each answer stores the wording it was asked with.
 6. **The public report** is read by project id without login. Ids must be impossible to guess, or the link needs its own token; a password is on the roadmap.
 7. **The free check**: how many samples (the app's three, or one to save cost), and the limits against abuse.
-8. **Plan limits. Partly decided 6 Oct 2026:** the project carries `plan` and `limits` (questions 25, 75, 300; competitors 3, 5, 5), and the Questions page uses the question limit. The Competitors page uses the competitor limit since 8 Oct. Still open: which plan a new project gets before billing exists (the mocks give every project Biznes), how Agentlik's 300 questions are split between its brands (`limits.prompts` is meant to be what this brand may use), and onboarding, which runs before a plan exists and still allows 5 competitors.
+8. **Plan limits. Mostly decided 15 Nov 2026** (the user's prices): a new project is a trial with Standard's limits until a plan is switched on, and the limits are 25, 50 and 300 questions with 5 competitors on every plan (`PLAN_LIMITS`), so onboarding's fixed 5 agrees. Still open: how Enterprise's 300 questions are split between its projects. **Partly decided 6 Oct 2026:** the project carries `plan` and `limits` (questions 25, 75, 300; competitors 3, 5, 5), and the Questions page uses the question limit. The Competitors page uses the competitor limit since 8 Oct. Still open: which plan a new project gets before billing exists (the mocks give every project Biznes), how Agentlik's 300 questions are split between its brands (`limits.prompts` is meant to be what this brand may use), and onboarding, which runs before a plan exists and still allows 5 competitors.
 9. **Where personal data is stored.** Phone numbers and Telegram accounts of Uzbek citizens may have to stay on servers in Uzbekistan. To confirm with a lawyer before choosing hosting.
 10. **SMS provider** for Uzbek numbers.
 11. **Size of the report.** It carries the full text of every answer: 75 questions × 3 answers already, 300 for an agency. If pages get slow, send the texts only to the Answers page.
 12. **An action whose cause is gone** (the client is now listed, the fact is now right) but which the client never marked: close it automatically, or leave it.
-13. **Wrong facts before brand facts exist.** What they are checked against: the client's website, or nothing until the client writes its facts.
+13. **Wrong facts before brand facts exist.** What they are checked against: the client's website, or nothing until the client writes its facts. **Answered by the build of 16 Nov 2026** (waiting for the user's look): the website, through the brand answers, from the first check on; the owner's facts as well on Pro.
 14. **Daily checks. Decided 6 Oct 2026: not offered for now.** The chart has a day view, as Peec's does, and Peec checks daily. Daily checks mean about seven times the answers: Start would go from 300 to about 2,250 a month, which leaves about 30 soʻm per answer at today's price. To reopen only as a higher plan or an add-on.
 
 15. **Three answers are few for one question.** A question's own chart moves in steps of a third, and one different answer looks like a big change. Enough for "named or not"; if clients read too much into it, the choices are more samples for chosen questions or showing a question's history over four weeks at a time.
@@ -261,7 +265,8 @@ That is roughly one to two US cents per answer, and it has to cover the answer w
   two assistants every other day costs $55–80 of the $89.99, so Pro is built as twice a week with 50
   questions (about $35). Standard on two assistants costs about $9. These replace the soʻm prices and the
   "Cost per plan" section above. Built: `projects.paid`, `billing.status`, `app/admin.py`, checks by plan,
-  Vertex in `app/engines.py`. All competitors limits are 5. Not confirmed by the user yet: the Pro correction.
+  Vertex in `app/engines.py`. All competitors limits are 5. The user confirmed the Pro correction the same day
+  ("yes agree with your questions count").
 - **15 Nov 2026. Fixes and wrong facts** (stage 4 of the root `PLAN.md`; built, waiting for the user's look
   and a live check). `app/fixes.py`: the cited pages read, the actions by rule with stable keys, their
   statuses, "Add a page", proof, wrong facts and briefs by a model inside a live check (`backend/README.md`,

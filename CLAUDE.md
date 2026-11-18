@@ -25,126 +25,125 @@ server and the code's internal names keep).
 
 A tool that shows a business how AI assistants talk about it, and what to do about it.
 
-Every week it asks ChatGPT (with web search on) the questions customers ask, such as "best dental clinic in
-Tashkent?", in Uzbek and in Russian, three times each. From the answers it measures how often the brand is
-named compared with its competitors (visibility, share of voice, position, tone), which sites ChatGPT relies
-on, and what it says about the brand that is wrong. Then it gives the owner a short list of fixes: get listed
-on a site ChatGPT cites, correct a wrong fact, write a page on a topic where only competitors are named, fix
+Every week (Pro: twice a week) it asks ChatGPT and Gemini, with web search on, the questions customers ask,
+such as "best dental clinic in Tashkent?", one answer a question (`RUN_SAMPLES`), and asks each assistant
+about the business by its name (the brand questions). From the answers it measures how often the brand is
+named compared with its competitors (visibility, share of voice, position, tone), which sites the assistants
+rely on, and what they say about the brand that is wrong. Then it gives the owner a short list of fixes: get
+listed on a site AI cites, correct a wrong fact, write a page on a topic where only competitors are named, fix
 something on the website.
 
 - **Buyers:** local businesses (the owner or their marketer) and agencies. Uzbekistan first, then the rest
   of Central Asia. Many will read their report on a phone, from Telegram.
-- **Languages:** the interface is in Uzbek (default), Russian and English; the questions are in Uzbek and Russian.
+- **Languages:** the interface is in Uzbek (default), Russian and English. The questions are in the languages
+  of the business's country (16 Nov): Uzbek and Russian in Uzbekistan, Russian in Kazakhstan, Kyrgyzstan,
+  Tajikistan, Turkmenistan, Russia and Belarus, English elsewhere.
 - **Reference product:** Peec AI (peec.ai). We copy its layout where it works and make ours simpler, local
   and in plain words. We never copy its name, logo, colors, wording, customer quotes or logos.
-- **Why ChatGPT only for now:** it brings about 95% of the visits that AI assistants send to websites in
-  Uzbekistan (DataReportal Digital 2026). Google's AI answers and Yandex come next; Google has about 74% of
-  search there and Yandex about 22% (StatCounter, 2026). **Corrected 16 Nov:** the 95% could not be found in
-  DataReportal's report, and StatCounter's October 2026 figures for Uzbekistan say otherwise: among AI chatbots
-  Gemini 58%, ChatGPT 35%; in search Google 76%, Yandex 22%. Since 15 Nov the product asks both assistants; the
-  landing page shows StatCounter's figures with their month.
-- **Plans (soʻm a month):** free check 0 · Start 199,000 · Biznes 490,000 · Agentlik 1,490,000 · Managed GEO
-  from 3,000,000. Weekly checks. Details in `frontend/CLAUDE.md`.
+- **Which assistants:** ChatGPT and Gemini, since 15 Nov; Google's AI answers in Search and Yandex are "tez
+  orada". The first reason given for ChatGPT alone (about 95% of AI visits in Uzbekistan, said to be
+  DataReportal's) could not be found in DataReportal's report (corrected 16 Nov). StatCounter's October 2026
+  figures for Uzbekistan: among AI chatbots Gemini 58%, ChatGPT 35%; in search Google 76%, Yandex 22%. The
+  landing page shows them with their month.
+- **Plans (the user's decision, 15 Nov, in dollars; the soʻm plans of October are gone):** the first check
+  free, once an account · Standard $39.99 a month (weekly, 25 questions) · Pro $89.99 (twice a week, 50
+  questions, wrong facts against the owner's facts) · Enterprise by agreement (several projects) · Managed GEO
+  by agreement. No payment yet: a plan is switched on by hand (`python -m app.admin plan`). The table is in
+  `PLAN.md`.
 
-## Where the project stands (14 November 2026)
+## Where the project stands (18 November 2026)
 
-Read this section first in a new session: it says what exists, how to run it, and exactly where to go on.
+Read this section first in a new session: it says what exists, how to run it, and where to go on. The entries
+under "Done" hold the detail, newest first.
 
-**Three parts exist, all on `main` (GitHub: Baxa1997/geo-uz, a public repository):**
+**Three parts, all on `main` (GitHub: Baxa1997/geo-uz, a public repository), every branch merged:**
 
-1. **`frontend/`: a Next.js 16 app with every page built on mock data** (Tashkent dental clinics), behind the API
-   contract in `frontend/CLAUDE.md`. Since 14 Nov its login is the backend's (email and a code) when
-   `NEXT_PUBLIC_LIVE=auth` is set, as it is in this computer's `.env.local`; every other page is still mocks.
-2. **The pilot report**: `/pilots/<slug>` in the frontend draws a one-off report from `frontend/pilots/<slug>.json`,
-   and `backend/pilot/` is the script that makes that file from a brief (`backend/pilot/README.md`). It has run
-   for real for the first client.
-3. **`backend/app/`: the backend's first slice** (`backend/README.md`): login by a code sent to an email, and a new
-   account's first run (`POST /first-runs`: website in, assistants asked, first statistics out). Tried on this
-   computer with curl; not wired to the frontend, not deployed.
+1. **`frontend/`: a Next.js 16 app, every page built, in three languages.** With
+   `NEXT_PUBLIC_LIVE=auth,first-run,projects` (this computer) a real account's pages read and write the backend;
+   sample data (Tashkent dental clinics) stays for the landing page's preview and wherever a slice is off
+   (`frontend/CLAUDE.md`). Deployed on Vercel, which still puts its own login in front of the site.
+2. **`backend/app/`: the API** (`backend/README.md`): login by a code the backend emails itself; the first check
+   (the website read, the owner confirms the business, competitors and questions, then ChatGPT and Gemini are
+   asked, with the results filling in as they come); real projects behind every page; checks by plan, started
+   by a timer; fixes and wrong facts; the report by its link, as a PDF and by email. Deployed at
+   `https://geo-api.shopsready.com` on the Contabo server, with Supabase's database (in Mumbai).
+3. **The pilot report**: `/pilots/<slug>` draws a one-off report from `frontend/pilots/<slug>.json`, made by
+   `backend/pilot/` from a brief (`backend/pilot/README.md`). Run for real for the first client; on hold until
+   the platform's flow is set up (the user, 14 Nov).
 
-**What was done on 14 Nov after the backend's first slice, in order** (each has its entry under "Done"):
+**The latest work (17–18 Nov), each merged, pushed and deployed, each waiting for the user's look** (entries
+under "Done"): the name Seenova AI, then its logo as two rounds; the first part of the user's list of 17 Nov
+(speed, loading, fields, the report's section on each assistant, Manbalar rebuilt); Harakatlar made simple,
+with a task for the owner's own AI on every action; Notoʻgʻri faktlar rebuilt; a real PDF download; the
+reader's signature lines gone from the report.
 
-1. The look was made our own, so the app no longer reads as Peec: navy and paper colors, the Onest typeface,
-   the landing page's own marks, a taller header with the languages as a dropdown. Merged and pushed (`restyle`).
-2. The Uzbek metric names became Tilga olinish, Oʻrni, Baho. Merged and pushed with 1.
-3. Every icon was replaced: our own for the sidebar, metrics and action goals, Phosphor for the rest. Merged and
-   pushed with 1.
-5. (15 Nov) The first-run page: after login, a website, the run's progress, the first statistics. Merged and pushed
-   (`first-run-page`) when the user said "commit, push", with the setup's link to the run, the server's
-   deployment notes and the browser's calls routed through the frontend.
-4. The login page was moved to email and wired to the backend. Merged and pushed (`email-login`), when the user
-   said "commit, push".
+**The user's decisions that hold now:**
 
-**The user's decisions that hold now (14 Nov):**
-
-- The first flow is: login → the user's website → the first run on ChatGPT and Gemini → first statistics → the
-  dashboard's setup (brand, competitors, questions) → settings.
-- Supabase holds the database and the login (email code and Google). A server at Contabo runs the Python backend.
-  The frontend talks only to the backend.
+- The first flow (16 Nov, "confirm, then check"): login → the website and country → the business, competitors
+  and questions, confirmed → the check on ChatGPT and Gemini → the first statistics → the project's dashboard.
+  One free check an account; one website, one project.
+- Supabase is the database only. The backend sends the login email itself (15 Nov, "switch to backend":
+  Supabase's emails kept the default sign-in link through six tests, whatever the saved templates said). A
+  server at Contabo runs the backend; the frontend talks only to it. Google login comes later.
+- The prices of 15 Nov ("What the project is", and `PLAN.md`); a plan is switched on by hand.
 - The pilot report "is good for now"; its polishing and sending come after the platform's flow is set up.
 - The look is "navy and paper" with our own key icons and Phosphor for the rest; the Uzbek metric names are
-  Tilga olinish, Oʻrni, Baho (`frontend/CLAUDE.md`, "Our look").
-- No paid request (OpenAI or any other) until the user says so ("no request should be done"): the Gemini key,
-  the Supabase project and the Contabo server were promised for 15 Nov, and live runs wait for them.
+  Tilga olinish, Oʻrni, Baho; the name is Seenova AI and the mark two rounds (`frontend/CLAUDE.md`, "Our look").
+- A paid request (OpenAI, Gemini) is made only when the user has chosen it, as for the real checks of 16 Nov
+  and the one request of 17 Nov. On this computer first checks are replayed (`FIRST_RUN_REPLAY=true`; the user,
+  16 Nov: "replay"). The one standing spend is the paid project on the server (below).
 
-**Go on from here, in this order:**
+**Go on from here.** Nothing is finished until the user confirms it, and most of "Done" since 15 Nov still
+waits for their look. The open work, in the order the user picks (ask as a short choice):
 
-1. Done (14 Nov, see "Done"): the login page asks for an email and a code against the backend. Google later.
-2. Built on 15 Nov (see "Done"), on a replayed run; still owed: one live run on ChatGPT and Gemini once the
-   keys are in and the user allows paid requests. It was: a page after login that takes a website, starts `POST /first-runs`, shows its progress (`GET /first-runs/{id}`:
-   `status`, `answered`, `total`) and then the first statistics (`GET /first-runs/{id}/result`, the `Snapshot`
-   shape plus `engines`, `recommended`). The free check's parts (`features/marketing`: CheckRunner,
-   SnapshotPreview, SiteAudit) are the closest thing built.
-3. Saving a first run as a project, then the setup steps (the onboarding wizard exists on mocks), then the
-   backend behind the other pages in the build order of `backend/PLAN.md`.
-4. A slice of the API goes live by its name in `NEXT_PUBLIC_LIVE` (`shared/api/client.ts`; "auth" so far), while
-   the rest stays on mocks; add a name per slice as the backend grows. Until the user says otherwise, **no paid
-   request is made** (the user, 14 Nov: "no request should be done"): build the first-run page against a saved
-   result and leave the one live run for when the keys arrive.
+1. The rest of the user's list of 17 Nov: Savollar (point 5), the report's competitors and sources (3–4), the
+   bug in the dynamics window. Each waits for its screenshots.
+2. The live site: the user turns off Vercel's login; then `FRONTEND_ORIGIN` on the server becomes the site's
+   public address; then Chromium on the server, when the user says (the PDF on the live site, the emailed
+   report's attachment).
+3. The database to a Supabase project in Frankfurt, once its connection string is in `backend/.env.server`
+   (`NEW_DATABASE_URL=…`): the data copied across and the server switched.
+4. Stage 5 of `PLAN.md`, ready for a paying client: the domain, terms, limits against abuse, backups, an alert
+   when a check fails, new passwords.
 
 **Waiting on the user (ask once, don't block on it):**
 
-- (17 Nov) From the list of 17 Nov: the screenshots it names for the report's competitors and sources, the
-  Savollar page and the bug in the dynamics window (only Brend savollari's arrived); the next page after
-  Manbalar (Notoʻgʻri faktlar, Harakatlar, Savollar); a Supabase project in the Frankfurt region (the user's
-  choice), its connection string in `backend/.env.server` as one line `NEW_DATABASE_URL=…`, never in chat,
-  then the data is copied across and the server switched; whether the six brand questions of the project on
-  the server are rewritten in the new way.
-
-- "Next" for the first-run page, and whether a saved run may be replayed in development to build it.
+- (17 Nov) The screenshots the list of 17 Nov names: the report's competitors and sources, the Savollar page and
+  the bug in the dynamics window (only Brend savollari's arrived).
+- (17 Nov) A Supabase project in the Frankfurt region (the user's choice), its connection string in
+  `backend/.env.server` as one line `NEW_DATABASE_URL=…`, never in chat; then the data is copied across and the
+  server switched.
+- (18 Nov) Vercel's login turned off (theirs, in Vercel): until then neither the server nor a client given a
+  report's link can open the site. Chromium on the server: not yet (the user's choice).
+- The paid project on the server: the user's own site, switched to Standard by hand on 16 Nov for the first
+  weekly check. The timer checks it every Monday at about $1.63 until it goes back to a trial
+  (`python -m app.admin plan <id> start --trial`).
+- New passwords, since all were pasted in chat on 15 Nov: the server's root password (an SSH key is installed,
+  so it is no longer needed), the Supabase database password (the same one) and the Gmail app password; each
+  goes into `backend/.env.server` (ignored by git), not into chat.
+- Google: Gemini runs through Vertex with the IELTS project's Google Cloud project and a copy of its
+  credentials, for now; a Google Cloud project of our own is owed. A Gemini API key (the other path in
+  `backend/app/engines.py`) has never run.
+- The product's own domain (the emails' sender, the site's address) and a mail service on it: Gmail's account
+  is for login codes and testing.
+- Real contacts for the public pages (an email, a Telegram): the footer's placeholders were removed on 16 Nov.
+  Contacts for the pilot report's last page.
+- Three answers pasted from the ChatGPT app, to compare the app with the API.
 - (Settled by the landing page's rebuild, 16 Nov, waiting for the user's look.) The weekly Telegram report is
   marked "tez orada" and "no sign-up needed" is gone: the free check is "sign in with your email, no card".
-- Real contacts for the public pages (an email, a Telegram): the footer's placeholders were removed on 16 Nov.
-- A Gemini API key: the Gemini client (`backend/app/engines.py`) is written from Google's documentation and has
-  never run, so its cost and answers are unmeasured.
-- New passwords, since all were pasted in chat on 15 Nov: the server's root password, the Supabase database
-  password (the same one) and the Gmail app password; each goes into `backend/.env.server` (ignored by git), not
-  into chat. Also a login tried from the Vercel site, whose addresses are behind Vercel's own login.
-- (Done, 15 Nov.) The login email is sent by the backend. On 15 Nov Supabase's custom SMTP worked but its emails kept the default sign-in link
-  through six tests, whatever the saved templates said; the user chose "switch to backend": `app/mail.py` sends
-  the code itself when `SMTP_HOST` is set (tried against a local test mail server), and Supabase keeps only the
-  database. The user gave a Gmail app password; the server sent a code to the user's inbox and it arrived
-  ("code came"). Merged and pushed (`own-login-email`) when the user said "commit and push". Entering the code
-  on the site has not been tried yet.
-- Supabase (15 Nov: the user gave the project; the server's backend now uses its database and its email login,
-  tables locked against Supabase's public API). Still theirs: the email templates with `{{ .Token }}`, a first
-  login with a real email, and new passwords: the database password is the same as the server's old root
-  password, and both were pasted in chat.
 - The frontend on Vercel (the user, 15 Nov: "geo right now will be in Vercel, then it will be in its domain, I
-  don't know yet"; the subdomain is for the API only). The backend answers at `https://geo-api.shopsready.com`.
-  The browser calls it through the frontend (`/api/backend`, a rewrite), so the login works from any domain.
-  The user imports the repository in Vercel (root `frontend`) with `NEXT_PUBLIC_API_URL`,
-  `NEXT_PUBLIC_USE_MOCKS=true`, `NEXT_PUBLIC_LIVE=auth,first-run`; the Vercel connector in this session is not
-  authorized. And a new root password: the user pasted the old
-  one in chat (15 Nov); an SSH key is installed, so the password is no longer needed.
-- Three answers pasted from the ChatGPT app, to compare the app with the API.
-- Contacts for the pilot report's last page.
+  don't know yet"; the subdomain is for the API only). The browser calls the backend through the frontend
+  (`/api/backend`, a rewrite), so the login works from any domain; the user used it there on 16 Nov (the
+  fifteen corrections). Vercel's variables are in `ENVIRONMENT.md`. The Vercel connector in this session is
+  not authorized.
 
-**What is measured (details in `backend/PLAN.md`, change log):** one answer with web search costs about $0.077
-on `gpt-6.1-sol`, $0.044 on `gpt-6.1-terra` (the default now) and $0.024 on `gpt-6-luna`, four times and more
-the 1–2 cents the plans' prices assume. A first run of ten questions on ChatGPT alone took 83 seconds and cost
-$0.47. Answers differ between runs and between models (about half the businesses in common); the pattern over
-many answers holds. The prices in "What the project is" have not been revised.
+**What is measured (details in `backend/PLAN.md`, change log):** an answer with web search costs $0.024 to
+$0.077 on OpenAI's models ($0.044 on `gpt-6.1-terra`, the default) and about $0.035 on Gemini. A first check
+on both assistants (ten questions on Gemini, five of them on ChatGPT, the brand questions) took about five
+minutes and cost $0.84 (16 Nov); a weekly check on Standard (ten questions on both, six brand questions) took
+about seven minutes and cost $1.63. At that rate Standard's 25 questions cost about $3.50 a check, about $15 a
+month against its $39.99. Gemini Flash's price doubles on 1 Jan 2027. Answers differ between runs and between
+models (about half the businesses in common); the pattern over many answers holds.
 
 **On this computer only, never in git** (the repository is public): the OpenAI key (`backend/pilot/.env`, read
 by `backend/app` too), clients' briefs (`backend/pilot/briefs/*` except the example), clients' report files
@@ -157,14 +156,15 @@ that is committed.
 - Frontend: `cd frontend`, `npm run dev`, http://localhost:3000. On this computer `node` is not on the shell's
   path: `export PATH="$HOME/.nvm/versions/node/v22.23.1/bin:$PATH"` first. Login needs the backend running
   (below): any email, and the code arrives by email (since 16 Nov this computer's `backend/.env` has the server's
-  `SMTP_*`; without them the code is printed in the backend's log); every account sees the sample project "Oq Tabassum".
-  With `NEXT_PUBLIC_LIVE` empty the login is a mock again: demo@geo.uz with any six-digit code.
+  `SMTP_*`; without them the code is printed in the backend's log). An account sees its own projects (the slice
+  `projects` is on here); one without a project starts at the first check. With `NEXT_PUBLIC_LIVE` empty the
+  login is a mock again (demo@geo.uz with any six-digit code) and every page shows the sample project "Oq Tabassum".
 - A pilot report: http://localhost:3000/ru/pilots/<slug> (the first client's two files are in `frontend/pilots/`).
   To make one: `cd backend/pilot`, `set -a; . ./.env; set +a`, `python3 pilot.py briefs/<brief>.json`.
 - Backend: `cd backend`, `. .venv/bin/activate`, `uvicorn app.main:app --reload --port 8000`; `GET /health` says
   which assistants have a key and whether first runs are replayed (`FIRST_RUN_REPLAY=true` in `backend/.env`:
   no paid request, and every step of the first check says in a banner that it shows a saved check, not the
-  website typed; remove the line for a live run, about $0.50). A login code is emailed (the `SMTP_*` lines in `backend/.env`), or
+  website typed; remove the line for a live run, about $0.85 on both assistants). A login code is emailed (the `SMTP_*` lines in `backend/.env`), or
   printed to the server's log when they are removed.
 - To check a pilot report as a PDF: Chrome headless, `--print-to-pdf` against the dev server.
 
@@ -974,26 +974,23 @@ that is committed.
 
 ## To do, in order
 
-00. **The platform's first flow (the user's decision, 14 Nov; before the pilots' list below).** Login → the
-   user's website → the first run on ChatGPT and Gemini → first statistics → the dashboard's setup → settings,
-   on Supabase (database, login by email code and Google) with the backend on a server at Contabo. The backend's
-   first slice is built in `backend/app/`, merged and pushed on 14 Nov when the user said "commit, push" (see
-   `backend/README.md`): email login and the first
-   run, tried on this computer. The frontend's login by email is done (14 Nov). Next: a page that starts the
-   first run and shows its progress and first statistics, then saving the result as a project. Waiting on the user: a Gemini
-   key, a Supabase project, the Contabo server.
+00. **The platform's first flow (the user's decision, 14 Nov).** It works end to end on the live server since
+   16 Nov: login → the website → the business, competitors and questions confirmed → the check on ChatGPT and
+   Gemini → the statistics → the project, then checks by plan, the report and the fixes (stages 1–4 of
+   `PLAN.md`: built, waiting for the user's look). What is left of the MVP: stage 5 of `PLAN.md`, and on the
+   live site the report's PDF and links (Vercel's login, `FRONTEND_ORIGIN`, Chromium on the server).
 
-0. **Pilots first (the user's decision, 14 Nov).** The first real run is done. Next: decide what the cost of
-   an answer ($0.077) does to the prices (try a cheaper model; fewer samples or runs; higher prices); read
-   and correct the first client's draft and fill the contacts before it is sent. Still unmeasured: the ChatGPT
-   app against the API on the same day (the user pastes three answers from the app). Then sell 5–10
-   pilots by hand. Only after that the backend, and then for the report and four pages (Overview, Savollar,
-   Javoblar, Harakatlar). Ideas agreed as direction, not built: the app opening on "how AI sees you" beside
-   the leader, counts instead of percentages while samples are small, the report's look in the app, a
-   category ranking (one measurement serves every business in it), Kazakhstan by hand-made Russian pilots.
+0. **Pilots (the user's decision of 14 Nov, put after the platform's flow the same day).** The first real run
+   is done, and the prices were set against the measured cost on 15 Nov. Before the first client's report is
+   sent: read and correct its draft and fill the contacts. Still unmeasured: the ChatGPT app against the API
+   on the same day (the user pastes three answers from the app). Whether to sell 5–10 pilots by hand while the
+   platform is built is the user's to decide (`PLAN.md`). Ideas agreed as direction, not built: the app opening
+   on "how AI sees you" beside the leader, counts instead of percentages while samples are small, the report's
+   look in the app, a category ranking (one measurement serves every business in it), Kazakhstan by hand-made
+   Russian pilots.
 
 1. **The other pages, the same way, in the sidebar's order.** Each also gets hover explanations on its table
-   headings, figures and marks (`Hint`), which only Savollar has so far:
+   headings, figures and marks (`Hint`; done on most data pages, `frontend/CLAUDE.md`, "Explanations on hover"):
    - Javoblar: built and merged (see "Done"); corrections may still come.
    - Raqobatchilar: built and merged (see "Done"); corrections may still come.
    - Manbalar: rebuilt after Peec's Domains screenshots, laid out like Peec's on 8 Oct, confirmed by the
@@ -1001,10 +998,11 @@ that is committed.
    - The report: rewritten and merged (see "Done"); corrections may still come.
    - Savollar: laid out like Peec's with all of its Prompts features on 8 Oct and merged on 10 Oct, then its
      topics column, folded rail and table in Peec's design with tags, fact-checking and location, merged the
-     same day (see "Done"); corrections may still come.
-   - Harakatlar: laid out like Peec's Actions on 10 Oct, corrected twice and merged the same day (see "Done");
-     more corrections may still come. Still to come on it: marks on the chart where a fix started and was done (Peec's Impact as a block), once Impact's
-     screenshots arrive.
+     same day (see "Done"); corrections may still come. Next on it: point 5 of the user's list of 17 Nov,
+     waiting for its screenshots.
+   - Harakatlar: laid out like Peec's Actions on 10 Oct, corrected twice and merged the same day, then made
+     simple on 17 Nov (see "Done"); more corrections may still come. Still to come on it: marks on the chart
+     where a fix started and was done (Peec's Impact as a block), once Impact's screenshots arrive.
    - Asked for on 10 Oct, before the Peec trial ends about 11 Oct, in one go: Impact, Settings › Facts (the
      other Settings tabs came the same day and are built). Settings › Company showed Peec's email report: a
      switch per project and "every 2 weeks"; ours stays in Hisobotlar's delivery window. The Fanouts screenshots of 8 Oct need nothing: the question's page already lists the
@@ -1015,24 +1013,25 @@ that is committed.
    - Sozlamalar: built from Peec's Settings screenshots on 10 Oct, on the branch `settings-and-overview`, with the
      Overview tightened, Profil and Tarif then made Peec's, and Savollar with a question's page in Peec's design;
      merged and pushed on 10 Oct (see "Done"); corrections may still come.
-   - Notoʻgʻri faktlar: the brand facts now exist (Sozlamalar › Faktlar); the page should say which fact each wrong
-     claim contradicts. Peec's Settings › Facts screens never came; ours is built from the teardown.
+   - Notoʻgʻri faktlar: rebuilt on 18 Nov from what AI says about the business, each wrong claim beside the
+     truth (see "Done"); corrections may still come. Peec's Settings › Facts screens never came; ours is built
+     from the teardown.
 
    Peec pages that get no page of ours (the user agreed on 6 Oct; Discovery left this list on 8 Oct, when the
    user asked for all of Peec's Prompts features: it is "Find questions" on Savollar):
    - Impact: not a page, a block on Harakatlar (the chart with marks, above).
    - Fanouts: no page of its own; since 7 Oct each question's page lists the searches behind its answers.
    - Ads: no. ChatGPT ads aren't sold here, and Peec has paused the page itself.
-2. **Parts that are design only:** the GEO AI side panel answers every question with a demo reply; Gemini
-   and Yandex are marked "tez orada" in the engine switcher. Hisobotlar's delivery: "Connect Telegram" ties a
-   chat at once in the mocks (the bot doesn't exist yet), and no email is sent. A past week's report shows the
-   latest answers (the mocks keep one run), so its topics and questions are today's. Plans: a project now carries its plan and
-   limits, and the question and competitor limits are used, but nothing sets a plan (every mock project is
-   on Biznes) and onboarding still allows a fixed 5 competitors.
-3. **Backend.** Begin with step 0 of `backend/PLAN.md`: a small script that measures what one answer costs
-   and whether the answers are the ones a person in Tashkent gets. Its result decides whether the prices
-   work, so it comes before any other backend code. Then follow the build order in that file. It lists
-   nineteen open questions; daily checks (14) and the searches (16) are decided and plan limits (8) partly.
+2. **Parts that are design only:** the Seenova AI side panel answers every question with a demo reply; Yandex
+   and Google's AI answers are marked "tez orada" (Gemini is real since 15 Nov). There is no Telegram bot: the
+   backend answers 501 to connecting one, and only the mocks tie a chat at once. No payment: a plan is switched
+   on by hand (`python -m app.admin plan`), and a new project is a trial with Standard's limits. The backend
+   doesn't serve suggested questions, Discovery, keywords or members yet (empty answers). On sample data only:
+   a past week's report shows the latest answers (the mocks keep one run), and every mock project is on Biznes.
+3. **Backend.** Step 0 of `backend/PLAN.md` is done (14 Nov), and stages 1–4 of `PLAN.md` are built (15–16 Nov,
+   see "Done"); stage 5 is next. `backend/PLAN.md` keeps nineteen open questions; the cost of an answer (1),
+   daily checks (14) and the searches (16) are decided, plan limits (8) mostly, and wrong facts before the
+   owner's facts (13) answered by the build of 16 Nov.
 4. **Noted during the dashboard review, not scheduled:** saving a chart as a picture (owners forward
    pictures in Telegram), a date-range filter once a client has four or more weeks, an export menu on each
    card, and a "write to us in Telegram" banner for new clients. Also a "Saytim" (my website) page once the

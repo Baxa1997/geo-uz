@@ -15,12 +15,12 @@ Two things live here:
 ## Run it on this computer
 
 Nothing needs an account: the database is the file `local.db`, and a login code is printed to the server's log
-instead of being emailed.
+unless the `SMTP_*` lines below are set (this computer's `.env` has them since 16 Nov, so its codes are emailed).
 
 ```
 cd backend
 python3 -m venv .venv && . .venv/bin/activate
-pip install fastapi uvicorn "sqlalchemy>=2" "psycopg[binary]"
+pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8000
 ```
 
@@ -146,25 +146,29 @@ project's (`prompt_id` empty), in the report's language with its three languages
 assistant in `details`; the run is then marked as checked for facts, and each such fact gets its action in
 Harakatlar. No model is asked for it. A fact not stated again at the next check leaves the list.
 
-**Projects** (`app/projects.py`, 15 Nov 2026; read only). Tables: `projects`, `brands` (the client's own and
+**Projects** (`app/projects.py`, 15 Nov 2026: the reads, then the same day the writes). Tables: `projects`, `brands` (the client's own and
 the competitors, in a fixed order), `prompts`, `runs`, `answers`, `mentions` (every business an answer names;
 without a brand id when the project doesn't track it: the "new competitor" list) and `citations`. Saving a
 first run matches its competitors and questions to what the client kept in the setup, by name and by text: a
 competitor the client dropped becomes an untracked name, one the client added is looked for in the answers'
 text, a question the client removed loses its answers, a new one waits for the next check. The report is
 counted in plain code from those rows for any set of questions, with the condition score by the formula of
-`frontend/src/shared/helpers/condition.ts`. A new project is on Biznes until plans are sold. The plan's
-limits on questions, competitors and facts are enforced. Not built: suggested questions (they need a model),
-facts read from the website, actions, inviting members.
+`frontend/src/shared/helpers/condition.ts`. A new project is a trial with Standard's limits (`DEFAULT_PLAN`,
+`billing.status` "trial") until a plan is switched on by hand. The plan's limits on questions, competitors and
+facts are enforced. Not built: suggested questions (they need a model), facts read from the website, inviting
+members.
 
-**The weekly check** (`app/weekly.py`, 15 Nov 2026; **never run against an assistant**). `python -m app.weekly`
+**The weekly check** (`app/weekly.py`, 15 Nov 2026; **first run against the assistants on 16 Nov**, on the
+server: the user's own site on Standard, 20 answers of 20 on both assistants, the six brand questions and a
+page's brief, 413 seconds, $1.63; `PLAN.md`, change log). `python -m app.weekly`
 checks every project, `--project <id>` one. It asks each tracked question to every assistant with a key,
 `RUN_SAMPLES` times (default 1), five at a time, a failed one twice more; reads the answers as a first run does;
 gathers the spellings of each business with the tracked brands' names among them; keeps what earlier checks
 found about each cited site and reads the five most cited new ones. With `FIRST_RUN_REPLAY=true` it asks
-nobody and saves the project's latest check again as a new one: that is how it was tried. On the server the
-timer `geo-weekly` starts it every day at 01:00 UTC (installed 15 Nov; it checks only paid projects due that
-day, and none is paid yet), with `WEEKLY_RUNS=true` so the report names the next check.
+nobody and saves the project's latest check again as a new one: that is how it was first tried. On the server
+the timer `geo-weekly` starts it every day at 01:00 UTC (installed 15 Nov; it checks only paid projects due that
+day: one since 16 Nov, the user's own site, every Monday until it goes back to a trial), with `WEEKLY_RUNS=true`
+so the report names the next check.
 
 **Fixes** (`app/fixes.py`, 15 Nov 2026). After a project is made and after every check, the most cited pages
 on sites a business can be listed on are opened (plain HTTP, up to 15, no model) and it is kept which tracked
@@ -175,9 +179,10 @@ topic whose questions name competitors and never the client, a fix for each fail
 for each wrong fact. An action's `key` never changes, so the client's status survives the next check; an
 untouched suggestion that is no longer called for goes. Proof: the client's visibility on the action's
 questions in the last check before it was done and in the latest one. Two parts use a model and run only
-inside a live weekly check, so **they have never run**: wrong facts (each answer that names the client, read
-against the facts in Sozlamalar › Faktlar; `Report.factsChecked` says whether it happened) and the briefs of
-content actions (also when a page is added by hand).
+inside a live weekly check: the briefs of content actions (also when a page is added by hand), which first ran
+in the live check of 16 Nov, and wrong facts against the owner's facts (each answer that names the client, read
+against the facts in Sozlamalar › Faktlar; `Report.factsChecked` says whether it happened), which **has never
+run**: Standard keeps no facts, and no Pro project has been checked.
 
 **The report's delivery** (`app/delivery.py`, 15 Nov 2026). `GET /projects/{id}/report`,
 `/reports/{runId}` and `/actions` answer without login: the report's page is the link a client shares, and the
@@ -220,12 +225,15 @@ repository.
 
 ## Not built yet
 
-- The frontend's login calls this service (since 14 Nov, with `NEXT_PUBLIC_LIVE=auth` in `frontend/.env.local`);
-  and so does the first-run page (`auth,first-run`, since 15 Nov); every other page still runs on mocks.
+- The frontend calls this service for the login, the first check and every project's page
+  (`NEXT_PUBLIC_LIVE=auth,first-run,projects`). Not served: the old free check (`POST /snapshot`), the old
+  setup's suggestions (`/onboarding/*`), support messages; suggested questions and members answer empty.
 - Gemini through a key (the Interactions API) has never run; through Vertex it has (15 Nov).
-- Supabase's login is written and has never been run: no project yet. Google login is not written.
-- A live weekly check (the timer is installed); a browser on the server for the PDF; the report in
-  Telegram; suggested questions; facts read from the website; and everything else in `PLAN.md`.
+- Supabase's own login (its email with the code) is written and was set aside on 15 Nov: its emails kept the
+  default sign-in link, so this service sends the code itself. Google login is not written.
+- A browser on the server for the PDF; the report in Telegram; suggested questions; facts read from the
+  website; leaving AI assistants ("ChatGPT", "Claude") out of the untracked brands; and everything else in
+  `PLAN.md`.
 - A first run is done in a thread of the web process: fine for a start, a queue when there is traffic.
 
 ## Speed (17 Nov 2026)
