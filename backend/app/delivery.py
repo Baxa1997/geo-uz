@@ -98,6 +98,17 @@ def _chrome() -> str:
     raise DeliveryError("no_browser")
 
 
+def available() -> bool:
+    """Whether a report can be printed here: a browser is installed, and the report's page is at an address the
+    browser can reach (on the server, the site's public address, not this computer's)."""
+    try:
+        _chrome()
+    except DeliveryError:
+        return False
+    origin = settings.frontend_origin.lower()
+    return not (settings.secure_cookies and ("//localhost" in origin or "//127.0.0.1" in origin))
+
+
 def pdf(project_id: str, run_id: str, language: str) -> bytes:
     """The report's page printed as A4. Raises DeliveryError when no browser is installed or the page didn't print."""
     with tempfile.TemporaryDirectory() as folder:

@@ -245,3 +245,13 @@ Measured on the server against Supabase: the report 3.4 s → 0.14 s when kept (
 2.0 s → 0.14 s, the session check 0.56 s → 0.14 s and nothing while kept. A database next to the server would
 make each statement a few milliseconds.
 
+## The report as a PDF (18 Nov 2026)
+
+`GET /projects/{id}/reports/{run_id}/pdf?lang=` prints the report's page with Chrome (`delivery.pdf`) and answers
+the file (`seenova-<site>-<date>.pdf`). It is read by the report's link, like the report, and a made PDF is kept
+until the project changes (`app/cache.py`). `/health` says `"pdf": true` when Chrome is found and the report's page
+is at an address Chrome can open (`FRONTEND_ORIGIN`; on the server not `localhost`); the frontend's PDF buttons
+download the file then, and open the print dialog otherwise. On the server it needs Chrome or Chromium installed
+(`CHROME_PATH` if not in the usual places) and `FRONTEND_ORIGIN` set to the site's public address, which must open
+without Vercel's login. On this computer: 6.5 s for a first PDF, then from memory.
+

@@ -2,18 +2,18 @@
 
 import { CheckIcon as Check } from "@phosphor-icons/react/dist/ssr/Check";
 import { LinkIcon as Link2 } from "@phosphor-icons/react/dist/ssr/Link";
-import { PrinterIcon as Printer } from "@phosphor-icons/react/dist/ssr/Printer";
 import { PaperPlaneTiltIcon as Send } from "@phosphor-icons/react/dist/ssr/PaperPlaneTilt";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Hint } from "@/shared/components/hint";
-import { Button, buttonVariants } from "@/shared/components/ui/button";
+import { Button } from "@/shared/components/ui/button";
+import { PdfButton } from "./pdf-button";
 
 /**
  * A report's ways out, in Hisobotlar: copy the shared report's link (anyone with it can read it, no login),
- * share it in Telegram, or open it as A4 with the print window, where it is saved as a PDF.
+ * share it in Telegram, or download its PDF (the print window where the backend can't make one: `PdfButton`).
  */
-export function ReportShare({ path, text }: { path: string; text: string }) {
+export function ReportShare({ path, text, projectId, runId }: { path: string; text: string; projectId: string; runId: string }) {
   const t = useTranslations("Reports.share");
   const [copied, setCopied] = useState(false);
   const absolute = () => new URL(path, window.location.origin).toString();
@@ -50,14 +50,7 @@ export function ReportShare({ path, text }: { path: string; text: string }) {
           </Button>
         )}
       </Hint>
-      <Hint text={t("pdfHint")} described={false}>
-        {() => (
-          <a href={`${path}${path.includes("?") ? "&" : "?"}print=1`} target="_blank" rel="noopener" className={buttonVariants()}>
-            <Printer aria-hidden data-icon="inline-start" />
-            {t("pdf")}
-          </a>
-        )}
-      </Hint>
+      <PdfButton projectId={projectId} runId={runId} printHref={`${path}${path.includes("?") ? "&" : "?"}print=1`} />
     </div>
   );
 }

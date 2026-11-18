@@ -88,7 +88,7 @@ export default async function ReportDetailPage({ params }: Props) {
           <p className="mr-auto text-sm text-muted-foreground tabular-nums">
             {tReport("number", { number: report.history.length })} · {before ? tReport("meta.periodRange", { from: formatShortDate(before, locale, TIME_ZONE), to: date }) : date}
           </p>
-          <ReportShare path={shared} text={tReports("share.text", { brand: project.brand.name, date })} />
+          <ReportShare path={shared} text={tReports("share.text", { brand: project.brand.name, date })} projectId={project.id} runId={runId} />
         </>
       }
     >

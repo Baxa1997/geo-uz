@@ -50,7 +50,7 @@ export default async function ReportPage({ params, searchParams }: Props) {
       <div className="min-h-svh bg-muted/60 print:min-h-0 print:bg-transparent">
         <main className="flex w-full flex-col gap-3 px-3 py-4 sm:px-4 sm:py-6 print:p-0">
           {query.print === "1" && <AutoPrint />}
-          <ReportToolbar />
+          <ReportToolbar projectId={report.project.id} runId={runOf(query) ?? report.history.at(-1)?.runId ?? ""} />
           {report.prompts.length === 0 ? (
             <div className="mx-auto w-full max-w-224">
               <NoData projectId={report.project.id} />

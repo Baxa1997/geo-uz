@@ -3,13 +3,11 @@
 import { ArrowDownIcon as ArrowDown } from "@phosphor-icons/react/dist/ssr/ArrowDown";
 import { ArrowRightIcon as ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight";
 import { ArrowUpIcon as ArrowUp } from "@phosphor-icons/react/dist/ssr/ArrowUp";
-import { FileArrowDownIcon as FileDown } from "@phosphor-icons/react/dist/ssr/FileArrowDown";
 import { MinusIcon as Minus } from "@phosphor-icons/react/dist/ssr/Minus";
 import { useLocale, useTimeZone, useTranslations } from "next-intl";
 import { CsvButton } from "@/shared/components/csv-button";
 import { Hint } from "@/shared/components/hint";
 import { LinkRow } from "@/shared/components/link-row";
-import { buttonVariants } from "@/shared/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { TIME_ZONE } from "@/shared/constants";
 import { CONDITION_AREAS, conditionStatus } from "@/shared/helpers/condition";
@@ -21,6 +19,7 @@ import { STATUS_FILL } from "../constants";
 import { weekEvents } from "../helpers/weeks";
 import { StatusChip } from "./report-parts";
 import { WeekEventLine } from "./week-event";
+import { PdfButton } from "./pdf-button";
 
 /** A row tells at most this many of its week's events. */
 const EVENTS_SHOWN = 2;
@@ -40,6 +39,7 @@ export function ReportsArchive({
   doneDates,
   base,
   shared,
+  projectId,
   filename,
 }: {
   project: Pick<Project, "brand" | "competitors">;
@@ -56,6 +56,8 @@ export function ReportsArchive({
   base: string;
   /** The shared report's address: `?run=` opens a week's, `&print=1` its print window. */
   shared: string;
+  /** For each report's PDF. */
+  projectId: string;
   filename: string;
 }) {
   const t = useTranslations("Reports.archive");
@@ -231,19 +233,14 @@ export function ReportsArchive({
                     )}
                   </td>
                   <td>
-                    <Hint text={t("pdfHint")} described={false}>
-                      {() => (
-                        <a
-                          href={`${shared}?run=${encodeURIComponent(row.point.runId)}&print=1`}
-                          target="_blank"
-                          rel="noopener"
-                          aria-label={t("pdfOf", { number: row.number })}
-                          className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "size-8 text-muted-foreground hover:text-foreground")}
-                        >
-                          <FileDown aria-hidden />
-                        </a>
-                      )}
-                    </Hint>
+                    <PdfButton
+                      compact
+                      variant="ghost"
+                      projectId={projectId}
+                      runId={row.point.runId}
+                      printHref={`${shared}?run=${encodeURIComponent(row.point.runId)}&print=1`}
+                      className="size-8 text-muted-foreground hover:text-foreground"
+                    />
                   </td>
                   <td className="text-right">
                     <ArrowRight aria-hidden className="ml-auto size-4 text-muted-foreground transition-colors group-hover:text-foreground" />

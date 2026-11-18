@@ -626,15 +626,20 @@ def get_run_report(project_id: str, run_id: str) -> Any:
     return kept(project_id, None, "report", projects.report, run_id=run_id)
 
 
+# Read by the report's link, like the report itself (17 Nov 2026: the "PDF" button downloads a file now, where it
+# opened the print window). A PDF takes Chrome a few seconds: one is kept until the project changes.
 @app.get("/projects/{project_id}/reports/{run_id}/pdf")
-def get_report_pdf(project_id: str, run_id: str, lang: str = "uz", user: User = Depends(current_user)) -> Response:
+def get_report_pdf(project_id: str, run_id: str, lang: str = "uz") -> Response:
     """The run's report as a PDF, printed from the report's own page."""
-    in_project(lambda db: projects.report(db, projects.own(db, user, project_id), run_id=run_id) and None)
+    language = lang if lang in ("uz", "ru", "en") else "uz"
+    # The report first: an unknown project is a 404 before Chrome is started
+    report = kept(project_id, None, "report", projects.report, run_id=run_id)
     try:
-        printed = delivery.pdf(project_id, run_id, lang if lang in ("uz", "ru", "en") else "uz")
+        document = cache.report(("pdf", project_id, run_id, language), (cache.version(project_id), run_id), lambda: delivery.pdf(project_id, run_id, language))
     except delivery.DeliveryError as error:
         raise HTTPException(503, error.args[0]) from error
-    return Response(printed, media_type="application/pdf", headers={"Content-Disposition": f'attachment; filename="geo-report-{run_id[:8]}.pdf"'})
+    name = f"seenova-{report['project']['brand']['domain']}-{report['method']['collectedAt'][:10]}.pdf"
+    return Response(document, media_type="application/pdf", headers={"Content-Disposition": f'attachment; filename="{name}"'})
 
 
 @app.get("/projects/{project_id}/topics")
@@ -871,4 +876,4 @@ def demo_request(body: DemoBody) -> None:
 
 @app.get("/health")
 def health() -> Dict[str, Any]:
-    return {"ok": True, "engines": settings.engines, "replay": settings.first_run_replay, "login": settings.login}
+    return {"ok": True, "engines": settings.engines, "replay": settings.first_run_replay, "login": settings.login, "pdf": delivery.available()}

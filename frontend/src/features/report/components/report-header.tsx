@@ -8,12 +8,12 @@ import { totalAnswers } from "@/shared/helpers/scores";
 import type { Report } from "@/shared/types/api";
 import { ReportTools } from "./report-tools";
 
-/** Over the shared report, on screen only: the language switch and the tools (link, print). Our mark is on the paper. */
-export function ReportToolbar() {
+/** Over the shared report, on screen only: the language switch and the tools (link, PDF). Our mark is on the paper. */
+export function ReportToolbar({ projectId, runId }: { projectId: string; runId: string }) {
   return (
     <div className="mx-auto flex w-full max-w-224 flex-wrap items-center justify-end gap-2 print:hidden">
       <LocaleSwitcher />
-      <ReportTools />
+      <ReportTools projectId={projectId} runId={runId} />
     </div>
   );
 }
@@ -97,9 +97,8 @@ export function ReportLetterhead({ report }: { report: Report }) {
 }
 
 /**
- * The end of the report proper, as an official document closes: who prepared it and when, and beside it a
- * place for the reader to sign that they have read it (a line for the signature, a line for the name and
- * the date). The reference sections and the appendix follow it.
+ * The end of the report proper, as an official document closes: who prepared it and when. The reference
+ * sections and the appendix follow it.
  */
 export function ReportSignOff({ report }: { report: Report }) {
   const t = useTranslations("Report.signoff");
@@ -107,19 +106,11 @@ export function ReportSignOff({ report }: { report: Report }) {
   const timeZone = useTimeZone() ?? TIME_ZONE;
   const label = "text-xs font-semibold tracking-wider text-muted-foreground uppercase";
   return (
-    <div className="grid gap-x-12 gap-y-5 border-t-2 border-foreground pt-3.5 text-sm sm:grid-cols-2 print:grid-cols-2 print:break-inside-avoid">
-      <div className="flex flex-col gap-1">
-        <p className={label}>{t("preparedBy")}</p>
-        <p className="font-semibold">{t("preparedByValue")}</p>
-        <p className="text-muted-foreground">{formatLongDate(report.method.collectedAt, locale, timeZone)}</p>
-      </div>
-      <div className="flex flex-col gap-1">
-        <p className={label}>{t("acknowledged")}</p>
-        <div className="grid grid-cols-2 gap-5 pt-7">
-          <p className="border-t border-foreground/60 pt-1 text-xs text-muted-foreground">{t("signature")}</p>
-          <p className="border-t border-foreground/60 pt-1 text-xs text-muted-foreground">{t("nameDate")}</p>
-        </div>
-      </div>
+    // Who prepared it and when; the lines for the reader to sign are gone (the user, 18 Nov 2026)
+    <div className="flex flex-col gap-1 border-t-2 border-foreground pt-3.5 text-sm print:break-inside-avoid">
+      <p className={label}>{t("preparedBy")}</p>
+      <p className="font-semibold">{t("preparedByValue")}</p>
+      <p className="text-muted-foreground">{formatLongDate(report.method.collectedAt, locale, timeZone)}</p>
     </div>
   );
 }

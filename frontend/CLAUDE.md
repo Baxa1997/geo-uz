@@ -813,8 +813,8 @@ It runs in four parts, every section numbered (`REPORT_PARTS`, `REPORT_SECTIONS`
   (`helpers/risks.ts`), each entry a sentence with its numbers, what it means, its level and the action that
   answers it. 9 Action plan: how far it has come as one bar, what is still to do in order of effect with the area
   each action improves (`ACTION_AREAS`), then what is done and what it changed.
-- **Sign-off** (`ReportSignOff`), where the report proper ends: who prepared it and when, and lines for the reader
-  to sign that they have read it.
+- **Sign-off** (`ReportSignOff`), where the report proper ends: who prepared it and when. The lines for the
+  reader to sign that they had read it were removed on 18 Nov (the user: "remove the signature for bosses part").
 - **IV. Reference.** Method and scope with the limits of the numbers, then Definitions (the five numbers, then the
   condition score, each area's formula and where a status begins), which close the report. Last, a line on
   what the numbers are.
@@ -858,8 +858,10 @@ A4 (`@page` and the `print:` classes): the tools and filters are `print:hidden`,
 marks would vanish), a section runs on from the one before, its heading and conclusion stay with what follows, a
 short table, a card and a table's row are never cut in two, and every page carries "3 / 13" at its foot (a page
 margin box in `@page`; a browser that doesn't know them leaves it out). The first page holds the letterhead and
-the whole condition: the summary's area rows keep their bar beside the name from 448px (`@md:`) for that. "Print or save as PDF" is the browser's print
-dialog; a sent PDF (Telegram) will be this same page printed by the backend. Its texts are the `Report`
+the whole condition: the summary's area rows keep their bar beside the name from 448px (`@md:`) for that. "PDF yuklab olish" (`PdfButton`, 18 Nov: the user
+"pdf download is not working, there are no pdf download button") downloads the file the backend makes by printing
+this same page with Chrome (`GET /projects/{id}/reports/{runId}/pdf`, by the report's link) when its `/health` says
+`pdf`; elsewhere, or when the download fails, it opens the print dialog as before. Its texts are the `Report`
 namespace; the findings are computed in `features/report/helpers` and the shared score helpers. Check a change to
 it as a PDF too (Chrome's `Page.printToPDF` from the test browser), not only on screen.
 
