@@ -75,7 +75,8 @@ under "Done" hold the detail, newest first.
 under "Done"): the name Seenova AI, then its logo as two rounds; the first part of the user's list of 17 Nov
 (speed, loading, fields, the report's section on each assistant, Manbalar rebuilt); Harakatlar made simple,
 with a task for the owner's own AI on every action; Notoʻgʻri faktlar rebuilt; a real PDF download; the
-reader's signature lines gone from the report.
+reader's signature lines gone from the report; the landing page's indicator, the sentence with chips and a
+smaller headline.
 
 **The user's decisions that hold now:**
 
@@ -196,8 +197,8 @@ that is committed.
 ## Done (as of 18 November 2026)
 
 - **Built, waiting for the user's look: the landing page's indicator and the sentence with chips (18 Nov), on
-  the branch `hero-indicator`; merged and pushed the same day, when the user said "commit, push and deploy",
-  after the docs brought up to date (`docs-current`).** The user, with two other products' heroes and an indicator as
+  the branch `hero-indicator`; merged, pushed and deployed the same day, when the user said "commit, push and
+  deploy" (Vercel's build passed), after the docs brought up to date (`docs-current`).** The user, with two other products' heroes and an indicator as
   the pictures: "Put the Indicator for the top of main text", "Sub text make as in the screenshot, but
   appropriately of our, but not many text, and style make the same". Over the headline, in the place of the
   small mono label, a pill: a dark badge "Jonli" (ru "Новое", en "New") with the live green dot (it rings four
