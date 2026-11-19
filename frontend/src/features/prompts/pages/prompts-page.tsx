@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
 import { getTranslations } from "next-intl/server";
 import { cache } from "react";
 import { Page } from "@/shared/components/page";
@@ -11,7 +10,6 @@ import { loadReport } from "@/shared/api/load-report";
 import { withFilters } from "@/shared/helpers/report-filters";
 import { seriesBrands } from "@/shared/helpers/scores";
 import { PromptManager, type View } from "../components/prompt-manager";
-import { TOPICS_COOKIE } from "../constants";
 
 type Props = PageProps<"/[locale]/projects/[id]/prompts">;
 
@@ -27,9 +25,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 /**
- * The questions we ask ChatGPT, each with the latest run's result, laid out like Peec's prompts page
- * across the whole panel (`bleed`): topics on the left, the questions on the right with a footer that
- * stays in view. `?view=suggested|archived` opens a tab; `&new=` marks that many of the newest
+ * The questions we ask AI, each with the latest check's result, across the whole panel (`bleed`): since
+ * 18 Nov a simple list under one row of tabs and one of tools (the topics are a filter), and a footer once
+ * rows are picked. `?view=suggested|archived` opens a tab; `&new=` marks that many of the newest
  * suggestions as just made (Discovery comes back with it); `?tag=` starts the list on one tag (Sozlamalar ›
  * Teglar links it). A question opens its own page (prompt-page).
  */
@@ -37,12 +35,11 @@ export default async function PromptsPage({ params, searchParams }: Props) {
   const { locale: segment, id } = await params;
   const locale = setPageLocale(segment);
   const query = await searchParams;
-  const [{ report, prompts, allPrompts, filters, topics }, suggestions, topicList, t, cookieStore] = await Promise.all([
+  const [{ report, prompts, allPrompts, filters, topics }, suggestions, topicList, t] = await Promise.all([
     loadReport(id, query),
     orNotFound(api.getPromptSuggestions(id)),
     orNotFound(api.getTopics(id)),
     getTranslations({ locale, namespace: "Sidebar" }),
-    cookies(),
   ]);
   const { brand, competitors, plan, limits } = report.project;
   const view = VIEWS.find((candidate) => candidate === query.view) ?? "tracked";
@@ -62,7 +59,6 @@ export default async function PromptsPage({ params, searchParams }: Props) {
         initialTag={typeof query.tag === "string" ? query.tag : ""}
         // The language filter stands in the search's row, as Peec's filters do: no strip of its own
         filterBar={prompts.length > 0 ? <ReportFilterBar key="filters" topics={topics} topicFilter={false} /> : undefined}
-        initialTopicsFolded={cookieStore.get(TOPICS_COOKIE)?.value === "folded"}
         freshCount={fresh}
         results={report.prompts}
         brands={[brand, ...competitors]}
@@ -74,7 +70,6 @@ export default async function PromptsPage({ params, searchParams }: Props) {
         filename={`${brand.domain}-questions-${report.method.collectedAt.slice(0, 10)}`}
         nextRunAt={report.nextRunAt}
         wrongFacts={report.wrongFacts}
-        factsChecked={report.factsChecked !== false}
         wrongFactsHref={withFilters(`/projects/${report.project.id}/wrong-facts`, filters)}
         discoveryHref={withFilters(`/projects/${report.project.id}/prompts/discovery`, filters)}
         city={report.project.city}

@@ -97,8 +97,9 @@ smaller headline.
 **Go on from here.** Nothing is finished until the user confirms it, and most of "Done" since 15 Nov still
 waits for their look. The open work, in the order the user picks (ask as a short choice):
 
-1. The rest of the user's list of 17 Nov: Savollar (point 5), the report's competitors and sources (3–4), the
-   bug in the dynamics window. Each waits for its screenshots.
+1. The rest of the user's list of 17 Nov: the report's competitors and sources (3–4), the bug in the dynamics
+   window. Each waits for its screenshots. (Savollar, point 5, was made simple on 18 Nov from the user's own
+   screenshot of it.)
 2. The live site: the user turns off Vercel's login; then `FRONTEND_ORIGIN` on the server becomes the site's
    public address; then Chromium on the server, when the user says (the PDF on the live site, the emailed
    report's attachment).
@@ -109,8 +110,8 @@ waits for their look. The open work, in the order the user picks (ask as a short
 
 **Waiting on the user (ask once, don't block on it):**
 
-- (17 Nov) The screenshots the list of 17 Nov names: the report's competitors and sources, the Savollar page and
-  the bug in the dynamics window (only Brend savollari's arrived).
+- (17 Nov) The screenshots the list of 17 Nov names: the report's competitors and sources and the bug in the
+  dynamics window (only Brend savollari's arrived; Savollar's came on 18 Nov and the page was rebuilt).
 - (17 Nov) A Supabase project in the Frankfurt region (the user's choice), its connection string in
   `backend/.env.server` as one line `NEW_DATABASE_URL=…`, never in chat; then the data is copied across and the
   server switched.
@@ -195,6 +196,21 @@ that is committed.
    that no key and no client's name is in it.
 
 ## Done (as of 18 November 2026)
+
+- **Built, waiting for the user's look: Savollar made simple (18 Nov), on the branch `savollar-simple`; merged and
+  pushed on 19 Nov with `full-screens`, when the user said "commit, push and deploy".** The user, with a screenshot of the page on a real project: "is somehow messy and UI design is not
+  structurally correct". What was wrong: three rows of tools and a notice before the first question, a topics
+  column for seven topics of one or two questions, and a table of fourteen columns that scrolled sideways, mostly
+  dashes and "0%", the businesses named as initials ("B", "I") and the leader cut ("British Coun…"), "Archive
+  all" always at the foot. Asked with two pictures, the user chose "simple, like Harakatlar". Now: one row of tabs
+  and buttons (the rare ones in a ⋯), one row of tools with the topic as a filter, one sentence on where the
+  client stands, and four columns (the question with its language, topic, wrong facts and tags under it; "Sizni
+  tilga oldi" as "0 / 1"; "Kimni tilga oldi" with the names written out; a ⋯ for edit, tags, fact-checking and
+  archive); the rest is on the question's page and in the CSV; the footer only with rows picked
+  (`frontend/CLAUDE.md`, prompts). The page's tour follows the new order. The topics column
+  (`topics-column.tsx`) and its cookie are removed. Looked at in a browser on this computer in Uzbek on desktop
+  and phone width and in Russian on desktop, with both menus opened. Not tried: the Suggested and Archive tabs on
+  a project that has some, adding a tag from the ⋯, English. No new variable.
 
 - **Built, waiting for the user's look: full-height screens for the first check and the login, and the
   dashboard's buttons filled (18 Nov), on the branch `full-screens`; merged and pushed on 19 Nov, when the user said
@@ -1027,8 +1043,7 @@ that is committed.
    - The report: rewritten and merged (see "Done"); corrections may still come.
    - Savollar: laid out like Peec's with all of its Prompts features on 8 Oct and merged on 10 Oct, then its
      topics column, folded rail and table in Peec's design with tags, fact-checking and location, merged the
-     same day (see "Done"); corrections may still come. Next on it: point 5 of the user's list of 17 Nov,
-     waiting for its screenshots.
+     same day (see "Done"), then made simple on 18 Nov (see "Done"); corrections may still come.
    - Harakatlar: laid out like Peec's Actions on 10 Oct, corrected twice and merged the same day, then made
      simple on 17 Nov (see "Done"); more corrections may still come. Still to come on it: marks on the chart
      where a fix started and was done (Peec's Impact as a block), once Impact's screenshots arrive.

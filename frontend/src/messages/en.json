@@ -1564,7 +1564,9 @@
       "language": "Language",
       "factCheck": "Fact-checking",
       "tags": "Tags",
-      "location": "Location"
+      "location": "Location",
+      "youNamed": "Named you",
+      "whoNamed": "Who was named"
     },
     "queued": "Queued",
     "you": "You",
@@ -1658,7 +1660,9 @@
       "languageColumn": "The language the question is asked in: UZ Uzbek, RU Russian.",
       "factCheck": "When on, the answers to this question are checked against the facts about your brand, and the number of wrong facts found shows beside it. Turned off, they aren't checked from the next check on.",
       "tags": "Your own labels on questions, such as a branch or a campaign. The “Tag” filter narrows the list by them.",
-      "location": "The city the question is asked from: AI searches as if answering someone there. Changed in the question's window."
+      "location": "The city the question is asked from: AI searches as if answering someone there. Changed in the question's window.",
+      "youNamed": "In how many of this question’s answers in the latest check you were named: “1 / 2” is one answer of two.",
+      "whoNamed": "The tracked businesses this question’s answers named, the most named first. “You” is your business."
     },
     "webSearchCell": "AI searched the web for {count} of {total} answers",
     "wrongFactsSome": "{count, plural, one {# wrong fact} other {# wrong facts}}: click to see",
@@ -1811,7 +1815,21 @@
       "on": "Yes",
       "off": "No"
     },
-    "trialNote": "These questions were asked in the free first check. Questions you add are asked in the next check, once a plan is switched on."
+    "trialNote": "These questions were asked in the free first check. Questions you add are asked in the next check, once a plan is switched on.",
+    "wrongFactsMark": "{count, plural, one {# wrong fact} other {# wrong facts}}",
+    "moreNames": "and {count} more",
+    "rowMenu": "Actions: {text}",
+    "rowMenuHint": "Edit, tags, fact-checking, archive",
+    "menu": {
+      "label": "More actions",
+      "editTopic": "Edit the topic “{topic}”"
+    },
+    "summary": {
+      "none": "These questions haven’t been asked yet: the results appear after the first check.",
+      "line": "AI named you in {named} of {asked, plural, one {# question} other {# questions}}.",
+      "rivals": "In {count}, only competitors were named.",
+      "queued": "{count, plural, one {# is} other {# are}} asked at the next check."
+    }
   },
   "PromptForm": {
     "addTitle": "Add questions",
@@ -3467,10 +3485,6 @@
       }
     },
     "prompts": {
-      "topics": {
-        "title": "Questions by topic",
-        "text": "Pick a topic to see its questions. “New topic” adds one; the pencil beside a topic opens it to rename or delete it."
-      },
       "tabs": {
         "title": "Tracked, suggested, archived",
         "text": "Tracked questions are asked every week. Suggested ones are worth adding. Archived ones are no longer asked, but keep their answers."
@@ -3479,17 +3493,21 @@
         "title": "Add questions",
         "text": "The ring shows how many questions your plan holds. Add your own, or let “Find questions” suggest them from your services."
       },
+      "topics": {
+        "title": "By topic",
+        "text": "Pick a topic: the list keeps only its questions. A new topic, or editing the one picked, is in the ⋯ menu above."
+      },
       "summary": {
-        "title": "Your numbers on these questions",
-        "text": "Visibility, tone, position and web search over the questions shown. They change with the search and the filters."
+        "title": "Where you stand on these questions",
+        "text": "How many of the questions shown named you, and how many only competitors. It follows the search and the filters; under it, when the next check is."
       },
       "row": {
         "title": "One question",
-        "text": "A click opens its page: its answers, its charts and the fixes that should move it."
+        "text": "A click opens its page: its answers, its charts and the fixes that should move it. The row’s ⋯ edits it, its tags, or archives it."
       },
       "footer": {
         "title": "Several at once",
-        "text": "Tick questions to move them to a topic, archive or track them: this bar acts on the ones you picked."
+        "text": "Tick questions with their boxes: a bar appears at the foot to move them to a topic or archive them."
       }
     },
     "prompt": {
