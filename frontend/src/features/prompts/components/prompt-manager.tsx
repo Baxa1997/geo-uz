@@ -4,11 +4,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArchiveIcon as Archive } from "@phosphor-icons/react/dist/ssr/Archive";
 import { CaretDownIcon as ChevronDown } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import { CaretUpIcon as ChevronUp } from "@phosphor-icons/react/dist/ssr/CaretUp";
-import { CaretDoubleLeftIcon as ChevronsLeft } from "@phosphor-icons/react/dist/ssr/CaretDoubleLeft";
-import { CaretDoubleRightIcon as ChevronsRight } from "@phosphor-icons/react/dist/ssr/CaretDoubleRight";
 import { CaretUpDownIcon as ChevronsUpDown } from "@phosphor-icons/react/dist/ssr/CaretUpDown";
 import { WarningCircleIcon as CircleAlert } from "@phosphor-icons/react/dist/ssr/WarningCircle";
 import { ProhibitIcon as CircleSlash } from "@phosphor-icons/react/dist/ssr/Prohibit";
+import { DotsThreeIcon as More } from "@phosphor-icons/react/dist/ssr/DotsThree";
 import { FolderSimplePlusIcon as FolderInput } from "@phosphor-icons/react/dist/ssr/FolderSimplePlus";
 import { TreeViewIcon as ListTree } from "@phosphor-icons/react/dist/ssr/TreeView";
 import { PencilSimpleIcon as Pencil } from "@phosphor-icons/react/dist/ssr/PencilSimple";
@@ -23,29 +22,30 @@ import { useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
 import { CsvButton } from "@/shared/components/csv-button";
 import { FilterMenu } from "@/shared/components/filter-menu";
-import { BrandLogo } from "@/shared/components/scores/brand-logo";
 import { Hint } from "@/shared/components/hint";
 import { MethodLabel } from "@/shared/components/scores/method-label";
-import { Switch } from "@/shared/components/switch";
 import { Button, buttonVariants } from "@/shared/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/components/ui/dropdown-menu";
-import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/shared/components/ui/sheet";
-import { UzFlag } from "@/shared/components/uz-flag";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/shared/components/ui/dropdown-menu";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { api, ApiError } from "@/shared/api/client";
 import { queryKeys } from "@/shared/api/query-keys";
 import { MIN_PROMPTS, TIME_ZONE } from "@/shared/constants";
-import { formatIsoDay, formatShortDate, formatWeekdayDate } from "@/shared/helpers/dates";
+import { formatIsoDay, formatWeekdayDate } from "@/shared/helpers/dates";
 import { labelFor } from "@/shared/helpers/labels";
-import { formatDecimal, formatPercent } from "@/shared/helpers/numbers";
 import { isTracked } from "@/shared/helpers/prompts";
 import { FILTER_PARAMS, withFilters } from "@/shared/helpers/report-filters";
-import { toneOf } from "@/shared/helpers/scores";
+import { answersNaming } from "@/shared/helpers/scores";
 import { cn } from "@/shared/helpers/utils";
-import type { Brand, Plan, Prompt, PromptResult, ReportFilters, ReportMethod, SuggestedPrompt, Tone, UpdatePromptsRequest, WrongFact } from "@/shared/types/api";
+import type { Brand, Plan, Prompt, PromptResult, ReportFilters, ReportMethod, SuggestedPrompt, UpdatePromptsRequest, WrongFact } from "@/shared/types/api";
 import type { SeriesBrand } from "@/shared/types/scores";
-import { TOPICS_COOKIE, type TopicSort } from "../constants";
-import { matchesFilter, PROMPTS_FILTERS, promptsSummary, promptStats, toneScore, type PromptsFilter } from "../helpers/stats";
+import { matchesFilter, PROMPTS_FILTERS, promptStats, type PromptsFilter } from "../helpers/stats";
 import { AddPromptDialog } from "./add-prompt-dialog";
 import { ArchiveTable } from "./archive-table";
 import { ImportKeywordsDialog } from "./import-keywords-dialog";
@@ -54,39 +54,22 @@ import { SelectBox } from "./select-box";
 import { SuggestionsTable } from "./suggestions-table";
 import { TagsCell } from "./tags-cell";
 import { TopicDialog } from "./topic-dialog";
-import { TopicsColumn, type TopicItem } from "./topics-column";
 import { fieldClass } from "@/shared/components/ui/field-style";
-
-const dash = <span className="text-muted-foreground">—</span>;
-
-const YEAR_SECONDS = 60 * 60 * 24 * 365;
 
 export type View = "tracked" | "suggested" | "archived";
 const VIEWS: View[] = ["tracked", "suggested", "archived"];
 
-/** The columns the table sorts by, as Peec's; without a sort the questions keep the order they were added in. */
-type SortKey = "question" | "visibility" | "shareOfVoice" | "tone" | "position" | "webSearch" | "location" | "added";
+/** The columns the table sorts by; without a sort the questions keep the order they were added in. */
+type SortKey = "question" | "visibility";
 
-const SORT_WIDTHS: Record<SortKey, string> = {
-  question: "",
-  visibility: "w-32",
-  shareOfVoice: "w-32",
-  tone: "w-24",
-  position: "w-24",
-  webSearch: "w-32",
-  location: "w-36",
-  added: "w-32",
-};
+/** A to Z; the other column puts the largest number first. */
+const ASCENDING_FIRST: SortKey[] = ["question"];
 
-/** A to Z, and the first place first; the other columns put the largest number first. */
-const ASCENDING_FIRST: SortKey[] = ["question", "position", "location"];
+/** The businesses written out in a question's row before "+2". */
+const NAMES_SHOWN = 3;
 
-/** The question stays in view while the other columns scroll sideways under it; once they do, its edge casts a shadow, as on Peec. */
-const PINNED =
-  "sticky left-0 z-[1] bg-card shadow-[inset_-1px_0_0_var(--border)] group-data-scrolled/table:shadow-[inset_-1px_0_0_var(--border),10px_0_14px_-10px_rgb(0_0_0/0.18)]";
-
-/** The tone as Peec shows it: a dot in its color before the score out of 100. */
-const TONE_DOTS: Record<Tone, string> = { positive: "bg-positive", neutral: "bg-muted-foreground/60", negative: "bg-negative" };
+/** A topic as the filter lists it: its name and how many questions of the open tab it holds. */
+type TopicItem = { value: string; label: string; count: number };
 
 /** A window open over the page. */
 type Dialog =
@@ -99,17 +82,18 @@ type Dialog =
   | { kind: "topic"; topic: string | null };
 
 /**
- * The project's questions, laid out like Peec's prompts page across the whole panel: the topics column on
- * the left ("New topic +", each topic with its count and a ⋯ to rename or delete it; « at its foot folds
- * it to a rail, and the page remembers it folded); on the right the
- * tracked, suggested and archived questions as tabs, with how many of the plan's questions are used and
- * the page's buttons; a toolbar; the list; and a footer that says when the questions are asked again, or,
- * once rows are picked with their boxes, what can be done with them.
+ * The project's questions, made simple (the user, 18 Nov 2026: "messy and UI design is not structurally
+ * correct"; asked, they chose "simple, like Harakatlar"): one row with the tracked, suggested and archived
+ * questions as tabs, how many of the plan's questions are used and the page's buttons (a ⋯ menu holds the
+ * rare ones: a new topic, editing the topic picked, archiving all); one row of tools (search, the topic, the
+ * language, named or not, a tag, the export); one sentence on where the client stands over the questions
+ * shown; the list; and, once rows are picked with their boxes, a footer with what can be done with them.
  *
- * Tracked: a table that scrolls sideways under the question (visibility, share of voice, tone, position,
- * the brands named, who leads, how often ChatGPT searched the web, the wrong facts found, the date added)
- * under a search, a filter and the client's numbers over the rows shown; a click on a row opens the
- * question's page; picked rows move to a topic or to the archive ("Archive all" with none picked).
+ * Tracked: four columns that fit the panel: the question (its language, topic, wrong facts and tags under it),
+ * how many of its answers named the client ("1 / 3"), who the answers named, written out, the most named
+ * first, and a ⋯ per row (edit, tags, fact-checking, archive). The rest (share of voice, tone, position, web
+ * search, location, the date added) is on the question's own page, which a click on the row opens, and in
+ * the export.
  * Suggested: Peec's table with ✕ / ✓ on each row, "Suggest more" for the topic picked or for all, keywords
  * from a file, and Discovery; picked rows are tracked or rejected together. Archived: picked rows are
  * tracked again. Questions are added (one per line, or from a file) and edited in a window. Every heading,
@@ -125,7 +109,6 @@ export function PromptManager({
   initialTopics,
   initialView,
   initialTag,
-  initialTopicsFolded,
   freshCount,
   results,
   brands,
@@ -137,7 +120,6 @@ export function PromptManager({
   filename,
   nextRunAt,
   wrongFacts,
-  factsChecked = true,
   wrongFactsHref,
   discoveryHref,
   city,
@@ -158,14 +140,12 @@ export function PromptManager({
   initialView: View;
   /** The tag the list starts on (`?tag=`); one no question carries is ignored. */
   initialTag: string;
-  /** The topics column folded to a rail, as the user left it (a cookie). */
-  initialTopicsFolded: boolean;
   /** How many of the newest suggestions Discovery just made, to mark as new. */
   freshCount: number;
   /** The latest run's results; a question without one hasn't been asked yet. */
   results: PromptResult[];
   brands: Brand[];
-  /** The tracked brands with their colors, for the "brands named" column. */
+  /** The tracked brands, for "who was named". */
   series: SeriesBrand[];
   youId: string;
   collectedAt: string;
@@ -178,8 +158,6 @@ export function PromptManager({
   nextRunAt: string | null;
   /** What ChatGPT gets wrong about the client, each with the question it came up in. */
   wrongFacts: WrongFact[];
-  /** False when the answers weren't checked against the brand's facts: a dash then reads "not checked yet". */
-  factsChecked?: boolean;
   /** The page that lists them. */
   wrongFactsHref: string;
   /** Peec's Discovery: services, customers and languages make new suggestions. */
@@ -208,9 +186,7 @@ export function PromptManager({
   });
   const { data: topicList } = useQuery({ queryKey: queryKeys.topics(projectId), queryFn: () => api.getTopics(projectId), initialData: initialTopics });
   const [view, setView] = useState<View>(initialView);
-  const [topicSort, setTopicSort] = useState<TopicSort>("added");
   const [tagFilter, setTagFilter] = useState(initialTag);
-  const [topicsFolded, setTopicsFolded] = useState(initialTopicsFolded);
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<PromptsFilter>("all");
   const [sort, setSort] = useState<{ key: SortKey; reversed: boolean } | null>(null);
@@ -223,7 +199,8 @@ export function PromptManager({
   const [fresh, setFresh] = useState<Set<string>>(() => new Set(initialSuggestions.slice(0, freshCount).map((suggestion) => suggestion.id)));
   const [notice, setNotice] = useState("");
   const [announcement, setAnnouncement] = useState("");
-  const [topicsOpen, setTopicsOpen] = useState(false);
+  // The question whose tags are shown to edit, picked from its ⋯ (a question with tags shows them anyway)
+  const [tagging, setTagging] = useState<string | null>(null);
 
   const topicLabel = (topic: string) => labelFor(messages.Topics, topic);
   const pageOf = (prompt: Prompt) => withFilters(`/projects/${projectId}/prompts/${prompt.id}`, filters);
@@ -327,15 +304,13 @@ export function PromptManager({
     }
   }
 
-  /** A topic opens in its window, over the sheet's place on a narrow panel. */
+  /** A topic opens in its window: a new one, or the one picked. */
   function openTopic(topic: string | null) {
-    setTopicsOpen(false);
     openDialog({ kind: "topic", topic });
   }
 
   function pickTopic(topic: string) {
     setSelected(new Set());
-    setTopicsOpen(false);
     if (view === "suggested") {
       setSuggestedTopic(topic);
       return;
@@ -364,14 +339,16 @@ export function PromptManager({
 
   // Tracked: topics with their counts over the questions in the chosen language
   const inLanguage = tracked.filter((prompt) => !filters.language || prompt.language === filters.language);
-  const lastRun = formatShortDate(collectedAt, locale, timeZone);
-  const byId = new Map(series.map((brand) => [brand.id, brand]));
   const inTopic = inLanguage
     .filter((prompt) => !filters.topic || prompt.topic === filters.topic)
     .map((prompt) => {
       const result = results.find((r) => r.prompt.id === prompt.id);
       const named = result
-        ? series.filter((brand) => result.answers.some((answer) => answer.mentions.some((mention) => mention.brandId === brand.id)))
+        ? series
+            .map((brand) => ({ brand, answers: answersNaming(result, brand.id) }))
+            .filter(({ answers }) => answers > 0)
+            .sort((a, b) => b.answers - a.answers)
+            .map(({ brand }) => brand)
         : [];
       return { prompt, result, named, stats: result && promptStats(result, brands, youId) };
     });
@@ -381,12 +358,6 @@ export function PromptManager({
   const sortValue: Record<SortKey, (row: Row) => number | string | null> = {
     question: ({ prompt }) => prompt.text,
     visibility: ({ stats }) => (stats && stats.total ? stats.named / stats.total : null),
-    shareOfVoice: ({ stats }) => stats?.shareOfVoice ?? null,
-    tone: ({ stats }) => (stats ? toneScore(stats.tones) : null),
-    position: ({ stats }) => stats?.position ?? null,
-    webSearch: ({ stats }) => (stats && stats.total ? stats.searched / stats.total : null),
-    location: ({ prompt }) => labelFor(messages.Cities, prompt.location),
-    added: ({ prompt }) => Date.parse(prompt.createdAt),
   };
   // The tags on the project's questions, for picking and for the filter; a filter on a tag no question has any more lets go
   const allTags = [...new Set(prompts.flatMap((prompt) => prompt.tags))].sort((a, b) => a.localeCompare(b, locale));
@@ -394,7 +365,7 @@ export function PromptManager({
   const matching = inTopic.filter((row) => (!search || row.prompt.text.toLowerCase().includes(search)) && (!tag || row.prompt.tags.includes(tag)));
   const rows = matching.filter((row) => matchesFilter(row.stats, status));
   if (sort) {
-    // Best first (A to Z, the largest share, the earliest place, the latest date), or the other way round
+    // Best first (A to Z, the largest share), or the other way round
     const value = sortValue[sort.key];
     const best = ASCENDING_FIRST.includes(sort.key) ? 1 : -1;
     rows.sort((a, b) => {
@@ -404,11 +375,11 @@ export function PromptManager({
       return order * best * (sort.reversed ? -1 : 1);
     });
   }
-  const summary = promptsSummary(rows.flatMap((row) => row.result ?? []), youId);
-  const searchedShare = (() => {
-    const answers = rows.flatMap((row) => row.result?.answers ?? []);
-    return answers.length ? answers.filter((answer) => answer.searches.length > 0).length / answers.length : null;
-  })();
+  // Where the client stands over the questions shown, in a sentence (it was a line of four numbers)
+  const asked = rows.filter((row) => row.stats);
+  const namedYou = asked.filter((row) => row.stats && row.stats.named > 0).length;
+  const rivalsOnly = asked.filter((row) => row.stats && row.stats.named === 0 && row.named.some((brand) => !brand.isYou)).length;
+  const waiting = rows.length - asked.length;
 
   // Suggested and archived, under the topic picked and the search
   const suggestedRows = suggestions.filter(
@@ -427,7 +398,7 @@ export function PromptManager({
     ...(decide.isPending ? decide.variables.ids : []),
   ]);
 
-  // The topics column: the project's topics with the open tab's counts
+  // The topics, for the filter: the project's topics with the open tab's counts
   const countIn = (list: { topic: string }[], topic: string) => list.filter((item) => item.topic === topic).length;
   const columnItems: TopicItem[] = topics.map((topic) => ({
     value: topic,
@@ -445,35 +416,31 @@ export function PromptManager({
           .map((topic) => ({ value: topic, label: topicLabel(topic), count: countIn(archived, topic) }))
       : [];
   const currentTopic = view === "suggested" ? suggestedTopic : (filters.topic ?? "");
-  const topicsColumn = (folded = false) => (
-    <TopicsColumn
-      folded={folded}
-      items={[...columnItems, ...archivedOnly]}
-      suggested={view === "suggested" ? suggestedTopics : undefined}
-      allLabel={t(view === "suggested" ? "topicsColumn.allSuggested" : "allTopics")}
-      allCount={view === "tracked" ? inLanguage.length : view === "suggested" ? suggestions.length : archived.length}
-      current={currentTopic}
-      sort={topicSort}
-      onSort={setTopicSort}
-      onPick={pickTopic}
-      onNew={() => openTopic(null)}
-      onEdit={openTopic}
-    />
-  );
+  // The topic filter's options: all, then every topic of the open tab with its count
+  const topicOptions: TopicItem[] = [
+    {
+      value: "",
+      label: t(view === "suggested" ? "topicsColumn.allSuggested" : "allTopics"),
+      count: view === "tracked" ? inLanguage.length : view === "suggested" ? suggestions.length : archived.length,
+    },
+    ...columnItems,
+    ...archivedOnly,
+    ...(view === "suggested" ? suggestedTopics : []),
+  ];
 
-  /** How a column is sorted now: not, ascending or descending. Best first means A to Z, the largest share, the first place. */
+  /** How a column is sorted now: not, ascending or descending. Best first means A to Z, the largest share. */
   function sortState(key: SortKey) {
     const sorted = sort?.key === key ? sort : null;
     return !sorted ? null : sorted.reversed !== ASCENDING_FIRST.includes(key) ? "ascending" : "descending";
   }
 
   /** A heading's label that explains its column on hover and sorts: best first, then the other way round, then back to the order added. */
-  function sortButton(key: SortKey, end = false) {
+  function sortButton(key: SortKey, label: string, hint: string, end = false) {
     const sorted = sort?.key === key ? sort : null;
     const state = sortState(key);
     const Icon = !state ? ChevronsUpDown : state === "ascending" ? ChevronUp : ChevronDown;
     return (
-      <Hint text={`${t(`hints.${key}`)} ${t("hints.sort")}`} className={cn("flex", end ? "w-full justify-end" : "min-w-0")}>
+      <Hint text={`${hint} ${t("hints.sort")}`} className={cn("flex", end ? "w-full justify-end" : "min-w-0")}>
         {(describedBy) => (
           <button
             type="button"
@@ -485,7 +452,7 @@ export function PromptManager({
               state && "text-foreground",
             )}
           >
-            {t(`columns.${key}`)}
+            {label}
             <Icon aria-hidden className="size-3.5 shrink-0" />
           </button>
         )}
@@ -493,24 +460,18 @@ export function PromptManager({
     );
   }
 
-  /** A sortable column's heading; a column of numbers has its heading at the right, over them, as on Peec. */
-  function sortHeading(key: SortKey, end = true) {
-    const state = sortState(key);
-    return (
-      <th scope="col" aria-sort={state ?? undefined} className={cn(SORT_WIDTHS[key], end && "text-right")}>
-        {sortButton(key, end)}
-      </th>
-    );
-  }
-
-  /** A click anywhere on a question opens its page; the links, buttons and boxes (and, on a phone, hints) in it keep their own click. */
+  /**
+   * A click anywhere on a question opens its page; the links, buttons and boxes (and, on a phone, hints) in it
+   * keep their own click, and so does a menu the row opened (drawn outside it, its clicks still reach the row).
+   */
   function openQuestion(event: React.MouseEvent, prompt: Prompt, own = "a, button, input") {
+    if (!(event.target instanceof Node) || !event.currentTarget.contains(event.target)) return;
     if (event.target instanceof Element && event.target.closest(own)) return;
     router.push(pageOf(prompt));
   }
 
-  const languageMark = (prompt: Prompt, className?: string) => (
-    <Hint text={t(`hints.language.${prompt.language}`)} focusable={false} described={false} className={cn("text-[0.65rem] font-semibold text-muted-foreground uppercase", className)}>
+  const languageMark = (prompt: Prompt) => (
+    <Hint text={t(`hints.language.${prompt.language}`)} focusable={false} described={false} className="font-semibold uppercase">
       {prompt.language}
     </Hint>
   );
@@ -519,184 +480,106 @@ export function PromptManager({
       {prompt.text}
     </Link>
   );
-  const question = ({ prompt }: Row) => (
-    <>
-      {languageMark(prompt, "mr-1.5")}
-      {questionLink(prompt)}
-    </>
-  );
   const box = ({ prompt }: Row) => <SelectBox checked={pickedSet.has(prompt.id)} label={t("selection.one", { text: prompt.text })} onChange={() => toggle(prompt.id)} />;
-  const run = ({ stats }: Row) =>
-    stats ? (
-      <span className="whitespace-nowrap text-muted-foreground">{lastRun}</span>
-    ) : (
-      <Hint text={t("hints.queued")} focusable={false} className="rounded-md bg-muted px-1.5 py-0.5 text-xs whitespace-nowrap">
-        {t("queued")}
-      </Hint>
-    );
-  const visibility = (row: Row) =>
-    row.stats ? (
-      <Hint text={t("visibilityHint", { count: row.stats.named, total: row.stats.total })} focusable={false} described={false} className="items-baseline gap-1 tabular-nums">
-        <span className={cn(row.stats.named === 0 && "text-muted-foreground")}>
-          {formatPercent(row.stats.total ? row.stats.named / row.stats.total : 0, locale)}
-        </span>
-        <span className="text-xs text-muted-foreground">
-          {row.stats.named}/{row.stats.total}
-        </span>
-        <span className="sr-only"> {t("visibilityHint", { count: row.stats.named, total: row.stats.total })}</span>
-      </Hint>
-    ) : (
-      // Not asked yet: queued for the next weekly run
-      run(row)
-    );
-  const position = ({ stats }: Row) =>
-    stats?.position ? (
-      <span className="tabular-nums">
-        <span aria-hidden className="text-muted-foreground">
-          #
-        </span>
-        {formatDecimal(stats.position, locale)}
-      </span>
-    ) : (
-      dash
-    );
-  const voice = ({ stats }: Row) =>
-    stats && stats.shareOfVoice !== null ? <span className="tabular-nums">{formatPercent(stats.shareOfVoice, locale)}</span> : dash;
-  const webSearch = ({ stats }: Row) =>
-    stats ? (
-      <Hint text={t("webSearchCell", { count: stats.searched, total: stats.total })} focusable={false} className="items-baseline gap-1 tabular-nums">
-        <span className={cn(stats.searched === 0 && "text-muted-foreground")}>{formatPercent(stats.total ? stats.searched / stats.total : 0, locale)}</span>
-        <span className="text-xs text-muted-foreground">
-          {stats.searched}/{stats.total}
-        </span>
-      </Hint>
-    ) : (
-      dash
-    );
-  // Peec's "Branding": whether the question names the client's brand, or asks without knowing it
-  const brandName = brands.find((brand) => brand.id === youId)?.name.toLowerCase() ?? "";
-  const isBranded = (prompt: Prompt) => brandName !== "" && prompt.text.toLowerCase().includes(brandName);
-  const branded = ({ prompt }: Row) => {
-    const named = isBranded(prompt);
-    const Icon = named ? Tag : CircleSlash;
-    return (
-      <Hint text={t(named ? "hints.brandedYes" : "hints.brandedNo")} focusable={false} className="items-center gap-1.5 whitespace-nowrap">
-        <Icon aria-hidden className="size-4 shrink-0 text-muted-foreground" />
-        {t(named ? "branded.yes" : "branded.no")}
-      </Hint>
-    );
-  };
-  /** Peec's fact-checking switch; while it is on, the wrong facts found beside it. */
-  const factCheck = (row: Row) => (
-    <span className="flex items-center gap-3">
-      <Switch checked={row.prompt.factCheck} label={t("factCheckLabel", { text: row.prompt.text })} onChange={(on) => patch.mutate({ ids: [row.prompt.id], factCheck: on })} />
-      {row.prompt.factCheck && row.stats && factsOf(row.prompt) > 0 && facts(row)}
-    </span>
-  );
-  const tagsOf = ({ prompt }: Row) => (
-    <TagsCell tags={prompt.tags} allTags={allTags} question={prompt.text} onChange={(next) => patch.mutate({ ids: [prompt.id], tags: next })} />
-  );
-  const location = ({ prompt }: Row) => (
-    <span className="flex items-center gap-2 whitespace-nowrap">
-      <UzFlag />
-      {labelFor(messages.Cities, prompt.location)}
-    </span>
-  );
-  const language = ({ prompt }: Row) => (
-    <Hint text={t(`hints.language.${prompt.language}`)} focusable={false} className="rounded-md bg-muted px-1.5 py-0.5 text-xs font-semibold uppercase">
-      {prompt.language}
+  const queued = (
+    <Hint text={t("hints.queued")} focusable={false} className="rounded-md bg-muted px-1.5 py-0.5 text-xs whitespace-nowrap">
+      {t("queued")}
     </Hint>
   );
   const factsOf = (prompt: Prompt) => wrongFacts.filter((fact) => fact.promptId === prompt.id).length;
-  /** Our version of Peec's fact-checking switch: every question is checked, so the column shows what was found. */
-  const facts = ({ prompt, stats }: Row) => {
-    const count = factsOf(prompt);
-    if (!stats) return dash;
-    return count > 0 ? (
-      <Hint text={t("wrongFactsSome", { count })} described={false}>
-        {() => (
-          <Link
-            href={wrongFactsHref}
-            aria-label={t("wrongFactsSome", { count })}
-            className="inline-flex items-center gap-1 font-medium text-negative underline-offset-4 outline-none hover:underline focus-visible:underline"
-          >
-            <CircleAlert aria-hidden className="size-4" />
-            {count}
-          </Link>
-        )}
-      </Hint>
-    ) : (
-      <Hint text={t(factsChecked ? "wrongFactsNone" : "wrongFactsNotChecked")} focusable={false} className="text-muted-foreground">
-        —
-      </Hint>
-    );
-  };
-  const added = ({ prompt }: Row) => <span className="whitespace-nowrap text-muted-foreground">{formatShortDate(prompt.createdAt, locale, timeZone)}</span>;
-  const tone = ({ stats }: Row) => {
-    const score = stats ? toneScore(stats.tones) : null;
-    if (score === null) return dash;
+
+  /** Under the question: its language and topic, the wrong facts found in its answers, its tags. */
+  const meta = (row: Row) => {
+    const count = row.stats && row.prompt.factCheck ? factsOf(row.prompt) : 0;
     return (
-      <Hint text={t("toneCell", { tone: tones(toneOf(score)), score })} focusable={false} described={false} className="items-center gap-1.5 tabular-nums">
-        <span aria-hidden className={cn("size-2 shrink-0 rounded-full", TONE_DOTS[toneOf(score)])} />
-        {score}
-        <span className="sr-only">{t("toneCell", { tone: tones(toneOf(score)), score })}</span>
-      </Hint>
-    );
-  };
-  const namedChips = ({ named, stats }: Row) =>
-    !stats ? (
-      dash
-    ) : named.length === 0 ? (
-      <span className="text-muted-foreground">{t("nobody")}</span>
-    ) : (
-      <ul className="flex flex-wrap items-center gap-1">
-        {named.map((brand) => (
-          <li key={brand.id} className="flex">
-            <Hint text={brand.isYou ? `${brand.name} (${t("you")})` : brand.name} focusable={false} described={false} className={cn("rounded-md", brand.isYou && "ring-2 ring-you/50 ring-offset-1")}>
-              <BrandLogo name={brand.name} logo={brand.logo} className="size-6" />
-              <span className="sr-only">{brand.name}</span>
-            </Hint>
-          </li>
-        ))}
-      </ul>
-    );
-  const leader = ({ stats }: Row) =>
-    !stats ? (
-      dash
-    ) : !stats.leader ? (
-      <span className="text-muted-foreground">{t("nobody")}</span>
-    ) : stats.leader.id === youId ? (
-      <span className="rounded-md bg-you-soft px-1.5 py-0.5 text-xs font-medium ring-1 ring-you/40">{t("you")}</span>
-    ) : (
-      <span className="flex min-w-0 items-center gap-2">
-        <BrandLogo name={stats.leader.name} logo={byId.get(stats.leader.id)?.logo} />
-        <span className="truncate">{stats.leader.name}</span>
+      <span className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-muted-foreground">
+        {languageMark(row.prompt)}
+        <span aria-hidden>·</span>
+        <span>{topicLabel(row.prompt.topic)}</span>
+        {count > 0 && (
+          <>
+            <span aria-hidden>·</span>
+            <Link href={wrongFactsHref} className="inline-flex items-center gap-1 font-medium text-negative underline-offset-4 outline-none hover:underline focus-visible:underline">
+              <CircleAlert aria-hidden className="size-3.5" />
+              {t("wrongFactsMark", { count })}
+            </Link>
+          </>
+        )}
+        {(row.prompt.tags.length > 0 || tagging === row.prompt.id) && (
+          <span className="ml-1">
+            <TagsCell tags={row.prompt.tags} allTags={allTags} question={row.prompt.text} onChange={(next) => patch.mutate({ ids: [row.prompt.id], tags: next })} />
+          </span>
+        )}
       </span>
     );
-  const actions = ({ prompt }: Row) => (
-    <span className="flex justify-end gap-0.5">
-      <Hint text={t("hints.edit")} described={false}>
+  };
+
+  /** How many of the question's answers named the client: "1 / 3", the first number green when any did. */
+  const youNamed = (row: Row) =>
+    row.stats ? (
+      <Hint text={t("visibilityHint", { count: row.stats.named, total: row.stats.total })} focusable={false} described={false} className="whitespace-nowrap tabular-nums">
+        <span className={cn("font-semibold", row.stats.named > 0 ? "text-positive" : "text-muted-foreground")}>{row.stats.named}</span>
+        {/* No-break spaces: a flex box drops a plain one at its start */}
+        <span className="text-muted-foreground">{"\u00a0/\u00a0"}{row.stats.total}</span>
+        <span className="sr-only"> {t("visibilityHint", { count: row.stats.named, total: row.stats.total })}</span>
+      </Hint>
+    ) : (
+      // Not asked yet: queued for the next check
+      queued
+    );
+
+  /** Who the answers named, the most named first, written out (the initials were unreadable); the client as "You". */
+  const whoNamed = (row: Row) => {
+    if (!row.stats) return <span className="text-muted-foreground">—</span>;
+    if (row.named.length === 0) return <span className="text-muted-foreground">{t("nobody")}</span>;
+    const shown = row.named.slice(0, NAMES_SHOWN);
+    return (
+      <span className="text-pretty">
+        {shown.map((brand, index) => (
+          <span key={brand.id}>
+            {index > 0 && ", "}
+            <span className={brand.isYou ? "font-semibold text-you" : undefined}>{brand.isYou ? t("you") : brand.name}</span>
+          </span>
+        ))}
+        {row.named.length > shown.length && <span className="text-muted-foreground"> {t("moreNames", { count: row.named.length - shown.length })}</span>}
+      </span>
+    );
+  };
+
+  /** A question's own ⋯: edit it, its tags, its fact-checking, archive it. */
+  const rowMenu = ({ prompt }: Row) => (
+    <DropdownMenu>
+      <Hint text={t("rowMenuHint")} described={false}>
         {() => (
-          <Button variant="ghost" size="icon-sm" aria-label={`${t("edit")}: ${prompt.text}`} onClick={() => openDialog({ kind: "edit", prompt })}>
-            <Pencil aria-hidden />
-          </Button>
+          <DropdownMenuTrigger render={<Button variant="ghost" size="icon-sm" aria-label={t("rowMenu", { text: prompt.text })} disabled={busyIds.has(prompt.id)} />}>
+            <More aria-hidden weight="bold" />
+          </DropdownMenuTrigger>
         )}
       </Hint>
-      <Hint text={t("archiveHint")} described={false}>
-        {() => (
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            aria-label={`${t("archive")}: ${prompt.text}`}
-            disabled={busyIds.has(prompt.id)}
-            onClick={() => update.mutate({ ids: [prompt.id], archived: true })}
-          >
-            <Archive aria-hidden />
-          </Button>
-        )}
-      </Hint>
-    </span>
+      <DropdownMenuContent align="end" className="w-60">
+        <DropdownMenuItem onClick={() => openDialog({ kind: "edit", prompt })}>
+          <Pencil aria-hidden />
+          {t("edit")}
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTagging(prompt.id)}>
+          <Tag aria-hidden />
+          {t("columns.tags")}
+        </DropdownMenuItem>
+        <DropdownMenuCheckboxItem checked={prompt.factCheck} onCheckedChange={(on) => patch.mutate({ ids: [prompt.id], factCheck: on })}>
+          {t("columns.factCheck")}
+        </DropdownMenuCheckboxItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={() => update.mutate({ ids: [prompt.id], archived: true })}>
+          <Archive aria-hidden />
+          {t("archive")}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
+
+  // Peec's "Branding", kept for the export: whether the question names the client's brand
+  const brandName = brands.find((brand) => brand.id === youId)?.name.toLowerCase() ?? "";
+  const isBranded = (prompt: Prompt) => brandName !== "" && prompt.text.toLowerCase().includes(brandName);
   const csvRows = () => [
     [
       t("csvHeaders.question"),
@@ -744,7 +627,7 @@ export function PromptManager({
   const allPicked = visibleIds.length > 0 && visibleIds.every((id) => pickedSet.has(id));
 
   const searchBox = (
-    <div className="relative w-full min-w-40 @md:w-40">
+    <div className="relative w-full min-w-40 @md:w-48">
       <Search aria-hidden className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
       <label htmlFor="prompts-search" className="sr-only">
         {t("search")}
@@ -759,440 +642,370 @@ export function PromptManager({
       />
     </div>
   );
-  function foldTopics() {
-    const next = !topicsFolded;
-    setTopicsFolded(next);
-    document.cookie = `${TOPICS_COOKIE}=${next ? "folded" : "open"}; path=/; max-age=${YEAR_SECONDS}; samesite=lax`;
-  }
 
-  // On a narrow panel the topics are a sheet opened from the toolbar
-  const topicsSheet = (
-    <Sheet open={topicsOpen} onOpenChange={setTopicsOpen}>
-      <SheetTrigger render={<Button data-tour="topics" variant="outline" className="h-9 max-w-56 @3xl:hidden" />}>
-        <ListTree aria-hidden data-icon="inline-start" />
-        <span className="truncate">{currentTopic ? topicLabel(currentTopic) : t("topics")}</span>
-      </SheetTrigger>
-      <SheetContent side="left" className="w-80 gap-0 overflow-y-auto p-0">
-        <SheetTitle className="sr-only">{t("topics")}</SheetTitle>
-        {topicsColumn()}
-      </SheetContent>
-    </Sheet>
+  // The rare things, out of the way in one ⋯: a topic, words from an SEO tool, archiving everything
+  const editable = currentTopic !== "" && view !== "suggested" && topics.includes(currentTopic);
+  const pageMenu = (
+    <DropdownMenu>
+      <Hint text={t("menu.label")} described={false}>
+        {() => (
+          <DropdownMenuTrigger render={<Button variant="outline" size="icon" aria-label={t("menu.label")} className="size-9" />}>
+            <More aria-hidden weight="bold" />
+          </DropdownMenuTrigger>
+        )}
+      </Hint>
+      <DropdownMenuContent align="end" className="w-64">
+        {/* On a phone the button's place in the row is taken: it is here instead */}
+        <DropdownMenuItem className="sm:hidden" onClick={() => router.push(discoveryHref)}>
+          <Sparkles aria-hidden />
+          {t("buttons.discovery")}
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => openTopic(null)}>
+          <Plus aria-hidden />
+          {t("topicsColumn.new")}
+        </DropdownMenuItem>
+        {editable && (
+          <DropdownMenuItem onClick={() => openTopic(currentTopic)}>
+            <Pencil aria-hidden />
+            {t("menu.editTopic", { topic: topicLabel(currentTopic) })}
+          </DropdownMenuItem>
+        )}
+        {view === "suggested" && (
+          <DropdownMenuItem onClick={() => openDialog({ kind: "keywords" })}>
+            <UploadCloud aria-hidden />
+            {t("buttons.keywords")}
+          </DropdownMenuItem>
+        )}
+        {view === "tracked" && tracked.length > 0 && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem variant="destructive" onClick={() => openDialog({ kind: "archiveAll" })}>
+              <Archive aria-hidden />
+              {t("selection.archiveAll")}
+            </DropdownMenuItem>
+          </>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
+  // Suggested: what to do with all of them, until some are picked
+  const footer = picked.length > 0 || (view === "suggested" && suggestedRows.length > 0);
 
   return (
-    <div aria-busy={pending} className={cn("@container flex flex-1 transition-opacity", pending && "opacity-70")}>
-      {/*
-        The topics: a column across the page's height on a wide panel, as Peec's. It stays under the page's
-        title while the list scrolls, and « at its foot, level with the list's footer, folds it to a rail
-      */}
-      <aside className={cn("hidden shrink-0 flex-col border-r @3xl:flex", topicsFolded ? "w-14" : "w-56")}>
-        <div data-tour="topics" className="sticky top-12 max-h-[calc(100svh-9.5rem)] overflow-y-auto lg:max-h-[calc(100svh-7.5rem-2px)]">
-          {topicsColumn(topicsFolded)}
-        </div>
-        <div className={cn("sticky bottom-0 z-2 mt-auto flex h-14 shrink-0 items-center border-t bg-background", topicsFolded ? "justify-center" : "justify-end px-3")}>
-          <Hint text={t(topicsFolded ? "topicsColumn.expand" : "topicsColumn.collapse")} described={false}>
-            {() => (
-              <Button variant="ghost" size="icon" aria-label={t(topicsFolded ? "topicsColumn.expand" : "topicsColumn.collapse")} onClick={foldTopics}>
-                {topicsFolded ? <ChevronsRight aria-hidden /> : <ChevronsLeft aria-hidden />}
-              </Button>
-            )}
-          </Hint>
-        </div>
-      </aside>
-
-      <div className="flex min-w-0 flex-1 flex-col">
-        {/* The tabs with the plan's room and the page's buttons, as on Peec */}
-        <div className="flex min-h-14 flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b px-4 py-2">
-          <div role="group" aria-label={t("tabsLabel")} data-tour="tabs" className="flex items-center gap-1 self-stretch">
-            {VIEWS.map((option) => (
-              <Hint key={option} text={t(`hints.tabs.${option}`)} side="bottom" className="-mb-2 self-end">
-                {(describedBy) => (
-                  <button
-                    type="button"
-                    aria-pressed={view === option}
-                    aria-describedby={describedBy}
-                    onClick={() => openView(option)}
-                    className="group relative flex h-12 items-center rounded-lg text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+    <div aria-busy={pending} className={cn("@container flex min-w-0 flex-1 flex-col transition-opacity", pending && "opacity-70")}>
+      {/* One row: the tabs, then how much of the plan is used and the page's buttons */}
+      <div className="flex min-h-14 flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b px-4 py-2">
+        <div role="group" aria-label={t("tabsLabel")} data-tour="tabs" className="flex items-center gap-1 self-stretch">
+          {VIEWS.map((option) => (
+            <Hint key={option} text={t(`hints.tabs.${option}`)} side="bottom" className="-mb-2 self-end">
+              {(describedBy) => (
+                <button
+                  type="button"
+                  aria-pressed={view === option}
+                  aria-describedby={describedBy}
+                  onClick={() => openView(option)}
+                  className="group relative flex h-12 items-center rounded-lg text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+                >
+                  <span
+                    className={cn(
+                      "flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 transition-colors",
+                      view === option ? "bg-muted font-medium text-foreground" : "text-muted-foreground group-hover:text-foreground",
+                    )}
                   >
-                    <span
-                      className={cn(
-                        "flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 transition-colors",
-                        view === option ? "bg-muted font-medium text-foreground" : "text-muted-foreground group-hover:text-foreground",
-                      )}
-                    >
-                      {t(`tabs.${option}`)}
-                      <span className="text-xs tabular-nums opacity-60">{counts[option]}</span>
-                    </span>
-                    {view === option && <span aria-hidden className="absolute inset-x-0 bottom-0 h-0.5 rounded-full bg-foreground" />}
-                  </button>
-                )}
-              </Hint>
-            ))}
-          </div>
-          <div data-tour="add" className="flex flex-wrap items-center gap-2">
-            <Hint text={usedHint} described={false} className="items-center gap-1.5 text-sm text-muted-foreground tabular-nums">
-              <svg viewBox="0 0 20 20" aria-hidden className="size-5 -rotate-90">
-                <circle cx="10" cy="10" r="8" fill="none" className="stroke-muted" strokeWidth="3" />
-                <circle
-                  cx="10"
-                  cy="10"
-                  r="8"
-                  fill="none"
-                  className="stroke-positive"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                  strokeDasharray={2 * Math.PI * 8}
-                  strokeDashoffset={2 * Math.PI * 8 * (1 - used)}
-                />
-              </svg>
-              <span>
-                <span className="font-medium text-foreground">{tracked.length}</span>/{limit}
-              </span>
-              <span className="sr-only">{usedHint}</span>
-            </Hint>
-            {view === "suggested" && (
-              <Hint text={t("buttons.keywordsHint")} described={false}>
-                {() => (
-                  <Button variant="outline" className="h-9" onClick={() => openDialog({ kind: "keywords" })}>
-                    <UploadCloud aria-hidden data-icon="inline-start" />
-                    {t("buttons.keywords")}
-                  </Button>
-                )}
-              </Hint>
-            )}
-            <Hint text={t("buttons.discoveryHint")} described={false}>
-              {() => (
-                <Link href={discoveryHref} className={cn(buttonVariants({ variant: "outline" }), "h-9")}>
-                  <Sparkles aria-hidden data-icon="inline-start" />
-                  {t("buttons.discovery")}
-                </Link>
+                    {t(`tabs.${option}`)}
+                    <span className="text-xs tabular-nums opacity-60">{counts[option]}</span>
+                  </span>
+                  {view === option && <span aria-hidden className="absolute inset-x-0 bottom-0 h-0.5 rounded-full bg-foreground" />}
+                </button>
               )}
             </Hint>
+          ))}
+        </div>
+        <div data-tour="add" className="flex flex-wrap items-center gap-2">
+          <Hint text={usedHint} described={false} className="items-center gap-1.5 text-sm text-muted-foreground tabular-nums">
+            <svg viewBox="0 0 20 20" aria-hidden className="size-5 -rotate-90">
+              <circle cx="10" cy="10" r="8" fill="none" className="stroke-muted" strokeWidth="3" />
+              <circle
+                cx="10"
+                cy="10"
+                r="8"
+                fill="none"
+                className="stroke-positive"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeDasharray={2 * Math.PI * 8}
+                strokeDashoffset={2 * Math.PI * 8 * (1 - used)}
+              />
+            </svg>
+            <span>
+              <span className="font-medium text-foreground">{tracked.length}</span>/{limit}
+            </span>
+            <span className="sr-only">{usedHint}</span>
+          </Hint>
+          <Hint text={t("buttons.discoveryHint")} described={false}>
+            {() => (
+              <Link href={discoveryHref} className={cn(buttonVariants({ variant: "outline" }), "hidden h-9 sm:inline-flex")}>
+                <Sparkles aria-hidden data-icon="inline-start" />
+                {t("buttons.discovery")}
+              </Link>
+            )}
+          </Hint>
+          {view === "suggested" ? (
+            <Hint text={suggestedTopic ? t("buttons.moreTopicHint", { topic: topicLabel(suggestedTopic) }) : t("buttons.moreHint")} described={false}>
+              {() => (
+                <Button className="h-9" disabled={more.isPending} onClick={() => more.mutate()}>
+                  <Sparkles aria-hidden data-icon="inline-start" className={cn(more.isPending && "animate-pulse")} />
+                  {more.isPending ? t("buttons.suggesting") : t("buttons.more")}
+                </Button>
+              )}
+            </Hint>
+          ) : (
             <Hint text={full ? t("full", { plan: plans(plan), max: limit }) : t("buttons.addHint")} described={false}>
               {() => (
-                <Button variant={view === "suggested" ? "outline" : "default"} className="h-9" disabled={full} onClick={() => openDialog({ kind: "add" })}>
+                <Button className="h-9" disabled={full} onClick={() => openDialog({ kind: "add" })}>
                   <Plus aria-hidden data-icon="inline-start" />
                   {t("add")}
                 </Button>
               )}
             </Hint>
-            {view === "suggested" && (
-              <Hint text={suggestedTopic ? t("buttons.moreTopicHint", { topic: topicLabel(suggestedTopic) }) : t("buttons.moreHint")} described={false}>
-                {() => (
-                  <Button className="h-9" disabled={more.isPending} onClick={() => more.mutate()}>
-                    <Sparkles aria-hidden data-icon="inline-start" className={cn(more.isPending && "animate-pulse")} />
-                    {more.isPending ? t("buttons.suggesting") : t("buttons.more")}
-                  </Button>
-                )}
-              </Hint>
-            )}
-          </div>
+          )}
+          {pageMenu}
         </div>
+      </div>
 
-        {/* The tab's tools: search, filters, and on the tracked questions the client's numbers over the rows shown */}
-        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-b px-4 py-2.5">
-          <div className="flex min-w-0 flex-wrap items-center gap-2">
-            {searchBox}
-            {filterBar}
-            {topicsSheet}
-            {view === "tracked" && (
-              <FilterMenu
-                icon={CircleSlash}
-                label={t("filter.label")}
-                value={status}
-                options={PROMPTS_FILTERS.map((option) => ({
-                  value: option,
-                  label: t(`filter.${option}`),
-                  count: matching.filter((row) => matchesFilter(row.stats, option)).length,
-                }))}
-                onChange={setStatus}
-              />
-            )}
-            {view === "tracked" && allTags.length > 0 && (
-              <FilterMenu
-                icon={Tag}
-                label={t("tagFilter.label")}
-                value={tag}
-                options={[
-                  { value: "", label: t("tagFilter.all"), count: inTopic.length },
-                  ...allTags.map((option) => ({ value: option, label: option, count: inTopic.filter((row) => row.prompt.tags.includes(option)).length })),
-                ]}
-                onChange={(value) => {
-                  setTagFilter(value);
-                  setSelected(new Set());
-                }}
-              />
-            )}
-          </div>
-          {view === "tracked" && (
-            <div className="flex flex-wrap items-center gap-x-1.5 gap-y-2 text-sm">
-              <dl data-tour="summary" className="flex flex-wrap items-center gap-y-1 text-muted-foreground [&>div]:px-2 [&>div+div]:border-l [&>div+div]:border-foreground/15">
-                <div className="flex items-center gap-1.5">
-                  <dt>
-                    <Hint text={t("hints.summary.visibility")}>{t("columns.visibility")}</Hint>
-                  </dt>
-                  <dd className="font-medium text-foreground tabular-nums">{summary.visibility !== null ? `${summary.visibility}%` : "—"}</dd>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <dt>
-                    <Hint text={t("hints.summary.tone")}>{t("columns.tone")}</Hint>
-                  </dt>
-                  <dd className="flex items-center gap-1 font-medium text-foreground tabular-nums">
-                    {summary.sentiment !== null && <span aria-hidden className={cn("size-2 rounded-full", TONE_DOTS[toneOf(summary.sentiment)])} />}
-                    {summary.sentiment ?? "—"}
-                  </dd>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <dt>
-                    <Hint text={t("hints.summary.position")}>{t("columns.position")}</Hint>
-                  </dt>
-                  <dd className="font-medium text-foreground tabular-nums">{summary.position !== null ? `#${formatDecimal(summary.position, locale)}` : "—"}</dd>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <dt>
-                    <Hint text={t("hints.summary.webSearch")}>{t("columns.webSearch")}</Hint>
-                  </dt>
-                  <dd className="font-medium text-foreground tabular-nums">{searchedShare !== null ? formatPercent(searchedShare, locale) : "—"}</dd>
-                </div>
-              </dl>
-              {rows.length > 0 && <CsvButton iconOnly filename={filename} label={t("csv")} hint={t("csvHint")} rows={csvRows} className="h-9 w-9" />}
+      {/* One row of tools: the search, the filters, the export */}
+      <div className="flex flex-wrap items-center gap-2 border-b px-4 py-2.5">
+        {searchBox}
+        <span data-tour="topics" className="flex">
+          <FilterMenu icon={ListTree} label={t("columns.topic")} value={currentTopic} options={topicOptions} onChange={pickTopic} />
+        </span>
+        {view !== "suggested" && filterBar}
+        {view === "tracked" && (
+          <FilterMenu
+            icon={CircleSlash}
+            label={t("filter.label")}
+            value={status}
+            options={PROMPTS_FILTERS.map((option) => ({
+              value: option,
+              label: t(`filter.${option}`),
+              count: matching.filter((row) => matchesFilter(row.stats, option)).length,
+            }))}
+            onChange={setStatus}
+          />
+        )}
+        {view === "tracked" && allTags.length > 0 && (
+          <FilterMenu
+            icon={Tag}
+            label={t("tagFilter.label")}
+            value={tag}
+            options={[
+              { value: "", label: t("tagFilter.all"), count: inTopic.length },
+              ...allTags.map((option) => ({ value: option, label: option, count: inTopic.filter((row) => row.prompt.tags.includes(option)).length })),
+            ]}
+            onChange={(value) => {
+              setTagFilter(value);
+              setSelected(new Set());
+            }}
+          />
+        )}
+        {view === "tracked" && rows.length > 0 && <CsvButton iconOnly filename={filename} label={t("csv")} hint={t("csvHint")} rows={csvRows} className="ml-auto h-9 w-9" />}
+      </div>
+
+      <div className="flex min-w-0 flex-1 flex-col">
+        {/* Why nothing can be added or tracked: said once, above whichever list is open */}
+        {full && view !== "archived" && <p className="mx-4 mt-3 rounded-lg bg-muted px-3 py-2 text-sm text-pretty">{t("full", { plan: plans(plan), max: limit })}</p>}
+        {failed && (
+          <p role="alert" className="mx-4 mt-3 text-sm text-destructive">
+            {t("saveFailed")}
+          </p>
+        )}
+        {notice && <p className="mx-4 mt-3 rounded-lg bg-muted px-3 py-2 text-sm text-pretty">{notice}</p>}
+
+        {view === "suggested" ? (
+          suggestions.length === 0 ? (
+            <div className="flex flex-1 flex-col items-center justify-center gap-2 px-4 py-16 text-center">
+              <span aria-hidden className="mb-2 flex size-12 items-center justify-center rounded-xl border bg-muted/50">
+                <Sparkles className="size-5 text-muted-foreground" />
+              </span>
+              <p className="font-medium">{t("suggested.emptyTitle")}</p>
+              <p className="max-w-sm text-sm text-pretty text-muted-foreground">{t("suggested.emptyText")}</p>
+              <Button className="mt-3" disabled={more.isPending} onClick={() => more.mutate()}>
+                <Sparkles aria-hidden data-icon="inline-start" />
+                {more.isPending ? t("buttons.suggesting") : t("suggested.emptyButton")}
+              </Button>
             </div>
-          )}
-        </div>
-
-        <div className="flex min-w-0 flex-1 flex-col">
-          {/* Why nothing can be added or tracked: said once, above whichever list is open */}
-          {full && view !== "archived" && <p className="mx-4 mt-3 rounded-lg bg-muted px-3 py-2 text-sm text-pretty">{t("full", { plan: plans(plan), max: limit })}</p>}
-          {failed && (
-            <p role="alert" className="mx-4 mt-3 text-sm text-destructive">
-              {t("saveFailed")}
-            </p>
-          )}
-          {notice && <p className="mx-4 mt-3 rounded-lg bg-muted px-3 py-2 text-sm text-pretty">{notice}</p>}
-
-          {view === "suggested" ? (
-            suggestions.length === 0 ? (
-              <div className="flex flex-1 flex-col items-center justify-center gap-2 px-4 py-16 text-center">
-                <span aria-hidden className="mb-2 flex size-12 items-center justify-center rounded-xl border bg-muted/50">
-                  <Sparkles className="size-5 text-muted-foreground" />
-                </span>
-                <p className="font-medium">{t("suggested.emptyTitle")}</p>
-                <p className="max-w-sm text-sm text-pretty text-muted-foreground">{t("suggested.emptyText")}</p>
-                <Button className="mt-3" disabled={more.isPending} onClick={() => more.mutate()}>
-                  <Sparkles aria-hidden data-icon="inline-start" />
-                  {more.isPending ? t("buttons.suggesting") : t("suggested.emptyButton")}
-                </Button>
-              </div>
-            ) : suggestedRows.length === 0 ? (
-              <p className="m-4 rounded-lg bg-muted px-3 py-2 text-sm text-muted-foreground">{t(suggestedTopic && !search ? "suggested.noneInTopic" : "noMatch")}</p>
-            ) : (
-              <SuggestionsTable
-                rows={suggestedRows}
-                selected={pickedSet}
-                fresh={fresh}
-                busy={busyIds}
-                canTrack={!full}
-                showTopic={!suggestedTopic}
-                topicLabel={topicLabel}
-                onToggle={toggle}
-                onToggleAll={() => toggleAll(suggestedRows.map((row) => row.id))}
-                onDecide={(ids, track) => decide.mutate({ ids, track })}
-              />
-            )
-          ) : view === "archived" ? (
-            archivedRows.length === 0 ? (
-              <p className="m-4 rounded-lg border border-dashed px-4 py-6 text-center text-sm text-muted-foreground">{t(archived.length === 0 ? "archiveEmpty" : "noMatch")}</p>
-            ) : (
-              <>
-                <p className="border-b px-4 py-2.5 text-sm text-pretty text-muted-foreground">{t("archiveIntro")}</p>
-                <ArchiveTable
-                  prompts={archivedRows}
-                  selected={pickedSet}
-                  busy={busyIds}
-                  full={full}
-                  href={pageOf}
-                  topicLabel={topicLabel}
-                  onToggle={toggle}
-                  onToggleAll={() => toggleAll(archivedRows.map((row) => row.id))}
-                  onRestore={(ids) => update.mutate({ ids, archived: false })}
-                />
-              </>
-            )
+          ) : suggestedRows.length === 0 ? (
+            <p className="m-4 rounded-lg bg-muted px-3 py-2 text-sm text-muted-foreground">{t(suggestedTopic && !search ? "suggested.noneInTopic" : "noMatch")}</p>
+          ) : (
+            <SuggestionsTable
+              rows={suggestedRows}
+              selected={pickedSet}
+              fresh={fresh}
+              busy={busyIds}
+              canTrack={!full}
+              showTopic={!suggestedTopic}
+              topicLabel={topicLabel}
+              onToggle={toggle}
+              onToggleAll={() => toggleAll(suggestedRows.map((row) => row.id))}
+              onDecide={(ids, track) => decide.mutate({ ids, track })}
+            />
+          )
+        ) : view === "archived" ? (
+          archivedRows.length === 0 ? (
+            <p className="m-4 rounded-lg border border-dashed px-4 py-6 text-center text-sm text-muted-foreground">{t(archived.length === 0 ? "archiveEmpty" : "noMatch")}</p>
           ) : (
             <>
-              {trial ? <p className="mx-4 mt-3 rounded-lg bg-muted px-3 py-2 text-sm">{t("trialNote")}</p> : tracked.length > 0 && tracked.length < Math.min(MIN_PROMPTS, limit) && <p className="mx-4 mt-3 rounded-lg bg-muted px-3 py-2 text-sm">{t("belowMin")}</p>}
-              {tracked.length === 0 ? (
-                <div className="m-4 flex flex-col items-center gap-1 rounded-lg border border-dashed p-6 text-center">
-                  <p className="font-medium">{t("empty")}</p>
-                  <p className="text-sm text-muted-foreground">{t("emptyHint")}</p>
-                </div>
-              ) : rows.length === 0 ? (
-                <p className="m-4 rounded-lg bg-muted px-3 py-2 text-sm text-muted-foreground">{t("noMatch")}</p>
-              ) : (
-                <>
-                  {/*
-                    Wide panel: Peec's table, scrolling sideways under the question (its edge casts a shadow once
-                    it does). Gray headings in the body's size, the numbers at the right under theirs, the
-                    question alone in its cell (its language has a column of its own, in Peec's "Location" place).
-                    relative + min-w-0: it scrolls here, not the page
-                  */}
-                  <div
-                    onScroll={(event) => event.currentTarget.toggleAttribute("data-scrolled", event.currentTarget.scrollLeft > 0)}
-                    className="group/table relative hidden min-w-0 overflow-x-auto @4xl:block"
-                  >
-                    <table className="w-full min-w-[141rem] table-fixed text-[0.9375rem]">
-                      <thead>
-                        <tr className="border-b bg-muted text-left text-muted-foreground [&>th]:px-3 [&>th]:py-2.5 [&>th]:font-normal [&>th:first-child]:pl-4 [&>th:last-child]:pr-4">
-                          <th scope="col" aria-sort={sortState("question") ?? undefined} className={cn(PINNED, "w-[22rem] bg-muted")}>
-                            <span className="flex items-center gap-3">
-                              <SelectBox checked={allPicked} mixed={picked.length > 0 && !allPicked} label={t("selection.all")} onChange={() => toggleAll(visibleIds)} />
-                              {sortButton("question")}
-                            </span>
-                          </th>
-                          {sortHeading("visibility")}
-                          {sortHeading("shareOfVoice")}
-                          {sortHeading("tone")}
-                          {sortHeading("position")}
-                          <th scope="col" className="w-32">
-                            <Hint text={t("hints.named")}>{t("columns.named")}</Hint>
-                          </th>
-                          <th scope="col" className="w-36">
-                            <Hint text={t("hints.leader")}>{t("columns.leader")}</Hint>
-                          </th>
-                          {sortHeading("webSearch")}
-                          <th scope="col" className="w-36">
-                            <Hint text={t("hints.branded")}>{t("columns.branded")}</Hint>
-                          </th>
-                          <th scope="col" className="w-40">
-                            <Hint text={t("hints.factCheck")}>{t("columns.factCheck")}</Hint>
-                          </th>
-                          <th scope="col" className="w-48">
-                            <Hint text={t("hints.tags")}>{t("columns.tags")}</Hint>
-                          </th>
-                          <th scope="col" className="w-20">
-                            <Hint text={t("hints.languageColumn")}>{t("columns.language")}</Hint>
-                          </th>
-                          {sortHeading("location", false)}
-                          {sortHeading("added")}
-                          <th scope="col" className="w-20">
-                            <span className="sr-only">{t("columns.actions")}</span>
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y">
-                        {rows.map((row, index) => {
-                          const on = pickedSet.has(row.prompt.id);
-                          return (
-                            <tr
-                              key={row.prompt.id}
-                              data-tour={index === 0 ? "row" : undefined}
-                              onClick={(event) => openQuestion(event, row.prompt)}
-                              className={cn(
-                                "group cursor-pointer transition-colors [&>td]:px-3 [&>td]:py-3.5 [&>td:first-child]:pl-4 [&>td:last-child]:pr-2",
-                                on ? "bg-you-soft/40" : "hover:bg-muted/60",
-                                busyIds.has(row.prompt.id) && "opacity-50",
-                              )}
-                            >
-                              {/* Opaque on hover too: the other columns pass under it */}
-                              <td
-                                className={cn(
-                                  PINNED,
-                                  "transition-colors",
-                                  on ? "bg-[color-mix(in_oklab,var(--you-soft)_40%,var(--card))]" : "group-hover:bg-[color-mix(in_oklab,var(--muted)_60%,var(--card))]",
-                                )}
-                              >
-                                <span className="flex items-start gap-3">
-                                  <span className="flex h-5 items-center">{box(row)}</span>
-                                  <span className="min-w-0">{questionLink(row.prompt)}</span>
-                                </span>
-                              </td>
-                              <td className="text-right">{visibility(row)}</td>
-                              <td className="text-right">{voice(row)}</td>
-                              <td className="text-right">{tone(row)}</td>
-                              <td className="text-right">{position(row)}</td>
-                              <td>{namedChips(row)}</td>
-                              <td>{leader(row)}</td>
-                              <td className="text-right">{webSearch(row)}</td>
-                              <td>{branded(row)}</td>
-                              <td>{factCheck(row)}</td>
-                              <td>{tagsOf(row)}</td>
-                              <td>{language(row)}</td>
-                              <td>{location(row)}</td>
-                              <td className="text-right">{added(row)}</td>
-                              <td>{actions(row)}</td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
+              <p className="border-b px-4 py-2.5 text-sm text-pretty text-muted-foreground">{t("archiveIntro")}</p>
+              <ArchiveTable
+                prompts={archivedRows}
+                selected={pickedSet}
+                busy={busyIds}
+                full={full}
+                href={pageOf}
+                topicLabel={topicLabel}
+                onToggle={toggle}
+                onToggleAll={() => toggleAll(archivedRows.map((row) => row.id))}
+                onRestore={(ids) => update.mutate({ ids, archived: false })}
+              />
+            </>
+          )
+        ) : tracked.length === 0 ? (
+          <div className="m-4 flex flex-col items-center gap-1 rounded-lg border border-dashed p-6 text-center">
+            <p className="font-medium">{t("empty")}</p>
+            <p className="text-sm text-muted-foreground">{t("emptyHint")}</p>
+          </div>
+        ) : (
+          <>
+            {/* Where the client stands over the questions shown, then when they are asked again */}
+            <div data-tour="summary" className="flex flex-col gap-1 border-b px-4 py-3">
+              <p className="text-pretty">
+                {asked.length === 0 ? (
+                  t("summary.none")
+                ) : (
+                  <>
+                    <span className="font-medium">{t("summary.line", { named: namedYou, asked: asked.length })}</span>
+                    {rivalsOnly > 0 && ` ${t("summary.rivals", { count: rivalsOnly })}`}
+                    {waiting > 0 && ` ${t("summary.queued", { count: waiting })}`}
+                  </>
+                )}
+              </p>
+              {(trial || nextRunAt || tracked.length < Math.min(MIN_PROMPTS, limit)) && (
+                <p className="text-sm text-pretty text-muted-foreground">
+                  {trial ? t("trialNote") : nextRunAt ? t("schedule", { date: formatWeekdayDate(nextRunAt, locale, timeZone) }) : ""}
+                  {!trial && tracked.length < Math.min(MIN_PROMPTS, limit) && ` ${t("belowMin")}`}
+                </p>
+              )}
+            </div>
 
-                  {/* Narrow panel: the same rows as cards */}
-                  <ul className="divide-y @4xl:hidden">
+            {rows.length === 0 ? (
+              <p className="m-4 rounded-lg bg-muted px-3 py-2 text-sm text-muted-foreground">{t("noMatch")}</p>
+            ) : (
+              <>
+                {/* A wide panel: four columns that fit it, no sideways scrolling */}
+                <table className="hidden w-full table-fixed text-[0.9375rem] @3xl:table">
+                  <thead>
+                    <tr className="border-b bg-muted/60 text-left text-sm text-muted-foreground [&>th]:px-3 [&>th]:py-2.5 [&>th]:font-normal [&>th:first-child]:pl-4 [&>th:last-child]:pr-3">
+                      <th scope="col" aria-sort={sortState("question") ?? undefined}>
+                        <span className="flex items-center gap-3">
+                          <SelectBox checked={allPicked} mixed={picked.length > 0 && !allPicked} label={t("selection.all")} onChange={() => toggleAll(visibleIds)} />
+                          {sortButton("question", t("columns.question"), t("hints.question"))}
+                        </span>
+                      </th>
+                      <th scope="col" aria-sort={sortState("visibility") ?? undefined} className="w-40 text-right">
+                        {sortButton("visibility", t("columns.youNamed"), t("hints.youNamed"), true)}
+                      </th>
+                      <th scope="col" className="w-[34%]">
+                        <Hint text={t("hints.whoNamed")}>{t("columns.whoNamed")}</Hint>
+                      </th>
+                      <th scope="col" className="w-12">
+                        <span className="sr-only">{t("columns.actions")}</span>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y">
                     {rows.map((row, index) => (
-                      <li
+                      <tr
                         key={row.prompt.id}
                         data-tour={index === 0 ? "row" : undefined}
-                        onClick={(event) => openQuestion(event, row.prompt, "a, button, input, [data-hint]")}
-                        className={cn("flex cursor-pointer items-start gap-3 py-3 pr-2 pl-4 transition-colors", pickedSet.has(row.prompt.id) ? "bg-you-soft/40" : "hover:bg-muted/30")}
+                        onClick={(event) => openQuestion(event, row.prompt)}
+                        className={cn(
+                          "cursor-pointer align-top transition-colors [&>td]:px-3 [&>td]:py-3 [&>td:first-child]:pl-4 [&>td:last-child]:pr-2",
+                          pickedSet.has(row.prompt.id) ? "bg-you-soft/40" : "hover:bg-muted/50",
+                          busyIds.has(row.prompt.id) && "opacity-50",
+                        )}
                       >
-                        <span className="flex h-5 items-center">{box(row)}</span>
-                        <div className="flex min-w-0 flex-1 flex-col gap-2">
-                          <p className="text-sm text-pretty">{question(row)}</p>
-                          <dl className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs">
-                            <div>
-                              <span className="inline-flex rounded-md bg-muted px-1.5 py-0.5 whitespace-nowrap">{topicLabel(row.prompt.topic)}</span>
-                            </div>
-                            {row.stats ? (
-                              <>
-                                <Stat label={t("columns.visibility")} hint={t("hints.visibility")}>
-                                  {visibility(row)}
-                                </Stat>
-                                <Stat label={t("columns.shareOfVoice")} hint={t("hints.shareOfVoice")}>
-                                  {voice(row)}
-                                </Stat>
-                                <Stat label={t("columns.position")} hint={t("hints.position")}>
-                                  {position(row)}
-                                </Stat>
-                                <Stat label={t("columns.tone")} hint={t("hints.tone")}>
-                                  {tone(row)}
-                                </Stat>
-                                <Stat label={t("columns.leader")} hint={t("hints.leader")}>
-                                  {leader(row)}
-                                </Stat>
-                                {factsOf(row.prompt) > 0 && (
-                                  <Stat label={t("columns.wrongFacts")} hint={t("hints.wrongFacts")}>
-                                    {facts(row)}
-                                  </Stat>
-                                )}
-                              </>
-                            ) : (
-                              <div>{run(row)}</div>
-                            )}
-                          </dl>
-                        </div>
-                        {actions(row)}
-                      </li>
+                        <td>
+                          <span className="flex items-start gap-3">
+                            <span className="flex h-6 items-center">{box(row)}</span>
+                            <span className="flex min-w-0 flex-col gap-1">
+                              {questionLink(row.prompt)}
+                              {meta(row)}
+                            </span>
+                          </span>
+                        </td>
+                        <td className="text-right">
+                          <span className="flex h-6 items-center justify-end">{youNamed(row)}</span>
+                        </td>
+                        <td>
+                          <span className="block pt-0.5 text-sm">{whoNamed(row)}</span>
+                        </td>
+                        <td>
+                          <span className="flex justify-end">{rowMenu(row)}</span>
+                        </td>
+                      </tr>
                     ))}
-                  </ul>
-                </>
-              )}
-              {method && results.length > 0 && (
-                <div className="px-4 py-3">
-                  <MethodLabel method={method} />
-                </div>
-              )}
-            </>
-          )}
-        </div>
+                  </tbody>
+                </table>
 
-        {/* The footer, as Peec's: how many and when they are asked again; with rows picked, what to do with them */}
+                {/* A narrow panel: the same rows as cards */}
+                <ul className="divide-y @3xl:hidden">
+                  {rows.map((row, index) => (
+                    <li
+                      key={row.prompt.id}
+                      data-tour={index === 0 ? "row" : undefined}
+                      onClick={(event) => openQuestion(event, row.prompt, "a, button, input, [data-hint]")}
+                      className={cn("flex cursor-pointer items-start gap-3 py-3 pr-2 pl-4 transition-colors", pickedSet.has(row.prompt.id) ? "bg-you-soft/40" : "hover:bg-muted/30")}
+                    >
+                      <span className="flex h-6 items-center">{box(row)}</span>
+                      <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+                        <span className="text-[0.9375rem]">{questionLink(row.prompt)}</span>
+                        {meta(row)}
+                        <p className="flex flex-col gap-0.5 text-sm">
+                          <span className="flex items-baseline gap-1.5">
+                            <span className="text-muted-foreground">{t("columns.youNamed")}:</span>
+                            {youNamed(row)}
+                          </span>
+                          {row.stats && (
+                            <span>
+                              <span className="text-muted-foreground">{t("columns.whoNamed")}: </span>
+                              {whoNamed(row)}
+                            </span>
+                          )}
+                        </p>
+                      </div>
+                      {rowMenu(row)}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+            {method && results.length > 0 && (
+              <div className="px-4 py-3">
+                <MethodLabel method={method} />
+              </div>
+            )}
+          </>
+        )}
+      </div>
+
+      {/* With rows picked, what to do with them; on the suggestions, also what to do with all of them */}
+      {footer && (
         <div data-tour="footer" className="sticky bottom-0 z-2 flex min-h-14 flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t bg-background px-4 py-2.5 text-sm">
           {picked.length > 0 ? (
             <>
               <p className="flex items-center gap-2">
                 <span className="font-medium">{t("selection.count", { count: picked.length })}</span>
-                <Button variant="ghost" size="sm" onClick={() => setSelected(new Set())}>
+                <Button variant="outline" size="sm" onClick={() => setSelected(new Set())}>
                   <X aria-hidden data-icon="inline-start" />
                   {t("selection.clear")}
                 </Button>
@@ -1248,52 +1061,36 @@ export function PromptManager({
             </>
           ) : (
             <>
-              <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-muted-foreground">
-                <Hint text={t(`footer.${view}Hint`)} className="font-medium text-foreground">
-                  {t(`footer.${view}`, { count: visibleIds.length })}
+              <p className="text-muted-foreground">
+                <Hint text={t("footer.suggestedHint")} className="font-medium text-foreground">
+                  {t("footer.suggested", { count: suggestedRows.length })}
                 </Hint>
-                {nextRunAt && view === "tracked" && (
-                  <>
-                    <span aria-hidden>·</span>
-                    <Hint text={t("hints.schedule")}>{t("schedule", { date: formatWeekdayDate(nextRunAt, locale, timeZone) })}</Hint>
-                  </>
-                )}
               </p>
               <div className="flex flex-wrap items-center gap-2">
-                {view === "tracked" && tracked.length > 0 && (
-                  <Button variant="outline" onClick={() => openDialog({ kind: "archiveAll" })}>
-                    <Archive aria-hidden data-icon="inline-start" />
-                    {t("selection.archiveAll")}
-                  </Button>
-                )}
-                {view === "suggested" && suggestedRows.length > 0 && (
-                  <>
-                    <Button variant="outline" disabled={decide.isPending} onClick={() => decide.mutate({ ids: suggestedRows.map((row) => row.id), track: false })}>
-                      <X aria-hidden data-icon="inline-start" />
-                      {t("suggested.rejectAll")}
+                <Button variant="outline" disabled={decide.isPending} onClick={() => decide.mutate({ ids: suggestedRows.map((row) => row.id), track: false })}>
+                  <X aria-hidden data-icon="inline-start" />
+                  {t("suggested.rejectAll")}
+                </Button>
+                <Hint text={suggestedRows.length > room ? t("suggested.noRoomFor", { room }) : t("suggested.trackAllHint")} described={false}>
+                  {() => (
+                    <Button
+                      variant="outline"
+                      disabled={decide.isPending || suggestedRows.length > room}
+                      onClick={() => decide.mutate({ ids: suggestedRows.map((row) => row.id), track: true })}
+                    >
+                      <Plus aria-hidden data-icon="inline-start" />
+                      {t("suggested.trackAll")}
                     </Button>
-                    <Hint text={suggestedRows.length > room ? t("suggested.noRoomFor", { room }) : t("suggested.trackAllHint")} described={false}>
-                      {() => (
-                        <Button
-                          variant="outline"
-                          disabled={decide.isPending || suggestedRows.length > room}
-                          onClick={() => decide.mutate({ ids: suggestedRows.map((row) => row.id), track: true })}
-                        >
-                          <Plus aria-hidden data-icon="inline-start" />
-                          {t("suggested.trackAll")}
-                        </Button>
-                      )}
-                    </Hint>
-                  </>
-                )}
+                  )}
+                </Hint>
               </div>
             </>
           )}
         </div>
-        <p aria-live="polite" className="sr-only">
-          {announcement}
-        </p>
-      </div>
+      )}
+      <p aria-live="polite" className="sr-only">
+        {announcement}
+      </p>
 
       {(dialog?.kind === "add" || dialog?.kind === "edit") && (
         <AddPromptDialog
@@ -1366,20 +1163,6 @@ export function PromptManager({
         pending={removeTopic.isPending}
         onConfirm={() => dialog?.kind === "deleteTopic" && removeTopic.mutate(dialog.topic)}
       />
-    </div>
-  );
-}
-
-/** "Label value" pair in a question's card; a tap on the label explains the number. */
-function Stat({ label, hint, children }: { label: string; hint: string; children: React.ReactNode }) {
-  return (
-    <div className="flex items-center gap-1">
-      <dt className="text-muted-foreground">
-        <Hint text={hint} focusable={false}>
-          {label}
-        </Hint>
-      </dt>
-      <dd>{children}</dd>
     </div>
   );
 }

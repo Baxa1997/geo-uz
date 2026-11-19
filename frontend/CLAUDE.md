@@ -479,34 +479,33 @@ frontend/src/
                           #   language (BreakdownCard; these five cards open large, ⤢), then recommended actions and
                           #   questions without you, latest answers; share menu (public link, CSV), next weekly check
                           #   date. Numbers and charts come right after the sentence (the user's order, Oct 5)
-    prompts/              # Questions, laid out like Peec's prompts page across the whole panel (Page `bleed`; the
-                          #   user's correction of Oct 8: Add as a window, "Suggest more", and the rest of Peec's
-                          #   features): the topics column in Peec's design (TopicsColumn: the title's ⌃⌄ sorts the
-                          #   topics as added, by name or by count; "New topic +" and "All topics" in rows of their
-                          #   own; each topic's pencil opens it in a window, as Peec's (TopicDialog: its name, its
-                          #   tracked questions, "Delete topic"), and "New topic" opens one empty; suggested topics apart on the Suggested
-                          #   tab; « at its foot folds it to Peec's closed rail, kept in the geo_topics cookie: ⌃⌄,
-                          #   the count of all, +, each topic as its count with its name on hover); tracked /
-                          #   suggested / archived tabs with the plan's ring (Project.limits.prompts; at the limit
-                          #   nothing can be added, tracked or restored) and the page's buttons; Peec's table (gray
-                          #   headings in the body's size, the numbers at the right, the pinned question's edge
-                          #   shadowed once it scrolls sideways): the question (sorts A to Z), visibility, share of
-                          #   voice, tone (a dot and the score out of 100), position, brands named, leader, web
-                          #   search, branding (whether the question names the client's brand, as Peec's), Peec's
-                          #   fact-checking switch (Prompt.factCheck; the wrong facts found beside it), tags
-                          #   (Prompt.tags; TagsCell finds or makes one; a "Tag" filter over the list), language,
-                          #   location (Prompt.location, the city it is asked from, picked in its window), date
-                          #   added; the client's numbers over the rows shown
-                          #   (helpers/stats.ts); boxes to pick rows, and a footer that stays in view: when they are
-                          #   asked again and "Archive all", or what to do with the rows picked (move to a topic,
-                          #   archive; track or reject suggestions; track archived ones again). AddPromptDialog (one
+    prompts/              # Questions, across the whole panel (Page `bleed`). Made simple on 18 Nov (the user: "messy
+                          #   and UI design is not structurally correct"; asked, they chose "simple, like
+                          #   Harakatlar"; until then Peec's layout: a topics column, three rows of tools and a
+                          #   table of 14 columns that scrolled sideways). PromptManager: one row with the tracked /
+                          #   suggested / archived tabs, the plan's ring (Project.limits.prompts; at the limit
+                          #   nothing can be added, tracked or restored), "Find questions", Add (on Suggested
+                          #   "Suggest more") and a ⋯ with the rare ones (on a phone "Find questions", a new topic,
+                          #   editing the topic picked in TopicDialog, keywords on Suggested, "Archive all" in red);
+                          #   one row of tools: search, the topic (a FilterMenu: the topics are a filter now), the
+                          #   language, named or not, a tag (when tags exist), the CSV; one sentence on where the
+                          #   client stands over the rows shown ("AI named you in 0 of 10 questions. In 6, only
+                          #   competitors were named.") with the trial note or the next check under it; the table
+                          #   in four columns that fit the panel: the question (sorts A to Z) with its language,
+                          #   topic, wrong facts and tags under it (TagsCell shows when the question has tags or
+                          #   its ⋯ › Tags was picked), "Named you" as "0 / 1" (sorts), "Who was named" with the
+                          #   tracked businesses written out, the most named first, three and "and 2 more", and a ⋯
+                          #   (edit, tags, fact-checking as a ticked item, archive); cards on a narrow panel. Share
+                          #   of voice, tone, position, web search, branding, location and the date added are on
+                          #   the question's own page and in the CSV. The footer shows only with rows picked (move
+                          #   to a topic, archive; track or reject suggestions; track archived ones again), and on
+                          #   Suggested with "Reject all" and "Track all". AddPromptDialog (one
                           #   question per line, or a CSV/TXT file: helpers/file.ts; also edits a question);
                           #   SuggestionsTable (why and when each was suggested, ✕ / ✓ per row), "Suggest more" for
                           #   the topic picked or all, ImportKeywordsDialog; pages/discovery-page (/prompts/discovery,
                           #   Peec's Discovery: services, customer types, extra context, languages → new suggestions
                           #   with new topics). ?view=suggested|archived opens a tab, &new= marks new suggestions.
-                          #   Left out of Peec's: volume (no data), intent and branding (need classifying in the
-                          #   backend), free tags (we have topics), location (one city), the topics column's sort.
+                          #   Left out of Peec's: volume (no data), intent (needs classifying in the backend).
                           #   pages/prompt-page: one question (/prompts/[promptId], opened from the list, the archive
                           #   and an answer's chat), in Peec's design: PromptFilters in the page's strip (the checks
                           #   shown, ?period=8|4; "All filters": competitors to compare, ?brands=, and kinds of

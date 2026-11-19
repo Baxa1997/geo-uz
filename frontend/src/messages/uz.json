@@ -1564,7 +1564,9 @@
       "language": "Til",
       "factCheck": "Fakt tekshiruvi",
       "tags": "Teglar",
-      "location": "Joylashuv"
+      "location": "Joylashuv",
+      "youNamed": "Sizni tilga oldi",
+      "whoNamed": "Kimni tilga oldi"
     },
     "queued": "Navbatda",
     "you": "Siz",
@@ -1658,7 +1660,9 @@
       "languageColumn": "Savol qaysi tilda beriladi: UZ — oʻzbekcha, RU — ruscha.",
       "factCheck": "Yoqilgan boʻlsa, shu savolga berilgan javoblar brendingiz haqidagi toʻgʻri maʼlumotlar bilan solishtiriladi va topilgan notoʻgʻri faktlar soni yonida koʻrinadi. Oʻchirilsa, keyingi tekshiruvdan boshlab solishtirilmaydi.",
       "tags": "Savollarga oʻzingiz qoʻyadigan belgilar, masalan filial yoki aksiya. “Teg” filtri roʻyxatni ular boʻyicha saralaydi.",
-      "location": "Savol qaysi shahardan berilgandek soʻraladi: AI shu shahardagi odamga javob bergandek qidiradi. Savol oynasida oʻzgartiriladi."
+      "location": "Savol qaysi shahardan berilgandek soʻraladi: AI shu shahardagi odamga javob bergandek qidiradi. Savol oynasida oʻzgartiriladi.",
+      "youNamed": "Oxirgi tekshiruvda shu savolga berilgan javoblarning nechtasida sizni tilga olgani: masalan, “1 / 2” — ikki javobdan birida.",
+      "whoNamed": "Shu savolga berilgan javoblarda tilga olingan kuzatilayotgan bizneslar, eng koʻp tilga olingani birinchi. “Siz” — sizning biznesingiz."
     },
     "webSearchCell": "{total} ta javobdan {count} tasida AI internetdan qidirgan",
     "wrongFactsSome": "{count} ta notoʻgʻri fakt — koʻrish uchun bosing",
@@ -1811,7 +1815,21 @@
       "on": "Ha",
       "off": "Yoʻq"
     },
-    "trialNote": "Bu savollar bepul birinchi tekshiruvda berilgan. Qoʻshgan savollaringiz tarif yoqilgach, keyingi tekshiruvda beriladi."
+    "trialNote": "Bu savollar bepul birinchi tekshiruvda berilgan. Qoʻshgan savollaringiz tarif yoqilgach, keyingi tekshiruvda beriladi.",
+    "wrongFactsMark": "{count} ta notoʻgʻri fakt",
+    "moreNames": "va yana {count} ta",
+    "rowMenu": "Amallar: {text}",
+    "rowMenuHint": "Tahrirlash, teglar, fakt tekshiruvi, arxivlash",
+    "menu": {
+      "label": "Boshqa amallar",
+      "editTopic": "“{topic}” mavzusini tahrirlash"
+    },
+    "summary": {
+      "none": "Bu savollar hali AI’ga berilmagan: natijalar birinchi tekshiruvdan keyin chiqadi.",
+      "line": "{asked} ta savoldan {named} tasida AI sizni tilga oldi.",
+      "rivals": "{count} tasida faqat raqobatchilar tilga olindi.",
+      "queued": "{count} tasi keyingi tekshiruvda beriladi."
+    }
   },
   "PromptForm": {
     "addTitle": "Savol qoʻshish",
@@ -3467,10 +3485,6 @@
       }
     },
     "prompts": {
-      "topics": {
-        "title": "Mavzular boʻyicha savollar",
-        "text": "Savollarini koʻrish uchun mavzuni tanlang. “Yangi mavzu” mavzu qoʻshadi; mavzu yonidagi qalamcha uni nomini oʻzgartirish yoki oʻchirish uchun ochadi."
-      },
       "tabs": {
         "title": "Kuzatilayotgan, tavsiyalar, arxiv",
         "text": "Kuzatilayotgan savollar har hafta beriladi. Tavsiyalar — qoʻshishga arziydigan savollar. Arxivdagilar endi berilmaydi, lekin javoblari saqlanadi."
@@ -3479,17 +3493,21 @@
         "title": "Savol qoʻshing",
         "text": "Doira tarifingizda nechta savolga joy borligini koʻrsatadi. Oʻz savollaringizni qoʻshing yoki “Savollar yaratish” ularni xizmatlaringizdan taklif qilsin."
       },
+      "topics": {
+        "title": "Mavzu boʻyicha",
+        "text": "Mavzuni tanlang: roʻyxatda faqat uning savollari qoladi. Yangi mavzu qoʻshish yoki tanlanganini tahrirlash — yuqoridagi ⋯ menyuda."
+      },
       "summary": {
-        "title": "Shu savollardagi raqamlaringiz",
-        "text": "Koʻrsatilgan savollar boʻyicha tilga olinish, baho, oʻrni va veb-qidiruv. Ular qidiruv va saralashga qarab oʻzgaradi."
+        "title": "Shu savollarda qayerdasiz",
+        "text": "Koʻrsatilgan savollarning nechtasida AI sizni tilga olgani va nechtasida faqat raqobatchilarni. Qidiruv va filtrlarga qarab oʻzgaradi; ostida — keyingi tekshiruv qachonligi."
       },
       "row": {
         "title": "Bitta savol",
-        "text": "Bosilsa, uning sahifasi ochiladi: javoblari, grafiklari va unga taʼsir qiladigan tuzatishlar."
+        "text": "Bosilsa, uning sahifasi ochiladi: javoblari, grafiklari va unga taʼsir qiladigan tuzatishlar. Qatordagi ⋯ — tahrirlash, teglar va arxivlash."
       },
       "footer": {
         "title": "Bir nechtasini birdan",
-        "text": "Savollarni mavzuga koʻchirish, arxivlash yoki kuzatish uchun belgilang: bu panel belgilanganlar bilan ishlaydi."
+        "text": "Savollarni katakchasi bilan belgilang: pastda ularni mavzuga koʻchirish yoki arxivlash paneli chiqadi."
       }
     },
     "prompt": {
