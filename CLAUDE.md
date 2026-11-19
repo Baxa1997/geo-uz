@@ -71,12 +71,13 @@ under "Done" hold the detail, newest first.
    `backend/pilot/` from a brief (`backend/pilot/README.md`). Run for real for the first client; on hold until
    the platform's flow is set up (the user, 14 Nov).
 
-**The latest work (17–18 Nov), each merged, pushed and deployed, each waiting for the user's look** (entries
+**The latest work (17–19 Nov), each merged, pushed and deployed, each waiting for the user's look** (entries
 under "Done"): the name Seenova AI, then its logo as two rounds; the first part of the user's list of 17 Nov
 (speed, loading, fields, the report's section on each assistant, Manbalar rebuilt); Harakatlar made simple,
 with a task for the owner's own AI on every action; Notoʻgʻri faktlar rebuilt; a real PDF download; the
 reader's signature lines gone from the report; the landing page's indicator, the sentence with chips and a
-smaller headline.
+smaller headline; (19 Nov) full-height screens for the first check and the login, black and gray buttons in the
+dashboard, and Savollar made simple.
 
 **The user's decisions that hold now:**
 
@@ -197,8 +198,9 @@ that is committed.
 
 ## Done (as of 18 November 2026)
 
-- **Built, waiting for the user's look: Savollar made simple (18 Nov), on the branch `savollar-simple`; merged and
-  pushed on 19 Nov with `full-screens`, when the user said "commit, push and deploy".** The user, with a screenshot of the page on a real project: "is somehow messy and UI design is not
+- **Built, waiting for the user's look: Savollar made simple (18 Nov), on the branch `savollar-simple`; merged,
+  pushed and deployed on 19 Nov with `full-screens`, when the user said "commit, push and deploy" (Vercel's
+  build passed).** The user, with a screenshot of the page on a real project: "is somehow messy and UI design is not
   structurally correct". What was wrong: three rows of tools and a notice before the first question, a topics
   column for seven topics of one or two questions, and a table of fourteen columns that scrolled sideways, mostly
   dashes and "0%", the businesses named as initials ("B", "I") and the leader cut ("British Coun…"), "Archive
@@ -213,8 +215,8 @@ that is committed.
   a project that has some, adding a tag from the ⋯, English. No new variable.
 
 - **Built, waiting for the user's look: full-height screens for the first check and the login, and the
-  dashboard's buttons filled (18 Nov), on the branch `full-screens`; merged and pushed on 19 Nov, when the user said
-  "commit, push and deploy".** The user: "The page must
+  dashboard's buttons filled (18 Nov), on the branch `full-screens`; merged, pushed and deployed on 19 Nov, when the
+  user said "commit, push and deploy" (Vercel's build passed).** The user: "The page must
   be made full page not scrolling" (the setup's step 2 and a check's page, `?run=`), "login all of them must be
   done full page so buttons must be always visible", and "Inside of Dashboard the buttons must be background
   colored, green chosen or black … cancel buttons must be appropriately colored background". Asked, they chose
@@ -1014,7 +1016,7 @@ that is committed.
   then `hisobotlar-correction` (the report as an official status document with a condition score, Hisobotlar
   opening on the latest condition), then `report-detail-width` (the report fills the panel's width), then
   `settings-and-overview` (Sozlamalar in Peec's layout, the Overview tightened, Savollar and a question's page in
-  Peec's design, brands' logos), then `plan-billing-correction` (Tarif's plans four in a row, as Peec's); on 14 Nov `pilot-report`, `pilot-first-run`, `models-and-site`, `backend-first-slice`, then `restyle` (the look of our own, the Uzbek metric names, the icons), then `email-login` (the login by email, wired to the backend); on 15 Nov `own-login-email` (the backend sends the login code itself; Supabase's tables locked) after `first-run-page` (the first run's page, the setup filled in from it, the backend on the server, API calls through the frontend); on 17 Nov `feedback-17-nov` (the user's list of 17 Nov, Manbalar rebuilt, the name Seenova AI and its logo), then `actions-simpler` (Harakatlar made simple, a task for the owner's own AI on every action); on 18 Nov `logo-rounds` (the logo as two rounds), then `wrong-facts-rebuild` (Notoʻgʻri faktlar rebuilt), then `report-pdf` (a real PDF download, no signature lines), then `docs-current` (the docs brought up to date with each other and the code), then `hero-indicator` (the landing page's indicator, the sentence with chips, a smaller headline). Each time the user chose "commit, push" when asked (for Harakatlar: "push everything"). Each page gets its
+  Peec's design, brands' logos), then `plan-billing-correction` (Tarif's plans four in a row, as Peec's); on 14 Nov `pilot-report`, `pilot-first-run`, `models-and-site`, `backend-first-slice`, then `restyle` (the look of our own, the Uzbek metric names, the icons), then `email-login` (the login by email, wired to the backend); on 15 Nov `own-login-email` (the backend sends the login code itself; Supabase's tables locked) after `first-run-page` (the first run's page, the setup filled in from it, the backend on the server, API calls through the frontend); on 17 Nov `feedback-17-nov` (the user's list of 17 Nov, Manbalar rebuilt, the name Seenova AI and its logo), then `actions-simpler` (Harakatlar made simple, a task for the owner's own AI on every action); on 18 Nov `logo-rounds` (the logo as two rounds), then `wrong-facts-rebuild` (Notoʻgʻri faktlar rebuilt), then `report-pdf` (a real PDF download, no signature lines), then `docs-current` (the docs brought up to date with each other and the code), then `hero-indicator` (the landing page's indicator, the sentence with chips, a smaller headline); on 19 Nov `full-screens` (full-height screens for the first check and the login, the dashboard's buttons filled), then `savollar-simple` (Savollar made simple). Each time the user chose "commit, push" when asked (for Harakatlar: "push everything"). Each page gets its
   own branch, merged when the user says so.
 
 ## To do, in order
