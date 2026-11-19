@@ -39,7 +39,7 @@ export function FirstRunProgress({ run, stale, who }: { run: FirstRun; stale: bo
   const running = current < 2;
 
   return (
-    <div className="flex min-h-svh flex-col bg-[linear-gradient(155deg,#0b1335_0%,#1c2e6e_52%,#3f63c8_100%)] text-white">
+    <div data-screen className="flex h-dvh flex-col overflow-y-auto bg-[linear-gradient(155deg,#0b1335_0%,#1c2e6e_52%,#3f63c8_100%)] text-white">
       <header className="flex h-16 shrink-0 items-center justify-end px-5 sm:px-8">
         <div className="flex min-w-0 items-center gap-1 rounded-full bg-background py-1 pr-1 pl-4 text-foreground">
           {who && <span className="hidden truncate pr-1 text-sm text-muted-foreground sm:block">{o("loggedInAs", { who })}</span>}

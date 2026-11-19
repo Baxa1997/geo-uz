@@ -210,14 +210,14 @@ export function BrandsManager({
                   </div>
                   <Hint text={t("hide", { name: brand.name })} described={false}>
                     {() => (
-                      <Button variant="outline" size="icon-sm" className="bg-background" disabled={busy} aria-label={t("hide", { name: brand.name })} onClick={() => decide.mutate({ brand, track: false })}>
+                      <Button variant="outline" size="icon-sm" disabled={busy} aria-label={t("hide", { name: brand.name })} onClick={() => decide.mutate({ brand, track: false })}>
                         <X aria-hidden />
                       </Button>
                     )}
                   </Hint>
                   <Hint text={full ? t("full", { plan: plans(project.plan), max: project.limits.competitors }) : t("track", { name: brand.name })} described={false}>
                     {() => (
-                      <Button variant="outline" size="icon-sm" className="bg-background" disabled={busy || full} aria-label={t("track", { name: brand.name })} onClick={() => decide.mutate({ brand, track: true })}>
+                      <Button variant="outline" size="icon-sm" disabled={busy || full} aria-label={t("track", { name: brand.name })} onClick={() => decide.mutate({ brand, track: true })}>
                         <Check aria-hidden />
                       </Button>
                     )}

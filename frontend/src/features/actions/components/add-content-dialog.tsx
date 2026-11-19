@@ -101,7 +101,7 @@ export function AddContentDialog({
       closeButton
       footer={
         <>
-          <Button type="button" variant="ghost" size="lg" onClick={() => close(false)}>
+          <Button type="button" variant="outline" size="lg" onClick={() => close(false)}>
             {t("cancel")}
           </Button>
           <Button type="submit" form={`${id}-form`} size="lg" disabled={!ready || create.isPending}>

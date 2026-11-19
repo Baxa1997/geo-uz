@@ -73,7 +73,7 @@ export function TopicDialog({
               {t("dialog.delete")}
             </Button>
           )}
-          <Button type="button" variant="ghost" size="lg" onClick={() => onOpenChange(false)}>
+          <Button type="button" variant="outline" size="lg" onClick={() => onOpenChange(false)}>
             {t("dialog.cancel")}
           </Button>
           <Button type="submit" form={`${id}-form`} size="lg" disabled={!ready}>

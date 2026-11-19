@@ -206,7 +206,7 @@ export function AnswersList({
       </table>
       {rows.length > limit && (
         <div className="border-t p-3 text-center">
-          <Button variant="ghost" onClick={() => setLimit((current) => current + PAGE)}>
+          <Button variant="outline" onClick={() => setLimit((current) => current + PAGE)}>
             {t("more", { count: Math.min(PAGE, rows.length - limit) })}
           </Button>
         </div>

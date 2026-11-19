@@ -88,7 +88,7 @@ export function FactsEditor({ projectId, initial, limit, plan, wrongFactsHref, p
         actions={
           <>
             <span className={cn("text-sm tabular-nums", full ? "font-medium text-foreground" : "text-muted-foreground")}>{t("count", { count: facts.length, max: limit })}</span>
-            <Button variant="outline" className="bg-background" disabled={suggest.isPending} onClick={() => suggest.mutate()}>
+            <Button variant="outline" disabled={suggest.isPending} onClick={() => suggest.mutate()}>
               <Sparkles aria-hidden data-icon="inline-start" />
               {suggest.isPending ? t("reading") : t("fromSite")}
             </Button>
@@ -162,7 +162,7 @@ export function FactsEditor({ projectId, initial, limit, plan, wrongFactsHref, p
               }}
               className={cn(FIELD, "h-9 resize-none py-2")}
             />
-            <Button type="submit" variant="outline" className="bg-background" disabled={!clean(draft)}>
+            <Button type="submit" variant="outline" disabled={!clean(draft)}>
               <Plus aria-hidden data-icon="inline-start" />
               {t("add")}
             </Button>
@@ -177,7 +177,7 @@ export function FactsEditor({ projectId, initial, limit, plan, wrongFactsHref, p
           description={shown.length > 0 ? t("foundText") : t("foundNone")}
           actions={
             shown.length > 1 && !full ? (
-              <Button variant="outline" className="bg-background" onClick={() => setFacts((current) => addFacts(current, shown, limit))}>
+              <Button variant="outline" onClick={() => setFacts((current) => addFacts(current, shown, limit))}>
                 {t("addAll")}
               </Button>
             ) : undefined
@@ -186,7 +186,7 @@ export function FactsEditor({ projectId, initial, limit, plan, wrongFactsHref, p
           {shown.map((fact) => (
             <div key={fact} className="flex items-center gap-3 px-4 py-2.5 sm:px-5">
               <p className="min-w-0 flex-1 text-sm text-pretty">{fact}</p>
-              <Button variant="outline" size="sm" className="bg-background" disabled={full} onClick={() => setFacts((current) => addFacts(current, [fact], limit))}>
+              <Button variant="outline" size="sm" disabled={full} onClick={() => setFacts((current) => addFacts(current, [fact], limit))}>
                 <Plus aria-hidden data-icon="inline-start" />
                 {t("add")}
               </Button>

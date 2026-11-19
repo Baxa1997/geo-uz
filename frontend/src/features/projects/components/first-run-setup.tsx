@@ -415,7 +415,9 @@ function Stepper({ current }: { current: number }) {
 /**
  * A step's frame, as the user's pictures: from `lg` our name on a navy panel fills the left, and the step
  * stands at the right under the account's line: its title, a sentence, the numbered steps, the fields,
- * Previous at the left and Next at the right.
+ * Previous at the left and Next at the right. Exactly the window's height (the user, 18 Nov 2026: "full page
+ * not scrolling … buttons must be always visible"): the title and the steps stay at the top, the fields scroll
+ * between them and the bar of buttons at the foot, and the page itself never scrolls.
  */
 function Shell({
   step,
@@ -453,9 +455,9 @@ function Shell({
   }
 
   return (
-    <div className="flex min-h-svh">
+    <div data-screen className="flex h-dvh overflow-hidden">
       {/* A painted gradient, nothing blurred or moving */}
-      <aside className="sticky top-0 hidden h-svh w-[42%] max-w-[46rem] shrink-0 flex-col justify-between bg-[linear-gradient(155deg,#0b1335_0%,#1c2e6e_52%,#3f63c8_100%)] p-12 text-white lg:flex">
+      <aside className="hidden h-full w-[42%] max-w-[46rem] shrink-0 flex-col justify-between bg-[linear-gradient(155deg,#0b1335_0%,#1c2e6e_52%,#3f63c8_100%)] p-12 text-white lg:flex">
         <span />
         <div className="flex flex-col items-center gap-5 text-center">
           <span className="flex items-center gap-3.5">
@@ -477,28 +479,34 @@ function Shell({
           </div>
         </header>
 
-        <form ref={formRef} onSubmit={handle} noValidate className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-7 px-5 pt-6 pb-10 sm:px-10 sm:pt-10">
-          <div className="flex flex-col gap-2">
-            <h1 className="text-3xl font-bold tracking-[-0.03em] text-balance sm:text-[2.125rem]">{title}</h1>
-            <p className="text-pretty text-muted-foreground">{description}</p>
+        <form ref={formRef} onSubmit={handle} noValidate className="flex min-h-0 flex-1 flex-col">
+          {/* Where the owner is: the step's title and the numbered steps, always in view */}
+          <div className="mx-auto flex w-full max-w-3xl shrink-0 flex-col gap-5 px-5 pt-3 pb-5 sm:gap-7 sm:px-10 sm:pt-8 sm:pb-6">
+            <div className="flex flex-col gap-1.5 sm:gap-2">
+              <h1 className="text-2xl font-bold tracking-[-0.03em] text-balance sm:text-[2.125rem]">{title}</h1>
+              <p className="text-sm text-pretty text-muted-foreground sm:text-base">{description}</p>
+            </div>
+            <Stepper current={FIRST_CHECK_STEPS.indexOf(step)} />
           </div>
-          <Stepper current={FIRST_CHECK_STEPS.indexOf(step)} />
-          {/* A new step starts at its top */}
-          <div key={step} className="flex flex-col gap-5">
-            {children}
+          {/* The fields: the one part that scrolls. A new step starts at its top */}
+          <div key={step} className="min-h-0 flex-1 overflow-y-auto">
+            <div className="mx-auto flex w-full max-w-3xl flex-col gap-5 px-5 pt-1 pb-6 sm:px-10">{children}</div>
           </div>
-          <div className="mt-auto flex items-center justify-between gap-3 pt-4">
-            {onBack ? (
-              <Button type="button" variant="outline" size="lg" className="h-11 px-5" onClick={onBack} disabled={disabled && Boolean(onSubmit)}>
-                {back ?? t("back")}
+          {/* Previous and Next, never out of view */}
+          <div className="shrink-0 border-t bg-background">
+            <div className="mx-auto flex w-full max-w-3xl items-center justify-between gap-3 px-5 py-3 sm:px-10 sm:py-4">
+              {onBack ? (
+                <Button type="button" variant="outline" size="lg" className="h-11 px-5" onClick={onBack} disabled={disabled && Boolean(onSubmit)}>
+                  {back ?? t("back")}
+                </Button>
+              ) : (
+                <span />
+              )}
+              <Button type="submit" size="lg" disabled={disabled} className="h-11 px-6">
+                {submit}
+                <ArrowRight aria-hidden data-icon="inline-end" />
               </Button>
-            ) : (
-              <span />
-            )}
-            <Button type="submit" size="lg" disabled={disabled} className="h-11 px-6">
-              {submit}
-              <ArrowRight aria-hidden data-icon="inline-end" />
-            </Button>
+            </div>
           </div>
         </form>
       </div>

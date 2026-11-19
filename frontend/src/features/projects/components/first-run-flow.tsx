@@ -2,19 +2,17 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import type { ReactNode } from "react";
 import { Button } from "@/shared/components/ui/button";
 import { useRouter } from "@/i18n/navigation";
 import { api } from "@/shared/api/client";
 import { queryKeys } from "@/shared/api/query-keys";
-import { cn } from "@/shared/helpers/utils";
 import type { FirstRun } from "@/shared/types/api";
 import { PARTIAL_POLL_MS, RUN_POLL_MS } from "../constants";
 import { FirstRunLive } from "./first-run-live";
 import { FirstRunProgress } from "./first-run-progress";
 import { FirstRunResultView } from "./first-run-result";
+import { FirstRunScreen } from "./first-run-screen";
 import { FirstRunSetup } from "./first-run-setup";
-import { OnboardingHeader } from "./onboarding-header";
 
 /** Nothing changes by itself in these: done and failed for good, `ready` until the owner confirms. */
 const isResting = (run: FirstRun) => run.status === "done" || run.status === "failed" || run.status === "ready";
@@ -59,17 +57,11 @@ function FirstRunStarted({ initial, ...frame }: Frame & { initial: FirstRun }) {
 
   if (BEFORE_CHECK.includes(run.status)) return <FirstRunSetup run={run} {...frame} />;
 
-  if (result.data) {
-    return (
-      <Centered who={frame.who} wide>
-        <FirstRunResultView result={result.data} runId={run.id} onAgain={again} />
-      </Centered>
-    );
-  }
+  if (result.data) return <FirstRunResultView result={result.data} runId={run.id} onAgain={again} who={frame.who} />;
 
   if (run.status === "failed" || result.isError) {
     return (
-      <Centered who={frame.who}>
+      <FirstRunScreen who={frame.who}>
         <section className="my-auto flex flex-col items-start gap-4">
           <h1 className="text-2xl font-semibold tracking-tight">{t("failedTitle", { site: run.domain })}</h1>
           <p role="alert" className="text-pretty text-muted-foreground">
@@ -79,27 +71,11 @@ function FirstRunStarted({ initial, ...frame }: Frame & { initial: FirstRun }) {
             {t("tryAgain")}
           </Button>
         </section>
-      </Centered>
+      </FirstRunScreen>
     );
   }
 
-  if (partial.data && partial.data.answered > 0) {
-    return (
-      <Centered who={frame.who} wide>
-        <FirstRunLive run={run} partial={partial.data} />
-      </Centered>
-    );
-  }
+  if (partial.data && partial.data.answered > 0) return <FirstRunLive run={run} partial={partial.data} who={frame.who} />;
 
   return <FirstRunProgress run={run} stale={isError} who={frame.who} />;
-}
-
-/** The check and its statistics: one column in the middle, under the header. */
-function Centered({ who, wide = false, children }: { who: string | null; /** The statistics: a table and its tabs want more room. */ wide?: boolean; children: ReactNode }) {
-  return (
-    <>
-      <OnboardingHeader who={who} />
-      <main className={cn("mx-auto flex w-full flex-1 flex-col px-4 py-10 sm:py-14", wide ? "max-w-4xl" : "max-w-3xl")}>{children}</main>
-    </>
-  );
 }

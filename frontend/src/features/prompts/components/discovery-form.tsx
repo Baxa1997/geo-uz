@@ -160,7 +160,7 @@ export function DiscoveryForm({
       {/* The step's buttons stay at the bottom, as on Peec */}
       <div data-tour="buttons" className="sticky bottom-0 flex items-center justify-between gap-3 border-t bg-background px-5 py-4 sm:px-10">
         {step === 2 ? (
-          <Button variant="ghost" size="lg" onClick={() => setStep(1)}>
+          <Button variant="outline" size="lg" onClick={() => setStep(1)}>
             <ArrowLeft aria-hidden data-icon="inline-start" />
             {t("back")}
           </Button>

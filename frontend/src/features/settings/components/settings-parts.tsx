@@ -97,7 +97,7 @@ export function SaveBar({
         </p>
         <div className="flex shrink-0 items-center gap-2">
           {dirty && (
-            <Button variant="outline" disabled={saving} onClick={onCancel} className="bg-background">
+            <Button variant="outline" disabled={saving} onClick={onCancel}>
               {t("cancel")}
             </Button>
           )}
