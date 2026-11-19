@@ -196,6 +196,21 @@ that is committed.
 
 ## Done (as of 18 November 2026)
 
+- **Built, waiting for the user's look: full-height screens for the first check and the login, and the
+  dashboard's buttons filled (18 Nov), on the branch `full-screens`; merged and pushed on 19 Nov, when the user said
+  "commit, push and deploy".** The user: "The page must
+  be made full page not scrolling" (the setup's step 2 and a check's page, `?run=`), "login all of them must be
+  done full page so buttons must be always visible", and "Inside of Dashboard the buttons must be background
+  colored, green chosen or black … cancel buttons must be appropriately colored background". Asked, they chose
+  black, in the dashboard only. Now every screen of the first check and the login is exactly the window's
+  height, with its buttons in a bar at the foot that never leaves the view and only the content scrolling;
+  the statistics' two save buttons became one in that bar. In the workspace the main buttons are black and
+  Cancel, Back, Decline and the other secondary ones a filled warm gray, its windows included; the public pages,
+  the login and the first check keep navy (`frontend/CLAUDE.md`, "Our look", "Buttons"). Looked at in a browser
+  in Uzbek on this computer: the login on desktop, a 620px-high window and a phone; the first step and the
+  statistics on desktop and phone; Harakatlar and Savollar. Not looked at: the live results (no check running),
+  a setup step past the first, Russian and English. No new variable.
+
 - **Built, waiting for the user's look: the landing page's indicator and the sentence with chips (18 Nov), on
   the branch `hero-indicator`; merged, pushed and deployed the same day, when the user said "commit, push and
   deploy" (Vercel's build passed), after the docs brought up to date (`docs-current`).** The user, with two other products' heroes and an indicator as

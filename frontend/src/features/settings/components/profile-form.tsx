@@ -123,7 +123,7 @@ export function ProfileForm({ project, categories, cities }: { project: Project;
               <p className="text-[0.9375rem] text-muted-foreground">{brand.domain}</p>
               {brand.aliases.length > 0 && <p className="text-sm text-pretty text-muted-foreground">{t("aliasesLine", { aliases: brand.aliases.join(", ") })}</p>}
             </div>
-            <Button variant="outline" className="bg-background" onClick={() => setEditingBrand(true)}>
+            <Button variant="outline" onClick={() => setEditingBrand(true)}>
               <Pencil aria-hidden data-icon="inline-start" />
               {t("editBrand")}
             </Button>

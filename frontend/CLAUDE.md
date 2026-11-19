@@ -67,6 +67,15 @@ slices change in the contract below:
   asked for every three seconds (`getFirstRunPartial`); the finished check's page takes its place. The live
   counts come from the answers' own words, so a competitor the answers spell another way is counted only at
   the end, and the page says the final numbers come when the check ends.
+- **Every screen of the first check and the login is the window's height (18 Nov; the user: "full page not
+  scrolling … buttons must be always visible").** The page never scrolls (`data-screen`, and globals.css keeps
+  `html` from scrolling under it); a part inside does. The setup (`Shell`): the title and the numbered steps at
+  the top, the fields scrolling under them, Previous and Next in a bar at the foot. The live results and the
+  statistics (`FirstRunScreen`): the header, the content scrolling, and the screen's buttons in the bar at the
+  foot ("See my full analysis", disabled while the check runs; then it and "Check another website", one under
+  the other on a phone); the statistics' navy closing band is gone, its sentence is in the bar. The navy
+  progress screen is `h-dvh` too. The login: its form column scrolls only on a window too short for it, and its
+  navy panel is tighter below 820px of height (the `tall:` variant).
 
 ## MVP scope
 Written in October; the MVP as it stands now is `../PLAN.md`, "What the MVP is", and wins where the two differ.
@@ -220,6 +229,15 @@ paper", the pilot report's look). The tokens are in `globals.css`:
   colors, never Peec's shape. `app/icon.svg`, `app/favicon.ico` (16, 32, 48px) and `app/apple-icon.png` (180px,
   full-bleed) are the rounds in white on the brand's navy tile. The login panel and the first check's panel
   are the brand's navy gradient, the login panel with the two rounds drawn huge and faint. Emails write the name in `mail.BRAND` and `mail.WORDMARK_HTML`.
+- **Buttons** (18 Nov, the user: "inside of Dashboard the buttons must be background colored … cancel buttons
+  must be appropriately colored background"; asked, they chose black, in the dashboard only). `ui/button` takes
+  its colors from tokens in globals.css (`--button*`): the main button (`default`) and the soft one (`outline`).
+  On the public pages, the login, the first check and the shared report they are navy and white with a
+  hairline, as before; while the workspace is on screen (`:root:has([data-workspace])`, so its windows and menus,
+  drawn outside it, follow too) the main one is black with white text and the soft one a filled warm gray with
+  no line. Cancel, Back, Decline, "Show more" and paging buttons are the soft one; only icon-only buttons (and the
+  header's Log out) stay `ghost`, with no ground. In the workspace never paint a soft button white
+  (`bg-background`): it hides the gray.
 - **Icons** (14 Nov). Two sources, no Lucide (the set Peec uses; the package is removed):
   - **Our own** (`shared/components/own-icons.tsx`), where a visitor looks most: the sidebar's pages, the four
     metrics (`IconMentions`, `IconVoiceShare`, `IconPlace`, `IconRating`) and the action goals. Drawn on a 24

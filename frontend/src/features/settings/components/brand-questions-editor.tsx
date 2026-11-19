@@ -131,7 +131,7 @@ export function BrandQuestionsEditor({ projectId, brand, initial, overviewHref }
               {t("newLabel")}
             </label>
             <input id={`${id}-new`} value={draft} lang={language} maxLength={PROMPT_TEXT_MAX_LENGTH} placeholder={t("placeholder", { brand })} onChange={(event) => setDraft(event.target.value)} className={cn(FIELD, "h-9 min-w-40 flex-1")} />
-            <Button type="submit" variant="outline" className="bg-background" disabled={clean(draft).length < PROMPT_TEXT_MIN_LENGTH}>
+            <Button type="submit" variant="outline" disabled={clean(draft).length < PROMPT_TEXT_MIN_LENGTH}>
               <Plus aria-hidden data-icon="inline-start" />
               {t("add")}
             </Button>

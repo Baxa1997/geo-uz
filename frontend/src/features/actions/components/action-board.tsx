@@ -404,7 +404,7 @@ export function ActionBoard({
         <div className="ml-auto flex items-center gap-2">
           <Hint text={t("guideHint")} described={false}>
             {() => (
-              <Button variant="outline" size="icon" aria-label={t("guide")} onClick={startTour} className="bg-background">
+              <Button variant="outline" size="icon" aria-label={t("guide")} onClick={startTour}>
                 <BookOpen aria-hidden />
               </Button>
             )}
@@ -412,7 +412,7 @@ export function ActionBoard({
           <DropdownMenu>
             <Hint text={t("exportHint")} described={false}>
               {() => (
-                <DropdownMenuTrigger render={<Button variant="outline" size="icon" aria-label={t("export")} className="bg-background" />}>
+                <DropdownMenuTrigger render={<Button variant="outline" size="icon" aria-label={t("export")} />}>
                   <Upload aria-hidden />
                 </DropdownMenuTrigger>
               )}
@@ -509,7 +509,7 @@ export function ActionBoard({
                 )}
                 {tab === "new" && newListed.length > 1 && (
                   <div className="flex items-center gap-2 @lg:ml-auto">
-                    <Button variant="ghost" size="sm" disabled={saveMany.isPending} onClick={() => setDeclining(true)} className="text-muted-foreground">
+                    <Button variant="outline" size="sm" disabled={saveMany.isPending} onClick={() => setDeclining(true)}>
                       <X aria-hidden data-icon="inline-start" />
                       {t("declineAll")}
                     </Button>
@@ -643,7 +643,7 @@ function ActionCard({
         <Button size="sm" disabled={busy} onClick={() => onStatus("in_progress")}>
           {t("start")}
         </Button>
-        <Button size="sm" variant="ghost" onClick={onOpen}>
+        <Button size="sm" variant="outline" onClick={onOpen}>
           {t("details")}
         </Button>
       </div>

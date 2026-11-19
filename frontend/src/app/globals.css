@@ -4,6 +4,8 @@
 @plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
+/* A window tall enough for a screen's roomier spacing (the login panel): below it, the tighter one */
+@custom-variant tall (@media (min-height: 820px));
 
 @theme inline {
   --color-you: var(--you);
@@ -31,6 +33,12 @@
   --color-brand-soft: var(--brand-soft);
   --color-brand-foreground: var(--brand-foreground);
   --color-telegram-hover: var(--telegram-hover);
+  --color-button: var(--button);
+  --color-button-hover: var(--button-hover);
+  --color-button-foreground: var(--button-foreground);
+  --color-button-soft: var(--button-soft);
+  --color-button-soft-hover: var(--button-soft-hover);
+  --color-button-soft-border: var(--button-soft-border);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans-face);
@@ -141,6 +149,14 @@
   /* Telegram blue, darkened so white text passes 4.5:1 */
   --telegram: #1979bc;
   --telegram-hover: #1873b3;
+  /* Buttons (`ui/button`): the main one, and the soft one (Cancel, Decline, a secondary tool). Navy and white
+     with a hairline on the public pages, the first check and the report; the workspace has its own (below) */
+  --button: #1c2e6e;
+  --button-hover: #1c2e6ecc;
+  --button-foreground: #ffffff;
+  --button-soft: #ffffff;
+  --button-soft-hover: #f4f2ed;
+  --button-soft-border: #e4e1da;
   --sidebar: #faf9f6;
   --sidebar-foreground: #14182b;
   --sidebar-primary: #1c2e6e;
@@ -209,14 +225,29 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+/* The workspace's buttons (the user, 18 Nov 2026: "inside of Dashboard the buttons must be background colored";
+   asked, they chose black for the main ones): black with white text, and the soft ones filled in a warm gray
+   with no line. Set on the page's root while the workspace is on it, so its windows and menus, drawn outside
+   it, follow too. Not in a layer: it must win over `:root` above. */
+:root:has([data-workspace]) {
+  --button: #161616;
+  --button-hover: #333333;
+  --button-foreground: #ffffff;
+  --button-soft: #ebe8e1;
+  --button-soft-hover: #dfdbd2;
+  --button-soft-border: transparent;
+}
+
 @layer base {
   /* No page scrolling behind an open modal <dialog> (the mobile menu) */
   html:has(dialog[open]:modal) {
     overflow: hidden;
   }
 
-  /* The workspace scrolls inside its panels; the page itself never does */
-  html:has([data-workspace]) {
+  /* The workspace scrolls inside its panels, and the login and first check's screens (`data-screen`) inside
+     their columns; the page itself never does */
+  html:has([data-workspace]),
+  html:has([data-screen]) {
     overflow: hidden;
   }
 

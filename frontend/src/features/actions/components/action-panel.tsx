@@ -376,7 +376,7 @@ function PromptBox({ target, text, domain, copied, onCopy }: { target: PromptTar
     <div className="overflow-hidden rounded-xl border bg-card">
       <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-b bg-muted/40 px-4 py-2.5">
         <p className="min-w-0 flex-1 basis-56 text-sm text-pretty text-muted-foreground">{t(`aiPrompt.where.${target}`, { domain })}</p>
-        <Button variant="outline" size="sm" onClick={onCopy} className="shrink-0 bg-background">
+        <Button variant="outline" size="sm" onClick={onCopy} className="shrink-0">
           {copied ? <Check aria-hidden data-icon="inline-start" /> : <Copy aria-hidden data-icon="inline-start" />}
           {copied ? t("copied") : t("aiPrompt.copy")}
         </Button>

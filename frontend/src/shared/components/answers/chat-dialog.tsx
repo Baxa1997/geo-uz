@@ -209,14 +209,14 @@ function Conversation({
       </div>
 
       <footer className="flex h-10 shrink-0 items-center justify-between gap-3 border-t px-1.5">
-        <Button variant="ghost" size="sm" className="text-sm" disabled={position === 0} onClick={() => onIndex(position - 1)}>
+        <Button variant="outline" size="sm" className="text-sm" disabled={position === 0} onClick={() => onIndex(position - 1)}>
           <ArrowLeft aria-hidden data-icon="inline-start" />
           {t("previous")}
         </Button>
         <span aria-live="polite" className="text-xs text-muted-foreground tabular-nums">
           {t("counter", { index: position + 1, total })}
         </span>
-        <Button variant="ghost" size="sm" className="text-sm" disabled={position === total - 1} onClick={() => onIndex(position + 1)}>
+        <Button variant="outline" size="sm" className="text-sm" disabled={position === total - 1} onClick={() => onIndex(position + 1)}>
           {t("next")}
           <ArrowRight aria-hidden data-icon="inline-end" />
         </Button>

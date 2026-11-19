@@ -7,10 +7,12 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/80",
+        // The main button and the soft one take their colors from tokens (globals.css): navy and white on the
+        // public pages, black and a filled gray in the workspace (the user's choice, 18 Nov 2026)
+        default: "bg-button text-button-foreground hover:bg-button-hover",
         brand: "bg-brand text-brand-foreground hover:bg-brand-hover",
         outline:
-          "border-border bg-background hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
+          "border-button-soft-border bg-button-soft hover:bg-button-soft-hover hover:text-foreground aria-expanded:bg-button-soft-hover aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
         ghost:

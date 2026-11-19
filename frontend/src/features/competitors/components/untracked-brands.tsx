@@ -147,7 +147,7 @@ export function UntrackedBrands({
                   <span className="text-xs text-muted-foreground">{count(brand)}</span>
                 </span>
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   size="sm"
                   disabled={busy === brand.name}
                   aria-label={t("untracked.showLabel", { name: brand.name })}

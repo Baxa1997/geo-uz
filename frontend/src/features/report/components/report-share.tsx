@@ -32,7 +32,7 @@ export function ReportShare({ path, text, projectId, runId }: { path: string; te
     <div data-tour="tools" className="flex flex-wrap items-center gap-2">
       <Hint text={t("copyHint")} described={false}>
         {() => (
-          <Button variant="outline" onClick={copy} className="bg-background">
+          <Button variant="outline" onClick={copy}>
             {copied ? <Check aria-hidden data-icon="inline-start" /> : <Link2 aria-hidden data-icon="inline-start" />}
             <span aria-live="polite">{copied ? t("copied") : t("copy")}</span>
           </Button>
