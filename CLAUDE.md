@@ -204,8 +204,9 @@ that is committed.
 ## Done (as of 18 November 2026)
 
 - **Built, waiting for the user's look: Phase 0 item 0.4 of the report spec, a type for every cited site and
-  the actions a type allows (21 Nov), on the branch `phase0-domain-types`; merged and pushed the same day, when the
-  user chose "Ship 0.4, then plan 0.5".** The user: "commit, push,
+  the actions a type allows (21 Nov), on the branch `phase0-domain-types`; merged, pushed and deployed the same day,
+  when the user chose "Ship 0.4, then plan 0.5" (Vercel redeploys on the push; the server's previous `app/` is kept
+  as `app.bak-before-domains`).** The user: "commit, push,
   then plan 0.4"; after the plan they chose, when asked, the AI's typing in every new check plus once now on the two
   live projects, and routes only from our checked list or their review. `app/domains.py` (a new table
   `domain_types`) gives each cited site the spec's type (§4.6), its control, the route onto it and who typed it:
@@ -226,9 +227,13 @@ that is committed.
   percentages on the baseline report stand beside their count; the type check and the linter are clean. Looked at
   in headless Chrome on the baseline (with one site typed by hand and one by a stand-in AI, in the look's own
   database): the Sources in English on desktop and as print, Russian on desktop and phone, Uzbek on phone, and
-  Hisobotlar's copy in Uzbek on desktop and phone; nothing wider than the screen, no console error. Not done yet:
-  the AI's one-off typing on the two live projects (after the deploy, `python -m app.admin classify`). No new
-  variable; one new table.
+  Hisobotlar's copy in Uzbek on desktop and phone; nothing wider than the screen, no console error. Deployed: the
+  server made `domain_types` at start, locked like the others; then the AI typed the two live projects' latest
+  checks once, as approved ($0.018 in all, more than the "under a cent" first said: $0.0135 for the paid project's
+  48 unknown sites, $0.0046 for the baseline's 22). The paid project: 45 competitors' sites (its category's other
+  preparation platforms and the test administrators' portals), 2 media, 3 reference, 2 platform docs, 1 social, 1
+  unclassified, its own site; the baseline: 24 competitors' sites and 2 platform docs. Neither has a site to get
+  onto (the AI's media sites have no checked route). No new variable; one new table.
 
 - **Finished, confirmed by the user on 21 Nov: Phase 0 item 0.3 of the report spec, every percentage beside its
   count (21 Nov); merged, pushed and deployed with step 1, 0.1 and 0.2 (the branch `phase0-wave-object`) the same
