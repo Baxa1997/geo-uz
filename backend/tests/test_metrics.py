@@ -286,29 +286,41 @@ def test_the_shelf_and_providers_on_a_made_up_check() -> None:
 def test_the_digest_says_the_change_and_the_action() -> None:
     from app import digest
 
-    def check(named: Dict[str, int], answers: int) -> Dict[str, Any]:
-        rows = [{"id": key, "name": key.title(), "named": count} for key, count in named.items()]
+    def check(answers: List[Dict[str, Any]], settings: str = "same") -> Dict[str, Any]:
+        built = {**_wave(answers), "wave": {"collected_at": "2026-11-24T05:00:00+00:00", "settings_hash": settings}}
+        named = {key: sum(1 for answer in answers if any(mention["brand_id"] == key for mention in answer["mentions"])) for key in ("acme", "bolt", "cora")}
         rivals = {key: count for key, count in named.items() if key != "acme"}
         top = max(rivals.values())
-        return {
+        computed = {
             "scope": {"engines": [{"engine": "chatgpt"}, {"engine": "gemini"}]},
-            "visibility": {"named": named["acme"], "answers": answers},
-            "brands": {"rows": rows, "rivals_top": {"named": {"value": top, "ids": [key for key, count in rivals.items() if count == top]}}},
+            "visibility": {"named": named["acme"], "answers": len(answers)},
+            "brands": {"rows": [{"id": key, "name": key.title(), "named": count} for key, count in named.items()], "rivals_top": {"named": {"value": top, "ids": [key for key, count in rivals.items() if count == top]}}},
         }
+        return {"wave": built, "metrics": computed}
 
-    built = {"project": {"brand": {"name": "Acme"}}, "wave": {"collected_at": "2026-11-24T05:00:00+00:00"}}
-    before, now = check({"acme": 0, "bolt": 1, "cora": 1}, 15), check({"acme": 3, "bolt": 1, "cora": 2}, 20)
+    def asked(key: str, prompt: str, engine: str, *brands: str) -> Dict[str, Any]:
+        return _answer(key, prompt, "-", [(brand, "", "neutral") for brand in brands], engine=engine)
+
+    # The check before asked p1 and p2 on both assistants; this one p1 on both, p2 on ChatGPT and p3 (new) on Gemini
+    before = check([asked("b1", "p1", "chatgpt", "bolt"), asked("b2", "p1", "gemini", "cora"), asked("b3", "p2", "chatgpt"), asked("b4", "p2", "gemini", "bolt")])
+    now = check([asked("n1", "p1", "chatgpt", "acme", "bolt"), asked("n2", "p1", "gemini", "acme", "cora"), asked("n3", "p2", "chatgpt", "acme", "cora"), asked("n4", "p3", "gemini", "acme", "cora")])
     action = {"kind": "listing", "domain": "goldenpages.uz", "status": "new"}
-    lines = digest.render(built, now, "en", "https://example.test/r", before, action).splitlines()
+    lines = digest.render(now["wave"], now["metrics"], "en", "https://example.test/r", before, action).splitlines()
     assert lines == [
         "Seenova · Acme · 24 Nov 2026 · ChatGPT, Gemini",
-        "In AI answers: Acme 3/20 (was 0/15)",
-        "Most named instead of you: Cora 2/20",
-        "Biggest change: Acme 3/20, was 0/15",
+        "In AI answers: Acme 4/4 (was 0/4)",
+        "Most named instead of you: Cora 3/4",
+        # Over the 3 answers on the questions asked on the same assistant in both checks, not over all 4
+        "Biggest change: Acme 3/3, was 0/3 on the same questions",
         "This week's action: get listed on goldenpages.uz (Marketing)",
         "Full report: https://example.test/r",
     ]
-    quiet = digest.render(built, before, "uz", "https://example.test/r", before, None).splitlines()
+    # A change of settings is said; with no question asked the same way there is nothing to compare
+    elsewhere = check([asked("o1", "p9", "chatgpt", "acme")], settings="other")
+    lines = digest.render(elsewhere["wave"], elsewhere["metrics"], "en", "https://example.test/r", before, None).splitlines()
+    assert lines[1] == "In AI answers: Acme 1/1 (was 0/4, asked another way)"
+    assert lines[3] == "Biggest change: can't compare, no question was asked the same way in both checks"
+    quiet = digest.render(before["wave"], before["metrics"], "uz", "https://example.test/r", before, None).splitlines()
     assert len(quiet) == 6 and quiet[3].endswith("sezilarli oʻzgarish yoʻq") and quiet[4].endswith("kuzatamiz")
 
 

@@ -39,7 +39,9 @@ slices change in the contract below:
   progress (`status`: queued, reading_site, asking, reading_answers, done, failed) and `GET /first-runs/{id}/result` for a `Snapshot` that also carries `engines` (scores per assistant),
   `recommended` (per brand id), `answers`, `description` and `services`; an answer says its `engine`, a mention
   whether it is `recommended`. `POST /snapshot` is not built.
-- Two assistants, ChatGPT and Gemini, not one.
+- Two assistants, ChatGPT and Gemini, from 15 Nov; since 21 Nov 2026 Gemini with Google Search is paused for Google's
+  terms (`ANSWER_ENGINES=chatgpt` on the server): the first check's screens show the assistants `/health` lists
+  (`useAnswerEngines`), and the public pages and plans name ChatGPT with Gemini "soon" (`ENGINES`, `ENGINE_TILES`).
 - **Confirm first, check after (16 Nov; the user: "I don't understand the flow we have … more structured").**
   `/onboarding/first-run` is four numbered steps before anybody is asked (`FirstRunSetup`, `FIRST_CHECK_STEPS`):
   1 the website and the country; 2 the business as we read it; 3 its competitors; 4 the questions (ten at most
@@ -152,12 +154,14 @@ structured correctly … make it clear everything"): the structure of a clear pr
 words. In order (`SECTION` in marketing/constants, `pages/landing-page.tsx`):
 
 1. **Hero**: the indicator (since 18 Nov: a pill with a dark "Jonli" badge and its live dot, a sparkle, what is
-   new and an arrow to the assistants' section; it says only what the product does, so "Gemini kuzatuvi
-   qoʻshildi", never Google's AI answers until they are checked), the headline, one short sentence with the
+   new and an arrow to the assistants' section; it says only what the product does: since 21 Nov 2026 "Savollar
+   mijozingiz shahridan beriladi" (Phase 0 item 0.7), no longer "Gemini kuzatuvi qoʻshildi", and never Google's AI
+   answers until they are checked), the headline, one short sentence with the
    metrics as chips, and **the website field itself** (`SiteForm` → `/check?site=`, which goes to the real first check,
    login by email first, when `first-run` is live), a line "free · email · 2–3 minutes · book a demo", then
    the dashboard preview.
-2. **Assistants** (`Engines`): ChatGPT and Gemini "every check", Google's AI answers and Yandex "soon", then why
+2. **Assistants** (`Engines`): ChatGPT "every check"; Gemini (paused since 21 Nov 2026), Google's AI answers and
+   Yandex "soon", then why
    these, three StatCounter figures for Uzbekistan with their month (`MARKET_FIGURES`: update the numbers and
    the month in messages together).
 3. **How it works**: three numbered steps and the button.

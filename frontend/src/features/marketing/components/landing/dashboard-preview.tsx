@@ -92,11 +92,10 @@ export function DashboardPreview() {
               <Tag className="size-3.5" />
               {t("allTopics")}
             </Chip>
-            {/* The product asks both assistants (16 Nov 2026); the sample's numbers are an illustration */}
+            {/* The product asks ChatGPT (Gemini with Google Search paused, 21 Nov 2026); the sample's numbers are an illustration */}
             <Chip>
               <EngineIcon engine="chatgpt" className="size-3.5" />
-              <EngineIcon engine="gemini" className="size-3.5" />
-              ChatGPT · Gemini
+              ChatGPT
             </Chip>
             <Chip className="ml-auto hidden border-transparent text-muted-foreground @2xl:flex">
               <span className="relative flex size-2">

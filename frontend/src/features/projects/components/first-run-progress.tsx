@@ -9,6 +9,7 @@ import { LogoMark } from "@/shared/components/logo";
 import { LogoutButton } from "@/shared/components/logout-button";
 import { cn } from "@/shared/helpers/utils";
 import type { FirstRun } from "@/shared/types/api";
+import { useAnswerEngines } from "../hooks/use-answer-engines";
 
 const LINES = ["sending", "collecting", "checking"] as const;
 /** Where each assistant sits on the ring, as a point of its box, and its center in the ring's 100×100 drawing. */
@@ -31,6 +32,9 @@ export function FirstRunProgress({ run, stale, who }: { run: FirstRun; stale: bo
   const t = useTranslations("FirstRun");
   const o = useTranslations("Onboarding");
   const engines = useTranslations("Engines");
+  // Only the assistants the backend asks now (Gemini paused since 21 Nov 2026), each in its seat
+  const asked = useAnswerEngines();
+  const seats = SEATS.filter(({ engine }) => asked.includes(engine));
   // Sent, then answers coming in, then the answers read
   const current = run.status === "reading_answers" ? 2 : run.answered > 0 ? 1 : 0;
   const share = run.status === "reading_answers" ? 0.94 : run.total > 0 ? 0.06 + 0.84 * (run.answered / run.total) : 0.04;
@@ -58,7 +62,7 @@ export function FirstRunProgress({ run, stale, who }: { run: FirstRun; stale: bo
           <span className="absolute inset-[16%] animate-[orbit_40s_linear_infinite_reverse] rounded-full border border-dashed border-white/20 motion-reduce:animate-none" />
           {/* The questions run out to each assistant, and the answers come back */}
           <svg viewBox="0 0 100 100" className="absolute inset-0 size-full overflow-visible">
-            {SEATS.map(({ engine, x, y }, index) => (
+            {seats.map(({ engine, x, y }, index) => (
               <g key={engine}>
                 <line x1={50} y1={50} x2={x} y2={y} stroke="white" strokeOpacity={0.14} strokeWidth={0.6} />
                 {running && (
@@ -73,7 +77,7 @@ export function FirstRunProgress({ run, stale, who }: { run: FirstRun; stale: bo
           <span className="absolute inset-[32%] flex items-center justify-center rounded-full bg-white shadow-[0_0_0_10px_rgb(255_255_255/0.12)]">
             <LogoMark className="size-9 text-[#1c2e6e]" />
           </span>
-          {SEATS.map(({ engine, at }, index) => (
+          {seats.map(({ engine, at }, index) => (
             <span key={engine} className={cn("absolute flex size-12 items-center justify-center rounded-full bg-white text-[#14182b] shadow-lg", at)}>
               {running && <span className="absolute inset-0 animate-ripple rounded-full bg-white/60" style={{ animationDelay: `${index * 0.9}s` }} />}
               <EngineIcon engine={engine} className="relative size-6" />
@@ -84,7 +88,7 @@ export function FirstRunProgress({ run, stale, who }: { run: FirstRun; stale: bo
         <div className="flex flex-col gap-2.5">
           <p className="font-mono text-xs tracking-[0.14em] text-white/60 uppercase">{run.domain}</p>
           <h1 className="text-3xl font-bold tracking-[-0.03em] text-balance sm:text-4xl">{t("runningTitle")}</h1>
-          <p className="text-lg text-pretty text-white/75">{t("asking.text", { engines: SEATS.map(({ engine }) => engines(engine)).reverse().join(", ") })}</p>
+          <p className="text-lg text-pretty text-white/75">{t("asking.text", { engines: seats.map(({ engine }) => engines(engine)).reverse().join(", ") })}</p>
         </div>
 
         <div className="flex w-full max-w-md flex-col gap-3">

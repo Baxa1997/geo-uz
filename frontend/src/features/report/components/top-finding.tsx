@@ -6,6 +6,7 @@ import { useCountWords } from "@/shared/hooks/use-count-words";
 import type { Brand, WaveResponse } from "@/shared/types/api";
 import { sectionNumber } from "../constants";
 import { answerLabels, answerNumbers, excerptOf } from "../helpers/evidence";
+import { slotsByAnswer } from "../hooks/use-slot-words";
 import { AnswerCard } from "./evidence";
 import { BlockTitle, ReportCard } from "./report-parts";
 
@@ -50,6 +51,7 @@ export function TopFinding({
   const byId = new Map(wave.wave.answers.map((answer) => [answer.id, answer]));
   const answers = found.answers.flatMap((id) => (byId.has(id) ? [byId.get(id) as (typeof wave.wave.answers)[number]] : []));
   const numbers = answerNumbers(wave.wave);
+  const slots = slotsByAnswer(wave.wave);
   const named = found.named.flatMap((id) => brands.filter((brand) => brand.id === id));
   const spellings = [...named, ...(client ? [client] : [])].flatMap((brand) => [brand.name, ...brand.aliases]);
   const engineName = (engine: string) => (engine === "chatgpt" || engine === "gemini" ? engines(engine) : engine);
@@ -97,7 +99,7 @@ export function TopFinding({
           </summary>
           <div className="mt-3 flex flex-col gap-4">
             {answers.map((answer) => (
-              <AnswerCard key={answer.id} answer={answer} number={numbers.get(answer.id) ?? 0} brands={brands} youId={youId} anchor={false} runs={wave.wave.wave.runs_per_prompt} />
+              <AnswerCard key={answer.id} answer={answer} number={numbers.get(answer.id) ?? 0} slot={slots.get(answer.id)} brands={brands} youId={youId} anchor={false} runs={wave.wave.wave.runs_per_prompt} />
             ))}
           </div>
         </details>

@@ -1,7 +1,7 @@
 {
   "Metadata": {
     "title": "Seenova AI — AI javoblarida brendingiz koʻrinishi",
-    "description": "ChatGPT va Gemini mijozlaringiz savollariga javob berganda brendingizni qanchalik koʻp tilga olishini oʻlchang."
+    "description": "ChatGPT mijozlaringiz savollariga javob berganda brendingizni qanchalik koʻp tilga olishini oʻlchang."
   },
   "Common": {
     "loading": "Yuklanmoqda…",
@@ -89,8 +89,8 @@
       "assistants": "Assistentlar",
       "answers": "{count} ta javob",
       "surfaces": {
-        "api_web_search": "veb-qidiruv",
-        "api_grounded": "Google qidiruvi"
+        "api_web_search": "veb-qidiruv yoqilgan",
+        "api_grounded": "Google qidiruvi yoqilgan"
       },
       "located": "joylashuv: {place}",
       "toldInInstructions": "joy faqat koʻrsatmasida aytilgan ({place}), joylashuv sozlamasi sifatida emas",
@@ -610,6 +610,8 @@
         "topic": "Mavzu",
         "assistant": "Yordamchi",
         "model": "Model",
+        "surface": "Kanal",
+        "location": "Joylashuv",
         "date": "Sana",
         "searched": "Internetdan qidiruv",
         "client": "Sizni tilga oladi",
@@ -664,7 +666,7 @@
         "actions": "3 tagacha harakat: har birining dalili, masʼuli va natijani qanday tekshirish"
       },
       "ctaTitle": "First Audit buyurtma qilish",
-      "ctaText": "Har bir savol ChatGPT va Gemini’ga 3 marta beriladi, natijalarni inson tekshiradi, birinchi qilinadigan harakatlar bilan. Ismingiz va telefoningizni qoldiring — qoʻngʻiroq qilamiz.",
+      "ctaText": "Har bir savol ChatGPT’ga 3 marta beriladi, natijalarni inson tekshiradi, birinchi qilinadigan harakatlar bilan. Ismingiz va telefoningizni qoldiring — qoʻngʻiroq qilamiz.",
       "request": {
         "name": "Ismingiz",
         "phone": "Telefon",
@@ -2135,7 +2137,7 @@
   },
   "Landing": {
     "metaTitle": "AI mijozlaringizga kimni tavsiya qiladi? — Seenova AI",
-    "metaDescription": "Mijozlaringiz ChatGPT va Gemini’ga beradigan savollarni tekshiramiz, sizni raqobatchilar bilan solishtiramiz va nimani tuzatish kerakligini koʻrsatamiz. Birinchi tekshiruv bepul.",
+    "metaDescription": "Mijozlaringiz ChatGPT’ga beradigan savollarni tekshiramiz, sizni raqobatchilar bilan solishtiramiz va nimani tuzatish kerakligini koʻrsatamiz. Birinchi tekshiruv bepul.",
     "siteLabel": "Sayt manzili",
     "sitePlaceholder": "saytingiz.uz",
     "submit": "Bepul tekshirish",
@@ -2186,10 +2188,10 @@
     },
     "hero": {
       "badge": "Jonli",
-      "news": "Gemini kuzatuvi qoʻshildi",
+      "news": "Savollar mijozingiz shahridan beriladi",
       "title": "Brendingiz AI javoblarida",
       "titleMuted": "qanday koʻrinadi?",
-      "subtitle": "Saytingizni kiriting va ChatGPT hamda Gemini sizni qanday koʻrishini bilib oling: <visibility>Tilga olinish</visibility>, <position>Oʻrni</position>, <sources>Manbalar</sources> va nimani tuzatish kerakligi.",
+      "subtitle": "Saytingizni kiriting va ChatGPT sizni qanday koʻrishini bilib oling: <visibility>Tilga olinish</visibility>, <position>Oʻrni</position>, <sources>Manbalar</sources> va nimani tuzatish kerakligi.",
       "demo": "Demo soʻrash",
       "micro": "Bepul · Email orqali kirasiz · Natija 2–3 daqiqada"
     },
@@ -2257,7 +2259,7 @@
           "for": "Qayerda turganingizni koʻrish uchun",
           "cta": "Bepul tekshirish",
           "f1": "10 ta savol, bir marta",
-          "f2": "ChatGPT va Gemini",
+          "f2": "ChatGPT, veb-qidiruv bilan",
           "f3": "Siz va 5 tagacha raqobatchi",
           "f4": "Email orqali kirish, karta kerak emas"
         },
@@ -2266,7 +2268,7 @@
           "for": "Kichik biznes uchun",
           "cta": "Boshlash",
           "f1": "Har hafta 25 ta savol",
-          "f2": "ChatGPT va Gemini",
+          "f2": "ChatGPT, veb-qidiruv bilan",
           "f3": "5 ta raqobatchi",
           "f4": "Har tekshiruvdan keyin hisobot emailga"
         },
@@ -2331,7 +2333,7 @@
           "whiteLabel": "Hisobotda agentlik nomi"
         },
         "values": {
-          "both": "ChatGPT, Gemini",
+          "assistants": "ChatGPT",
           "once": "Bir marta",
           "weekly": "Har hafta",
           "twiceWeekly": "Haftasiga 2 marta",
@@ -2357,7 +2359,7 @@
         },
         "engines": {
           "q": "Qaysi AI yordamchilarni tekshirasiz?",
-          "a": "ChatGPT (OpenAI, veb-qidiruv yoqilgan) va Gemini (Google qidiruvi bilan): savol mijozingiz davlatidan beriladi — mijoz koʻradigan javobga eng yaqin usul. Google qidiruvidagi AI javoblari va Yandex — tez orada."
+          "a": "ChatGPT (OpenAI, veb-qidiruv yoqilgan): savol mijozingiz davlatidan beriladi — mijoz koʻradigan javobga eng yaqin usul. Gemini, Google qidiruvidagi AI javoblari va Yandex — tez orada."
         },
         "accuracy": {
           "q": "Natijalar qanchalik aniq?",
@@ -2415,14 +2417,14 @@
     "cta": {
       "eyebrow": "Karta kerak emas",
       "title": "AI sizni tavsiya qilyaptimi? 3 daqiqada bilib oling.",
-      "text": "Sayt manzilini kiriting: mijozlaringizning 10 ta savolini ChatGPT va Gemini’ga beramiz va natijani darhol koʻrsatamiz.",
+      "text": "Sayt manzilini kiriting: mijozlaringizning 10 ta savolini ChatGPT’ga beramiz va natijani darhol koʻrsatamiz.",
       "button": "Bepul tekshirish",
       "demo": "Demo soʻrash"
     },
     "footer": {
       "tagline": "Brendingiz AI javoblarida",
       "taglineMuted": "qanday koʻrinadi?",
-      "description": "Brendingiz ChatGPT va Gemini javoblarida qanchalik koʻrinishini oʻlchaymiz va nimani tuzatish kerakligini koʻrsatamiz.",
+      "description": "Brendingiz ChatGPT javoblarida qanchalik koʻrinishini oʻlchaymiz va nimani tuzatish kerakligini koʻrsatamiz.",
       "soon": "tez orada",
       "madeIn": "Toshkentda yaratilgan",
       "rights": "© 2026 Seenova AI",
@@ -2451,7 +2453,7 @@
     "engines": {
       "kicker": "AI yordamchilar",
       "title": "Mijozlaringiz savol beradigan AI yordamchilar",
-      "text": "Har bir savolni ChatGPT va Gemini’ga beramiz — mijozingiz davlatidan va uning tilida, xuddi mijozning oʻzi soʻragandek. Google qidiruvidagi AI javoblari va Yandex — navbatda.",
+      "text": "Har bir savolni ChatGPT’ga beramiz — mijozingiz davlatidan va uning tilida, xuddi mijozning oʻzi soʻragandek. Gemini, Google qidiruvidagi AI javoblari va Yandex — navbatda.",
       "live": "Har tekshiruvda",
       "soon": "Tez orada",
       "names": {
@@ -2488,7 +2490,7 @@
         "check": {
           "when": "2–3 daqiqa",
           "title": "Birinchi tekshiruv — bepul",
-          "text": "Saytingizni oʻqiymiz, mijozlaringiz beradigan 10 ta savolni tuzamiz va ularni ChatGPT hamda Gemini’ga beramiz."
+          "text": "Saytingizni oʻqiymiz, mijozlaringiz beradigan 10 ta savolni tuzamiz va ularni ChatGPT’ga beramiz."
         },
         "results": {
           "when": "Har hafta",
@@ -2525,7 +2527,7 @@
       "kicker": "AI siz haqingizda",
       "title": "AI biznesingiz haqida nima deydi — va bu toʻgʻrimi",
       "text": "Har bir AI yordamchidan biznesingizni nomi bilan soʻraymiz va har bir gapini saytingiz bilan solishtiramiz. Saytga zid gaplar — eski narx, notoʻgʻri ish vaqti — notoʻgʻri faktlar roʻyxatiga tushadi, ularni tuzatish esa harakatlar roʻyxatiga qoʻshiladi.",
-      "cardText": "Namuna: ikki AI yordamchining javobi, har bir gap klinika sayti bilan solishtirilgan.",
+      "cardText": "Namuna: ChatGPT’ning rus va oʻzbek tilidagi javoblari, har bir gap klinika sayti bilan solishtirilgan.",
       "frame": {
         "title": "AI nima deydi",
         "text": "har bir gap saytingiz bilan solishtiriladi"
@@ -3090,7 +3092,7 @@
       "title": "AI sizni tavsiya qilyaptimi — har tekshiruvda koʻrib turing.",
       "items": {
         "real": {
-          "title": "ChatGPT va Gemini’ning haqiqiy javoblari",
+          "title": "ChatGPT’ning haqiqiy javoblari",
           "text": "Mijozlaringiz tilida, ular tayangan saytlar bilan."
         },
         "competitors": {

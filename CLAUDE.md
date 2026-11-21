@@ -40,7 +40,11 @@ something on the website.
   Tajikistan, Turkmenistan, Russia and Belarus, English elsewhere.
 - **Reference product:** Peec AI (peec.ai). We copy its layout where it works and make ours simpler, local
   and in plain words. We never copy its name, logo, colors, wording, customer quotes or logos.
-- **Which assistants:** ChatGPT and Gemini, since 15 Nov; Google's AI answers in Search and Yandex are "tez
+- **Which assistants:** ChatGPT alone since 21 Nov 2026 (`ANSWER_ENGINES=chatgpt` on the server): Gemini with
+  Google Search is paused, because Google's terms for it (Service Specific Terms 20(k)) allow its answers to be
+  shown only to the person who asked and forbid storing, analysing or reselling them, which a report for a business
+  does; Gemini still reads and writes for us, without Google Search. From 15 to 21 Nov ChatGPT and Gemini. Google's
+  AI answers in Search and Yandex are "tez
   orada". The first reason given for ChatGPT alone (about 95% of AI visits in Uzbekistan, said to be
   DataReportal's) could not be found in DataReportal's report (corrected 16 Nov). StatCounter's October 2026
   figures for Uzbekistan: among AI chatbots Gemini 58%, ChatGPT 35%; in search Google 76%, Yandex 22%. The
@@ -103,7 +107,10 @@ waits for their look. The open work, in the order the user picks (ask as a short
 0. **Phase 0 of the report spec, item by item, a plan shown before each** (section "Seenova report: source of
    truth" below): every item built and deployed (step 1, 0.1–0.9, 21 Nov), 0.1–0.3 confirmed, the rest waiting for
    the user's look. Spec §2: Phase 1 waits for the demand signal (at least 5 paid First Audits out of 20 offers);
-   until then the First Audits are made with these tools plus the founder's review.
+   until then the First Audits are made with these tools plus the founder's review. The Phase 0 review (21 Nov)
+   found three gaps before the demand test; the close-out (branch `phase0-closeout`, 21 Nov) handles them: Gemini
+   paused for Google's terms (deployed to the server the same day), each evidence card's channel and place, the
+   digest's change over the same questions; the links wait for Vercel's login to go.
 1. The rest of the user's list of 17 Nov: the report's competitors and sources (3–4), the bug in the dynamics
    window. Each waits for its screenshots. (Savollar, point 5, was made simple on 18 Nov from the user's own
    screenshot of it.)
@@ -116,6 +123,11 @@ waits for their look. The open work, in the order the user picks (ask as a short
    when a check fails, new passwords.
 
 **Waiting on the user (ask once, don't block on it):**
+
+- (21 Nov) Gemini with Google Search is paused for Google's terms (Service Specific Terms 20(k)): a letter to Google
+  asking whether its answers may be stored, counted and shown in a report for a business (the terms allow what
+  Google permits in writing), or a lawyer's read; and what to do with the Gemini answers past checks already hold
+  (they stay as they are until the user decides).
 
 - (17 Nov) The screenshots the list of 17 Nov names: the report's competitors and sources and the bug in the
   dynamics window (only Brend savollari's arrived; Savollar's came on 18 Nov and the page was rebuilt).
@@ -203,6 +215,29 @@ that is committed.
    that no key and no client's name is in it.
 
 ## Done (as of 18 November 2026)
+
+- **Built, waiting for the user's look: the Phase 0 close-out (21 Nov), on the branch `phase0-closeout`, not committed;
+  its first part deployed to the server the same day.** After the review of Phase 0 the user asked "what is next";
+  of the plan they chose the close-out of the three gaps the review found before the demand test, then "Pause it in
+  new checks" for Gemini and "Yes, build it" for the evidence cards. (1) Google's terms for Gemini with Google Search
+  (Service Specific Terms 20(k); spec §9.3 question 2) allow its answers to be shown only to the person who asked
+  and forbid storing, analysing or reselling them: `ANSWER_ENGINES` (new, default `chatgpt,gemini`) is `chatgpt` on
+  the server since 21 Nov (deployed alone before the paid project's Monday check; `/health` lists `["chatgpt"]`; the
+  previous `app/` kept as `app.bak-before-closeout`); with ChatGPT alone the free check asks it all 10 questions and
+  both brand questions, and the competitor search goes to it; Gemini still reads and writes, without Google Search.
+  The first check's screens show the assistants `/health` lists; the landing page (hero's pill now "questions asked
+  from your customer's city", the sentence, the assistants with Gemini "soon", the steps, the FAQ, the closing
+  band, the footer, the plans and their answer counts, the sample brand answers), the login panel, the plan pages
+  and the snapshot's call to action name ChatGPT alone. (2) Every evidence card names its channel ("web search on",
+  "Google Search on") and its place in the scope card's words, and the answers' CSV has both as columns. (3) The
+  digest's biggest change is counted over the questions asked on the same assistant in both checks, and its
+  visibility line says when the check before was asked another way. (4) The links prospects open wait for the user
+  to turn off Vercel's login, then `FRONTEND_ORIGIN` on the server. Tests: `pytest` 55 pass (the switch, a first
+  check on ChatGPT alone, the digest on hand-made checks), `-m page` 20 pass (every evidence card's channel and
+  place); the type check and the linter are clean. Looked at in headless Chrome on the baseline: evidence cards in
+  English and Russian on desktop and Uzbek at 390px, the landing's top and assistants in English on desktop and
+  Uzbek at 390px; nothing wider than the screen, no console error. New variable `ANSWER_ENGINES` (`ENVIRONMENT.md`).
+  No new table, no paid request.
 
 - **Built, waiting for the user's look: Phase 0 item 0.9 of the report spec, the template clean-up (21 Nov), on the
   branch `phase0-template`; merged, pushed and deployed the same day, when the user chose "Ship 0.9": the last item
@@ -1314,6 +1349,7 @@ All from `frontend/`: `npm run dev` (development), `npm run build` then `npm run
 - Work on one Phase 0 item at a time. Show me a plan before writing code.
 - Decided with the user on 21 Nov 2026, while planning Phase 0: the baseline's scope card shows 20 slots, 15 completed and 5 excluded, with the reason that the free check asks ChatGPT 5 of the 10 questions (nothing failed: only 15 were planned); a Gemini answer that ran no web search counts as completed and says so ("Gemini searched in k of n"); the report surfaces (the report, its Hisobotlar copy, the PDF, the snapshot, the digest, the email) read the single data object in Phase 0, and the 0–100 score goes from everywhere (Hisobotlar's register, the dashboard's project cards, the landing page's sample report, the email too), while the other pages move to the object later.
 - Decided with the user on 21 Nov 2026, for item 0.9: a page about a topic is suggested only for a topic with at least 3 answers where competitors are named and the client never (the same 3 answers as spec §6.3's topic ranking).
+- Decided with the user on 21 Nov 2026, after the Phase 0 review (spec §9.3 question 2, the Google Search grounding terms): Google Cloud's Service Specific Terms 20(k) say Grounded Results are shown "only … to the End User who submitted the prompt" and may not be cached, syndicated, resold or analysed (the Gemini API's own terms say the same), so Gemini is paused as an assistant that answers in new checks (`ANSWER_ENGINES=chatgpt` on the server; the free check then asks ChatGPT all 10 questions); past checks stay as they are; the landing page and the plans say Gemini is coming. Spec §9.3 question 1: Vertex takes the city's coordinates (`latLng`), but its effect was never measured. Also for the close-out: each evidence card says its channel and its place (spec rule 3, §4.13, in the scope card's words, never the word "API"), and the digest's biggest change is counted over the questions asked on the same assistant in both checks, its visibility line saying when the check before was asked another way (spec §4.15, §9.2).
 - Decided with the user on 21 Nov 2026, for item 0.8: the Free Snapshot reports today's free check as it is asked (10 questions, Gemini 10 and ChatGPT 5); its call to action is a request button with no price (the price and contacts when the user gives them); the digest is copied by hand from Hisobotlar and the snapshot, and opens the report's email.
 - Decided with the user on 21 Nov 2026, for item 0.7: a project without a city is asked from its market's main city (Uzbekistan Tashkent, Kazakhstan Almaty, Kyrgyzstan Bishkek); a project's own city wins; other countries are told the country alone. Gemini on Vertex gets the city's coordinates as its grounding's location (one test call approved and made).
 - Decided with the user on 21 Nov 2026, for item 0.6: three runs of each question only for the paid First Audit, started by hand (`--runs 3`); weekly checks stay at one run until prices are set for more (three would cost Standard more than its $39.99). With several runs the PDF prints in full only the questions where the client or a tracked competitor is named, the others by their beginning.

@@ -25,6 +25,7 @@ import { DEFAULT_COUNTRY } from "@/shared/constants/countries";
 import { normalizeDomain } from "@/shared/helpers/domain";
 import { cn } from "@/shared/helpers/utils";
 import type { FirstRun, FirstRunConfirm, FirstRunDraft } from "@/shared/types/api";
+import { useAnswerEngines } from "../hooks/use-answer-engines";
 import { FIRST_CHECK_STEPS, INPUT_CLASS, MAX_ALIASES, MAX_COMPETITORS, MAX_DESCRIPTION_LENGTH, MAX_SERVICES, OWN_QUESTION_TOPIC } from "../constants";
 import { onboardingRequest, questionDrafts, topicDrafts, validateChoice, validateFirstQuestions, validateSite, validateWebsite } from "../helpers/onboarding";
 import type { BrandDraft, CompetitorChoice, OnboardingErrors, QuestionDraft, SiteDraft } from "../types";
@@ -187,14 +188,15 @@ function WebsiteStep({ site, ...frame }: Frame & { site: string }) {
   );
 }
 
-/** "Asked on: ChatGPT, Gemini · about N minutes", under the questions. */
+/** "Asked on: ChatGPT · about N minutes", under the questions: the assistants the backend asks now. */
 function AskedOn() {
   const t = useTranslations("FirstRun");
   const engines = useTranslations("Engines");
+  const asked = useAnswerEngines();
   return (
     <p className="flex flex-wrap items-center gap-x-2.5 gap-y-2 rounded-xl border bg-muted/40 px-4 py-3.5 text-sm text-muted-foreground">
       {t("asks")}
-      {(["chatgpt", "gemini"] as const).map((engine) => (
+      {asked.map((engine) => (
         <span key={engine} className="inline-flex items-center gap-1.5 rounded-full border bg-background px-2.5 py-1 font-medium text-foreground">
           <EngineIcon engine={engine} />
           {engines(engine)}

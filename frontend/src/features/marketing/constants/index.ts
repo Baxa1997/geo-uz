@@ -83,13 +83,14 @@ export const NAV: ({ key: "product"; items: NavItem[] } | { key: "how" | "pricin
 ];
 
 /**
- * The assistants, as the product asks them on 16 Nov 2026: ChatGPT and Gemini in every check; Google's AI
- * answers in search and Yandex are planned. Generic icons, not the companies' logos. Texts in
+ * The assistants, as the product asks them on 21 Nov 2026: ChatGPT in every check; Gemini is paused (Google's terms
+ * for Gemini with Google Search don't allow its answers in a report for a business: `ANSWER_ENGINES`), and Google's
+ * AI answers in search and Yandex are planned. Generic icons, not the companies' logos. Texts in
  * messages/Landing.engines.
  */
 export const ENGINE_TILES: { key: "chatgpt" | "gemini" | "googleAi" | "yandex"; live: boolean; icon: AppIcon }[] = [
   { key: "chatgpt", live: true, icon: Bot },
-  { key: "gemini", live: true, icon: Sparkles },
+  { key: "gemini", live: false, icon: Sparkles },
   { key: "googleAi", live: false, icon: Browser },
   { key: "yandex", live: false, icon: Search },
 ];
@@ -169,7 +170,7 @@ export const PRICING_FEATURES = ["f1", "f2", "f3", "f4"] as const;
  * A cell of the plan comparison: yes/no, a number, "soon" (planned, not built yet),
  * or the key of a text in messages/Landing.pricing.compare.values.
  */
-export type PlanCell = boolean | number | "soon" | { value: "both" | "once" | "weekly" | "twiceWeekly" | "byCountry" | "several" };
+export type PlanCell = boolean | number | "soon" | { value: "assistants" | "once" | "weekly" | "twiceWeekly" | "byCountry" | "several" };
 
 const text = (value: Extract<PlanCell, object>["value"]): PlanCell => ({ value });
 
@@ -194,12 +195,12 @@ export const PLAN_TABLE: {
   {
     group: "coverage",
     rows: [
-      { key: "engines", cells: [text("both"), text("both"), text("both"), text("both")] },
+      { key: "engines", cells: [text("assistants"), text("assistants"), text("assistants"), text("assistants")] },
       { key: "prompts", cells: [10, 25, 50, 300] },
       { key: "frequency", cells: [text("once"), text("weekly"), text("twiceWeekly"), text("twiceWeekly")] },
-      // Questions × two assistants × checks a month (4 weekly, 8 twice a week); the free check asks 10 on
-      // Gemini and 5 of them on ChatGPT. One answer a question and assistant (RUN_SAMPLES=1).
-      { key: "answers", cells: [15, 200, 800, 4800] },
+      // Questions × one assistant (ChatGPT; Gemini paused on 21 Nov 2026) × checks a month (4 weekly, 8 twice a
+      // week); the free check asks ChatGPT its 10. One answer a question (RUN_SAMPLES=1).
+      { key: "answers", cells: [10, 100, 400, 2400] },
       { key: "projects", cells: [1, 1, 1, text("several")] },
       { key: "competitors", cells: [5, 5, 5, 5] },
       { key: "languages", cells: [text("byCountry"), text("byCountry"), text("byCountry"), text("byCountry")] },
