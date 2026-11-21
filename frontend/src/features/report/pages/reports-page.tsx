@@ -4,12 +4,13 @@ import { cache } from "react";
 import { NoData } from "@/shared/components/no-data";
 import { Page } from "@/shared/components/page";
 import { PageSection } from "@/shared/components/page-section";
-import { getPathname } from "@/i18n/navigation";
+import { getPathname, Link } from "@/i18n/navigation";
 import { setPageLocale } from "@/i18n/page-locale";
 import { api } from "@/shared/api/client";
 import { orNotFound, orNull } from "@/shared/api/errors";
 import { TIME_ZONE } from "@/shared/constants";
 import { formatLongDate } from "@/shared/helpers/dates";
+import { CopyDigest } from "../components/copy-digest";
 import { DeliveryBanner } from "../components/delivery-banner";
 import { LatestReport } from "../components/latest-report";
 import { ReportShare } from "../components/report-share";
@@ -59,6 +60,8 @@ export default async function ReportsPage({ params }: Props) {
 
   const base = `/projects/${project.id}/reports`;
   const date = formatLongDate(latest.collectedAt, locale, TIME_ZONE);
+  // The latest check's six lines for Telegram, in the page's language (Phase 0 item 0.8); none on sample data's errors
+  const digest = await orNull(api.getDigest(project.id, latest.runId, locale));
   const shared = getPathname({ href: `/projects/${project.id}/report`, locale });
 
   return (
@@ -70,6 +73,20 @@ export default async function ReportsPage({ params }: Props) {
           href={`${base}/${encodeURIComponent(latest.runId)}`}
           share={<ReportShare path={shared} text={tReports("share.text", { brand: project.brand.name, date })} projectId={project.id} runId={latest.runId} />}
         />
+
+        {digest && (
+          <div className="flex flex-col gap-3 rounded-xl bg-card px-4 py-3.5 shadow-xs ring-1 ring-foreground/10 sm:px-5">
+            <CopyDigest text={digest.text} title={tReports("digest.title")} hint={tReports("digest.hint")} />
+            {project.firstRunId && (
+              <p className="text-xs text-muted-foreground">
+                <Link href={`/snapshot/${project.firstRunId}`} className="font-medium text-foreground underline-offset-4 hover:underline">
+                  {tReports("digest.snapshot")}
+                </Link>{" "}
+                {tReports("digest.snapshotHint")}
+              </p>
+            )}
+          </div>
+        )}
 
         <PageSection tour="archive" title={tReports("archive.title")} description={tReports("archive.description")}>
           <ReportsArchive

@@ -796,6 +796,13 @@ from the check's data object (`WaveMetrics`), each with what it is counted over 
   answers' beginnings on paper. With several runs (0.6) each answer says "run 2 of 3", and on paper only the
   questions where the client or a tracked competitor is named print in full, the others by their beginning (whole
   on the screen and in the CSV).
+- the Free Snapshot (Phase 0 item 0.8): `/[locale]/snapshot/[firstRunId]` (`features/report/pages/snapshot-page.tsx`,
+  `components/snapshot.tsx`; public, like the report's link): what was asked and the single-run note, who holds each
+  question, who appeared (every tracked brand first, then the others named most, marked "unverified"), the top
+  finding, what the First Audit adds (locked), a request for it (`audit-request.tsx`, through the demo request with
+  `about`), and the digest with Copy (`copy-digest.tsx`). One A4 page on paper (smaller type, the questions in two
+  columns, the form left out). Hisobotlar shows the latest check's digest with Copy under the latest report, and a
+  link to the snapshot of the first check (`Project.firstRunId`).
 The Overview and the other pages keep Peec's four numbers (`BrandScore`) and the six site kinds until they move to
 the data object.
 

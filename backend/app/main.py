@@ -28,6 +28,7 @@ from pydantic import BaseModel
 from sqlalchemy import func, select
 
 from . import cache, delivery, firstrun, fixes, mail, projects, slots, wave
+from . import digest as telegram_digest
 from .config import settings
 from .db import Brand, DemoRequest, FirstRun, LoginCode, Project, ReadSession, Run, Session, SessionLocal, User, create_tables, now
 
@@ -634,6 +635,37 @@ def get_wave(project_id: str, run_id: str) -> Any:
     return kept(project_id, None, "wave", wave.payload, run_id=run_id)
 
 
+# A check's Telegram digest (report spec §4.15, Phase 0 item 0.8): six lines to copy, read by the report's link like
+# the report. `lang` uz, ru or en; its link opens the report in that language
+@app.get("/projects/{project_id}/waves/{run_id}/digest")
+def get_digest(project_id: str, run_id: str, lang: str = "uz") -> Any:
+    language = lang if lang in ("uz", "ru", "en") else "uz"
+
+    def make(db: Any, project: Project, run_id: str, language: str) -> Dict[str, Any]:
+        found = wave.build(db, project, run_id)
+        return {"runId": found["wave"]["id"], "text": telegram_digest.for_run(db, project, found["wave"]["id"], language, delivery.link(project.id, found["wave"]["id"], language))}
+
+    return kept(project_id, None, "digest", make, run_id=run_id, language=language)
+
+
+# The Free Snapshot (report spec §4.14, Phase 0 item 0.8): a first check's one page, by the first check's id, without
+# login like a report's link. It is the project's first check once the first check was saved as a project
+@app.get("/snapshots/{first_run_id}")
+def get_snapshot(first_run_id: str, lang: str = "uz") -> Any:
+    language = lang if lang in ("uz", "ru", "en") else "uz"
+
+    def work(db: Any) -> Dict[str, Any]:
+        project = db.scalar(select(Project).where(Project.first_run_id == first_run_id))
+        run = db.scalar(select(Run).where(Run.project_id == project.id, Run.status == "done").order_by(Run.collected_at).limit(1)) if project else None
+        if project is None or run is None:
+            raise projects.ProjectError(404, "snapshot_not_found")
+        found = wave.payload(db, project, run.id)
+        text = telegram_digest.for_run(db, project, run.id, language, delivery.link(project.id, run.id, language))
+        return {"projectId": project.id, "runId": run.id, **found, "digest": text}
+
+    return in_project(work, read=True)
+
+
 # Read by the report's link, like the report itself (17 Nov 2026: the "PDF" button downloads a file now, where it
 # opened the print window). A PDF takes Chrome a few seconds: one is kept until the project changes.
 @app.get("/projects/{project_id}/reports/{run_id}/pdf")
@@ -849,6 +881,8 @@ class DemoBody(BaseModel):
     name: str
     phone: str
     sector: str
+    # What is asked for, when it isn't a demo: "First Audit · <brand>" from a Free Snapshot (Phase 0 item 0.8)
+    about: Optional[str] = None
 
 
 def tell_team(request: Dict[str, str]) -> None:
@@ -857,7 +891,8 @@ def tell_team(request: Dict[str, str]) -> None:
         return
     message = EmailMessage()
     message["Subject"] = f"{mail.BRAND}: demo — {request['name']}"
-    message.set_content(f"Ism / Имя / Name: {request['name']}\nTelefon / Телефон / Phone: {request['phone']}\nSoha / Сфера / Field: {request['sector']}\n")
+    about = f"Nima uchun / О чём / About: {request['about']}\n" if request.get("about") else ""
+    message.set_content(f"Ism / Имя / Name: {request['name']}\nTelefon / Телефон / Phone: {request['phone']}\nSoha / Сфера / Field: {request['sector']}\n{about}")
     try:
         mail.send(settings.smtp_from or settings.smtp_user or "", message)
     except (OSError, smtplib.SMTPException) as error:
@@ -876,10 +911,11 @@ def demo_request(body: DemoBody) -> None:
         recent = db.scalar(select(DemoRequest).where(DemoRequest.phone == phone, DemoRequest.created_at > now() - datetime.timedelta(minutes=10)))
         if recent:
             return
-        db.add(DemoRequest(name=name, phone=phone, sector=body.sector))
+        about = (body.about or "").strip()[:200] or None
+        db.add(DemoRequest(name=name, phone=phone, sector=body.sector, about=about))
         db.commit()
-    print(f"DEMO REQUEST: {name}, {phone}, {body.sector}")
-    threading.Thread(target=tell_team, args=({"name": name, "phone": phone, "sector": body.sector},), daemon=True).start()
+    print(f"DEMO REQUEST: {name}, {phone}, {body.sector}" + (f", {about}" if about else ""))
+    threading.Thread(target=tell_team, args=({"name": name, "phone": phone, "sector": body.sector, "about": about or ""},), daemon=True).start()
 
 
 @app.get("/health")

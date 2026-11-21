@@ -51,6 +51,8 @@ def compute(wave: Dict[str, Any]) -> Dict[str, Any]:
         "sources": sources(wave),
         "claims": claims(wave),
         "top_finding": top_finding(wave),
+        "shelf": shelf(wave),
+        "providers": providers(wave),
     }
 
 
@@ -382,6 +384,61 @@ def top_finding(wave: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         "client_named": _named_in(theirs, client),
         "of": len(theirs),
     }
+
+
+# Who holds a buyer question's answers (spec §4.1's shelf, the Free Snapshot §4.14)
+SHELF = ["competitor", "client", "shared", "open"]
+
+
+def shelf(wave: Dict[str, Any]) -> Dict[str, Any]:
+    """Each buyer question with an answer, by who holds its answers (0.8): `competitor` when tracked competitors
+    are named and the client never, `client` the other way round, `shared` when both are, `open` when no tracked
+    business is; with its answers and how many name the client and a competitor. And the questions of each kind."""
+    answers = _discovery(wave)
+    client = wave["project"]["brand"]["id"]
+    rivals = {brand["id"] for brand in wave["project"]["competitors"]}
+    rows = []
+    for prompt in wave["prompts"]:
+        theirs = [answer for answer in answers if answer["prompt_id"] == prompt["id"]]
+        if prompt["group"] != "discovery" or not theirs:
+            continue
+        named = _named_in(theirs, client)
+        with_rivals = sum(1 for answer in theirs if any(mention["brand_id"] in rivals for mention in answer["mentions"]))
+        status = "shared" if named and with_rivals else "client" if named else "competitor" if with_rivals else "open"
+        rows.append({"prompt_id": prompt["id"], "status": status, "answers": len(theirs), "named": named, "rivals": with_rivals})
+    kinds = Counter(row["status"] for row in rows)
+    return {"questions": rows, "counts": {kind: kinds[kind] for kind in SHELF}}
+
+
+def providers(wave: Dict[str, Any]) -> Dict[str, Any]:
+    """Every business the buyers' answers name (0.8, the Free Snapshot's "who appeared"), each once an answer:
+    the tracked ones by their brand, the others by their spelling (the one written most), marked untracked
+    (spec §8: shown `unverified` until reviewed). The most named first; equal counts in the project's order,
+    then by name. No rank: a count each."""
+    answers = _discovery(wave)
+    tracked = {brand["id"]: brand for brand in _tracked(wave)}
+    order = {brand_id: index for index, brand_id in enumerate(tracked)}
+    seen: Dict[str, set] = {}
+    spellings: Dict[str, Counter] = {}
+    for answer in answers:
+        for mention in answer["mentions"]:
+            key = mention["brand_id"] if mention["brand_id"] in tracked else f"name:{mention['name'].strip().casefold()}"
+            if key == "name:":
+                continue
+            seen.setdefault(key, set()).add(answer["id"])
+            spellings.setdefault(key, Counter())[mention["name"].strip()] += 1
+    rows = [
+        {
+            "key": key,
+            "name": tracked[key]["name"] if key in tracked else spellings[key].most_common(1)[0][0],
+            "tracked": key in tracked,
+            "own": bool(key in tracked and tracked[key]["own"]),
+            "answers": len(ids),
+        }
+        for key, ids in seen.items()
+    ]
+    rows.sort(key=lambda row: (-row["answers"], order.get(row["key"], len(order)), row["name"].casefold()))
+    return {"answers": len(answers), "rows": rows}
 
 
 # The brand-question check's verdicts as the spec names them (§4.7), from what the check calls them

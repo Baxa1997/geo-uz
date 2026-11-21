@@ -22,6 +22,9 @@ import type {
   WaveSources,
   WaveTop,
   WaveTopFinding,
+  WaveMetrics,
+  WaveProviders,
+  WaveShelf,
   WaveVisibility,
 } from "@/shared/types/api";
 
@@ -168,6 +171,58 @@ function topFindingOf(wave: Wave): WaveTopFinding | null {
   };
 }
 
+// Who holds each question (`metrics.shelf`) and every business named (`metrics.providers`)
+function shelfOf(wave: Wave): WaveShelf {
+  const client = wave.project.brand.id;
+  const rivals = wave.project.competitors.map((brand) => brand.id);
+  const names = (answer: Wave["answers"][number], ids: string[]) => answer.mentions.some((mention) => mention.brand_id !== null && ids.includes(mention.brand_id));
+  const questions = wave.prompts.flatMap((prompt) => {
+    const theirs = wave.answers.filter((answer) => answer.prompt_id === prompt.id);
+    if (prompt.group !== "discovery" || theirs.length === 0) return [];
+    const named = theirs.filter((answer) => names(answer, [client])).length;
+    const withRivals = theirs.filter((answer) => names(answer, rivals)).length;
+    const status: WaveShelf["counts"] extends Record<infer K, number> ? K : never = named && withRivals ? "shared" : named ? "client" : withRivals ? "competitor" : "open";
+    return [{ prompt_id: prompt.id, status, answers: theirs.length, named, rivals: withRivals }];
+  });
+  const counts = { competitor: 0, client: 0, shared: 0, open: 0 };
+  for (const row of questions) counts[row.status] += 1;
+  return { questions, counts };
+}
+
+function providersOf(wave: Wave): WaveProviders {
+  const tracked = [{ ...wave.project.brand, own: true }, ...wave.project.competitors.map((brand) => ({ ...brand, own: false }))];
+  const byId = new Map(tracked.map((brand, index) => [brand.id, { brand, index }]));
+  const seen = new Map<string, { name: string; tracked: boolean; own: boolean; order: number; answers: Set<string> }>();
+  for (const answer of wave.answers) {
+    for (const mention of answer.mentions) {
+      const known = mention.brand_id ? byId.get(mention.brand_id) : undefined;
+      const key = known ? known.brand.id : `name:${mention.name.trim().toLowerCase()}`;
+      const row = seen.get(key) ?? { name: known ? known.brand.name : mention.name.trim(), tracked: Boolean(known), own: Boolean(known?.brand.own), order: known ? known.index : tracked.length, answers: new Set<string>() };
+      row.answers.add(answer.id);
+      seen.set(key, row);
+    }
+  }
+  const rows = [...seen.entries()]
+    .sort(([, a], [, b]) => b.answers.size - a.answers.size || a.order - b.order || a.name.localeCompare(b.name))
+    .map(([key, row]) => ({ key, name: row.name, tracked: row.tracked, own: row.own, answers: row.answers.size }));
+  return { answers: wave.answers.length, rows };
+}
+
+/** The sample's six lines for Telegram (`backend/app/digest.py` writes a real project's), in English. */
+export function sampleDigest(wave: Wave, metrics: WaveMetrics): string {
+  const rows = new Map(metrics.brands.rows.map((row) => [row.id, row]));
+  const top = metrics.brands.rivals_top.named;
+  const seen = metrics.visibility;
+  return [
+    `Seenova · ${wave.project.brand.name} · ${wave.wave.collected_at.slice(0, 10)} · ${metrics.scope.engines.map((engine) => engine.engine).join(", ")}`,
+    `In AI answers: ${wave.project.brand.name} ${seen.named}/${seen.answers} (sample)`,
+    top.value > 0 ? `Most named instead of you: ${top.ids.map((id) => rows.get(id)?.name ?? id).join(" and ")} ${top.value}/${seen.answers}` : "Most named instead of you: no tracked competitor",
+    "Biggest change: sample data",
+    "This week's action: sample data",
+    "Full report: (the report's link)",
+  ].join("\n");
+}
+
 function brandsOf(wave: Wave): WaveBrands {
   const tracked = [{ ...wave.project.brand, own: true }, ...wave.project.competitors.map((brand) => ({ ...brand, own: false }))];
   const rows: WaveBrand[] = tracked.map((brand) => {
@@ -307,6 +362,8 @@ export function mockWave(report: Report, runId: string, number: number): WaveRes
       // Sample data has no brand-question check
       claims: { answers: 0, statements: 0, verified: 0, unverified: 0, contradicted: 0 },
       top_finding: topFindingOf(wave),
+      shelf: shelfOf(wave),
+      providers: providersOf(wave),
       scope: {
         wave: { number, is_baseline: number === 1, kind: wave.wave.kind, collected_at: method.collectedAt, settings_hash: "sample", reconstructed: true },
         engines: engines.map((engine) => {

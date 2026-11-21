@@ -101,8 +101,8 @@ beside its count), merged, pushed and deployed; 0.1–0.3 confirmed by the user,
 waits for their look. The open work, in the order the user picks (ask as a short choice):
 
 0. **Phase 0 of the report spec, item by item, a plan shown before each** (section "Seenova report: source of
-   truth" below): 0.4 (site types), 0.5 (evidence) and 0.6 (runs) deployed, 0.7 (location) built, all waiting for
-   the user's look; then 0.8 (snapshot and digest), 0.9 (template clean-up).
+   truth" below): 0.4 to 0.7 deployed, 0.8 (snapshot and digest) built, all waiting for the user's look; then 0.9
+   (template clean-up), the last of Phase 0.
 1. The rest of the user's list of 17 Nov: the report's competitors and sources (3–4), the bug in the dynamics
    window. Each waits for its screenshots. (Savollar, point 5, was made simple on 18 Nov from the user's own
    screenshot of it.)
@@ -202,6 +202,23 @@ that is committed.
    that no key and no client's name is in it.
 
 ## Done (as of 18 November 2026)
+
+- **Built, waiting for the user's look: Phase 0 item 0.8 of the report spec, the Free Snapshot and the Telegram
+  digest (21 Nov), on the branch `phase0-snapshot`; merged and pushed the same day, when the user chose "Ship 0.8,
+  then plan 0.9".** The user: "Ship 0.7, then plan 0.8"; after the
+  plan they chose, when asked, a request button with no price, today's free check as it is asked, and the digest in
+  Hisobotlar, on the snapshot and in the report's email. The snapshot, `/<lang>/snapshot/<first check's id>` (no
+  login): what was asked ("10 buyer questions · ChatGPT 5 + Gemini 10 · 1 run") and the single-run note, who holds
+  each question (`metrics.shelf`: on the baseline competitors 1, nobody 9), who appeared (`metrics.providers`: every
+  tracked brand with its count, then the most named others, "unverified"), the top finding, the First Audit's parts
+  locked, and "Ask for the First Audit" (a name and phone, emailed to the team as a demo request with `about`, a new
+  nullable column). One A4 page in print. The digest (`app/digest.py`): six lines in the client's language, every
+  number from the data object, the check before for the change, the plan's first open action with its owner; in
+  Hisobotlar with Copy, under the snapshot, and opening the report's email. Found and fixed on the way: `main.py`
+  already had a function called `digest` (a hash), which hid the new module. Tests: `pytest` 51 pass, `-m page` 17
+  pass: no expected failure is left. Looked at in headless Chrome on the baseline: the snapshot in English and
+  Russian on desktop, in Uzbek at 390px and printed (one page), Hisobotlar in Uzbek on desktop and Russian at 390px;
+  nothing wider than the screen, no console error. No new variable; one new column, no paid request.
 
 - **Built, waiting for the user's look: Phase 0 item 0.7 of the report spec, the customer's location on every
   assistant call (21 Nov), on the branch `phase0-location`; merged, pushed and deployed the same day, when the user
@@ -1276,6 +1293,7 @@ All from `frontend/`: `npm run dev` (development), `npm run build` then `npm run
 - Use the baseline client's first check (spec §3.3) as the test fixture. Acceptance tests are in spec §11.1; they run in `backend/tests/` on that check's data, which stays on this computer (`backend/tests/README.md`). Never write the client's name, its competitors' names or its project's id into a committed file.
 - Work on one Phase 0 item at a time. Show me a plan before writing code.
 - Decided with the user on 21 Nov 2026, while planning Phase 0: the baseline's scope card shows 20 slots, 15 completed and 5 excluded, with the reason that the free check asks ChatGPT 5 of the 10 questions (nothing failed: only 15 were planned); a Gemini answer that ran no web search counts as completed and says so ("Gemini searched in k of n"); the report surfaces (the report, its Hisobotlar copy, the PDF, the snapshot, the digest, the email) read the single data object in Phase 0, and the 0–100 score goes from everywhere (Hisobotlar's register, the dashboard's project cards, the landing page's sample report, the email too), while the other pages move to the object later.
+- Decided with the user on 21 Nov 2026, for item 0.8: the Free Snapshot reports today's free check as it is asked (10 questions, Gemini 10 and ChatGPT 5); its call to action is a request button with no price (the price and contacts when the user gives them); the digest is copied by hand from Hisobotlar and the snapshot, and opens the report's email.
 - Decided with the user on 21 Nov 2026, for item 0.7: a project without a city is asked from its market's main city (Uzbekistan Tashkent, Kazakhstan Almaty, Kyrgyzstan Bishkek); a project's own city wins; other countries are told the country alone. Gemini on Vertex gets the city's coordinates as its grounding's location (one test call approved and made).
 - Decided with the user on 21 Nov 2026, for item 0.6: three runs of each question only for the paid First Audit, started by hand (`--runs 3`); weekly checks stay at one run until prices are set for more (three would cost Standard more than its $39.99). With several runs the PDF prints in full only the questions where the client or a tracked competitor is named, the others by their beginning.
 - Decided with the user on 21 Nov 2026, for item 0.5: every buyer answer is printed in full, word for word, in the report's PDF too (its evidence section), not by its beginning.

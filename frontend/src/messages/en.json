@@ -631,6 +631,54 @@
       "openEvidence": "Open evidence",
       "printNote": "The whole answers ({answers}) with their cited pages are in section {section}.",
       "runOf": "run {run} of {runs}"
+    },
+    "snapshot": {
+      "metaTitle": "Free AI visibility snapshot · {brand}",
+      "title": "Free AI visibility snapshot",
+      "scope": "{questions, plural, one {# buyer question} other {# buyer questions}} · {engines} · {runs, plural, one {# run} other {# runs}}",
+      "engineAnswers": "{engine} {answers}",
+      "singleRun": "Single run. AI answers vary between runs, so one run can't tell a real pattern from chance. The paid First Audit asks each question 3 times.",
+      "runsNote": "Each question was asked {runs} times on each assistant.",
+      "shelfTitle": "Who holds each question",
+      "shelf": {
+        "competitor": "Competitors hold it",
+        "client": "You hold it",
+        "shared": "Shared with competitors",
+        "open": "No tracked business"
+      },
+      "questionsOf": "{count} of {total}",
+      "whoTitle": "Who appeared in the answers",
+      "nobodyNamed": "No business was named in any answer.",
+      "you": "you",
+      "tracked": "tracked",
+      "unverified": "unverified",
+      "more": "{count, plural, one {# more name} other {# more names}} not tracked.",
+      "whoNote": "Each count is the answers naming the business, of the {answers} answers. Names not tracked are as the answers wrote them, not reviewed yet.",
+      "lockedTitle": "In the First Audit",
+      "locked": {
+        "sources": "The {sites} sites AI cites, by type, and the ones you can get onto",
+        "facts": "What AI says about your business by name: {statements} statements checked against your website",
+        "actions": "Up to 3 actions, each with its evidence, its owner and how to check it worked"
+      },
+      "ctaTitle": "Get the First Audit",
+      "ctaText": "Every question asked 3 times on ChatGPT and Gemini, checked by a person, with the actions to take first. Leave your name and phone: we call you back.",
+      "request": {
+        "name": "Your name",
+        "phone": "Phone",
+        "send": "Ask for the First Audit",
+        "sent": "Thank you, {name}. We'll call you back.",
+        "failed": "It didn't go through. Please try again.",
+        "nameRequired": "Write your name",
+        "phoneInvalid": "Enter 9 digits after +998"
+      },
+      "digestTitle": "For Telegram",
+      "digestHint": "Six lines to send with this page's link.",
+      "paperEvidence": "The whole answers, with their cited pages, open at this page’s link.",
+      "ctaPaper": "Every question asked 3 times, checked by a person, with the actions to take first. Ask for it at this page’s link."
+    },
+    "digest": {
+      "copy": "Copy",
+      "copied": "Copied"
     }
   },
   "Headline": {
@@ -3981,6 +4029,12 @@
     "detail": {
       "title": "Report of {date}",
       "contents": "Contents"
+    },
+    "digest": {
+      "title": "This check for Telegram",
+      "hint": "Six lines with the report's link: copy and forward them.",
+      "snapshot": "The free snapshot of the first check",
+      "snapshotHint": "(one page, readable without login)."
     }
   },
   "Pilot": {

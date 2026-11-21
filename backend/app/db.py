@@ -91,6 +91,8 @@ class DemoRequest(Base):
     name: Mapped[str] = mapped_column(String(120))
     phone: Mapped[str] = mapped_column(String(20))
     sector: Mapped[str] = mapped_column(String(20))
+    # What is asked for when it isn't a demo, e.g. "First Audit · <brand> · snapshot <id>" (since 21 Nov 2026)
+    about: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)
     created_at: Mapped[datetime.datetime] = mapped_column(DateTime, default=now, index=True)
 
 

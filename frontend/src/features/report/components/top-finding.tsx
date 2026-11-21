@@ -16,7 +16,18 @@ import { BlockTitle, ReportCard } from "./report-parts";
  * can't open: it points to the answers in the evidence section. With no tracked business named anywhere, the
  * open shelf.
  */
-export function TopFinding({ wave, brands, youId }: { wave: WaveResponse; brands: Brand[]; youId: string }) {
+export function TopFinding({
+  wave,
+  brands,
+  youId,
+  paperNote,
+}: {
+  wave: WaveResponse;
+  brands: Brand[];
+  youId: string;
+  /** What the paper says of the whole answers; the report's own evidence section when not given. */
+  paperNote?: string;
+}) {
   const t = useTranslations("Report.topFinding");
   const engines = useTranslations("Engines");
   const words = useCountWords();
@@ -72,7 +83,7 @@ export function TopFinding({ wave, brands, youId }: { wave: WaveResponse; brands
                 {formatLongDate(answer.collected_at, locale, timeZone)} ·{" "}
                 {t("cited", { count: answer.citations.length })}
               </span>
-              <span data-verbatim className="text-pretty">
+              <span data-verbatim className="text-pretty print:line-clamp-2">
                 {excerptOf(answer.text, spellings)}
               </span>
             </li>
@@ -91,7 +102,7 @@ export function TopFinding({ wave, brands, youId }: { wave: WaveResponse; brands
           </div>
         </details>
         <p className="hidden text-xs text-pretty text-muted-foreground print:block">
-          {t("printNote", { answers: answerLabels(found.answers, numbers), section: sectionNumber("evidence") })}
+          {paperNote ?? t("printNote", { answers: answerLabels(found.answers, numbers), section: sectionNumber("evidence") })}
         </p>
       </ReportCard>
     </div>

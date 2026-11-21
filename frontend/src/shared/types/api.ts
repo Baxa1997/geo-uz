@@ -43,6 +43,8 @@ export interface Project {
   brand: Brand;
   competitors: Brand[];
   category: string;
+  /** The free first check it was saved from, whose Free Snapshot is `/snapshot/{firstRunId}` (a real project, 0.8). */
+  firstRunId?: string | null;
   /** "" when the business serves its whole country. */
   city: string;
   /** Two-letter country code; left out by sample data, which is Uzbekistan's. */
@@ -771,6 +773,20 @@ export interface WaveTopFinding {
   of: number;
 }
 
+/** Who holds a buyer question's answers (spec §4.1's shelf, the Free Snapshot, Phase 0 item 0.8). */
+export type ShelfStatus = "competitor" | "client" | "shared" | "open";
+
+export interface WaveShelf {
+  questions: { prompt_id: string; status: ShelfStatus; answers: number; named: number; rivals: number }[];
+  counts: Record<ShelfStatus, number>;
+}
+
+/** Every business the buyers' answers name, each once an answer; untracked ones by their spelling (0.8). */
+export interface WaveProviders {
+  answers: number;
+  rows: { key: string; name: string; tracked: boolean; own: boolean; answers: number }[];
+}
+
 export interface WaveMetrics {
   scope: WaveScope;
   visibility: WaveVisibility;
@@ -781,6 +797,21 @@ export interface WaveMetrics {
   sources: WaveSources;
   claims: WaveClaims;
   top_finding: WaveTopFinding | null;
+  shelf: WaveShelf;
+  providers: WaveProviders;
+}
+
+/** GET /snapshots/{firstRunId}: the free first check's one page (0.8), with its Telegram digest. */
+export interface SnapshotResponse extends WaveResponse {
+  projectId: string;
+  runId: string;
+  digest: string;
+}
+
+/** GET /projects/{id}/waves/{runId}/digest: a check's six lines for Telegram (0.8). */
+export interface DigestResponse {
+  runId: string;
+  text: string;
 }
 
 export interface WaveResponse {
@@ -972,6 +1003,8 @@ export interface DemoRequest {
   /** E.164, e.g. "+998901234567". */
   phone: string;
   sector: DemoSector;
+  /** What is asked for when it isn't a demo: "First Audit · <brand>" from a Free Snapshot. */
+  about?: string;
 }
 
 /** A question, bug report or idea sent from the in-app help panel. */

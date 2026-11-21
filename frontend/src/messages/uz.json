@@ -631,6 +631,54 @@
       "openEvidence": "Dalillarni ochish",
       "printNote": "Toʻliq javoblar ({answers}) manba sahifalari bilan {section}-boʻlimda.",
       "runOf": "{runs} tadan {run}-takror"
+    },
+    "snapshot": {
+      "metaTitle": "AI’da koʻrinish boʻyicha bepul tahlil · {brand}",
+      "title": "AI’da koʻrinish boʻyicha bepul tahlil",
+      "scope": "Xaridorlarning {questions} ta savoli · {engines} · {runs} ta takror",
+      "engineAnswers": "{engine} {answers}",
+      "singleRun": "Bir martalik tekshiruv. AI javoblari har safar oʻzgaradi, shuning uchun bir martalik tekshiruv qonuniyatni tasodifdan ajrata olmaydi. Pullik First Audit’da har bir savol 3 marta beriladi.",
+      "runsNote": "Har bir savol har bir yordamchiga {runs} marta berildi.",
+      "shelfTitle": "Har bir savolda kim bor",
+      "shelf": {
+        "competitor": "Raqobatchilarniki",
+        "client": "Sizniki",
+        "shared": "Raqobatchilar bilan birga",
+        "open": "Kuzatilayotgan biznes yoʻq"
+      },
+      "questionsOf": "{total} tadan {count}",
+      "whoTitle": "Javoblarda kim chiqdi",
+      "nobodyNamed": "Hech bir javobda biznes tilga olinmagan.",
+      "you": "siz",
+      "tracked": "kuzatiladi",
+      "unverified": "tekshirilmagan",
+      "more": "Yana {count} ta kuzatilmayotgan nom.",
+      "whoNote": "Har bir hisob — biznes tilga olingan javoblar, {answers} ta javobdan. Kuzatilmayotgan nomlar javoblar yozganidek berilgan, hali tekshirilmagan.",
+      "lockedTitle": "First Audit’da",
+      "locked": {
+        "sources": "AI havola beradigan {sites} ta sayt turlari boʻyicha va siz joylasha oladiganlari",
+        "facts": "AI biznesingiz haqida nomi bilan nima deydi: {statements} ta gap saytingiz bilan solishtirilgan",
+        "actions": "3 tagacha harakat: har birining dalili, masʼuli va natijani qanday tekshirish"
+      },
+      "ctaTitle": "First Audit buyurtma qilish",
+      "ctaText": "Har bir savol ChatGPT va Gemini’ga 3 marta beriladi, natijalarni inson tekshiradi, birinchi qilinadigan harakatlar bilan. Ismingiz va telefoningizni qoldiring — qoʻngʻiroq qilamiz.",
+      "request": {
+        "name": "Ismingiz",
+        "phone": "Telefon",
+        "send": "First Audit soʻrash",
+        "sent": "Rahmat, {name}. Qoʻngʻiroq qilamiz.",
+        "failed": "Yuborilmadi. Qaytadan urinib koʻring.",
+        "nameRequired": "Ismingizni yozing",
+        "phoneInvalid": "+998 dan keyin 9 ta raqam kiriting"
+      },
+      "digestTitle": "Telegram uchun",
+      "digestHint": "Ushbu sahifa havolasi bilan yuborish uchun olti qator.",
+      "paperEvidence": "Toʻliq javoblar manba sahifalari bilan ushbu sahifa havolasida ochiladi.",
+      "ctaPaper": "Har bir savol 3 marta beriladi, natijalarni inson tekshiradi, birinchi harakatlar bilan. Ushbu sahifa havolasi orqali soʻrang."
+    },
+    "digest": {
+      "copy": "Nusxalash",
+      "copied": "Nusxalandi"
     }
   },
   "Headline": {
@@ -3981,6 +4029,12 @@
     "detail": {
       "title": "{date} hisoboti",
       "contents": "Mundarija"
+    },
+    "digest": {
+      "title": "Ushbu tekshiruv Telegram uchun",
+      "hint": "Hisobot havolasi bilan olti qator: nusxalab yuboring.",
+      "snapshot": "Birinchi tekshiruvning bepul tahlili",
+      "snapshotHint": "(bir sahifa, kirishsiz ochiladi)."
     }
   },
   "Pilot": {
