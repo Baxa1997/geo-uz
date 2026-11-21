@@ -1,6 +1,7 @@
 import { rankedBrands, scoreOf } from "@/shared/helpers/scores";
 import { shareOf } from "@/shared/hooks/use-count-words";
-import type { Action, Report, WaveMetrics } from "@/shared/types/api";
+import type { Action, Report, WaveResponse } from "@/shared/types/api";
+import { orderedAnswers, type WaveAnswer } from "./evidence";
 import { openActions } from "./report";
 
 /** How much a risk can cost, or an opportunity can bring. */
@@ -10,6 +11,8 @@ interface Entry {
   level: Level;
   /** The number, in the plan, of the open action that answers it; null when the plan has none. */
   action: number | null;
+  /** The buyer answers it stands on, by id: the evidence a reader opens (Phase 0 item 0.5). */
+  evidence: string[];
 }
 
 /** What may cost the client customers, each with the counts its sentence needs (no percentage: Phase 0 item 0.3). */
@@ -29,7 +32,7 @@ export type Opportunity = Entry &
     | { kind: "listings"; count: number; answers: number; sites: { domain: string; cited: number }[] }
     | { kind: "closeTopics"; topics: string[]; gap: number }
     | { kind: "ownSite"; you: number; rivals: string[]; rivalCited: number; answers: number }
-    | { kind: "rivalFalling"; name: string; points: number }
+    | { kind: "rivalFalling"; name: string; id: string; points: number }
     | { kind: "language"; weak: string; weakNamed: number; weakAnswers: number; strong: string; strongNamed: number; strongAnswers: number }
   );
 
@@ -62,9 +65,12 @@ const points = (k: number, n: number) => shareOf(k, n) ?? 0;
  * leader's lead, a competitor gaining, its own visibility or tone falling) and where it can gain (sites it can
  * get onto, topics within reach, its own site, a competitor losing ground, the weaker question language).
  * Ties lead nobody, and every entry says its counts, never a percentage. A week's change is the report's
- * history until the change log (spec §4.12). Each entry points at the open action that answers it.
+ * history until the change log (spec §4.12). Each entry points at the open action that answers it, and at the
+ * buyer answers it stands on (its evidence, Phase 0 item 0.5); wrong facts come from the brand questions, whose
+ * answers are the accuracy section's.
  */
-export function outlook(report: Report, actions: Action[], metrics: WaveMetrics): { risks: Risk[]; opportunities: Opportunity[] } {
+export function outlook(report: Report, actions: Action[], wave: WaveResponse): { risks: Risk[]; opportunities: Opportunity[] } {
+  const { metrics } = wave;
   const { brand, competitors } = report.project;
   const open = openActions(actions);
   const numberOf = (matches: (action: Action) => boolean) => {
@@ -77,24 +83,40 @@ export function outlook(report: Report, actions: Action[], metrics: WaveMetrics)
   const rowOf = (id: string) => rows.find((row) => row.id === id);
   const nameOf = (id: string) => rowOf(id)?.name ?? id;
   const compared = report.history.length > 1;
+  // The evidence: the buyer answers that meet a test, by id
+  const buyerAnswers = orderedAnswers(wave.wave);
+  const topicOf = new Map(wave.wave.prompts.map((prompt) => [prompt.id, prompt.topic]));
+  const where = (test: (answer: WaveAnswer) => boolean) => buyerAnswers.filter(test).map((answer) => answer.id);
+  const names = (answer: WaveAnswer, ids: string[]) => answer.mentions.some((mention) => mention.brand_id !== null && ids.includes(mention.brand_id));
+  const rivalIds = competitors.map((competitor) => competitor.id);
+  const cites = (answer: WaveAnswer, domains: string[]) => answer.citations.some((citation) => domains.includes(citation.domain));
   const trend = (id: string) => Math.round((scoreOf(report.scores, id)?.trend ?? 0) * 100);
 
   const risks: Risk[] = [];
   const [firstFact] = report.wrongFacts;
-  if (firstFact) risks.push({ kind: "facts", level: "high", count: report.wrongFacts.length, claim: firstFact.claim, action: numberOf((action) => action.kind === "fact") });
+  if (firstFact) risks.push({ kind: "facts", level: "high", count: report.wrongFacts.length, claim: firstFact.claim, action: numberOf((action) => action.kind === "fact"), evidence: [] });
 
   const lost = metrics.topics.filter((topic) => topic.named === 0 && topic.rivals.value > 0 && points(topic.rivals.value, topic.answers) >= LOST_FROM);
   const [worst] = lost;
   if (worst) {
     const keys = lost.map((topic) => topic.key);
-    risks.push({ kind: "lostTopics", level: "high", topics: keys.slice(0, NAMED), leaders: worst.rivals.ids.map(nameOf), action: numberOf((action) => action.kind === "content" && keys.includes(action.topic)) });
+    risks.push({
+      kind: "lostTopics",
+      level: "high",
+      topics: keys.slice(0, NAMED),
+      leaders: worst.rivals.ids.map(nameOf),
+      action: numberOf((action) => action.kind === "content" && keys.includes(action.topic)),
+      evidence: where((answer) => keys.includes(topicOf.get(answer.prompt_id) ?? "") && names(answer, rivalIds)),
+    });
   }
 
   // A leader's lead only when one brand is named more often than every other: tied brands lead nobody
   const [only] = leaders.length === 1 ? leaders.flatMap((id) => rows.filter((row) => row.id === id)) : [];
   if (client && only && !only.own) {
     const gap = points(only.named, answers) - points(client.named, answers);
-    if (gap >= GAP.medium) risks.push({ kind: "leaderGap", level: gap >= GAP.high ? "high" : "medium", leader: only.name, leaderNamed: only.named, you: client.named, answers, action: null });
+    if (gap >= GAP.medium) {
+      risks.push({ kind: "leaderGap", level: gap >= GAP.high ? "high" : "medium", leader: only.name, leaderNamed: only.named, you: client.named, answers, action: null, evidence: where((answer) => names(answer, [only.id])) });
+    }
   }
 
   if (compared && client) {
@@ -103,10 +125,12 @@ export function outlook(report: Report, actions: Action[], metrics: WaveMetrics)
       .sort((a, b) => b.points - a.points)[0];
     const row = rising && rowOf(rising.id);
     if (rising && row && rising.points >= MOVE.medium) {
-      risks.push({ kind: "rivalRising", level: rising.points >= MOVE.high ? "high" : "medium", name: row.name, points: rising.points, named: row.named, answers, action: null });
+      risks.push({ kind: "rivalRising", level: rising.points >= MOVE.high ? "high" : "medium", name: row.name, points: rising.points, named: row.named, answers, action: null, evidence: where((answer) => names(answer, [row.id])) });
     }
     const fell = -trend(brand.id);
-    if (fell >= MOVE.medium) risks.push({ kind: "falling", level: fell >= MOVE.high ? "high" : "medium", points: fell, named: client.named, answers, action: null });
+    if (fell >= MOVE.medium) {
+      risks.push({ kind: "falling", level: fell >= MOVE.high ? "high" : "medium", points: fell, named: client.named, answers, action: null, evidence: where((answer) => names(answer, [client.id])) });
+    }
   }
 
   // Tone counted per mention, summed up only from three mentions (report spec §6.3): mostly negative is a high
@@ -114,7 +138,14 @@ export function outlook(report: Report, actions: Action[], metrics: WaveMetrics)
   const tone = client?.tone;
   const negative = tone?.counts.negative ?? 0;
   if (tone && negative > 0 && (tone.summary === "negative" || tone.summary === "mixed")) {
-    risks.push({ kind: "tone", level: tone.summary === "negative" ? "high" : "medium", negative, mentions: tone.mentions, action: null });
+    risks.push({
+      kind: "tone",
+      level: tone.summary === "negative" ? "high" : "medium",
+      negative,
+      mentions: tone.mentions,
+      action: null,
+      evidence: where((answer) => answer.mentions.some((mention) => mention.brand_id === client?.id && mention.tone === "negative")),
+    });
   }
 
   const opportunities: Opportunity[] = [];
@@ -134,6 +165,7 @@ export function outlook(report: Report, actions: Action[], metrics: WaveMetrics)
       answers: sources.cited_answers,
       sites: missing.slice(0, NAMED).map((row) => ({ domain: row.domain, cited: row.cited })),
       action: numberOf((action) => action.kind === "listing" && domains.includes(action.domain)),
+      evidence: where((answer) => cites(answer, domains)),
     });
   }
 
@@ -146,7 +178,14 @@ export function outlook(report: Report, actions: Action[], metrics: WaveMetrics)
   const [nearest] = close;
   if (nearest) {
     const keys = close.map((topic) => topic.key);
-    opportunities.push({ kind: "closeTopics", level: "medium", topics: keys.slice(0, NAMED), gap: nearest.gap, action: numberOf((action) => action.kind === "content" && keys.includes(action.topic)) });
+    opportunities.push({
+      kind: "closeTopics",
+      level: "medium",
+      topics: keys.slice(0, NAMED),
+      gap: nearest.gap,
+      action: numberOf((action) => action.kind === "content" && keys.includes(action.topic)),
+      evidence: where((answer) => keys.includes(topicOf.get(answer.prompt_id) ?? "") && names(answer, rivalIds)),
+    });
   }
 
   const rivalSite = metrics.brands.rivals_top.cited;
@@ -159,6 +198,7 @@ export function outlook(report: Report, actions: Action[], metrics: WaveMetrics)
       rivalCited: rivalSite.value,
       answers: sources.cited_answers,
       action: numberOf((action) => action.kind === "technical"),
+      evidence: where((answer) => cites(answer, rivalSite.ids.flatMap((id) => wave.wave.project.competitors.find((brand) => brand.id === id)?.domains ?? []))),
     });
   }
 
@@ -168,9 +208,9 @@ export function outlook(report: Report, actions: Action[], metrics: WaveMetrics)
     const place = ranked.findIndex((row) => row.isYou);
     const falling = ranked
       .slice(0, Math.max(0, place))
-      .map((row) => ({ name: row.brand.name, points: -trend(row.brand.id) }))
+      .map((row) => ({ name: row.brand.name, id: row.brand.id, points: -trend(row.brand.id) }))
       .sort((a, b) => b.points - a.points)[0];
-    if (falling && falling.points >= MOVE.medium) opportunities.push({ kind: "rivalFalling", level: "low", ...falling, action: null });
+    if (falling && falling.points >= MOVE.medium) opportunities.push({ kind: "rivalFalling", level: "low", ...falling, action: null, evidence: where((answer) => names(answer, [falling.id])) });
   }
 
   const languages = [...metrics.languages].sort((a, b) => points(a.named, a.answers) - points(b.named, b.answers));
@@ -187,6 +227,7 @@ export function outlook(report: Report, actions: Action[], metrics: WaveMetrics)
       strongNamed: strong.named,
       strongAnswers: strong.answers,
       action: null,
+      evidence: where((answer) => answer.lang === weak.key),
     });
   }
 

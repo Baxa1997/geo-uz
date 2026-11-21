@@ -146,7 +146,8 @@
       "actions": "Action plan",
       "method": "Method and scope",
       "glossary": "Definitions",
-      "appendix": "All questions and answers"
+      "appendix": "All questions and answers",
+      "evidence": "Evidence: every answer in full"
     },
     "summary": {
       "highlights": "This week’s highlights",
@@ -346,8 +347,7 @@
     },
     "appendix": {
       "lead": "Every question of the topics above: in how many answers you are named, and who is named beside you. Open a question to read its answers.",
-      "printNote": "On paper each answer is shown by its beginning. The full answers are at the report's link.",
-      "answerOfRun": "{engine} · run {n}"
+      "printNote": "On paper every answer is printed in full, word for word, in section {section} (Evidence)."
     },
     "changes": {
       "lead": "The events behind the numbers: your place among the brands, the sites AI relies on, new wrong facts and the work done this week. The numbers themselves are in the section before.",
@@ -587,6 +587,46 @@
         "tooFew": "Held back: too few mentions for share of voice ({mentions} of the {minimum} needed)"
       },
       "and": " and "
+    },
+    "evidence": {
+      "lead": "Every buyer answer of this check word for word, under its question, with the pages it cites. The findings above name them by their numbers (A1, A2…).",
+      "count": "{answers, plural, one {# answer} other {# answers}} to {questions, plural, one {# question} other {# questions}}.",
+      "answersOf": "{answers}",
+      "engineModel": "{engine} ({model})",
+      "searched": "searched the web",
+      "notSearched": "no web search",
+      "cited": "{count, plural, =0 {Cited pages} one {Cited page} other {Cited pages (#)}}",
+      "noCitations": "This answer cites no page.",
+      "evidence": "Evidence:",
+      "csv": {
+        "label": "Answers as CSV",
+        "hint": "Every buyer answer of this check with its question, assistant, date, the brands it names, the pages it cites and its whole text.",
+        "number": "Answer",
+        "question": "Question",
+        "language": "Language",
+        "topic": "Topic",
+        "assistant": "Assistant",
+        "model": "Model",
+        "date": "Date",
+        "searched": "Web search",
+        "client": "Names you",
+        "brands": "Tracked brands named",
+        "cited": "Cited pages",
+        "text": "Answer text",
+        "yes": "yes",
+        "no": "no"
+      }
+    },
+    "topFinding": {
+      "title": "Top finding",
+      "open": "No tracked business is named in any buyer answer yet: the shelf is open to whoever gets there first.",
+      "meta": "{lang} · {answers, plural, one {# answer} other {# answers}}",
+      "competitor": "Named: {names}. {brand}: absent.",
+      "shared": "Named: {names}, and {brand} in {named} of {answers}.",
+      "client": "{brand} is named in {named} of {answers}; no tracked competitor is.",
+      "cited": "{count, plural, =0 {no cited page} one {# cited page} other {# cited pages}}",
+      "openEvidence": "Open evidence",
+      "printNote": "The whole answers ({answers}) with their cited pages are in section {section}."
     }
   },
   "Headline": {

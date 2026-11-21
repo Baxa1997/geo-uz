@@ -245,7 +245,9 @@ questions and who is named most, from the object. Since 0.3 (21 Nov 2026) one ro
 sections: `assistants` (each assistant's answers, those naming the client, who it names most), `topics` and
 `languages` (each group's answers, the client's count, the competitors named most, ties together), `sources`
 (each cited site once an answer, over the answers that cite any site, spec §6.3; the sites by type, in sites; the
-placement targets) and `claims` (the brand-question check's verdicts, verified, unverified, contradicted, apart from
+placement targets), `top_finding` (0.5: the buyer question where tracked competitors are named in the most answers
+and the client in none, else beside it, else the client alone, else the open shelf; ties to more answers, then the
+questions' order; its answers' ids, the competitors named, the client's count) and `claims` (the brand-question check's verdicts, verified, unverified, contradicted, apart from
 every count of the buyers' answers). A done action's proof carries its counts (`proof.counts`). Kept like the
 report, until the project changes. Tested on the baseline client's check and with stand-in assistants:
 `tests/test_wave.py`, `tests/test_metrics.py`, `tests/test_domains.py`.

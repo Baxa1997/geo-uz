@@ -755,6 +755,22 @@ export interface WaveClaims {
   contradicted: number;
 }
 
+/**
+ * The report's top finding (spec §4.1, §4.14, Phase 0 item 0.5): one buyer question and every answer to it.
+ * `competitor`: tracked competitors named where the client isn't; `shared`: beside the client; `client`: the
+ * client alone; `open`: no tracked business named in any answer (no question then).
+ */
+export interface WaveTopFinding {
+  kind: "competitor" | "shared" | "client" | "open";
+  prompt_id: string | null;
+  /** Its answers' ids, ChatGPT's first. */
+  answers: string[];
+  /** The competitors named in them, the most named first. */
+  named: string[];
+  client_named: number;
+  of: number;
+}
+
 export interface WaveMetrics {
   scope: WaveScope;
   visibility: WaveVisibility;
@@ -764,6 +780,7 @@ export interface WaveMetrics {
   languages: WaveGroup[];
   sources: WaveSources;
   claims: WaveClaims;
+  top_finding: WaveTopFinding | null;
 }
 
 export interface WaveResponse {

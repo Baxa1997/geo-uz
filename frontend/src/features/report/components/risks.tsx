@@ -5,9 +5,11 @@ import { useMessages, useTranslations } from "next-intl";
 import { labelFor } from "@/shared/helpers/labels";
 import { useCountWords } from "@/shared/hooks/use-count-words";
 import { cn } from "@/shared/helpers/utils";
-import type { Action, Report, WaveMetrics } from "@/shared/types/api";
+import type { Action, Report, WaveResponse } from "@/shared/types/api";
 import { sectionNumber } from "../constants";
+import { answerNumbers } from "../helpers/evidence";
 import { outlook, type Level, type Opportunity, type Risk } from "../helpers/risks";
+import { EvidenceLinks } from "./evidence";
 import { ReportCard } from "./report-parts";
 import type { AppIcon } from "@/shared/types/icon";
 
@@ -23,17 +25,20 @@ interface Line {
   title: string;
   detail: string;
   action: number | null;
+  evidence: string[];
 }
 
 /**
  * The report's register of risks and opportunities, side by side: what may cost the client customers and
  * where it can gain, each entry a sentence with its numbers, a line on what it means, its level, and the
- * action of the plan that answers it. It is what the plan in the next section is made for.
+ * action of the plan that answers it, and the answers it stands on (Phase 0 item 0.5), each a link to it in the
+ * evidence section. It is what the plan in the next section is made for.
  */
-export function Risks({ report, actions, metrics }: { report: Report; actions: Action[]; metrics: WaveMetrics }) {
+export function Risks({ report, actions, wave }: { report: Report; actions: Action[]; wave: WaveResponse }) {
   const t = useTranslations("Report.risks");
   const messages = useMessages();
-  const { risks, opportunities } = outlook(report, actions, metrics);
+  const { risks, opportunities } = outlook(report, actions, wave);
+  const numbers = answerNumbers(wave.wave);
   const words = useCountWords();
   const topics = (keys: string[]) => keys.map((key) => t("quote", { text: labelFor(messages.Topics, key) })).join(", ");
   const language = (key: string) => (key === "uz" || key === "ru" || key === "en" ? t(`languages.${key}`) : key);
@@ -89,14 +94,14 @@ export function Risks({ report, actions, metrics }: { report: Report; actions: A
       icon: TriangleAlert,
       title: t("risks"),
       empty: t("risksNone"),
-      lines: risks.map((entry) => ({ key: entry.kind, level: entry.level, action: entry.action, ...risk(entry) })),
+      lines: risks.map((entry) => ({ key: entry.kind, level: entry.level, action: entry.action, evidence: entry.evidence, ...risk(entry) })),
     },
     {
       key: "opportunity",
       icon: Lightbulb,
       title: t("opportunities"),
       empty: t("opportunitiesNone"),
-      lines: opportunities.map((entry) => ({ key: entry.kind, level: entry.level, action: entry.action, ...opportunity(entry) })),
+      lines: opportunities.map((entry) => ({ key: entry.kind, level: entry.level, action: entry.action, evidence: entry.evidence, ...opportunity(entry) })),
     },
   ];
 
@@ -125,6 +130,7 @@ export function Risks({ report, actions, metrics }: { report: Report; actions: A
                           <span aria-hidden className={cn("size-2 rounded-full", DOTS[key][line.level])} />
                           {t(`levels.${key}.${line.level}`)}
                         </span>
+                        <EvidenceLinks ids={line.evidence} numbers={numbers} />
                         {line.action !== null && (
                           <a href="#actions" className="inline-flex items-center gap-1 text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
                             <ArrowRight aria-hidden className="size-3" />
