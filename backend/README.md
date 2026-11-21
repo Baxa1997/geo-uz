@@ -292,6 +292,15 @@ the cities in `places.COORDINATES`) besides the sentence in its instructions: tr
 how each call was located (`user_location`, `lat_lng`, or `instruction` for a city without coordinates and for every
 Gemini call before 0.7). A check made before keeps what it was told (the baseline: Uzbekistan, no city).
 
+**The Free Snapshot and the Telegram digest** (0.8, 21 Nov 2026): `GET /snapshots/{firstRunId}?lang=` (no login, like a
+report's link) is a free first check's one page once it was saved as a project: its data object, metrics and digest.
+The metrics add `shelf` (each buyer question by who holds its answers: competitors, the client, both, nobody) and
+`providers` (every business named, once an answer, untracked ones by their spelling). `app/digest.py` writes a
+check's six lines in uz, ru or en from the data object only (the check before it for the change, the plan's first
+open action for the action); `GET /projects/{id}/waves/{runId}/digest?lang=` serves them, and the report's email
+opens with them. The snapshot's request for the First Audit goes through `POST /demo-requests` with `about` (a new
+nullable column `demo_requests.about`, added at start), emailed to the team.
+
 ## On the server (since 15 Nov 2026)
 
 The service runs on the Contabo server beside the user's other projects, which it must not touch: its own

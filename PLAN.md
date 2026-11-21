@@ -158,6 +158,7 @@ The "what to do" half: the part that keeps a small business paying.
 | Condition score | One number from 0 to 100 over five areas | — | removed on 21 Nov (Phase 0 item 0.2): the report shows counts, every percentage beside its count, ties grouped, N/A where nothing was counted |
 | The report's scope card | What a check asked, of which assistant and model, and what came of every call | the slot log | yes, since 21 Nov (a check before it has its slots rebuilt when read) |
 | Risks and opportunities | The report's register | written from the numbers in the frontend | yes, in a real project's report; since 21 Nov each entry names the answers it stands on |
+| Free Snapshot and Telegram digest | The free first check on one page (`/snapshot/<first check>`); six lines for Telegram in Hisobotlar, on the snapshot and in the report's email | `metrics.shelf`, `metrics.providers`, `app/digest.py` | yes, since 21 Nov (Phase 0 item 0.8); no Telegram bot: copied by hand |
 | Top finding and evidence | One buyer question with its answers; every answer in full, numbered, in the report and the PDF, and as a CSV | `metrics.top_finding`; the data object's answers | yes, since 21 Nov (Phase 0 item 0.5) |
 | Recommended actions | Fixes with impact, steps, questions and proof | rules over the answers and sites | yes, from the first check; a page's brief first ran in the live check of 16 Nov |
 

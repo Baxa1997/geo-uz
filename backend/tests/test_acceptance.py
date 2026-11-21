@@ -217,15 +217,13 @@ def test_the_top_finding_opens_both_answers(report_page: Page, baseline: Dict[st
 
 
 @page
-@todo("0.8", "the Free Snapshot one-pager")
 def test_the_snapshot_says_it_is_one_run(site: Any, baseline: Dict[str, Any]) -> None:
     first_run = baseline["tables"]["first_runs"][0]["id"]
     assert site.page(f"/en/snapshot/{first_run}").block("single-run-note") is not None
 
 
-@todo("0.8", "the Telegram digest, from metrics")
 def test_the_digest_is_six_lines_of_known_numbers(db: Any, project: Any, run_id: str) -> None:
-    from app import digest, metrics, wave  # digest: built in 0.8
+    from app import digest, metrics, wave
 
     built = wave.build(db, project, run_id)
     computed = metrics.compute(built)

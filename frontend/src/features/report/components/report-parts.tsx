@@ -15,12 +15,13 @@ const ROMAN = ["I", "II", "III", "IV", "V", "VI"];
  * the whole width it is given (beside the contents in the workspace). On paper the page is the paper, so it
  * loses its edge and its margins.
  */
-export function ReportPaper({ fill = false, children }: { fill?: boolean; children: React.ReactNode }) {
+export function ReportPaper({ fill = false, className, children }: { fill?: boolean; className?: string; children: React.ReactNode }) {
   return (
     <article
       className={cn(
         "flex w-full flex-col gap-6 rounded-xs bg-card px-4 py-5 shadow-sm ring-1 ring-foreground/15 sm:px-8 sm:py-7 print:max-w-none print:gap-6 print:rounded-none print:p-0 print:shadow-none print:ring-0",
         !fill && "mx-auto max-w-224",
+        className,
       )}
     >
       {children}

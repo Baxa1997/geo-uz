@@ -91,6 +91,8 @@ def project_json(db: Db, project: Project) -> Dict[str, Any]:
         "category": project.category,
         "city": project.city,
         "country": project.country or DEFAULT_COUNTRY,
+        # The free first check it was saved from: its Free Snapshot's address (Phase 0 item 0.8)
+        "firstRunId": project.first_run_id,
         "languages": languages or sorted(firstrun.languages_for(project.country or DEFAULT_COUNTRY), reverse=True),
         "description": project.description,
         "services": project.services or [],

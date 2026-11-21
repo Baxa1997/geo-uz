@@ -55,6 +55,17 @@ def test_the_email_tells_counts_not_a_score(db: Any, project: Any, run_id: str, 
     assert f"{facts['named']}/{facts['answers']}" in text and "tied" in text
 
 
+def test_the_email_opens_with_the_digest(db: Any, project: Any, run_id: str) -> None:
+    from app import digest
+
+    found = wave.payload(db, project, run_id)
+    lines = digest.for_run(db, project, run_id, "en", "https://example.test/report")
+    email = delivery.message(delivery.summary(found), "en", "https://example.test/report", None, lines)
+    text = email.get_body(("plain",)).get_content()
+    assert text.startswith(lines.splitlines()[0]) and lines in text
+    assert lines.splitlines()[1] in email.get_body(("html",)).get_content()
+
+
 # --- the rules, on made-up checks -----------------------------------------------------------------------
 
 
@@ -240,3 +251,62 @@ def test_an_open_shelf_and_no_answer() -> None:
     alone = metrics.top_finding(_wave([_answer("a1", "p1", "Nobody", []), _answer("a2", "p2", "Acme", [("acme", "", "positive")])]))
     assert alone["kind"] == "client" and alone["prompt_id"] == "p2"
     assert metrics.top_finding(_wave([])) is None
+
+
+# --- the Free Snapshot and the digest (0.8) --------------------------------------------------------------
+
+
+def test_the_baseline_shelf_and_who_appeared(db: Any, project: Any, run_id: str, brand_ids: Dict[str, str], expected: Dict[str, Any]) -> None:
+    found = wave.payload(db, project, run_id)["metrics"]
+    counts = found["shelf"]["counts"]
+    # One question where only competitors are named, none where the client is, the rest open
+    assert counts == {"competitor": 1, "client": 0, "shared": 0, "open": expected["scope"]["discovery_prompts"] - 1}
+    providers = found["providers"]
+    assert providers["answers"] == expected["scope"]["completed"]
+    tracked = {row["key"]: row for row in providers["rows"] if row["tracked"]}
+    # Only the tracked brands that were named appear: the two rivals once each, the client not at all
+    assert sorted(tracked) == sorted(brand_ids[name] for name in expected["tied_at_one"]) and all(row["answers"] == 1 for row in tracked.values())
+    assert all(row["answers"] >= 1 for row in providers["rows"]) and len(providers["rows"]) > len(tracked)
+
+
+def test_the_shelf_and_providers_on_a_made_up_check() -> None:
+    answers = [
+        _answer("a1", "p1", "", [("acme", "", "positive"), ("bolt", "", "neutral")]),
+        _answer("a2", "p2", "", [("bolt", "", "neutral"), ("", "Zeta Bots", "neutral")]),
+        _answer("a3", "p3", "", [("acme", "", "neutral")]),
+        _answer("a4", "p4", "", [("", "zeta bots", "neutral"), ("", "Zeta Bots", "neutral")]),
+    ]
+    found = metrics.shelf(_wave(answers))
+    assert [row["status"] for row in found["questions"]] == ["shared", "competitor", "client", "open"]
+    rows = metrics.providers(_wave(answers))["rows"]
+    # Counted once an answer; an untracked business by its spelling written most, the ties in the project's order
+    assert [(row["name"], row["answers"], row["tracked"]) for row in rows] == [("Acme", 2, True), ("Bolt", 2, True), ("Zeta Bots", 2, False)]
+
+
+def test_the_digest_says_the_change_and_the_action() -> None:
+    from app import digest
+
+    def check(named: Dict[str, int], answers: int) -> Dict[str, Any]:
+        rows = [{"id": key, "name": key.title(), "named": count} for key, count in named.items()]
+        rivals = {key: count for key, count in named.items() if key != "acme"}
+        top = max(rivals.values())
+        return {
+            "scope": {"engines": [{"engine": "chatgpt"}, {"engine": "gemini"}]},
+            "visibility": {"named": named["acme"], "answers": answers},
+            "brands": {"rows": rows, "rivals_top": {"named": {"value": top, "ids": [key for key, count in rivals.items() if count == top]}}},
+        }
+
+    built = {"project": {"brand": {"name": "Acme"}}, "wave": {"collected_at": "2026-11-24T05:00:00+00:00"}}
+    before, now = check({"acme": 0, "bolt": 1, "cora": 1}, 15), check({"acme": 3, "bolt": 1, "cora": 2}, 20)
+    action = {"kind": "listing", "domain": "goldenpages.uz", "status": "new"}
+    lines = digest.render(built, now, "en", "https://example.test/r", before, action).splitlines()
+    assert lines == [
+        "Seenova · Acme · 24 Nov 2026 · ChatGPT, Gemini",
+        "In AI answers: Acme 3/20 (was 0/15)",
+        "Most named instead of you: Cora 2/20",
+        "Biggest change: Acme 3/20, was 0/15",
+        "This week's action: get listed on goldenpages.uz (Marketing)",
+        "Full report: https://example.test/r",
+    ]
+    quiet = digest.render(built, before, "uz", "https://example.test/r", before, None).splitlines()
+    assert len(quiet) == 6 and quiet[3].endswith("sezilarli oʻzgarish yoʻq") and quiet[4].endswith("kuzatamiz")

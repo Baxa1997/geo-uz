@@ -32,7 +32,7 @@ import * as onboarding from "./onboarding";
 import { discoveryDrafts, keywordDrafts, KNOWN_TOPICS, poolFor, type Draft } from "./suggestions";
 import { buildPromptReport, buildReport, buildSnapshot, firstRun, METHOD, NO_RUN, pastReport, SEEDED_RUN, type MockRun } from "./report";
 import { clearSessionToken, readSessionToken, writeSessionToken } from "./session";
-import { mockWave } from "./wave";
+import { mockWave, sampleDigest } from "./wave";
 
 const LATENCY_MS = 300;
 const RESEND_SECONDS = 60;
@@ -731,6 +731,20 @@ export const mockApi: ApiClient = {
     if (!report) throw new ApiError(404, `Run ${runId} not found`);
     const number = latest.history.findIndex((point) => point.runId === id) + 1;
     return respond(mockWave(report, id, number > 0 ? number : latest.history.length));
+  },
+
+  // The sample data has no digest of its own: its six lines from the sample check's counts, in English
+  getDigest: async (projectId, runId) => {
+    const { wave, metrics } = await mockApi.getWave(projectId, runId);
+    return respond({ runId: wave.wave.id, text: sampleDigest(wave, metrics) });
+  },
+
+  // A sample project's first check as a Free Snapshot: the sample's only project stands for every first check
+  getFreeSnapshot: async () => {
+    const project = state.projects[0];
+    if (!project) throw new ApiError(404, "snapshot_not_found");
+    const found = await mockApi.getWave(project.id, "latest");
+    return respond({ ...found, projectId: project.id, runId: found.wave.wave.id, digest: sampleDigest(found.wave, found.metrics) });
   },
 
   getReportSettings: async (projectId) => {

@@ -22,7 +22,7 @@ from typing import Any, Dict, Optional
 
 from sqlalchemy import select
 
-from . import mail, projects, wave
+from . import digest, mail, projects, wave
 from .config import settings
 from .db import Project, Run, SessionLocal
 
@@ -137,7 +137,8 @@ def summary(found: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def message(facts: Dict[str, Any], language: str, url: str, attachment: Optional[bytes]) -> EmailMessage:
+def message(facts: Dict[str, Any], language: str, url: str, attachment: Optional[bytes], digest_text: str = "") -> EmailMessage:
+    """The report's email; `digest_text` (the Telegram digest, Phase 0 item 0.8) opens it, ready to forward."""
     words = WORDS.get(language, WORDS["uz"])
     leaders = facts["leaders"]
     rows = [
@@ -151,7 +152,7 @@ def message(facts: Dict[str, Any], language: str, url: str, attachment: Optional
     ]
     email = EmailMessage()
     email["Subject"] = words["subject"].format(brand=facts["brand"], date=facts["date"])
-    text = [f"{mail.BRAND} · {facts['brand']}", "", words["intro"], ""] + [f"{name}: {value}" + (f" ({note})" if note else "") for name, value, note in rows]
+    text = ([digest_text, "", "—", ""] if digest_text else []) + [f"{mail.BRAND} · {facts['brand']}", "", words["intro"], ""] + [f"{name}: {value}" + (f" ({note})" if note else "") for name, value, note in rows]
     text += ["", f"{words['open']}: {url}"] + ([words["attached"]] if attachment else []) + ["", words["why"]]
     email.set_content("\n".join(text))
     cells = "".join(
@@ -164,7 +165,8 @@ def message(facts: Dict[str, Any], language: str, url: str, attachment: Optional
         f'<div style="font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;color:#14182b;max-width:520px">'
         + mail.WORDMARK_HTML.replace("margin:0 0 16px", "margin:0 0 4px")
         + f'<p style="font-size:16px;margin:0 0 16px">{html.escape(facts["brand"])} · {html.escape(facts["date"])}</p>'
-        f'<p style="margin:0 0 8px;color:#666b7a">{html.escape(words["intro"])}</p>'
+        + (f'<pre style="white-space:pre-wrap;font-family:inherit;font-size:13px;background:#f4f2ed;border-radius:6px;padding:12px;margin:0 0 16px">{html.escape(digest_text)}</pre>' if digest_text else "")
+        + f'<p style="margin:0 0 8px;color:#666b7a">{html.escape(words["intro"])}</p>'
         f'<table style="width:100%;border-collapse:collapse;margin:0 0 20px">{cells}</table>'
         f'<p style="margin:0 0 16px"><a href="{html.escape(url)}" style="display:inline-block;background:#1c2e6e;color:#ffffff;text-decoration:none;padding:10px 18px;border-radius:6px;font-weight:600">{html.escape(words["open"])}</a></p>'
         + (f'<p style="margin:0 0 8px;color:#666b7a;font-size:13px">{html.escape(words["attached"])}</p>' if attachment else "")
@@ -202,7 +204,13 @@ def deliver(project_id: str, run_id: Optional[str] = None) -> str:
         print(f"delivery: no PDF for project {project_id}: {error}")
         attachment = None
     try:
-        mail.send(where["email"], message(summary(found), language, link(project_id, run_id, language), attachment))
+        with SessionLocal() as db:
+            text = digest.for_run(db, db.get(Project, project_id), run_id, language, link(project_id, run_id, language))
+    except Exception as error:  # the email goes without its digest rather than not at all
+        print(f"delivery: no digest for project {project_id}: {error!r}")
+        text = ""
+    try:
+        mail.send(where["email"], message(summary(found), language, link(project_id, run_id, language), attachment, text))
     except (OSError, smtplib.SMTPException) as error:
         print(f"delivery: email failed for project {project_id}: {error!r}")
         return "failed"

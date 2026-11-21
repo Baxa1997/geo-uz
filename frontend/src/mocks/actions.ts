@@ -172,6 +172,14 @@ export async function getWave(projectId: string, runId: string) {
   return run((m) => m.getWave(projectId, runId));
 }
 
+export async function getDigest(projectId: string, runId: string, lang: string) {
+  return run((m) => m.getDigest(projectId, runId, lang));
+}
+
+export async function getFreeSnapshot(firstRunId: string, lang: string) {
+  return run((m) => m.getFreeSnapshot(firstRunId, lang));
+}
+
 export async function getRunReport(projectId: string, runId: string) {
   return run((m) => m.getRunReport(projectId, runId));
 }

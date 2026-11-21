@@ -20,6 +20,7 @@ import type {
   CreatePromptsRequest,
   DiscoverPromptsRequest,
   DemoRequest,
+  DigestResponse,
   DismissBrandRequest,
   FirstRun,
   FirstRunConfirm,
@@ -28,6 +29,7 @@ import type {
   FirstRunRequest,
   FirstRunResult,
   ImportKeywordsRequest,
+  SnapshotResponse,
   Project,
   Prompt,
   PromptSuggestion,
@@ -140,6 +142,10 @@ export interface ApiClient {
   getRunReport(projectId: string, runId: string): Promise<Report>;
   /** A check's data object and its metrics ("latest": the newest finished check). Readable without login, like the report. */
   getWave(projectId: string, runId: string): Promise<WaveResponse>;
+  /** A check's Telegram digest, six lines in a language. Readable without login, like the report. */
+  getDigest(projectId: string, runId: string, lang: string): Promise<DigestResponse>;
+  /** The free first check's one page, by the first check's id. Readable without login. */
+  getFreeSnapshot(firstRunId: string, lang: string): Promise<SnapshotResponse>;
   getReportSettings(projectId: string): Promise<ReportSettings>;
   updateReportSettings(projectId: string, body: UpdateReportSettingsRequest): Promise<ReportSettings>;
   getActions(projectId: string): Promise<Action[]>;
@@ -276,6 +282,8 @@ const httpApi: ApiClient = {
     request(`/projects/${id(projectId)}/report?${new URLSearchParams({ period, ...filters })}`),
   getRunReport: (projectId, runId) => request(`/projects/${id(projectId)}/reports/${id(runId)}`),
   getWave: (projectId, runId) => request(`/projects/${id(projectId)}/waves/${id(runId)}`),
+  getDigest: (projectId, runId, lang) => request(`/projects/${id(projectId)}/waves/${id(runId)}/digest?lang=${encodeURIComponent(lang)}`),
+  getFreeSnapshot: (firstRunId, lang) => request(`/snapshots/${id(firstRunId)}?lang=${encodeURIComponent(lang)}`),
   getReportSettings: (projectId) => request(`/projects/${id(projectId)}/report-settings`),
   updateReportSettings: (projectId, body) => send("PATCH", `/projects/${id(projectId)}/report-settings`, body),
   getActions: (projectId) => request(`/projects/${id(projectId)}/actions`),
@@ -365,6 +373,8 @@ const mockBridge = (): ApiClient => ({
         mocks().then((m) => unwrap(m.getReport(projectId, period, filters))),
       getRunReport: (projectId, runId) => mocks().then((m) => unwrap(m.getRunReport(projectId, runId))),
       getWave: (projectId, runId) => mocks().then((m) => unwrap(m.getWave(projectId, runId))),
+      getDigest: (projectId, runId, lang) => mocks().then((m) => unwrap(m.getDigest(projectId, runId, lang))),
+      getFreeSnapshot: (firstRunId, lang) => mocks().then((m) => unwrap(m.getFreeSnapshot(firstRunId, lang))),
       getReportSettings: (projectId) => mocks().then((m) => unwrap(m.getReportSettings(projectId))),
       updateReportSettings: (projectId, body) => mocks().then((m) => unwrap(m.updateReportSettings(projectId, body))),
       getActions: (projectId) => mocks().then((m) => unwrap(m.getActions(projectId))),
