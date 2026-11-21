@@ -204,8 +204,9 @@ that is committed.
 ## Done (as of 18 November 2026)
 
 - **Built, waiting for the user's look: Phase 0 item 0.7 of the report spec, the customer's location on every
-  assistant call (21 Nov), on the branch `phase0-location`; merged and pushed the same day, when the user chose
-  "Ship 0.7, then plan 0.8".** The user: "Ship 0.6, then plan 0.7";
+  assistant call (21 Nov), on the branch `phase0-location`; merged, pushed and deployed the same day, when the user
+  chose "Ship 0.7, then plan 0.8" (the server's previous `app/` is kept as `app.bak-before-location`; the paid
+  project's next weekly check is the first asked this way).** The user: "Ship 0.6, then plan 0.7";
   after the plan they chose, when asked, the market's main city for a project without one, and one test call to
   Gemini. `app/places.py`: every call is told a city (the project's, else Tashkent, Almaty or Bishkek) and the
   time zone; ChatGPT as its `user_location`, Gemini on Vertex as its grounding's latitude and longitude besides the
