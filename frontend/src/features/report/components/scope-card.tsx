@@ -1,8 +1,8 @@
 import { useLocale, useTimeZone, useTranslations } from "next-intl";
 import { TIME_ZONE } from "@/shared/constants";
 import { formatLongDate } from "@/shared/helpers/dates";
-import { countryName } from "@/shared/helpers/labels";
-import type { ScopeEngine, SlotTally, WaveLocation, WaveScope } from "@/shared/types/api";
+import type { ScopeEngine, SlotTally, WaveScope } from "@/shared/types/api";
+import { useSlotWords } from "../hooks/use-slot-words";
 
 /**
  * A value as the scope card shows it, marked with its key: what `backend/tests/test_acceptance.py` reads off the
@@ -41,16 +41,8 @@ export function ScopeCard({ scope }: { scope: WaveScope }) {
   const nameOf = (engine: string) => (engine === "chatgpt" || engine === "gemini" ? engineNames(engine) : engine);
   const chatgpt = scope.engines.find((engine) => engine.engine === "chatgpt");
 
-  const where = (location: WaveLocation) => {
-    const country = location.country ? countryName(locale, location.country) : "";
-    return location.city ? t("cityCountry", { city: location.city, country }) : t("noCity", { country });
-  };
-  const located = (engine: ScopeEngine) =>
-    !engine.location || !engine.location.how
-      ? t("notLocated")
-      : engine.location.how === "instruction"
-        ? t("toldInInstructions", { place: where(engine.location) })
-        : t("located", { place: where(engine.location) });
+  const words = useSlotWords();
+  const located = (engine: ScopeEngine) => words.located(engine.location);
 
   // Why the slots left out were left out, and why the failed ones failed, each with how many
   const reasons = (tally: SlotTally, kind: "excluded" | "failed", group: "buyers" | "brand") =>
@@ -93,7 +85,7 @@ export function ScopeCard({ scope }: { scope: WaveScope }) {
                   <span className="font-mono text-[0.8125rem]">{engine.models.join(", ")}</span>
                 </>
               )}
-              {engine.surface && ` · ${t(`surfaces.${engine.surface === "api_grounded" ? "api_grounded" : "api_web_search"}`)}`}
+              {engine.surface && ` · ${words.surface(engine.surface)}`}
               {` · ${located(engine)}${engine.location_varies ? ` (${t("varies")})` : ""} · `}
               <Metric name={`scope.searched.${engine.engine}`}>{t("searched", { searched: engine.searched, completed: engine.completed })}</Metric>
             </li>

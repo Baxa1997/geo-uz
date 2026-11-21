@@ -237,3 +237,34 @@ def test_a_check_of_three_runs_is_counted_over_every_run(db: Any, project: Any, 
         db.execute(delete(Slot).where(Slot.run_id == run.id))
         db.execute(delete(Run).where(Run.id == run.id))
         db.commit()
+
+
+def test_answer_engines_leaves_gemini_out_with_its_key_set(monkeypatch: Any) -> None:
+    # Gemini with Google Search is paused on the server (Google's terms, 21 Nov 2026): ANSWER_ENGINES=chatgpt
+    from app.config import Settings
+
+    monkeypatch.setenv("OPENAI_API_KEY", "stand-in")
+    monkeypatch.setenv("GOOGLE_CLOUD_PROJECT", "stand-in")
+    monkeypatch.delenv("ANSWER_ENGINES", raising=False)
+    assert Settings().engines == ["chatgpt", "gemini"]
+    monkeypatch.setenv("ANSWER_ENGINES", "chatgpt")
+    paused = Settings()
+    assert paused.engines == ["chatgpt"]
+    # Gemini still reads and writes for us, without Google Search
+    assert paused.can_read and paused.read_model.startswith("gemini")
+
+
+def test_a_first_check_on_chatgpt_alone_asks_it_every_question(db: Any, stand_ins: None) -> None:
+    first_run_id = "stand-in-first-run-chatgpt"
+    try:
+        draft = stand_in_draft()
+        firstrun.check(draft, firstrun.confirmed_of(draft), lambda *step: None, ["chatgpt"], log=slots.SlotLog(first_run_id=first_run_id))
+        found = logged(db, first_run_id=first_run_id)
+        discovery = [slot for slot in found if slot.prompt_group == "discovery"]
+        assert len(discovery) == 10 and {slot.engine for slot in found} == {"chatgpt"}
+        assert not [slot for slot in discovery if slot.status == "excluded"]
+        # Both brand questions, one a language, with nobody beside it
+        assert {(slot.language, slot.status) for slot in found if slot.prompt_group == "branded"} == {("ru", "completed"), ("uz", "completed")}
+    finally:
+        db.execute(delete(Slot).where(Slot.first_run_id == first_run_id))
+        db.commit()

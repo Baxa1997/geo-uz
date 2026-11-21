@@ -213,6 +213,25 @@ def test_the_top_finding_opens_both_answers(report_page: Page, baseline: Dict[st
         assert cited <= set(node.links())
 
 
+@page
+def test_every_evidence_card_names_its_channel_and_place(report_page: Page, baseline: Dict[str, Any]) -> None:
+    # Spec rule 3 and §4.13: every answer opened as evidence says where it comes from (its slot's surface) and
+    # what the assistant was told of the customer's place (its slot's location), the top finding's two included
+    evidence = report_page.section("evidence")
+    finding = report_page.block("top-finding")
+    assert evidence is not None and finding is not None
+    cards = evidence.find_all("data-answer") + finding.find_all("data-answer")
+    # The fixture's answers are the buyer answers: every one has its card in the evidence section
+    assert len(evidence.find_all("data-answer")) == len(baseline["tables"]["answers"])
+    # The baseline was asked before 0.7: ChatGPT with its search tool's location, Gemini told the place in a sentence
+    said = {"chatgpt": ("web search on", "asked as from"), "gemini": ("Google Search on", "told the place only in its instructions")}
+    for card in cards:
+        surface, location = card.find("data-field", "surface"), card.find("data-field", "location")
+        assert surface is not None and location is not None
+        channel, place = said[card.attrs["data-engine"]]
+        assert surface.text == channel and location.text.startswith(place)
+
+
 # --- the Free Snapshot and the digest (0.8) -------------------------------------------------------------
 
 

@@ -4,13 +4,15 @@ import { TIME_ZONE } from "@/shared/constants";
 import { formatLongDate } from "@/shared/helpers/dates";
 import { labelFor } from "@/shared/helpers/labels";
 import { cn } from "@/shared/helpers/utils";
-import type { Brand, Wave } from "@/shared/types/api";
+import type { Brand, Wave, WaveSlot } from "@/shared/types/api";
 import { answerAnchor, answerLabels, excerptOf, orderedAnswers, type WaveAnswer } from "../helpers/evidence";
+import { slotsByAnswer, useSlotWords } from "../hooks/use-slot-words";
 import { AnswersCsv } from "./answers-csv";
 
 /**
  * One buyer answer as evidence (report spec rule 3, §4.13, Phase 0 item 0.5): its number, the assistant and
- * model, the date and whether it searched the web; the question word for word with its language; the whole
+ * model, where its answer comes from and what it was told of the customer's place (its slot's surface and location),
+ * the date and whether it searched the web; the question word for word with its language; the whole
  * answer with the tracked brands highlighted (the client's in its own color); every page it cites, as links.
  * `anchor` gives it the place a finding links to: only the evidence section's copy has it. With several runs
  * (Phase 0 item 0.6) it says which run it is; `paperBeginning` prints only its beginning on paper (the whole of
@@ -22,12 +24,15 @@ export function AnswerCard({
   question,
   brands,
   youId,
+  slot,
   anchor = true,
   runs = 1,
   paperBeginning = false,
 }: {
   answer: WaveAnswer;
   number: number;
+  /** Its slot in the check's slot log: the surface and the location it was asked with. */
+  slot?: WaveSlot;
   /** The question it answers, when the card stands away from it. */
   question?: { text: string; lang: string };
   brands: Brand[];
@@ -39,8 +44,10 @@ export function AnswerCard({
 }) {
   const t = useTranslations("Report.evidence");
   const engines = useTranslations("Engines");
+  const slotWords = useSlotWords();
   const locale = useLocale();
   const timeZone = useTimeZone() ?? TIME_ZONE;
+  const surface = slotWords.surface(slot?.surface);
   const engine = answer.engine === "chatgpt" || answer.engine === "gemini" ? engines(answer.engine) : answer.engine;
 
   return (
@@ -55,6 +62,14 @@ export function AnswerCard({
         <span className="font-semibold text-foreground tabular-nums">A{number}</span>
         <span aria-hidden>·</span>
         <span>{answer.model ? t("engineModel", { engine, model: answer.model }) : engine}</span>
+        {surface && (
+          <>
+            <span aria-hidden>·</span>
+            <span data-field="surface">{surface}</span>
+          </>
+        )}
+        <span aria-hidden>·</span>
+        <span data-field="location">{slotWords.located(slot?.location)}</span>
         {runs > 1 && (
           <>
             <span aria-hidden>·</span>
@@ -138,6 +153,7 @@ export function Evidence({ wave, brands, youId }: { wave: Wave; brands: Brand[];
   const messages = useMessages();
   const answers = orderedAnswers(wave);
   const numbers = new Map(answers.map((answer, index) => [answer.id, index + 1]));
+  const slots = slotsByAnswer(wave);
   const questions = wave.prompts.filter((prompt) => prompt.group === "discovery" && answers.some((answer) => answer.prompt_id === prompt.id));
   const runs = wave.wave.runs_per_prompt;
   const tracked = new Set(brands.map((brand) => brand.id));
@@ -170,6 +186,7 @@ export function Evidence({ wave, brands, youId }: { wave: Wave; brands: Brand[];
                 key={answer.id}
                 answer={answer}
                 number={numbers.get(answer.id) ?? 0}
+                slot={slots.get(answer.id)}
                 brands={brands}
                 youId={youId}
                 runs={runs}

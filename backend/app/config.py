@@ -48,6 +48,12 @@ class Settings:
     smtp_from: Optional[str] = field(default_factory=lambda: os.environ.get("SMTP_FROM"))
     openai_key: Optional[str] = field(default_factory=lambda: os.environ.get("OPENAI_API_KEY"))
     gemini_key: Optional[str] = field(default_factory=lambda: os.environ.get("GEMINI_API_KEY"))
+    # The assistants that answer customers' questions (comma-separated), of those with a key. Gemini with Google
+    # Search is paused on the server (the user's decision, 21 Nov 2026): Google's terms for it (Service Specific
+    # Terms 20(k)) allow its answers to be shown only to the person who asked, and forbid storing, analysing or
+    # reselling them, which a report for a business does. Gemini still reads and writes for us (READ_MODEL,
+    # WRITE_MODEL), without Google Search, which those terms don't cover.
+    answer_engines: List[str] = field(default_factory=lambda: [name.strip().lower() for name in os.environ.get("ANSWER_ENGINES", "chatgpt,gemini").split(",") if name.strip()])
     # The models that answer customers' questions, and the one that reads the answers
     chatgpt_model: str = field(default_factory=lambda: os.environ.get("CHATGPT_MODEL", "gpt-6.1-terra"))
     gemini_model: str = field(default_factory=lambda: os.environ.get("GEMINI_MODEL", "gemini-3.8-flash"))
@@ -108,8 +114,8 @@ class Settings:
 
     @property
     def engines(self) -> List[str]:
-        """The assistants that can be asked now: those with a key."""
-        return [name for name, key in (("chatgpt", self.openai_key), ("gemini", self.gemini_key or self.google_cloud_project)) if key]
+        """The assistants that are asked customers' questions now: those with a key, of `ANSWER_ENGINES`."""
+        return [name for name, key in (("chatgpt", self.openai_key), ("gemini", self.gemini_key or self.google_cloud_project)) if key and name in self.answer_engines]
 
 
 settings = Settings()
