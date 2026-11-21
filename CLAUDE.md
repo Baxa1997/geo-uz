@@ -204,8 +204,9 @@ that is committed.
 ## Done (as of 18 November 2026)
 
 - **Built, waiting for the user's look: Phase 0 item 0.6 of the report spec, several runs of each question
-  (21 Nov), on the branch `phase0-runs`; merged and pushed the same day, when the user chose "Ship 0.6, then plan
-  0.7".** The user: "Ship 0.5, then plan 0.6"; after the plan they
+  (21 Nov), on the branch `phase0-runs`; merged, pushed and deployed the same day, when the user chose "Ship 0.6,
+  then plan 0.7" (Vercel redeploys on the push; the server's previous `app/` is kept as `app.bak-before-runs`; the
+  daily timer still runs one run a question).** The user: "Ship 0.5, then plan 0.6"; after the plan they
   chose, when asked, three runs for the First Audit only, by hand, and on paper the key questions in full when a
   check has several runs. `python -m app.weekly --project <id> --runs 3` asks each question 3 times on each
   assistant (1 to 5), after printing the planned answers and their likely cost at the last check's price an answer;
