@@ -283,6 +283,15 @@ over all the answers, a question counts as covered when the client is named in o
 
 The pages keep a report two minutes, so a site typed by hand shows within that.
 
+**Location** (0.7, 21 Nov 2026; `app/places.py`): every call is told a city, the project's (or question's) own, else
+its market's main city (Uzbekistan Tashkent, Kazakhstan Almaty, Kyrgyzstan Bishkek: spec §9.1, the user's decision),
+with the country's time zone. ChatGPT takes them as its search tool's `user_location`. Gemini on Vertex takes the
+city's latitude and longitude as its Google Search grounding's location (`toolConfig.retrievalConfig.latLng`, for
+the cities in `places.COORDINATES`) besides the sentence in its instructions: tried once on the server on 21 Nov
+2026 (accepted, 12 cited pages, $0.035), which answers spec §9.3's first question for Vertex. The slot log says
+how each call was located (`user_location`, `lat_lng`, or `instruction` for a city without coordinates and for every
+Gemini call before 0.7). A check made before keeps what it was told (the baseline: Uzbekistan, no city).
+
 ## On the server (since 15 Nov 2026)
 
 The service runs on the Contabo server beside the user's other projects, which it must not touch: its own

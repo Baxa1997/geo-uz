@@ -24,6 +24,7 @@ import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Dict, List, Optional
 
+from . import places
 from .config import BACKEND, settings
 
 # The pilot script's OpenAI client and page reader are the tested ones: used from where they are
@@ -158,6 +159,11 @@ def _gemini_vertex(question: str, country: str, city: str) -> Dict[str, Any]:
     place = ", ".join(part for part in (city, f"country code {country}" if country else "") if part)
     if place:
         body["systemInstruction"] = {"parts": [{"text": f"The user's location: {place}."}]}
+    # And as the grounding's own location setting, which Vertex documents for Google Search grounding (report
+    # spec §9.1, Phase 0 item 0.7): the city's latitude and longitude, when it has them
+    spot = places.coordinates(city)
+    if spot:
+        body["toolConfig"] = {"retrievalConfig": {"latLng": {"latitude": spot[0], "longitude": spot[1]}}}
     reply = _vertex(settings.gemini_model, body, ASK_SECONDS)
     # Google Search is on, but Gemini decides itself whether to search, and now and then answers from memory
     # (one answer in five on gemini-3.8-flash, 15 Nov 2026). Such an answer has no sources: asked once more.
