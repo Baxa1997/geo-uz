@@ -24,7 +24,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from sqlalchemy import select
 from sqlalchemy.orm import Session as Db
 
-from . import domains, engines, projects
+from . import domains, engines, metrics, projects
 from .db import Action, Answer, Brand, Mention, Project, Prompt, Run, SessionLocal, WrongFact, now
 from .engines import web
 from .firstrun import STR, arr, obj
@@ -83,6 +83,13 @@ def _cites(result: Dict[str, Any], domain: str) -> int:
     return sum(1 for answer in result["answers"] if any(citation["domain"] == domain for citation in answer["citations"]))
 
 
+def content_allowed(results: List[Dict[str, Any]], client: str, rivals: List[str]) -> bool:
+    """Whether a topic's questions call for a page: at least `metrics.TOPIC_RANK_ANSWERS` answers between them,
+    a tracked competitor named in one and the client in none."""
+    answers = sum(len(result["answers"]) for result in results)
+    return answers >= metrics.TOPIC_RANK_ANSWERS and all(_named(result, client) == 0 for result in results) and any(_named(result, rival) > 0 for result in results for rival in rivals)
+
+
 def suggested(db: Db, project: Project, report: Dict[str, Any]) -> List[Dict[str, Any]]:
     """What the latest check calls for: key, kind, details, impact and the questions each should move."""
     client = report["project"]["brand"]["id"]
@@ -118,9 +125,13 @@ def suggested(db: Db, project: Project, report: Dict[str, Any]) -> List[Dict[str
             }
         )
 
-    missing = [result for result in results if _named(result, client) == 0 and any(_named(result, rival) > 0 for rival in rivals)]
-    for topic in dict.fromkeys(result["prompt"]["topic"] for result in missing if result["prompt"]["topic"]):
-        ids = [result["prompt"]["id"] for result in missing if result["prompt"]["topic"] == topic]
+    # A page about a topic only where it has enough answers to judge (spec §6.3's 3, Phase 0 item 0.9; the user's
+    # choice, 21 Nov 2026): competitors named in its answers and the client in none of them
+    for topic in dict.fromkeys(result["prompt"]["topic"] for result in results if result["prompt"]["topic"]):
+        theirs = [result for result in results if result["prompt"]["topic"] == topic]
+        if not content_allowed(theirs, client, rivals):
+            continue
+        ids = [result["prompt"]["id"] for result in theirs if _named(result, client) == 0 and any(_named(result, rival) > 0 for rival in rivals)]
         found.append({"key": f"content:{topic.casefold()}", "kind": "content", "details": {"topic": topic, "url": None, "pageType": None, "brief": None}, "impact": "high" if len(ids) > 1 else "medium", "promptIds": ids})
 
     for check in project.site_checks or []:
@@ -212,17 +223,28 @@ def _proof(db: Db, project: Project, action: Action, runs: List[Run], client: Br
 
 
 def _allowed_now(db: Db, project: Project, actions: List[Action], brands: List[Brand]) -> List[Action]:
-    """The actions without an untouched "get listed" one that the site's type or route no longer allows (spec §7,
-    Phase 0 item 0.4): such an action stops showing at once, and `sync` removes it at the next check. One the
-    client started or finished stays."""
+    """The actions without an untouched one that its rule no longer allows: a "get listed" one whose site's type or
+    route doesn't (spec §7, Phase 0 item 0.4), a page about a topic that no longer has enough answers to judge (0.9).
+    Such an action stops showing at once, and `sync` removes it at the next check. One the client started or
+    finished stays."""
+    refused = set()
+    pages = [action for action in actions if action.kind == "content" and action.status == "new" and not action.key.startswith("page:")]
+    if pages:
+        # A page about a topic only while the topic still qualifies (0.9): judged on the latest check
+        report = projects.report(db, project)
+        rivals_ids = [brand.id for brand in brands if not brand.own]
+        own_id = next(brand.id for brand in brands if brand.own)
+        for action in pages:
+            topic = str((action.details or {}).get("topic") or "")
+            if not content_allowed([result for result in report["prompts"] if result["prompt"]["topic"] == topic], own_id, rivals_ids):
+                refused.add(action.id)
     untouched = [action for action in actions if action.kind == "listing" and action.status == "new"]
     if not untouched:
-        return actions
+        return [action for action in actions if action.id not in refused]
     client = next(brand for brand in brands if brand.own)
     rivals = [(brand.name, brand.domain) for brand in brands if not brand.own]
     sites = {action.id: str((action.details or {}).get("domain") or "") for action in untouched}
     stored = domains.stored_for(db, sites.values(), project.id)
-    refused = set()
     for action_id, domain in sites.items():
         typed = domains.resolve(domain, client.domain, rivals, stored, project.id)
         if typed["type"] not in domains.PLACEABLE or not typed["route"]:

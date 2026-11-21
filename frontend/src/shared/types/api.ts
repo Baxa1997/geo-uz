@@ -799,6 +799,8 @@ export interface WaveMetrics {
   top_finding: WaveTopFinding | null;
   shelf: WaveShelf;
   providers: WaveProviders;
+  /** Spec §6.3's topic ranking (0.9): which topics have enough answers to judge, and whether they may be ranked. */
+  topic_ranking: { ranked: boolean; eligible: string[]; topics: number; largest: number; minimum_topics: number; minimum_answers: number };
 }
 
 /** GET /snapshots/{firstRunId}: the free first check's one page (0.8), with its Telegram digest. */

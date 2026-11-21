@@ -106,6 +106,7 @@ export function Sources({ metrics }: { metrics: WaveMetrics }) {
         </div>
       )}
 
+      {sources.rows.length > 0 && (
       <div data-block="targets" className="flex flex-col gap-2 print:break-inside-avoid">
         <BlockTitle>{t("targetsTitle")}</BlockTitle>
         <ReportCard className="flex flex-col gap-2 p-4 text-sm">
@@ -136,9 +137,16 @@ export function Sources({ metrics }: { metrics: WaveMetrics }) {
           )}
         </ReportCard>
       </div>
+      )}
 
       <div className="flex flex-col gap-2">
         <BlockTitle>{t("allTitle")}</BlockTitle>
+        {/* An explicit empty state, never a table of headings alone (spec defect 13, Phase 0 item 0.9) */}
+        {sources.rows.length === 0 ? (
+          <ReportCard className="px-4 py-3 text-sm text-pretty text-muted-foreground">
+            {t("noSites")}
+          </ReportCard>
+        ) : (
         <ReportCard className="@container">
           {/* Fixed columns: a long address is cut, never the columns after it (on a phone they ran off the card) */}
           <ReportTable
@@ -205,6 +213,7 @@ export function Sources({ metrics }: { metrics: WaveMetrics }) {
             {sources.rows.some((row) => !PLACEABLE.includes(row.type) && row.type !== "client_owned" && row.type !== "competitor_site") && ` ${t("dashNote")}`}
           </p>
         </ReportCard>
+        )}
       </div>
     </div>
   );

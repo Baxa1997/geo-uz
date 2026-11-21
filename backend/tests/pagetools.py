@@ -120,7 +120,8 @@ def _place_streamed(root: Node) -> None:
     content into the place held by `<template id="P:n">`. A browser runs that script; this reader doesn't, so it
     moves them the same way, until none is left (a late part may hold the places of others). Seen on 21 Nov 2026:
     the evidence cards' contents (Phase 0 item 0.5) arrived that way, and read empty where they stand."""
-    segments = {node.attrs["id"][2:]: node for node in root.walk() if node.tag == "div" and node.attrs.get("id", "").startswith("S:")}
+    # A part is held in a `<div hidden>`, or inside a table in a `<tbody>` or `<tr>` (of a `<table hidden>`)
+    segments = {node.attrs["id"][2:]: node for node in root.walk() if node.tag in ("div", "tbody", "tr") and node.attrs.get("id", "").startswith("S:")}
     for _ in range(len(segments) + 1):
         moved = False
         for node in list(root.walk()):

@@ -53,6 +53,7 @@ def compute(wave: Dict[str, Any]) -> Dict[str, Any]:
         "top_finding": top_finding(wave),
         "shelf": shelf(wave),
         "providers": providers(wave),
+        "topic_ranking": topic_ranking(wave),
     }
 
 
@@ -383,6 +384,28 @@ def top_finding(wave: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         "named": [rival for rival, count in sorted(counts, key=lambda item: -item[1]) if count > 0],
         "client_named": _named_in(theirs, client),
         "of": len(theirs),
+    }
+
+
+# Spec §6.3's topic ranking: topics are ranked only when at least this many have at least this many answers each;
+# a topic with fewer answers is listed with its counts but not judged (Phase 0 item 0.9)
+TOPIC_RANK_TOPICS = 3
+TOPIC_RANK_ANSWERS = 3
+
+
+def topic_ranking(wave: Dict[str, Any]) -> Dict[str, Any]:
+    """Whether the report may rank the topics and which it may judge (spec §6.3, defect 11): `eligible` are the
+    topics with at least `TOPIC_RANK_ANSWERS` buyer answers, `ranked` is true when there are at least
+    `TOPIC_RANK_TOPICS` of them. The same 3 answers decide whether a page about a topic is suggested (`fixes`)."""
+    rows = groups(wave, "topic")
+    eligible = [row["key"] for row in rows if row["answers"] >= TOPIC_RANK_ANSWERS]
+    return {
+        "ranked": len(eligible) >= TOPIC_RANK_TOPICS,
+        "eligible": eligible,
+        "topics": len(rows),
+        "largest": max((row["answers"] for row in rows), default=0),
+        "minimum_topics": TOPIC_RANK_TOPICS,
+        "minimum_answers": TOPIC_RANK_ANSWERS,
     }
 
 

@@ -218,7 +218,8 @@
         "behind": "Behind",
         "level": "Level",
         "ahead": "Ahead",
-        "nobody": "Nobody"
+        "nobody": "Nobody",
+        "small": "Too few answers"
       },
       "advice": {
         "absent": "AI never named you here, and it named {rival}. This topic needs a page.",
@@ -228,7 +229,8 @@
         "nobody": "AI named no tracked brand here: a chance to be the first."
       },
       "languageTitle": "By question language",
-      "language": "Language"
+      "language": "Language",
+      "unranked": "The topics aren't ranked: that needs at least {minimumTopics} topics with {minimumAnswers} answers or more each, and this check has {topics, plural, one {# topic} other {# topics}}, the largest with {largest, plural, one {# answer} other {# answers}}. Each is shown with its counts."
     },
     "sources": {
       "lead": "The sites AI cites, each with its type. Getting onto the ones open to you is the quickest way into its answers.",
@@ -258,7 +260,8 @@
       "rivals": "Competitors beside it",
       "notChecked": "Not checked",
       "notCheckedHint": "Nothing is suggested for a site of this type, so whether you are on it isn’t checked.",
-      "dashNote": "A dash under “Are you there?”: not checked, since nothing is suggested for a site of that type."
+      "dashNote": "A dash under “Are you there?”: not checked, since nothing is suggested for a site of that type.",
+      "noSites": "No data: no answer in this check cited a site."
     },
     "accuracy": {
       "lead": "Two questions: in what tone AI speaks of you, and whether what it says is true. A wrong price or address costs customers.",

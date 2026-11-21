@@ -208,6 +208,12 @@ function providersOf(wave: Wave): WaveProviders {
   return { answers: wave.answers.length, rows };
 }
 
+// Spec §6.3's topic ranking (`metrics.topic_ranking`): 3 topics of 3 answers each
+function rankingOf(topics: WaveGroup[]) {
+  const eligible = topics.filter((row) => row.answers >= 3).map((row) => row.key);
+  return { ranked: eligible.length >= 3, eligible, topics: topics.length, largest: Math.max(0, ...topics.map((row) => row.answers)), minimum_topics: 3, minimum_answers: 3 };
+}
+
 /** The sample's six lines for Telegram (`backend/app/digest.py` writes a real project's), in English. */
 export function sampleDigest(wave: Wave, metrics: WaveMetrics): string {
   const rows = new Map(metrics.brands.rows.map((row) => [row.id, row]));
@@ -364,6 +370,7 @@ export function mockWave(report: Report, runId: string, number: number): WaveRes
       top_finding: topFindingOf(wave),
       shelf: shelfOf(wave),
       providers: providersOf(wave),
+      topic_ranking: rankingOf(groupsOf(wave, "topic")),
       scope: {
         wave: { number, is_baseline: number === 1, kind: wave.wave.kind, collected_at: method.collectedAt, settings_hash: "sample", reconstructed: true },
         engines: engines.map((engine) => {

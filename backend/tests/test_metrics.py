@@ -310,3 +310,29 @@ def test_the_digest_says_the_change_and_the_action() -> None:
     ]
     quiet = digest.render(built, before, "uz", "https://example.test/r", before, None).splitlines()
     assert len(quiet) == 6 and quiet[3].endswith("sezilarli oʻzgarish yoʻq") and quiet[4].endswith("kuzatamiz")
+
+
+# --- the topic ranking rule (0.9) -------------------------------------------------------------------------
+
+
+def test_the_baseline_topics_are_too_small_to_rank_or_judge(db: Any, project: Any, run_id: str, report: Dict[str, Any]) -> None:
+    from app import fixes
+
+    found = wave.payload(db, project, run_id)["metrics"]["topic_ranking"]
+    assert not found["ranked"] and found["eligible"] == [] and found["largest"] < metrics.TOPIC_RANK_ANSWERS
+    # No page suggested about a topic of fewer than 3 answers, and the one stored with the check no longer shows
+    assert not any(action["kind"] == "content" for action in fixes.suggested(db, project, report))
+    assert not any(action["kind"] == "content" for action in fixes.listed(db, project))
+
+
+def test_topics_are_ranked_from_three_topics_of_three_answers() -> None:
+    def answers(prompt: str, count: int, offset: int) -> List[Dict[str, Any]]:
+        return [_answer(f"a{offset + index}", prompt, "Bolt", [("bolt", "", "neutral")]) for index in range(count)]
+
+    # p1 and p2 are one topic ("prices"), p3 and p4 another ("service"): two topics of 3 answers or more
+    two = answers("p1", 2, 0) + answers("p2", 1, 10) + answers("p3", 3, 20) + answers("p4", 1, 30)
+    found = metrics.topic_ranking(_wave(two))
+    assert found["eligible"] == ["prices", "service"] and not found["ranked"]
+    wave_three = _wave(two + answers("p5", 3, 40))
+    wave_three["prompts"][-2]["topic"] = "delivery"
+    assert metrics.topic_ranking(wave_three)["ranked"]

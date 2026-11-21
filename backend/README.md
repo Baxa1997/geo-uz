@@ -301,6 +301,11 @@ open action for the action); `GET /projects/{id}/waves/{runId}/digest?lang=` ser
 opens with them. The snapshot's request for the First Audit goes through `POST /demo-requests` with `about` (a new
 nullable column `demo_requests.about`, added at start), emailed to the team.
 
+**Topics** (0.9, 21 Nov 2026): `metrics.topic_ranking` says which topics have at least 3 buyer answers (`eligible`) and
+whether at least 3 do (`ranked`, spec §6.3). A page about a topic is suggested only for a topic of 3 answers or more
+where competitors are named and the client never (`fixes.content_allowed`, the user's choice of 21 Nov 2026); an
+untouched one that no longer qualifies stops showing at once and goes at the next check.
+
 ## On the server (since 15 Nov 2026)
 
 The service runs on the Contabo server beside the user's other projects, which it must not touch: its own

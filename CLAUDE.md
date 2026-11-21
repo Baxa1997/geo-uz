@@ -101,8 +101,9 @@ beside its count), merged, pushed and deployed; 0.1–0.3 confirmed by the user,
 waits for their look. The open work, in the order the user picks (ask as a short choice):
 
 0. **Phase 0 of the report spec, item by item, a plan shown before each** (section "Seenova report: source of
-   truth" below): 0.4 to 0.7 deployed, 0.8 (snapshot and digest) built, all waiting for the user's look; then 0.9
-   (template clean-up), the last of Phase 0.
+   truth" below): every item built (step 1, 0.1–0.9), 0.1–0.3 confirmed, the rest waiting for the user's look; 0.9
+   not yet deployed. Spec §2: Phase 1 waits for the demand signal (at least 5 paid First Audits out of 20 offers);
+   until then the First Audits are made with these tools plus the founder's review.
 1. The rest of the user's list of 17 Nov: the report's competitors and sources (3–4), the bug in the dynamics
    window. Each waits for its screenshots. (Savollar, point 5, was made simple on 18 Nov from the user's own
    screenshot of it.)
@@ -202,6 +203,22 @@ that is committed.
    that no key and no client's name is in it.
 
 ## Done (as of 18 November 2026)
+
+- **Built, waiting for the user's look: Phase 0 item 0.9 of the report spec, the template clean-up (21 Nov), on the
+  branch `phase0-template`; merged and pushed the same day, when the user chose "Ship 0.9": the last item of
+  Phase 0.** The user: "Ship 0.8, then plan 0.9"; after
+  the plan they chose, when asked, the same rule for page actions as for topics. Spec §6.3's topic ranking
+  (`metrics.topic_ranking`): a topic gets a standing only with 3 answers, and the topics are counted and ordered worst
+  first only when 3 of them qualify, else a line says why (the baseline: 10 topics of 1 or 2 answers, unranked, and
+  its "never named in a topic" risk from one answer gone, defect 11); a page about a topic only for a topic of 3
+  answers with competitors named and the client never (the baseline's stored one no longer shows). Explicit empty
+  states: Sources says "No data: no answer in this check cited a site." in the place of an empty table, and drops the
+  sites to get onto (defect 13's other half). The test reader learned the parts React streams inside tables (a row
+  of the competitors' table read empty without them). Tests: `pytest` 53 pass, `-m page` 19 pass with two new ones (a
+  made-up check with nothing to show says why in each place, and the printed PDF numbers its sections 1 to 14 without
+  a gap); no expected failure left; the type check and the linter are clean. Looked at in headless Chrome: Topics and
+  the risks register on the baseline in English on desktop and Uzbek at 390px, the empty check's competitors, Sources
+  and Topics. New on this computer only: `pypdf` (`requirements-dev.txt`). No new variable, no new table, no paid request.
 
 - **Built, waiting for the user's look: Phase 0 item 0.8 of the report spec, the Free Snapshot and the Telegram
   digest (21 Nov), on the branch `phase0-snapshot`; merged, pushed and deployed the same day, when the user chose
@@ -1294,6 +1311,7 @@ All from `frontend/`: `npm run dev` (development), `npm run build` then `npm run
 - Use the baseline client's first check (spec §3.3) as the test fixture. Acceptance tests are in spec §11.1; they run in `backend/tests/` on that check's data, which stays on this computer (`backend/tests/README.md`). Never write the client's name, its competitors' names or its project's id into a committed file.
 - Work on one Phase 0 item at a time. Show me a plan before writing code.
 - Decided with the user on 21 Nov 2026, while planning Phase 0: the baseline's scope card shows 20 slots, 15 completed and 5 excluded, with the reason that the free check asks ChatGPT 5 of the 10 questions (nothing failed: only 15 were planned); a Gemini answer that ran no web search counts as completed and says so ("Gemini searched in k of n"); the report surfaces (the report, its Hisobotlar copy, the PDF, the snapshot, the digest, the email) read the single data object in Phase 0, and the 0–100 score goes from everywhere (Hisobotlar's register, the dashboard's project cards, the landing page's sample report, the email too), while the other pages move to the object later.
+- Decided with the user on 21 Nov 2026, for item 0.9: a page about a topic is suggested only for a topic with at least 3 answers where competitors are named and the client never (the same 3 answers as spec §6.3's topic ranking).
 - Decided with the user on 21 Nov 2026, for item 0.8: the Free Snapshot reports today's free check as it is asked (10 questions, Gemini 10 and ChatGPT 5); its call to action is a request button with no price (the price and contacts when the user gives them); the digest is copied by hand from Hisobotlar and the snapshot, and opens the report's email.
 - Decided with the user on 21 Nov 2026, for item 0.7: a project without a city is asked from its market's main city (Uzbekistan Tashkent, Kazakhstan Almaty, Kyrgyzstan Bishkek); a project's own city wins; other countries are told the country alone. Gemini on Vertex gets the city's coordinates as its grounding's location (one test call approved and made).
 - Decided with the user on 21 Nov 2026, for item 0.6: three runs of each question only for the paid First Audit, started by hand (`--runs 3`); weekly checks stay at one run until prices are set for more (three would cost Standard more than its $39.99). With several runs the PDF prints in full only the questions where the client or a tracked competitor is named, the others by their beginning.
