@@ -204,8 +204,10 @@ that is committed.
 ## Done (as of 18 November 2026)
 
 - **Built, waiting for the user's look: Phase 0 item 0.5 of the report spec, evidence for every finding and the
-  answers as a CSV (21 Nov), on the branch `phase0-evidence`; merged and pushed the same day, when the user chose
-  "Ship 0.5, then plan 0.6".** The user: "Ship 0.4, then plan 0.5";
+  answers as a CSV (21 Nov), on the branch `phase0-evidence`; merged, pushed and deployed the same day, when the
+  user chose "Ship 0.5, then plan 0.6" (Vercel's build passed; the server's previous `app/` is kept as
+  `app.bak-before-evidence`; both live projects' reports open with a top finding of 2 answers where competitors
+  appear and the client doesn't).** The user: "Ship 0.4, then plan 0.5";
   after the plan they chose, when asked, every answer in full in the PDF too. `metrics.top_finding` picks the
   report's top finding (spec §4.1, §4.14): the buyer question where tracked competitors are named in the most
   answers and the client in none (else beside it, else the client alone, else the open shelf). On the baseline:
