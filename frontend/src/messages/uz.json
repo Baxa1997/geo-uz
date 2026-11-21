@@ -76,16 +76,62 @@
     "copied": "Havola nusxalandi",
     "footer": "Seenova AI tomonidan AI’ning {date} dagi javoblari asosida tayyorlandi. Raqamlar shu javoblarni tasvirlaydi; bu prognoz emas.",
     "meta": {
-      "period": "Davr",
       "periodRange": "{from} – {to}",
       "issued": "Hisobot sanasi",
-      "scope": "Qamrov",
-      "scopeValue": "{prompts} ta savol × {samples} ta javob = {answers} ta javob",
-      "assistant": "AI yordamchi",
-      "assistantValue": "{engine}, veb-qidiruv bilan",
-      "number": "Hisobot raqami",
-      "preparedBy": "Tayyorladi",
-      "preparedByValue": "Seenova AI platformasi"
+      "number": "Hisobot raqami"
+    },
+    "scope": {
+      "title": "Tekshiruv qamrovi",
+      "check": "Tekshiruv",
+      "baseline": "Birinchi tekshiruv: keyingilari shu bilan solishtiriladi",
+      "later": "Oldingi tekshiruv bilan solishtiriladi",
+      "collected": "{date} kuni yigʻilgan",
+      "assistants": "Assistentlar",
+      "answers": "{count} ta javob",
+      "surfaces": {
+        "api_web_search": "veb-qidiruv",
+        "api_grounded": "Google qidiruvi"
+      },
+      "located": "joylashuv: {place}",
+      "toldInInstructions": "joy faqat koʻrsatmasida aytilgan ({place}), joylashuv sozlamasi sifatida emas",
+      "notLocated": "joylashuvsiz soʻralgan",
+      "noCity": "{country}, shahar koʻrsatilmagan",
+      "cityCountry": "{city}, {country}",
+      "varies": "har soʻrovda bir xil emas",
+      "searched": "{completed} ta javobdan {searched} tasida internetdan qidirgan",
+      "notTracked": "Hali tekshirilmaydi",
+      "notTrackedNames": {
+        "google_ai_overviews": "Google AI Overviews",
+        "yandex": "Yandex"
+      },
+      "questions": "Savollar",
+      "buyerQuestions": "{count} ta xaridor savoli",
+      "brandQuestions": "{count} ta brend savoli",
+      "howto": "{count} ta “qanday qilish” savoli",
+      "slots": "Rejalangan javoblar",
+      "slotQuestions": "{count} ta savol",
+      "slotAssistants": "{count} ta assistent",
+      "slotRuns": "{count} marta",
+      "completed": "{count} tasi olindi",
+      "excluded": "{count} tasi chiqarilgan",
+      "failed": "{count} tasi xato",
+      "unfinished": "{count} tasi tugallanmagan",
+      "excludedWhy": "Nega chiqarilgan",
+      "failedWhy": "Nega xato",
+      "reasons": {
+        "free_check_subset": "bepul birinchi tekshiruv ChatGPT’ga {questions} ta savoldan {asked} tasini beradi, Gemini’ga esa hammasini",
+        "brand_free_check_subset": "bepul birinchi tekshiruv ChatGPT’ga brend savolini faqat birinchi tilda beradi",
+        "not_planned": "bu tekshiruvda rejalanmagan",
+        "error": "assistent qayta urinishlardan keyin ham xato qaytardi",
+        "empty_answer": "assistent matnsiz javob berdi",
+        "not_logged": "yozib qoʻyilmagan: tekshiruv har bir rejalangan javob yozib borilishidan oldin qilingan"
+      },
+      "byLanguage": "Javoblar tili boʻyicha",
+      "branded": "Brend savollari",
+      "brandedValue": "{completed} ta javob, alohida tekshiriladi: yuqoridagi hech bir raqamga kirmaydi",
+      "brands": "Brendlar",
+      "brandsValue": "{tracked} tasi kuzatiladi · {others, plural, =0 {javoblarda boshqa nom yoʻq} other {javoblarda yana # ta nom, koʻrib chiqilmagan}}",
+      "rebuilt": "Bu tekshiruv har bir rejalangan javob yozib borilishidan (2026-yil 21-noyabr) oldin qilingan: uning rejasi saqlangan javoblardan tiklandi."
     },
     "sections": {
       "summary": "Rahbar uchun xulosa",
@@ -111,37 +157,43 @@
       "noActions": "Kutilayotgan ish yoʻq: hozirgacha berilgan barcha tavsiyalar bajarilgan yoki rad etilgan."
     },
     "scorecard": {
-      "lead": "Hisobot kuzatadigan beshta raqam: hozir, oldingi tekshiruvda, eng kuchli raqobatchiga nisbatan va tekshiruvlar davomida.",
+      "lead": "Shu tekshiruv raqamlari, har biri nimadan hisoblangani bilan: sizniki va eng kuchli raqobatchiniki yonma-yon. Teng brendlar birga koʻrsatiladi.",
       "metric": "Koʻrsatkich",
-      "now": "Hozir",
-      "before": "Oldin",
-      "change": "Oʻzgarish",
       "best": "Eng kuchli raqobatchi",
       "about": {
-        "visibility": "Sizni tilga olgan javoblar ulushi",
-        "shareOfVoice": "Kuzatilayotgan brendlarning barcha tilga olinishlaridagi ulushingiz",
-        "position": "Javobdagi oʻrtacha oʻrningiz; 1 — birinchi",
-        "sentiment": "Siz haqingizda qanchalik ijobiy gapirilgani, 100 dan",
-        "usedAsSource": "Saytingizga havola bergan javoblar ulushi"
+        "visibility": "Sizni tilga olgan xaridor javoblari, barchasidan",
+        "coverage": "Kamida bitta javobi sizni tilga olgan savollar",
+        "shareOfVoice": "Kuzatilayotgan brendlarning barcha tilga olinishlaridan sizniki; {minimum} tadan koʻrsatiladi",
+        "sentiment": "AI siz haqingizda qanday gapiradi, har bir tilga olinish boʻyicha",
+        "position": "Javob bizneslarni raqamlangan roʻyxatda bergandagi oʻrningiz",
+        "usedAsSource": "Saytingizga havola bergan javoblar, saytga havola berganlaridan"
       },
       "noChange": "oʻzgarmadi",
       "better": "{amount} ga yaxshilandi",
       "worse": "{amount} ga yomonlashdi",
-      "notNamed": "tilga olinmagan",
-      "gap": "Farq",
-      "ahead": "{amount} ga oldinda",
-      "behind": "{amount} ga ortda",
-      "level": "teng",
-      "trend": "Dinamika",
-      "trendLabel": "{metric} {count} ta tekshiruvda: {from} dan {to} gacha"
+      "you": "{brand}",
+      "tied": "teng",
+      "labels": {
+        "visibility": "Tilga olinish",
+        "coverage": "Savollar",
+        "shareOfVoice": "Ovoz ulushi",
+        "sentiment": "Baho",
+        "position": "Javobdagi oʻrni",
+        "usedAsSource": "Manba sifatida"
+      }
     },
     "competitors": {
-      "lead": "Oxirgi tekshiruvdagi barcha kuzatilayotgan brendlar, eng koʻp koʻringanidan boshlab.",
+      "lead": "Shu tekshiruvdagi barcha kuzatilayotgan brendlar, eng koʻp tilga olinganidan boshlab. Teng tilga olingan brendlar bir oʻrinni boʻlishadi.",
       "brand": "Brend",
-      "change": "Oʻzgarish",
       "chart": "Tekshiruvlar davomidagi tilga olinish",
       "chartLabel": "Chiziqli grafik: {count} ta tekshiruvda {brands} ta brendning tilga olinishi",
-      "you": "siz"
+      "you": "siz",
+      "rank": "Oʻrin",
+      "named": "Tilga olingan",
+      "tone": "Baho",
+      "position": "Javobdagi oʻrni",
+      "shareOfVoice": "Ovoz ulushi",
+      "noShareOfVoice": "Ovoz ulushi hali yoʻq: kuzatilayotgan brendlar jami {mentions} marta tilga olingan, kamida {minimum} marta kerak."
     },
     "topics": {
       "lead": "AI mijozlaringizning qaysi ehtiyojlari haqida gapirganda sizni tilga oladi, qaysilarida esa faqat raqobatchilarni.",
@@ -188,8 +240,8 @@
       "own": "Sizning saytingiz",
       "competitor": "Raqobatchi sayti",
       "more": "Yana {count} ta saytga kamroq havola berilgan.",
-      "split": "AI havolalari kimga ishlaydi",
-      "splitLabel": "Havolalar taqsimoti: {parts}",
+      "split": "Keltirilgan saytlar kimga ishlaydi",
+      "splitLabel": "Keltirilgan saytlar taqsimoti: {parts}",
       "parts": {
         "own": "Oʻz saytingiz",
         "listed": "Siz bor saytlar",
@@ -197,21 +249,18 @@
         "competitors": "Raqobatchilar saytlari"
       },
       "sites": "{count} ta sayt",
-      "top": "Eng koʻp keltirilgan saytlar"
+      "top": "Eng koʻp keltirilgan saytlar",
+      "sitesOf": "{total} ta saytdan {count} tasi",
+      "usedOf": "Har bir sayt hisobi: unga havola bergan javoblar, biror saytga havola bergan {answers} ta javobdan."
     },
     "accuracy": {
       "lead": "Ikki savol: AI siz haqingizda qanday ohangda gapiradi va aytgani toʻgʻrimi. Notoʻgʻri narx yoki manzil mijoz yoʻqotishga olib keladi.",
       "toneTitle": "A. AI siz haqingizda qanday ohangda gapiradi",
-      "toneHow": "Sizni tilga olgan har bir javob ijobiy (100), neytral (50) yoki salbiy (0) deb baholanadi. Baho — shularning oʻrtachasi: 67 va undan yuqori — ijobiy, 33 va undan past — salbiy.",
+      "toneHow": "AI sizni har safar tilga olganda bu ijobiy, neytral yoki salbiy deb oʻqiladi va sanaladi. Hammasi uchun bitta soʻz faqat {minimum} ta tilga olinishdan boshlab beriladi; tilga olinmasa, baho oʻlchanmaydi.",
       "toneNone": "Bu tekshiruvda AI sizni tilga olmadi, shuning uchun bahoni oʻlchab boʻlmaydi.",
       "toneOf": "Shu tekshiruv javoblarida siz {count} marta tilga olingansiz:",
-      "truthTitle": "B. AI aytgani toʻgʻrimi",
+      "truthTitle": "B. Brend faktlari: nomingiz bilan soʻralganda AI nima deydi",
       "truthHow": "AI yordamchilardan “{brand}” haqida nomi bilan soʻraymiz va har bir gapini saytingizdagi maʼlumot bilan solishtiramiz.",
-      "checks": {
-        "confirmed": "ta gap saytingizga mos",
-        "contradicted": "ta gap saytingizga zid",
-        "unverified": "ta gap saytingizda yoʻq: tekshirib boʻlmadi"
-      },
       "factsTitle": "Notoʻgʻri faktlar",
       "none": "Bu tekshiruvda notoʻgʻri fakt topilmadi.",
       "notChecked": "Bu tekshiruvda AI aytganlari hali saytingiz bilan solishtirilmagan.",
@@ -219,17 +268,25 @@
       "correct": "Aslida (saytingizda)",
       "where": "Qayerda aytilgan",
       "question": "Savol",
-      "since": "Birinchi marta"
+      "since": "Birinchi marta",
+      "toneFrom": "{count} ta tilga olinishdan",
+      "separate": "Brend savollari boʻyicha alohida tekshiruv: xaridor javoblarining birorta raqamiga kirmaydi",
+      "verdicts": {
+        "verified": "tasdiqlangan: saytingizga mos",
+        "contradicted": "zid: saytingizda boshqacha yozilgan",
+        "unverified": "tekshirib boʻlmaydi: saytingizda yoʻq"
+      },
+      "verdictsOf": "Brend savollariga berilgan {answers} ta javobdagi {statements} ta gap. Eskirgan faktlar hali tekshirilmaydi: buning uchun solishtiriladigan sahifa sanasi kerak."
     },
     "actions": {
-      "lead": "Nima qilish kerakligi, eng samaralisidan boshlab. Har bir harakat yuqoridagi boʻlimlardan kelib chiqadi va holatingizning bir yoʻnalishini yaxshilaydi.",
+      "lead": "Nima qilish kerakligi, eng samaralisidan boshlab. Har bir harakat yuqoridagi boʻlimlardan kelib chiqadi va beshta yoʻnalishdan birini yaxshilaydi.",
       "what": "Nima qilish kerak",
       "impact": "Kutilayotgan taʼsir",
       "status": "Holat",
       "none": "Ochiq tavsiyalar yoʻq.",
       "more": "Yana {count} tasi — Harakatlar sahifasida.",
       "doneTitle": "Bajarilganlar",
-      "doneProof": "Shu savollardagi tilga olinish: {before} → {after}",
+      "doneProof": "Shu savollarda tilga olinish:",
       "donePending": "Natija keyingi tekshiruvdan keyin koʻrinadi",
       "progress": "{total} ta harakatdan {done} tasi bajarildi",
       "parts": {
@@ -242,50 +299,46 @@
     },
     "method": {
       "lead": "Raqamlar qanday yigʻilgani: hisobotni tekshirish va takrorlash mumkin boʻlishi uchun.",
-      "assistant": "AI yordamchi",
-      "assistantValue": "{engine}, veb-qidiruv yoqilgan holda",
-      "location": "Kim nomidan",
-      "locationValue": "{city}dagi mijoz nomidan",
-      "questions": "Savollar",
-      "questionsValue": "{count} ta kuzatilayotgan savol: {split}",
-      "samples": "Har savolga javoblar",
-      "samplesValue": "{samples} ta: AI yordamchi har safar boshqacha javob beradi, shuning uchun har bir savol bir necha marta beriladi",
+      "assistants": "Qanday soʻralgan",
+      "assistantsValue": "{names}: har bir savol yangi suhbatda, assistentning oʻz veb-qidiruvi yoqilgan holda. Har birining modeli va unga aytilgan joy yuqoridagi qamrov kartasida.",
+      "runs": "Takrorlar",
+      "runsValue": "Har bir savol uni olgan har bir assistentga {runs} marta berilgan. Assistent har safar boshqacha javob beradi, shuning uchun bir marta soʻrash haqiqiy oʻzgarishni tasodifdan ajrata olmaydi.",
       "checks": "Tekshiruvlar",
       "checksValue": "Har hafta. Bu tekshiruv: {date}; oldingisi: {previous}",
       "checksFirst": "Har hafta. Bu birinchi tekshiruv: {date}",
       "brands": "Solishtirilgan brendlar",
       "limits": "Cheklovlar",
-      "limitsValue": "AI yordamchining javoblari har safar va API bilan ilova orasida farq qilishi mumkin. Raqamlar — shu tekshiruvdagi barcha {answers} ta javob boʻyicha ulushlar; ikki tekshiruv orasidagi bir necha punktlik farq tasodif boʻlishi mumkin. Bir necha tekshiruv davomidagi yoʻnalish bir haftalik oʻzgarishdan ishonchliroq.",
-      "condition": "Holat bahosi",
-      "conditionValue": "{areas} ta yoʻnalishning oʻrtachasi; har biri shu tekshiruv javoblari boʻyicha 0 dan 100 gacha baholanadi. {good} va undan yuqori — yaxshi, {fair} va undan yuqori — oʻrtacha, {fair} dan past — zaif. Har bir yoʻnalish qanday hisoblanishi “Atamalar” boʻlimida.",
-      "questionsPart": "{count} tasi — {language}"
+      "limitsValue": "AI yordamchining javoblari har safar farq qiladi va uning oʻz ilovasida koʻrinadigan javobdan boshqacha boʻlishi mumkin. Raqamlar — shu tekshiruvdagi {answers} ta xaridor javobi boʻyicha hisoblar; ikki tekshiruv orasidagi bir javoblik farq tasodif boʻlishi mumkin. Bir necha tekshiruv davomidagi yoʻnalish bir haftalik oʻzgarishdan ishonchliroq.",
+      "samples": "Kichik namunalar va tenglik",
+      "samplesValue": "Har bir raqam nimadan hisoblangani bilan beriladi. {answers} tadan kam javobda hisob kichik namuna deb belgilanadi; ovoz ulushi kuzatilayotgan brendlar {mentions} marta tilga olingandan keyingina koʻrsatiladi; ohang bitta soʻz bilan faqat {tone} ta tilga olinishdan boshlab ifodalanadi, tilga olinmasa — oʻlchanmaydi; javobdagi oʻrin faqat raqamlangan roʻyxatdan olinadi. Teng tilga olingan brendlar bir oʻrinni boʻlishadi, ularning hech biri yetakchi emas."
     },
     "glossary": {
-      "visibility": "Brendni tilga olgan javoblar ulushi. 42% — har 100 javobdan 42 tasi.",
-      "shareOfVoice": "Brendning tilga olinishlari kuzatilayotgan barcha brendlarning tilga olinishlariga nisbatan. Eʼtibor qanday taqsimlanganini koʻrsatadi.",
-      "position": "Javobda tilga olingan bizneslar orasida brend nechanchi turgani. 1 — birinchi; qancha kichik boʻlsa, shuncha yaxshi. Brend tilga olingan javoblar boʻyicha oʻrtacha.",
-      "sentiment": "Brend haqida qanchalik ijobiy gapirilgani: 0 (salbiy) dan 100 (ijobiy) gacha.",
-      "usedAsSource": "Saytga havola bergan javoblar ulushi. Oʻz saytingiz uchun — AI siz yozgan maʼlumotga qanchalik tayanishini koʻrsatadi.",
+      "visibility": "Brendni tilga olgan xaridor javoblari — tekshiruvdagi xaridorlar savollariga berilgan barcha javoblardan: hisob (k/n) va uning ulushi.",
+      "shareOfVoice": "Brendning tilga olinishlari kuzatilayotgan brendlarning barcha tilga olinishlaridan. Ular yetarlicha koʻp tilga olingandagina koʻrsatiladi; undan kam boʻlsa — hisoblar.",
+      "position": "Javob bizneslarni raqamlangan roʻyxatda berganda brend nechanchi turgani: shu javoblar boʻyicha mediana. Belgili roʻyxat, jadval yoki matnda tartib yoʻq, shuning uchun ular oʻrin bermaydi.",
+      "sentiment": "Brendning har bir tilga olinishi ijobiy, neytral yoki salbiy deb oʻqiladi va sanaladi; hammasi uchun bitta soʻz faqat bir nechta tilga olinishdan keyin. Brend tilga olinmasa — oʻlchanmaydi.",
+      "usedAsSource": "Saytga havola bergan javoblar — biror saytga havola bergan javoblardan. Oʻz saytingiz uchun AI siz eʼlon qilgan narsaga qanchalik tayanishini koʻrsatadi.",
       "checkTerm": "Tekshiruv",
-      "check": "Haftalik bir aylanish: unda har bir kuzatilayotgan savol bir necha marta beriladi.",
-      "numbers": "Beshta koʻrsatkich",
-      "conditionTitle": "Holat bahosi",
-      "conditionTerm": "Holat bahosi",
-      "condition": "AI’dagi holatingizni koʻrsatadigan 0 dan 100 gacha bitta son: quyidagi {areas} ta yoʻnalish bahosining oʻrtachasi.",
+      "check": "Bitta aylanish: kuzatilayotgan savollar assistentlarga beriladi. Qancha javob rejalangani va olingani qamrov kartasida.",
+      "numbers": "Koʻrsatkichlar",
       "areas": {
-        "visibility": "Tilga olinishingiz son sifatida: javoblarning 42%ida tilga olinsangiz — 42.",
-        "competition": "Tilga olinishingiz eng koʻp tilga olingan kuzatilayotgan brendnikiga nisbatan, foizda. Yetakchi boʻlsangiz — 100.",
-        "coverage": "Kuzatilayotgan savollarning necha foizida kamida bitta javob sizni tilga olgani.",
-        "sources": "AI biznes joylashishi mumkin boʻlgan saytlarga (kataloglar, xaritalar, yangiliklar, ijtimoiy tarmoqlar) bergan havolalarning necha foizi siz bor saytlarga toʻgʻri kelgani.",
-        "accuracy": "Sizga berilgan baho (100 dan); AI siz haqingizda aytgan har bir notoʻgʻri fakt uchun {penalty} ball ayiriladi."
+        "visibility": "Sizni tilga olgan xaridor javoblari, barchasidan.",
+        "competition": "Har biri qanchalik koʻp tilga olinganiga koʻra kuzatilayotgan brendlar orasidagi oʻrningiz; teng tilga olinganlar uni boʻlishadi.",
+        "coverage": "Kamida bitta javobi sizni tilga olgan savollar, berilgan savollardan.",
+        "sources": "Saytingizga havola bergan javoblar, biror saytga havola berganlaridan.",
+        "accuracy": "AI ning siz haqingizdagi ohangi, har bir tilga olinish boʻyicha, va u aytgan notoʻgʻri faktlar."
       },
-      "statusTerm": "Holat",
-      "status": "Baho qanday oʻqiladi: {good} dan — yaxshi, {fair} dan — oʻrtacha, {fair} dan past — zaif."
+      "coverage": "Kamida bitta javobi brendni tilga olgan savollar — javob olgan savollardan.",
+      "areasTitle": "Beshta yoʻnalish",
+      "tiesTerm": "Tenglik",
+      "ties": "Teng tilga olingan brendlar bir oʻrinni boʻlishadi. Brend boshqa hammasidan koʻproq tilga olingandagina yetakchi hisoblanadi.",
+      "naTerm": "Oʻlchanmaydi",
+      "na": "Oʻlchaydigan narsa boʻlmaganda koʻrsatiladi, masalan, AI tilga olmagan brendning ohangi. U hech qachon oʻrtacha qiymat oʻrnida turmaydi."
     },
     "appendix": {
       "lead": "Yuqoridagi mavzularga kirgan har bir savol: nechta javobda tilga olingansiz va yoningizda kim tilga olingan. Javoblarni oʻqish uchun savolni oching.",
       "printNote": "Qogʻozda har bir javobning boshi berilgan. Javoblarning toʻliq matni — hisobot havolasida.",
-      "answerOf": "{engine} · {n}-javob"
+      "answerOfRun": "{engine} · {n}-takror"
     },
     "changes": {
       "lead": "Raqamlar ortidagi voqealar: brendlar orasidagi oʻrningiz, AI tayanadigan saytlar, yangi notoʻgʻri faktlar va bu hafta bajarilgan ishlar. Raqamlarning oʻzi oldingi boʻlimda.",
@@ -320,11 +373,6 @@
       "decisions": "Qarorlar",
       "reference": "Maʼlumotnoma"
     },
-    "status": {
-      "good": "Yaxshi",
-      "fair": "Oʻrtacha",
-      "weak": "Zaif"
-    },
     "areas": {
       "visibility": "Tilga olinish",
       "competition": "Raqobatdagi oʻrin",
@@ -333,50 +381,30 @@
       "accuracy": "Aniqlik va baho"
     },
     "condition": {
-      "overall": "Umumiy holat",
-      "byArea": "Yoʻnalishlar boʻyicha holat",
-      "score": "Baho",
-      "status": "Holat",
-      "outOf100": "{score}/100",
-      "gaugeLabel": "Holat bahosi: 100 dan {score}, {status}",
-      "first": "Birinchi hisobot: solishtirish uchun oldingisi yoʻq",
-      "changeUp": "{points} ball yuqori",
-      "changeDown": "{points} ball past",
-      "changeSame": "Oʻzgarmadi",
-      "columnsLabel": "Ustunli grafik: {count} ta hisobotdagi holat bahosi, {from} dan {to} gacha",
-      "reports": "{count} ta hisobot",
-      "scaleGood": "Yaxshi: {from}+",
-      "scaleFair": "Oʻrtacha: {from}–{to}",
-      "scaleWeak": "Zaif: 0–{to}",
-      "verdict": "Umumiy holatingiz — {status}: 100 dan {score} ball.",
-      "verdictAreas": "Eng kuchli yoʻnalishingiz — {strongest} ({strongestScore}), eng zaifi — {weakest} ({weakestScore}).",
       "conclusion": "Xulosa",
       "recommended": "Tavsiya",
-      "inPlan": "Rejadagi {number}-harakat, {section}-boʻlim",
-      "since": "oldingi hisobotga nisbatan"
+      "inPlan": "Rejadagi {number}-harakat, {section}-boʻlim"
     },
     "findings": {
-      "visibility": "AI sizni har 10 javobdan {you} tasida tilga oladi ({percent}).",
-      "visibilityUp": "Bu oldingi hisobotdagidan {points} punkt koʻp.",
-      "visibilityDown": "Bu oldingi hisobotdagidan {points} punkt kam.",
-      "visibilitySame": "Oldingi hisobotda ham shunday edi.",
-      "competitionBehind": "Kuzatilayotgan {of} ta brend ichida {rank}-oʻrindasiz. Yetakchi — {leader}: {leaderValue}, sizdan {gap} punkt oldinda.",
-      "competitionFirst": "Kuzatilayotgan {of} ta brend ichida birinchisiz. Keyingisi — {next}: {nextValue}.",
+      "visibility": "AI xaridorlarga berilgan {answers} ta javobdan {named} tasida sizni tilga oladi.",
       "competitionAlone": "Hozircha raqobatchilar kuzatilmayapti, shuning uchun solishtiradigan brend yoʻq.",
       "coverage": "AI {total} ta savoldan {named} tasida sizni tilga oladi.",
       "coverageMissing": "{count} ta savolda u faqat raqobatchilarni tilga oladi, sizni esa hech qachon.",
       "coverageAll": "Faqat raqobatchilar tilga olingan savol yoʻq.",
-      "weakTopic": "Eng zaif mavzuingiz — “{topic}”: sizda {value}, {leader}da {leaderValue}.",
-      "sources": "AI biznes joylashishi mumkin boʻlgan saytlarga (kataloglar, xaritalar, yangiliklar, ijtimoiy tarmoqlar) bergan havolalarining {percent} qismi siz bor saytlarga toʻgʻri keladi.",
-      "sourcesMissing": "Shunday {count} ta saytda siz yoʻqsiz; eng koʻp keltiriladiganlari: {sites}.",
-      "sourcesAll": "Ularning barchasida borsiz.",
-      "sourcesNoneCited": "AI biznes joylashishi mumkin boʻlgan birorta saytga havola bermadi.",
-      "ownSite": "Oʻz saytingizga esa u javoblarning {own} qismida havola beradi.",
-      "accuracy": "AI siz haqingizda gapirgandagi baho — 100 dan {score} ({tone}).",
-      "accuracyFacts": "U siz haqingizda {count} ta notoʻgʻri fakt aytmoqda; har biri bu bahodan {penalty} ball ayiradi.",
+      "accuracyFacts": "U siz haqingizda {count} ta notoʻgʻri fakt aytadi.",
       "accuracyClean": "Siz haqingizda notoʻgʻri fakt topilmadi.",
       "accuracyNotChecked": "Notoʻgʻri faktlar hali tekshirilmagan.",
-      "accuracyNotNamed": "AI sizni tilga olmayapti, shuning uchun bahoni hozircha oʻlchab boʻlmaydi."
+      "accuracyNotNamed": "AI sizni tilga olmayapti, shuning uchun bahoni hozircha oʻlchab boʻlmaydi.",
+      "smallSample": "Bu kichik namuna: bitta javob ham hisobni sezilarli oʻzgartiradi.",
+      "competitionNobody": "Bu javoblarda kuzatilayotgan brendlardan hech biri tilga olinmagan: yetakchi yoʻq.",
+      "competitionYouLead": "Kuzatilayotgan brendlar orasida sizni eng koʻp tilga olishadi: {answers} ta javobdan {named} tasida.",
+      "competitionShared": "Yetakchilikni {names} bilan boʻlishasiz: har biringiz {answers} ta javobdan {named} tasida.",
+      "competitionLeader": "Eng koʻp {leader} tilga olinadi: {answers} ta javobdan {named} tasida; siz — {you} tasida.",
+      "competitionTied": "Yetakchi yoʻq: {names} teng — {answers} ta javobdan {named} tasida; sizda — {you}.",
+      "sourcesNoCitations": "Bu tekshiruvda birorta javob saytga havola bermadi.",
+      "sourcesClient": "Saytga havola bergan {answers} ta javobdan {cited} tasida sizning saytingiz bor.",
+      "accuracyFew": "AI sizni {count} marta tilga oladi: ohangi haqida xulosa uchun bu kam (kamida {minimum} ta kerak).",
+      "accuracyTone": "AI ning siz haqingizdagi ohangi: {tone}, {count} ta tilga olinish boʻyicha."
     },
     "events": {
       "placeUp": "{now}-oʻringa koʻtarildingiz",
@@ -425,31 +453,31 @@
           "detail": "Shu haqda soʻragan mijoz siz haqingizda emas, {leader} haqida eshitadi."
         },
         "leaderGap": {
-          "title": "{leader} sizdan {gap} punkt oldinda: unda {leaderValue}, sizda {you}.",
+          "title": "{leader} {answers} ta javobdan {named} tasida tilga olinadi; siz — {you} tasida.",
           "detail": "U koʻproq javobda tilga olinadi, shuning uchun mijozlar avval u haqda eshitadi."
         },
         "rivalRising": {
-          "title": "{name} bir haftada {points} punkt oʻsdi, hozir unda {value}.",
+          "title": "{name} bir haftada {points} punkt oʻsdi va endi {answers} ta javobdan {named} tasida tilga olinadi.",
           "detail": "Shu surʼatda davom etsa, bugun sizni tilga olayotgan javoblarni egallaydi."
         },
         "falling": {
-          "title": "Tilga olinishingiz bir haftada {points} punkt tushdi: hozir {value}.",
+          "title": "Tilga olinishingiz bir haftada {points} punkt tushdi: {answers} ta javobdan {named} tasida.",
           "detail": "Bir hafta tasodif boʻlishi mumkin; ikkinchi hafta ham tushsa, bu yoʻnalish — chora koʻrish kerak."
         },
         "tone": {
-          "title": "AI siz haqingizda gapirgandagi baho — 100 dan {score}.",
+          "title": "Sizning {mentions} ta tilga olinishingizdan {negative} tasi salbiy.",
           "detail": "U sharhlarda oʻqiganini takrorlaydi. Sharhlarga javob bering va sababini bartaraf eting — baho oʻzgaradi."
         },
         "listings": {
-          "title": "AI tayanadigan {count} ta saytda siz yoʻqsiz: {sites}.",
-          "detail": "Foiz — shu saytga havola bergan javoblar ulushi. Ularga joylashish — shu javoblarga kirishning eng tez yoʻli."
+          "title": "AI tayanadigan {count} ta saytda siz yoʻqsiz: {sites} (har biriga havola bergan javoblar, saytga havola bergan {answers} tadan).",
+          "detail": "Har bir hisob — saytga havola bergan javoblar, biror saytga havola bergan javoblardan. Ularga joylashish — shu javoblarga kirishning eng tez yoʻli."
         },
         "closeTopics": {
           "title": "{topics} {count, plural, one {mavzusida} other {mavzularida}} yetakchiga yaqinsiz.",
           "detail": "Eng yaqinida farq — {gap} punkt: shu mavzuda bitta kuchli sahifa yetakchilikni olib berishi mumkin."
         },
         "ownSite": {
-          "title": "AI javoblarning {you} qismida saytingizga havola beradi, {rival} saytiga esa — {rivalValue} qismida.",
+          "title": "Saytga havola bergan {answers} ta javobdan AI {you} tasida saytingizni, {rivalCited} tasida {rival} saytini keltiradi.",
           "detail": "Xizmatlar va narxlar aniq yozilgan sahifalarga koʻproq havola beriladi, havola berilgan sayt esa koʻproq tilga olinadi."
         },
         "rivalFalling": {
@@ -457,7 +485,7 @@
           "detail": "Umumiy mavzularingizda undan oʻtib ketish uchun qulay payt."
         },
         "language": {
-          "title": "Tilga olinishingiz {weak} savollarda {weakValue}, {strong} savollarda esa {strongValue}.",
+          "title": "{weak} savollarda {weakAnswers} ta javobdan {weakNamed} tasida tilga olinasiz, {strong} savollarda esa {strongAnswers} tadan {strongNamed} tasida.",
           "detail": "Bu farqni {weak} sahifalar va kataloglardagi yozuvlar yopadi."
         }
       }
@@ -506,7 +534,9 @@
         "contacts": "Aloqa",
         "reputation": "Obroʻ",
         "other": "Boshqa"
-      }
+      },
+      "tied": "teng",
+      "separate": "Brend savollaridan — biznes nomi bilan berilgan: alohida tekshiruv, yuqoridagi birorta raqamga kirmaydi."
     },
     "pdf": {
       "download": "PDF yuklab olish",
@@ -517,6 +547,37 @@
       "printInstead": "Chop etish oynasidan saqlash",
       "printHint": "Hisobot A4 koʻrinishida ochiladi va chop etish oynasi chiqadi: «PDF sifatida saqlash»ni tanlang.",
       "failedHint": "PDF fayl tayyorlanmadi. Chop etish oynasida «PDF sifatida saqlash»ni tanlang."
+    },
+    "headline": {
+      "label": "Xaridor javoblarida tilga olinish",
+      "of": "xaridorlar savollariga berilgan {answers} ta javobdan",
+      "smallSample": "Kichik namuna",
+      "smallSampleNote": "{minimum} tadan kam javobda bitta javob ham hisobni sezilarli oʻzgartiradi.",
+      "byArea": "Yoʻnalishlar boʻyicha",
+      "verdict": "{brand} xaridorlarga berilgan {answers} ta javobdan {named} tasida tilga olindi."
+    },
+    "counts": {
+      "na": "Oʻlchanmaydi",
+      "notNamed": "tilga olinmagan",
+      "rank": {
+        "place": "{place}-oʻrin",
+        "tied": "{place}-oʻrin, teng",
+        "none": "Oʻrinsiz"
+      },
+      "tone": {
+        "mixed": "Aralash",
+        "mostly": "Asosan {tone}",
+        "count": "{tone}: {count}",
+        "few": "{counts} (xulosa uchun tilga olinishlar kam)"
+      },
+      "position": {
+        "unordered": "Oʻrinsiz (tartibsiz roʻyxat)",
+        "numbered": "Oʻrtacha oʻrin {median} · {n} ta javobdan {k} tasida raqamlangan roʻyxat"
+      },
+      "shareOfVoice": {
+        "tooFew": "Koʻrsatilmaydi: ovoz ulushi uchun tilga olinishlar kam (kerakli {minimum} tadan {mentions} ta)"
+      },
+      "and": " va "
     }
   },
   "Headline": {
@@ -1402,13 +1463,7 @@
     "deleteFailed": "Oʻchirib boʻlmadi. Qayta urinib koʻring.",
     "deleteConfirm": "Oʻchirish",
     "cancel": "Bekor qilish",
-    "condition": "Holat: {score}/100 · {status}",
-    "status": {
-      "good": "Yaxshi",
-      "fair": "Oʻrtacha",
-      "weak": "Zaif"
-    },
-    "lowest": "Bahoni tushiryapti: {areas} →"
+    "namedOf": "{answers} ta javobdan {named} tasida tilga olingan"
   },
   "Overview": {
     "noDataTitle": "Hali oʻlchov yoʻq",
@@ -2406,7 +2461,7 @@
     "report": {
       "kicker": "Hisobot",
       "title": "Rahbar tushunadigan haftalik hisobot",
-      "text": "Har tekshiruvdan keyin bitta hujjat: umumiy holat bahosi (100 balldan), beshta yoʻnalish, nima oʻzgargani va qarorlar. Havola orqali ulashing yoki PDF qilib saqlang; hisobot emailingizga ham keladi.",
+      "text": "Har tekshiruvdan keyin bitta hujjat: xaridorlarga berilgan qancha javobdan nechtasida tilga olingansiz, beshta yoʻnalish oʻz hisoblari bilan, nima oʻzgargani va qarorlar. Havola orqali ulashing yoki PDF qilib saqlang; hisobot emailingizga ham keladi.",
       "soon": "Tez orada",
       "frame": {
         "title": "Holat hisoboti",
@@ -3741,11 +3796,11 @@
     "reports": {
       "latest": {
         "title": "Soʻnggi hisobot",
-        "text": "Bu haftadagi holatingiz: 100 dan umumiy baho, uning holati va oʻzgarishi hamda besh yoʻnalish — har birining bahosi ortidagi fakt bilan. “Hisobotni ochish” — barcha boʻlimlar; yuqorida — havola, Telegram va PDF."
+        "text": "Bu haftadagi holatingiz: sizni tilga olgan xaridor javoblari soni va besh yoʻnalish — har biri oʻz hisobi bilan. “Hisobotni ochish” — barcha boʻlimlar; yuqorida — havola, Telegram va PDF."
       },
       "archive": {
         "title": "Barcha hisobotlar",
-        "text": "Har hafta bitta holat hisoboti: topilgan holat va oʻsha hafta nima boʻlgani. Qatorni bossangiz, hisobot ochiladi; oxiridagi belgi uni PDF qilib saqlaydi."
+        "text": "Har hafta bitta hisobot: sizni nechta javob tilga olgani va oʻsha hafta nima boʻlgani. Qatorni bossangiz, hisobot ochiladi; oxiridagi belgi uni PDF qilib saqlaydi."
       },
       "delivery": {
         "title": "Hisobot qayerga boradi",
@@ -3759,11 +3814,11 @@
       },
       "contents": {
         "title": "Mundarija",
-        "text": "Hisobotning toʻrt qismi va oʻn ikki boʻlimi. Nuqta — yoʻnalish holati; bossangiz, oʻsha boʻlimga oʻtasiz, oʻqilayotgani esa belgilanadi."
+        "text": "Hisobotning qismlari va boʻlimlari. Bossangiz, oʻsha boʻlimga oʻtasiz, oʻqilayotgani esa belgilanadi."
       },
       "condition": {
         "title": "Holat",
-        "text": "Umumiy baho va uning holati hamda u tashkil topgan besh yoʻnalish — har birining bahosi ortidagi fakt bilan."
+        "text": "Sizni tilga olgan xaridor javoblari soni va besh yoʻnalish — har biri oʻz hisobi va uning ortidagi gap bilan."
       },
       "decisions": {
         "title": "Yangiliklar va qarorlar",
@@ -3784,44 +3839,40 @@
       "count": "{count} ta haftalik hisobot",
       "latest": "Soʻnggi hisobot",
       "open": "Ochish",
-      "change": "oldingi hisobotga nisbatan {points} ball",
       "columns": {
         "number": "№",
         "period": "Davr",
-        "condition": "Holat",
-        "areas": "Yoʻnalishlar",
-        "events": "Hafta voqealari"
+        "events": "Hafta voqealari",
+        "named": "AI javoblarida"
       },
       "hints": {
         "number": "Hisobotning haftalik hisobotlar qatoridagi raqami.",
         "period": "Hisobot qamragan hafta: oldingi tekshiruvdan shu tekshiruvgacha. Qatorni bossangiz, toʻliq hisobot ochiladi.",
-        "condition": "Umumiy holat bahosi (100 dan), uning holati va oldingi hisobotdan beri oʻzgarishi, ballda.",
-        "areas": "Holatning besh yoʻnalishi hisobotdagi tartibda: tilga olinish, raqobatdagi oʻrin, savollar qamrovi, manbalarda borligi, aniqlik va baho. Yashil — yaxshi, sariq — oʻrtacha, qizil — zaif; bahosini koʻrish uchun belgi ustiga keling.",
-        "events": "Oʻsha hafta nima boʻldi: oʻrningiz, kim kimdan oʻtdi, yangi notoʻgʻri faktlar, bajarilgan ishlar, katta oʻzgarishlar."
+        "events": "Oʻsha hafta nima boʻldi: oʻrningiz, kim kimdan oʻtdi, yangi notoʻgʻri faktlar, bajarilgan ishlar, katta oʻzgarishlar.",
+        "named": "Shu tekshiruvdagi xaridorlar savollariga berilgan javoblardan sizni tilga olganlari va eng koʻp tilga olingan brend (teng boʻlsa — barchasi)."
       },
       "csvLabel": "Eksport",
       "csvHint": "Jadvalni CSV faylda yuklab olish",
       "csv": {
         "date": "Sana",
-        "visibility": "Tilga olinish, %",
-        "shareOfVoice": "Ovoz ulushi, %",
-        "place": "Oʻrni",
-        "tone": "Baho",
-        "leader": "Yetakchi",
+        "leader": "Eng koʻp tilga olingan",
         "facts": "Notoʻgʻri faktlar",
         "done": "Bajarilgan harakatlar",
         "number": "№",
-        "condition": "Holat bahosi, /100",
-        "status": "Holat"
+        "named": "Sizni tilga olgan javoblar",
+        "answers": "Javoblar"
       },
       "firstReport": "Birinchi hisobot",
       "weekly": "Haftalik hisobot",
-      "area": "{area}: {score}/100, {status}",
       "pdf": "PDF",
       "pdfHint": "Shu hisobot A4 koʻrinishida ochiladi va chop etish oynasi chiqadi: “PDF sifatida saqlash”ni tanlang.",
       "pdfOf": "№ {number} hisobotning PDF fayli",
       "eventsQuiet": "Sezilarli oʻzgarish yoʻq",
-      "eventsFirst": "Birinchi tekshiruv"
+      "eventsFirst": "Birinchi tekshiruv",
+      "namedOf": "{answers} ta javobdan {named} tasida tilga olingan",
+      "namedMost": "Eng koʻp: {names}",
+      "namedMostTied": "Eng koʻp, teng: {names}",
+      "nobodyNamed": "Kuzatilayotgan brend tilga olinmagan"
     },
     "delivery": {
       "title": "Hisobot qayerga boradi",
@@ -3877,25 +3928,6 @@
     "detail": {
       "title": "{date} hisoboti",
       "contents": "Mundarija"
-    },
-    "reasons": {
-      "title": "Nega {score}?",
-      "text": "Umumiy baho — besh yoʻnalishning oʻrtachasi: har biri {points} ballgacha beradi. Quyida har biri qancha bergani va bahoni nima tushirayotgani.",
-      "earned": "{points} / {max}",
-      "total": "Jami",
-      "lowersTitle": "Bahoni nima tushiryapti",
-      "lost": "−{points} ball",
-      "areaScore": "yoʻnalish: {score}/100",
-      "todo": "Nima qilish kerak",
-      "more": "Yana {count} ta harakat",
-      "nothingLost": "Barcha yoʻnalishlar 100 dan 100: bahoni hech narsa tushirmayapti.",
-      "advice": {
-        "visibility": "Sizni tilga olishlari uchun nima qilish kerak — Harakatlar",
-        "competition": "Yetakchi qaysi savollarda oldinda — Raqobatchilar",
-        "coverage": "Sizni tilga olmagan savollar — Savollar",
-        "sources": "AI tayanadigan, lekin sizni koʻrsatmaydigan saytlar — Manbalar",
-        "accuracy": "Brend faktlarini kiriting: javoblar shular bilan solishtiriladi"
-      }
     }
   },
   "Pilot": {

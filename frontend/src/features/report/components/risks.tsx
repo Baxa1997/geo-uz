@@ -1,11 +1,11 @@
 import { ArrowRightIcon as ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight";
 import { LightbulbIcon as Lightbulb } from "@phosphor-icons/react/dist/ssr/Lightbulb";
 import { WarningIcon as TriangleAlert } from "@phosphor-icons/react/dist/ssr/Warning";
-import { useLocale, useMessages, useTranslations } from "next-intl";
+import { useMessages, useTranslations } from "next-intl";
 import { labelFor } from "@/shared/helpers/labels";
-import { formatPercent } from "@/shared/helpers/numbers";
+import { useCountWords } from "@/shared/hooks/use-count-words";
 import { cn } from "@/shared/helpers/utils";
-import type { Action, Report } from "@/shared/types/api";
+import type { Action, Report, WaveMetrics } from "@/shared/types/api";
 import { sectionNumber } from "../constants";
 import { outlook, type Level, type Opportunity, type Risk } from "../helpers/risks";
 import { ReportCard } from "./report-parts";
@@ -30,12 +30,11 @@ interface Line {
  * where it can gain, each entry a sentence with its numbers, a line on what it means, its level, and the
  * action of the plan that answers it. It is what the plan in the next section is made for.
  */
-export function Risks({ report, actions }: { report: Report; actions: Action[] }) {
+export function Risks({ report, actions, metrics }: { report: Report; actions: Action[]; metrics: WaveMetrics }) {
   const t = useTranslations("Report.risks");
   const messages = useMessages();
-  const locale = useLocale();
-  const { risks, opportunities } = outlook(report, actions);
-  const percent = (value: number) => formatPercent(value / 100, locale);
+  const { risks, opportunities } = outlook(report, actions, metrics);
+  const words = useCountWords();
   const topics = (keys: string[]) => keys.map((key) => t("quote", { text: labelFor(messages.Topics, key) })).join(", ");
   const language = (key: string) => (key === "uz" || key === "ru" || key === "en" ? t(`languages.${key}`) : key);
 
@@ -44,15 +43,15 @@ export function Risks({ report, actions }: { report: Report; actions: Action[] }
       case "facts":
         return { title: t("items.facts.title", { count: entry.count }), detail: t("items.facts.detail", { claim: entry.claim }) };
       case "lostTopics":
-        return { title: t("items.lostTopics.title", { count: entry.topics.length, topics: topics(entry.topics) }), detail: t("items.lostTopics.detail", { leader: entry.leader }) };
+        return { title: t("items.lostTopics.title", { count: entry.topics.length, topics: topics(entry.topics) }), detail: t("items.lostTopics.detail", { leader: words.names(entry.leaders) }) };
       case "leaderGap":
-        return { title: t("items.leaderGap.title", { leader: entry.leader, gap: entry.gap, leaderValue: percent(entry.leaderValue), you: percent(entry.you) }), detail: t("items.leaderGap.detail") };
+        return { title: t("items.leaderGap.title", { leader: entry.leader, named: entry.leaderNamed, you: entry.you, answers: entry.answers }), detail: t("items.leaderGap.detail") };
       case "rivalRising":
-        return { title: t("items.rivalRising.title", { name: entry.name, points: entry.points, value: percent(entry.value) }), detail: t("items.rivalRising.detail") };
+        return { title: t("items.rivalRising.title", { name: entry.name, points: entry.points, named: entry.named, answers: entry.answers }), detail: t("items.rivalRising.detail") };
       case "falling":
-        return { title: t("items.falling.title", { points: entry.points, value: percent(entry.value) }), detail: t("items.falling.detail") };
+        return { title: t("items.falling.title", { points: entry.points, named: entry.named, answers: entry.answers }), detail: t("items.falling.detail") };
       case "tone":
-        return { title: t("items.tone.title", { score: entry.score }), detail: t("items.tone.detail") };
+        return { title: t("items.tone.title", { negative: entry.negative, mentions: entry.mentions }), detail: t("items.tone.detail") };
     }
   };
 
@@ -60,18 +59,25 @@ export function Risks({ report, actions }: { report: Report; actions: Action[] }
     switch (entry.kind) {
       case "listings":
         return {
-          title: t("items.listings.title", { count: entry.count, sites: entry.sites.map((site) => `${site.domain} (${percent(site.share)})`).join(", ") }),
+          title: t("items.listings.title", { count: entry.count, answers: entry.answers, sites: entry.sites.map((site) => `${site.domain} (${words.fraction(site.cited, entry.answers)})`).join(", ") }),
           detail: t("items.listings.detail"),
         };
       case "closeTopics":
         return { title: t("items.closeTopics.title", { count: entry.topics.length, topics: topics(entry.topics) }), detail: t("items.closeTopics.detail", { gap: entry.gap }) };
       case "ownSite":
-        return { title: t("items.ownSite.title", { you: percent(entry.you), rival: entry.rival, rivalValue: percent(entry.rivalValue) }), detail: t("items.ownSite.detail") };
+        return { title: t("items.ownSite.title", { you: entry.you, rival: words.names(entry.rivals), rivalCited: entry.rivalCited, answers: entry.answers }), detail: t("items.ownSite.detail") };
       case "rivalFalling":
         return { title: t("items.rivalFalling.title", { name: entry.name, points: entry.points }), detail: t("items.rivalFalling.detail") };
       case "language":
         return {
-          title: t("items.language.title", { weak: language(entry.weak), weakValue: percent(entry.weakValue), strong: language(entry.strong), strongValue: percent(entry.strongValue) }),
+          title: t("items.language.title", {
+            weak: language(entry.weak),
+            weakNamed: entry.weakNamed,
+            weakAnswers: entry.weakAnswers,
+            strong: language(entry.strong),
+            strongNamed: entry.strongNamed,
+            strongAnswers: entry.strongAnswers,
+          }),
           detail: t("items.language.detail", { weak: language(entry.weak) }),
         };
     }

@@ -51,7 +51,7 @@ something on the website.
   by agreement. No payment yet: a plan is switched on by hand (`python -m app.admin plan`). The table is in
   `PLAN.md`.
 
-## Where the project stands (18 November 2026)
+## Where the project stands (21 November 2026)
 
 Read this section first in a new session: it says what exists, how to run it, and where to go on. The entries
 under "Done" hold the detail, newest first.
@@ -77,7 +77,9 @@ under "Done"): the name Seenova AI, then its logo as two rounds; the first part 
 with a task for the owner's own AI on every action; Notoʻgʻri faktlar rebuilt; a real PDF download; the
 reader's signature lines gone from the report; the landing page's indicator, the sentence with chips and a
 smaller headline; (19 Nov) full-height screens for the first check and the login, black and gray buttons in the
-dashboard, and Savollar made simple.
+dashboard, and Savollar made simple. **(21 Nov) Phase 0 of the report spec**, its test harness and items 0.1–0.3
+(the slot log and the data object with the scope card; counts in the place of the 0–100 score; every percentage
+beside its count), merged and pushed; 0.1–0.3 confirmed by the user, the harness waiting for their look.
 
 **The user's decisions that hold now:**
 
@@ -98,6 +100,9 @@ dashboard, and Savollar made simple.
 **Go on from here.** Nothing is finished until the user confirms it, and most of "Done" since 15 Nov still
 waits for their look. The open work, in the order the user picks (ask as a short choice):
 
+0. **Phase 0 of the report spec, item by item, a plan shown before each** (section "Seenova report: source of
+   truth" below): 0.4 next (each cited site's kind from a list of our own and the AI, unknown sites
+   `unclassified` and never an action, spec §7's rules for actions), then 0.5 to 0.9.
 1. The rest of the user's list of 17 Nov: the report's competitors and sources (3–4), the bug in the dynamics
    window. Each waits for its screenshots. (Savollar, point 5, was made simple on 18 Nov from the user's own
    screenshot of it.)
@@ -184,19 +189,103 @@ that is committed.
 3. **Three languages, always.** Every piece of interface text goes into `uz.json`, `ru.json` and `en.json`.
 4. **Check before saying done.** Open the change in a real browser, on desktop and phone width, and run the
    type check and the linter. Judge speed on a production build, not on `npm run dev`.
-6. **Variables are reported (the user's rule, 15 Nov).** A change that adds, renames or removes a variable
+5. **Variables are reported (the user's rule, 15 Nov).** A change that adds, renames or removes a variable
    updates `ENVIRONMENT.md` in the same piece of work, and the reply names the variable, where the user has to
    set it (this computer, Vercel, the server) and to what. A secret's value is never written in the repository
    or asked for in chat: it goes into `backend/.env.server`, which git ignores.
-7. **Finished means the user said so (the user's rule, 15 Nov).** When a feature is built and checked, say so
+6. **Finished means the user said so (the user's rule, 15 Nov).** When a feature is built and checked, say so
    and ask the user to confirm it. Only after they do is it written as finished in "Done" and in `PLAN.md`;
    until then it is recorded as built and waiting for their look. Every feature that is confirmed is
    documented: what it does, where it lives, how to run it, what it needs.
-5. **Commit only when the user asks.** Say plainly which branch the work is on. "commit, push" has meant each
+7. **Commit only when the user asks.** Say plainly which branch the work is on. "commit, push" has meant each
    time: a branch for the work, a commit, a merge into `main`, and a push of both. Before any commit, check
    that no key and no client's name is in it.
 
 ## Done (as of 18 November 2026)
+
+- **Finished, confirmed by the user on 21 Nov: Phase 0 item 0.3 of the report spec, every percentage beside its
+  count (21 Nov); merged and pushed with step 1, 0.1 and 0.2 on the branch `phase0-wave-object` the same day, when
+  the user chose "commit, push", not deployed.** The user: "start 0.3";
+  after the plan they chose, when asked, to move the sections it touches to the data object. One rounding rule,
+  `metrics.share` (a whole percent, half up), mirrored by the frontend's `shareOf`; every percentage in the report
+  goes through `Share` ("2/7 · 29%", with its count marked). The data object now carries each cited site's kind
+  (`domains`, today's typing until 0.4), and the metrics count each assistant, each topic and question language
+  (the competitors named most with ties), each cited site (once an answer, over the answers that cite any site,
+  spec §6.3: the most cited site is 2 of 7, it read 13% of all 15) with the sites split in sites (24 of 26 don't list the
+  client, 92%: it read "24 sites · 91%", a share of citations beside a count of sites, defect 7), and the
+  brand-question check's verdicts. Each AI assistant, Topics, Sources and the risks register read them (the register
+  speaks in counts, never a percentage); a done action's "what it changed" shows its counts (`proof.counts`).
+  Accuracy's part B is the brand facts block, labelled as a separate check not counted among the buyers' answers,
+  with verified 10, contradicted 0, unverified 8 (defect 8); "outdated" is said not to be checked yet. Defect 10
+  went with 0.2. Tests: `pytest` 31 pass and 1 expected failure (0.8); `-m page` 14 pass and 3 expected failures
+  (0.4, 0.5, 0.8); every one of the baseline report's 30 percentages stands beside its count; the type check and
+  the linter are clean. Looked at in headless Chrome on the baseline: the changed sections in English on desktop
+  and as print, in Russian on desktop and in Uzbek at 390px (nothing wider than the screen, no console error).
+  Seen and left: a topic counts as lost when a competitor is in half its answers, so a topic of 2 answers with one
+  rival mention is a high risk from one answer; the topic rules are 0.9's. Not changed: the visibility chart over checks (from a second
+  check; Phase 1's change log), the app pages outside the report. No new variable, no new table.
+
+- **Finished, confirmed by the user on 21 Nov: Phase 0 item 0.2 of the report spec, counts in the place of the
+  0–100 score (21 Nov); merged and pushed with step 1, 0.1 and 0.3 (`phase0-wave-object`), not deployed.** The user: "start 0.2";
+  after the plan they chose, when asked, counts with no status for the five areas, and the client's citation rate
+  over the answers that cite a site (spec §6.3). `app/metrics.py` adds `visibility` (the headline: 0 of 15 buyer
+  answers on the baseline, "small sample" under 20, 0 of 10 questions, 0 of 7 answers citing a site) and `brands`
+  (every tracked brand's count; ties share a rank, so the two rivals named once are "tied 1st" and nobody leads; tone
+  per mention, a word only from 3 mentions, N/A at none; a place only from a numbered list, so both rivals, named in
+  a bulleted list of 30, have none; share of voice only from 10 mentions, 2 on the baseline). The score is gone
+  from the report's API (`conditionHistory`), the report (the gauge, the area bars and statuses, the section tags,
+  the contents' dots), Hisobotlar ("Why 40?", the register's score and marks), the project cards, the landing page's
+  sample report and the email. The summary is now `HeadlineSummary` (the count beside the five areas by their
+  counts), the key figures and the competitors' table read the metrics, tone is never a number, the risks follow
+  the tie and tone rules, the method states the thresholds, the definitions were rewritten without the score.
+  The report's `history` carries each check's answers and those naming the client (the register, the cards).
+  Tests: `pytest` 25 pass and 2 expected failures (0.3, 0.8); `-m page` 12 pass and 5 expected failures (0.3, 0.4,
+  0.5, 0.8); 0.3's "every brand with its count" and 0.9's glossary test now pass too and lost their marks; the type
+  check and the linter are clean. Looked at in headless Chrome on the baseline: the report in the three languages on
+  desktop and at 390px (nothing wider than the screen), the PDF's first two pages (17 pages; the summary opens page
+  2 whole), Hisobotlar and a report's page in Uzbek on desktop and phone, the dashboard's card, the landing page's
+  sample report; no console error. Found and fixed: Chrome has no Uzbek list rules, so names joined in the browser
+  read "и" and broke hydration; names are joined with our own "va", "и", "and". Found, not fixed: the landing
+  page's top bar in Russian is 429px wide on a 390px phone (before this work). Not changed: the Overview and the
+  other pages keep share of voice, tone out of 100 and place until they move to the object; "what changed" from a
+  second check (the change log, Phase 1); the topic ranking rule (0.9); the platform-docs action (0.4). No new
+  variable, no new table.
+
+- **Finished, confirmed by the user on 21 Nov: Phase 0 item 0.1 of the report spec, the slot log, the data object
+  and the scope card (21 Nov); merged and pushed with step 1, 0.2 and 0.3 (`phase0-wave-object`), not deployed.** Built in a session
+  that ran out before writing it up; looked at and recorded the same day, when the user chose "Finish 0.1". The
+  slot log (`app/slots.py`, a new table `slots`) writes every call a check plans to an assistant before anything
+  is asked and closes it as completed, failed or excluded with why; a check made before the log has its slots
+  rebuilt when read (`reconstructed`), so the baseline shows 20 slots, 15 completed and 5 excluded with no write
+  to the live database. The data object (`app/wave.py`) and its metrics (`app/metrics.py`) are served by
+  `GET /projects/{id}/waves/{runId}` (`backend/README.md`, "The slot log and the data object"). Under the
+  report's title the scope card (`scope-card.tsx`, spec §4.0) takes the place of the four-fact table: the check,
+  each assistant with its model, its surface, the place it was told and how many answers searched the web, what
+  isn't checked yet, the questions, the answers planned against completed, excluded and failed with why, the
+  answers by language, the brand questions apart, the brands; the method section reads the same numbers. It
+  names each model, as spec §4.0 asks (point 14 of 17 Nov had taken model names out of the report). Tests:
+  `pytest` 17 pass and 2 expected failures (0.3, 0.8); `-m page` 6 pass and 11 expected failures (0.2–0.9);
+  the type check and the linter are clean. Looked at in headless Chrome on the baseline (the tests' own servers
+  and database): the shared report in Uzbek, Russian and English on desktop and at a true 390px (nothing wider
+  than the screen), the PDF's first page (16 pages), the method section, and Hisobotlar's copy in Uzbek on
+  desktop and at 390px. The rest of the report still has the 0–100 score and the 50s: item 0.2. Not deployed:
+  the server makes the `slots` table at start (locked on Supabase like the others). No new variable.
+
+- **Built, waiting for the user's look: Phase 0 step 1 of the report spec, the test harness (21 Nov); merged and
+  pushed with items 0.1–0.3 (`phase0-wave-object`; the branch `phase0-harness` holds no commit of its own).** The user: "start step 1", after the plan for spec §2's Phase 0 (ten
+  steps, this one without a product change). `backend/tests/` (`backend/tests/README.md`): the baseline client's
+  first check exported read-only from the server into `backend/tests/fixtures/` (ignored by git, as are the spec
+  and its go-to-market companion: they name a client), loaded into a fresh SQLite database with every key
+  blanked, so no test reaches the server, an assistant or an inbox. `.venv/bin/python -m pytest` checks the data
+  and the backend (12 pass: the fixture is the panel of spec §3.3, and today's code still shows what the audit
+  found; 3 of §11.1 are expected to fail); `-m page` starts a backend and a frontend dev server of its own on the
+  fixture and reads the English report (1 passes: the page shows the audited defects; 13 of §11.1 are expected
+  to fail; 2 pass and stay as guards, since today's page numbers its sections without gaps and has no empty
+  heading, so the audit's defect 13 doesn't come from it). Each expected failure names the Phase 0 item that
+  makes it pass. Found on the way: the audit's failed ChatGPT slots were never planned (the free check asks
+  ChatGPT half the questions), most of the baseline's Gemini answers ran no web search, and a project without a
+  city was asked from its country alone. New: pytest (`backend/requirements-dev.txt`, this computer only). No new
+  variable.
 
 - **Built, waiting for the user's look: Savollar made simple (18 Nov), on the branch `savollar-simple`; merged,
   pushed and deployed on 19 Nov with `full-screens`, when the user said "commit, push and deploy" (Vercel's
@@ -711,7 +800,7 @@ that is committed.
   icons were replaced everywhere: our own for the sidebar's pages, the metrics and the action goals, Phosphor for
   the rest; `lucide-react` is removed. The user looked and confirmed it. Still to do: the
   landing's claims that run ahead of the product (the Telegram report, "no sign-up needed").
-   The rules are in `frontend/CLAUDE.md`, "Our look".
+  The rules are in `frontend/CLAUDE.md`, "Our look".
 
 - **The pilot report as a product, and its generator (14 Nov), on the branch `pilot-report`; merged and pushed the same day, when
   the user said "commit, push" and then "merge".** The
@@ -1016,18 +1105,18 @@ that is committed.
   then `hisobotlar-correction` (the report as an official status document with a condition score, Hisobotlar
   opening on the latest condition), then `report-detail-width` (the report fills the panel's width), then
   `settings-and-overview` (Sozlamalar in Peec's layout, the Overview tightened, Savollar and a question's page in
-  Peec's design, brands' logos), then `plan-billing-correction` (Tarif's plans four in a row, as Peec's); on 14 Nov `pilot-report`, `pilot-first-run`, `models-and-site`, `backend-first-slice`, then `restyle` (the look of our own, the Uzbek metric names, the icons), then `email-login` (the login by email, wired to the backend); on 15 Nov `own-login-email` (the backend sends the login code itself; Supabase's tables locked) after `first-run-page` (the first run's page, the setup filled in from it, the backend on the server, API calls through the frontend); on 17 Nov `feedback-17-nov` (the user's list of 17 Nov, Manbalar rebuilt, the name Seenova AI and its logo), then `actions-simpler` (Harakatlar made simple, a task for the owner's own AI on every action); on 18 Nov `logo-rounds` (the logo as two rounds), then `wrong-facts-rebuild` (Notoʻgʻri faktlar rebuilt), then `report-pdf` (a real PDF download, no signature lines), then `docs-current` (the docs brought up to date with each other and the code), then `hero-indicator` (the landing page's indicator, the sentence with chips, a smaller headline); on 19 Nov `full-screens` (full-height screens for the first check and the login, the dashboard's buttons filled), then `savollar-simple` (Savollar made simple). Each time the user chose "commit, push" when asked (for Harakatlar: "push everything"). Each page gets its
+  Peec's design, brands' logos), then `plan-billing-correction` (Tarif's plans four in a row, as Peec's); on 14 Nov `pilot-report`, `pilot-first-run`, `models-and-site`, `backend-first-slice`, then `restyle` (the look of our own, the Uzbek metric names, the icons), then `email-login` (the login by email, wired to the backend); on 15 Nov `own-login-email` (the backend sends the login code itself; Supabase's tables locked) after `first-run-page` (the first run's page, the setup filled in from it, the backend on the server, API calls through the frontend); on 17 Nov `feedback-17-nov` (the user's list of 17 Nov, Manbalar rebuilt, the name Seenova AI and its logo), then `actions-simpler` (Harakatlar made simple, a task for the owner's own AI on every action); on 18 Nov `logo-rounds` (the logo as two rounds), then `wrong-facts-rebuild` (Notoʻgʻri faktlar rebuilt), then `report-pdf` (a real PDF download, no signature lines), then `docs-current` (the docs brought up to date with each other and the code), then `hero-indicator` (the landing page's indicator, the sentence with chips, a smaller headline); on 19 Nov `full-screens` (full-height screens for the first check and the login, the dashboard's buttons filled), then `savollar-simple` (Savollar made simple); on 21 Nov `phase0-wave-object` (Phase 0 of the report spec: the test harness, items 0.1–0.3). Each time the user chose "commit, push" when asked (for Harakatlar: "push everything"). Each page gets its
   own branch, merged when the user says so.
 
 ## To do, in order
 
-00. **The platform's first flow (the user's decision, 14 Nov).** It works end to end on the live server since
+0. **The platform's first flow (the user's decision, 14 Nov).** It works end to end on the live server since
    16 Nov: login → the website → the business, competitors and questions confirmed → the check on ChatGPT and
    Gemini → the statistics → the project, then checks by plan, the report and the fixes (stages 1–4 of
    `PLAN.md`: built, waiting for the user's look). What is left of the MVP: stage 5 of `PLAN.md`, and on the
    live site the report's PDF and links (Vercel's login, `FRONTEND_ORIGIN`, Chromium on the server).
 
-0. **Pilots (the user's decision of 14 Nov, put after the platform's flow the same day).** The first real run
+1. **Pilots (the user's decision of 14 Nov, put after the platform's flow the same day).** The first real run
    is done, and the prices were set against the measured cost on 15 Nov. Before the first client's report is
    sent: read and correct its draft and fill the contacts. Still unmeasured: the ChatGPT app against the API
    on the same day (the user pastes three answers from the app). Whether to sell 5–10 pilots by hand while the
@@ -1036,7 +1125,7 @@ that is committed.
    look in the app, a category ranking (one measurement serves every business in it), Kazakhstan by hand-made
    Russian pilots.
 
-1. **The other pages, the same way, in the sidebar's order.** Each also gets hover explanations on its table
+2. **The other pages, the same way, in the sidebar's order.** Each also gets hover explanations on its table
    headings, figures and marks (`Hint`; done on most data pages, `frontend/CLAUDE.md`, "Explanations on hover"):
    - Javoblar: built and merged (see "Done"); corrections may still come.
    - Raqobatchilar: built and merged (see "Done"); corrections may still come.
@@ -1068,17 +1157,18 @@ that is committed.
    - Impact: not a page, a block on Harakatlar (the chart with marks, above).
    - Fanouts: no page of its own; since 7 Oct each question's page lists the searches behind its answers.
    - Ads: no. ChatGPT ads aren't sold here, and Peec has paused the page itself.
-2. **Parts that are design only:** the Seenova AI side panel answers every question with a demo reply; Yandex
+
+3. **Parts that are design only:** the Seenova AI side panel answers every question with a demo reply; Yandex
    and Google's AI answers are marked "tez orada" (Gemini is real since 15 Nov). There is no Telegram bot: the
    backend answers 501 to connecting one, and only the mocks tie a chat at once. No payment: a plan is switched
    on by hand (`python -m app.admin plan`), and a new project is a trial with Standard's limits. The backend
    doesn't serve suggested questions, Discovery, keywords or members yet (empty answers). On sample data only:
    a past week's report shows the latest answers (the mocks keep one run), and every mock project is on Biznes.
-3. **Backend.** Step 0 of `backend/PLAN.md` is done (14 Nov), and stages 1–4 of `PLAN.md` are built (15–16 Nov,
+4. **Backend.** Step 0 of `backend/PLAN.md` is done (14 Nov), and stages 1–4 of `PLAN.md` are built (15–16 Nov,
    see "Done"); stage 5 is next. `backend/PLAN.md` keeps nineteen open questions; the cost of an answer (1),
    daily checks (14) and the searches (16) are decided, plan limits (8) mostly, and wrong facts before the
    owner's facts (13) answered by the build of 16 Nov.
-4. **Noted during the dashboard review, not scheduled:** saving a chart as a picture (owners forward
+5. **Noted during the dashboard review, not scheduled:** saving a chart as a picture (owners forward
    pictures in Telegram), a date-range filter once a client has four or more weeks, an export menu on each
    card, and a "write to us in Telegram" banner for new clients. Also a "Saytim" (my website) page once the
    full site audit exists: every site check with passed and failed (a client sees only the failed ones today,
@@ -1088,3 +1178,14 @@ that is committed.
 
 All from `frontend/`: `npm run dev` (development), `npm run build` then `npm run start` (the real build),
 `npm run lint`, `npx tsc --noEmit` (type check).
+
+## Seenova report: source of truth
+
+- The report is built from `seenova-report-spec.md` (at the repository's root; it names a client, so git ignores it and it stays on this computer). If code, old docs or comments conflict with it, the spec wins.
+- Current scope is **Phase 0 only** (spec §2). Do not build Phase 1 or Phase 2 features unless I ask.
+- Every number shown in the UI, PDF or Telegram digest must be computed in code from the single data object (spec §10). The LLM must never write a number.
+- Never default a missing score to 50. Use N/A (spec §6.3).
+- Use the baseline client's first check (spec §3.3) as the test fixture. Acceptance tests are in spec §11.1; they run in `backend/tests/` on that check's data, which stays on this computer (`backend/tests/README.md`). Never write the client's name, its competitors' names or its project's id into a committed file.
+- Work on one Phase 0 item at a time. Show me a plan before writing code.
+- Decided with the user on 21 Nov 2026, while planning Phase 0: the baseline's scope card shows 20 slots, 15 completed and 5 excluded, with the reason that the free check asks ChatGPT 5 of the 10 questions (nothing failed: only 15 were planned); a Gemini answer that ran no web search counts as completed and says so ("Gemini searched in k of n"); the report surfaces (the report, its Hisobotlar copy, the PDF, the snapshot, the digest, the email) read the single data object in Phase 0, and the 0–100 score goes from everywhere (Hisobotlar's register, the dashboard's project cards, the landing page's sample report, the email too), while the other pages move to the object later.
+- Decided with the user on 21 Nov 2026, for item 0.2: with the score gone, each of the report's five areas shows its count and no status (no Weak/Fair/Good, no coloured dot); the client's "used as a source" is spec §6.3's, answers citing its site over answers that cite any site (0 of 7 on the baseline), not over every answer.

@@ -167,7 +167,8 @@ words. In order (`SECTION` in marketing/constants, `pages/landing-page.tsx`):
    left, one paragraph on the right) over **real pieces of the app** in `ProductFrame`s (a light ground, the
    app's own card, a caption under it): `BrandTable`, the cited sites with "are you on it", `BrandViewCard`,
    the open fixes with `useActionTitle` and `ImpactBadge`, `SiteAudit`, the report's first page with
-   `ConditionGauge` (moved to shared/components for this). The sample is the clinic of `mocks/demo.ts`
+   the count of buyer answers naming the clinic and the five areas by their counts (since 21 Nov 2026, from
+   `mockWave`'s metrics; the gauge went with the score). The sample is the clinic of `mocks/demo.ts`
    (`DEMO_REPORT`, `DEMO_BRAND_VIEW`, `DEMO_ACTIONS`, `DEMO_SITE_CHECKS`).
 9. **Why us** (`Local`): six cards. 10. **Who it is for** (`Audience`): a business (the navy card), an agency.
 11. **Pricing** (the cards, Managed GEO, the comparison `PLAN_TABLE`), 12. **FAQ**, 13. **Demo form** (since
@@ -516,7 +517,7 @@ frontend/src/
                           #   "query fanouts": each search with the answers that ran it) beside the fixes that list
                           #   the question, then its answers
     report/               # the client's status report (public, no login, no sidebar; prints as A4; `?run=` a past
-                          #   week's, `?print=1` opens the print window) and Hisobotlar (the latest report's condition,
+                          #   week's, `?print=1` opens the print window) and Hisobotlar (the latest report's counts,
                           #   the register of reports, a page per report with its contents): see "The report"
     pilot/                # the pilot report (/pilots/[slug], public): see "The pilot report"
   shared/                 # used by 2+ features
@@ -539,11 +540,13 @@ frontend/src/
                           #   Page (a workspace page: see "Page layout"), PageTabs (a page's views as tabs, in
                           #   Page's `tabs` strip), PageSection (a heading and a grey line over a part's cards),
                           #   EmptyState, Logo, …
-    hooks/                # use-assistant (open the Seenova AI panel from any page), use-logout, use-in-view, use-reduced-motion
+    hooks/                # use-assistant (open the Seenova AI panel from any page), use-logout, use-in-view, use-reduced-motion,
+                          #   use-count-words (the report's counts in words: ranks with ties, tone, place, N/A)
     helpers/              # domain (also shortUrl, pathOf, and siteHref + SITE_SLOT: the address of a cited site's
                           #   page as a pattern a server page can hand to a client component), dates, labels, phone,
-                          #   scores (pure functions), condition (the status report's score: its facts, formula and
-                          #   statuses), history (checks grouped by day, week, month), prompts (isTracked), utils (cn)
+                          #   scores (pure functions), areas (the report's five areas in order, isListable; the
+                          #   condition score of Oct 10 was removed on 21 Nov 2026), history (checks grouped by day,
+                          #   week, month), prompts (isTracked), utils (cn)
     constants/            # app-wide constants (ENGINES, TIME_ZONE, SESSION_COOKIE, phone format, prompt limits)
     types/                # api.ts (API contract types), scores.ts
   i18n/                   # next-intl routing, navigation, request config, setPageLocale, pickMessages (the
@@ -686,17 +689,24 @@ Types:
   scores: BrandScore[], prompts: PromptResult[], topSources: Source[], wrongFacts: WrongFact[],
   history: HistoryPoint[] (past runs, oldest first, ending with this one),
   sourceHistory: SourceHistoryPoint[] (the cited sites over the same runs),
-  conditionHistory: Condition[] (the project's condition after each of the same runs; empty for one question's report),
   untrackedBrands: { name, answers, dismissed }[] (brands the answers name that aren't tracked: new-competitor
   alerts; `dismissed` ones were hidden by the client and are listed apart),
   nextRunAt | null (next weekly run; runs start Monday 06:00 Tashkent; shown on the Overview as a date, not a countdown) }
-- HistoryPoint { runId, collectedAt, scores: BrandScore without trend [] }
+- HistoryPoint { runId, collectedAt, scores: BrandScore without trend [], answers (the run's answers), named (those
+  naming the client): Hisobotlar's register and the project cards show the count since 21 Nov 2026 }
 - ProjectLimits { prompts, competitors, facts } (from PLAN_LIMITS in shared/constants and the backend: 25/5/0,
   50/5/20, 300/5/50 since 15 Nov; Standard (`start`) checks no wrong facts against the owner's, so it keeps no facts)
 - TagSummary { name, prompts }; Member { id, name | null, phone | null, telegramUsername | null, role: "owner"|
   "member", status: "active"|"invited", projectIds[] }
-- Condition { score (0–100, the mean of the areas), areas: { visibility, competition, coverage, sources, accuracy } (each
-  0–100) }: see "Scores", the condition score
+- WaveResponse { wave, metrics } (`GET /projects/{id}/waves/{runId}`, `latest` for the newest check; read by the
+  report's link): one check's data object (report spec §10) and every number the report shows, computed by
+  `backend/app/metrics.py`: `scope` (the scope card, from the slot log), `visibility` (the headline count: buyer
+  answers naming the client of all of them, the small-sample flag under 20, questions named, citations of the
+  client's site of answers citing any site) and `brands` (every tracked brand's count, rank with ties grouped,
+  tone per mention with a word only from 3 mentions, place only from numbered lists, share of voice only from 10
+  mentions); since 0.3 also `assistants`, `topics`, `languages`, `sources` (each site over the answers citing any
+  site; the split in sites) and `claims` (the brand-question check's verdicts), and the object's `domains` (each
+  cited site's kind). Types in shared/types/api.ts (`WaveMetrics`)
 - SourceHistoryPoint { collectedAt, answers (answers of that run), sources: { domain, type, count (answers citing
   it), pages: { url, count }[] }[] } (a site the run didn't cite is left out; the last point's counts are
   `topSources`. The sites chart, a site's own chart and "what changed" are made from it in the frontend)
@@ -723,7 +733,8 @@ Types:
 - Action { id, kind: "listing"|"fact"|"content"|"technical", status: "new"|"in_progress"|"done"|"declined",
   impact: "high"|"medium"|"low", promptIds[] (questions it should move), createdAt, doneAt | null,
   stepsDone: number[] (how-to steps ticked off, by index below ACTION_STEP_COUNT = 3),
-  proof: { before, after (visibility 0–1 on promptIds), runs } | null, and by kind:
+  proof: { before, after (visibility 0–1 on promptIds), runs, counts: { before: [named, answers], after: [named, answers] } }
+  | null (the report shows the counts since 21 Nov 2026), and by kind:
   listing { domain, sourceType, answers (citing it), competitorIds[] (named in those answers) } ·
   fact { claim, correct } · content { topic, url | null, pageType: "home"|"service"|"prices"|"article"|"about"|
   "other" | null (both set for a page the client added: it is reworked, not written), brief: ContentBrief | null } ·
@@ -744,18 +755,25 @@ Four numbers per brand, shown side by side (the Overview's numbers, its chart ta
 - A source's "used" = answers citing it / all answers; its average citations = citations of its pages / answers citing it
 - "Used as a source" (the client) = answers citing the client's own domain / all answers
 
-**The condition score** (the status report's headline, `Report.conditionHistory`, one per run) is the mean of five
-areas, each a whole number from 0 to 100. The backend computes it; `shared/helpers/condition.ts` holds the same
-formula for the mocks (`rateCondition`), the facts it is counted from (`conditionFacts`, which the report's
-sentences are also written from) and how a score reads (`conditionStatus`: good from 70, fair from 40, weak under).
-- visibility = the client's visibility in percent
-- competition = its visibility as a share of the most visible tracked brand's (100 when it leads)
-- coverage = the share of questions with at least one answer naming it
-- sources = of the citations of sites a business can be listed on (not its own, not competitors'), the share going
-  to sites that list it, a site counted by the answers citing it (100 when none is cited)
-- accuracy = its tone (50 if never named) less 10 for every wrong fact
-A status is green, amber (`--progress`) or red, always with its word beside it. The score appears only in the
-report and on Hisobotlar: the Overview keeps Peec's four numbers.
+**No condition score since 21 Nov 2026** (report spec Phase 0 item 0.2, rule 1: the 0–100 score of Oct 10 was
+the mean of five areas, and with nothing measured one of them stood at a default 50). The report surfaces
+(the report, Hisobotlar, the PDF, the project cards, the landing page's sample report, the email) show counts
+from the check's data object (`WaveMetrics`), each with what it is counted over ("0/15"):
+- the headline: buyer answers naming the client, of all of them, with "small sample" under 20 answers;
+- the five areas (`REPORT_AREAS`), each by its own count and no status (the user's decision of 21 Nov 2026):
+  visibility (answers), competition (its rank among the tracked brands; brands named equally often share it, a
+  brand named nowhere has none, and one leads only when alone at the top), coverage (questions), sources (answers
+  citing its site of the answers citing any site), accuracy (its tone per mention, N/A when not named, and the
+  wrong facts);
+- tone is never a number: N/A at no mention, each tone counted under three mentions, a word ("mostly positive",
+  "mixed") from three; a place in an answer only from a numbered list ("no rank (unordered)" otherwise); share of
+  voice only from 10 mentions of the tracked brands. `shared/hooks/use-count-words.ts` writes them in words;
+  nothing in the frontend computes them. Never default a missing number to 50: write N/A.
+- every percentage on a report surface stands beside its count, through `Share` (report-parts: "2/7 · 29%",
+  `data-k`, `data-n`), by one rounding rule: `shareOf` (use-count-words), a whole percent rounded half up, the
+  same as the backend's `metrics.share` (Phase 0 item 0.3). A site's share is over the answers that cite any site
+  (spec §6.3), not over every answer.
+The Overview and the other pages keep Peec's four numbers (`BrandScore`) until they move to the data object.
 
 ## Charts
 - Where every tracked brand is drawn (the Overview's chart and table), each has its own color: `--series-1`
@@ -808,10 +826,8 @@ report and on Hisobotlar: the Overview keeps Peec's four numbers.
   ("named in 1 of 3 answers") and the chart's ⓘ says a single answer moves the percentage a lot.
 - Peec's topics × tags heat map is replaced by two bar lists (by topic, by question language), each row with the
   brand that leads there. No heat maps: a cell's shade can't be read as a number.
-- The report's own small charts follow the same rules: the condition score is a half-circle gauge cut where
-  "fair" and "good" begin, with the scale written under it; the score over the reports is columns with their
-  numbers (a column per check, never a curve); a number's line in the scorecard (`SparkLine`) is straight from
-  check to check and shows the way it went, not its size; a split (whom the citations work for, the tones of the
+- The report's own small charts follow the same rules (the condition score's gauge and columns went with the score
+  on 21 Nov 2026): a split (whom the citations work for, the tones of the
   mentions, the plan's progress) is one bar with its legend and numbers.
 
 ## The report
@@ -823,21 +839,23 @@ latest condition first, then every report). It is laid out as an **official docu
 corners, everything on it one under another; on paper it is the pages, each with its number at its foot. Its
 marks of a document: a letterhead over a double rule, the title in capitals in the middle of the page, a ruled
 table of the report's facts, each part named on a gray band ("Part II. Analysis": `PartHeading`), each section's
-heading in capitals over a rule with its area's status at the line's end, tables ruled and square with dark
-headings (`ReportCard`, `ReportTable`), statuses as square tags, and a sign-off. No rounded app cards inside it.
+heading in capitals over a rule, tables ruled and square with dark headings (`ReportCard`, `ReportTable`), and a
+sign-off (no status tags since the score went, 21 Nov 2026). No rounded app cards inside it.
 It runs in four parts, every section numbered (`REPORT_PARTS`, `REPORT_SECTIONS`):
 
-- **Letterhead** (`ReportLetterhead`): our mark and what we do, the report's number in the run of weekly reports
-  and its date; the document's title with whom it is about; the period, the scope (questions × answers), the
-  assistant and who prepared it as a ruled table.
-- **I. Condition.** 1 Executive summary: the overall condition score as a gauge with its status, its change and its
-  columns over the reports, beside the five areas (a bar, the score, the status and the fact behind it in a
-  sentence: `useAreaFindings`); the conclusion in a sentence; the week's highlights beside the decisions needed (the
-  plan's first three actions). 2 Key figures: the five numbers, each with this check, the previous one, the change,
-  the strongest competitor, how far ahead or behind, and its line over the checks. 3 What changed since the last
-  report: the events behind the numbers.
+- **Letterhead** (`ReportLetterhead`): our mark and what we do, the report's number among the project's checks
+  and its date; the document's title with whom it is about; then the scope card (`ScopeCard`, spec §4.0, from the
+  slot log: Phase 0 item 0.1).
+- **I. Condition.** 1 Executive summary (`HeadlineSummary`): the buyer answers naming the client as a large count
+  with its small-sample badge, beside the five areas, each with its count and the sentence behind it
+  (`useAreaFindings`, from the metrics); the conclusion: the count and who is named most; the week's highlights
+  beside the decisions needed (the plan's first three actions). 2 Key figures (`Scorecard`): visibility,
+  questions, share of voice, tone, place and "used as a source", the client's beside the strongest competitor's,
+  tied competitors named together (comparing checks comes with the change log, spec §4.12, Phase 1). 3 What
+  changed since the last report: the events behind the numbers.
 - **II. Analysis** opens (since 17 Nov) with "Each AI assistant" (`Assistants`): each assistant's share over its
-  own answers beside whom it names most, a line that Google's AI Overview isn't checked yet, and what each
+  own answers beside whom it names most (ties together, from `metrics.assistants`), a line that Google's AI
+  Overview isn't checked yet, and what each
   said about the business by name, every statement against the website. Then a section per area, each with its status beside its title, opening with its conclusion
   (`Verdict`) and closing with the plan's action that answers it (`NextStep`): 4 Competitive position (the brands
   table with bars, visibility over the checks), 5 Topics and questions (the client over the strongest competitor
@@ -850,26 +868,28 @@ It runs in four parts, every section numbered (`REPORT_PARTS`, `REPORT_SECTIONS`
   each action improves (`ACTION_AREAS`), then what is done and what it changed.
 - **Sign-off** (`ReportSignOff`), where the report proper ends: who prepared it and when. The lines for the
   reader to sign that they had read it were removed on 18 Nov (the user: "remove the signature for bosses part").
-- **IV. Reference.** Method and scope with the limits of the numbers, then Definitions (the five numbers, then the
-  condition score, each area's formula and where a status begins), which close the report. Last, a line on
+- **IV. Reference.** Method and scope with the limits of the numbers and the small-sample and tie rules with their
+  thresholds, then Definitions (the numbers, the five areas, ties, N/A; no example number), which close the report. Last, a line on
   what the numbers are.
 - **The order since 16 Nov** (the user's corrections): every question with its answers is section 6, right after
   Topics, and the definitions are the last section (`REPORT_SECTIONS`). Topics says what a topic is and what it
   is for, counts the topics by standing, and gives a row a topic in answers ("0 / 2"), with the standing as a
-  word and what to do. Accuracy answers two questions apart: A the tone (how the score is made, every tone
-  counted), B whether what AI says is true (statements against the website, wrong facts as a table). On paper
+  word and what to do (its counts from `metrics.topics` and `metrics.languages`, the competitors named most with
+  ties). Sources counts its sites from `metrics.sources`: the split in sites ("24 of 26 sites · 92%"), each site
+  over the answers that cite any site. The risks register speaks in counts, never a percentage. Accuracy answers
+  two questions apart: A the tone (every mention counted by tone, a word only from three mentions, N/A when not
+  named), B, labelled as a separate check on the brand questions (`data-block="branded"`) with each verdict
+  counted (verified, contradicted, unverified, `metrics.claims`), whether what AI says is true (statements against the website, wrong facts as a table). On paper
   nothing opens, so every question prints with the beginning of each of its answers (`PromptTable`).
 
 The sections are drawn by one component (`ReportBody`), so the shared report and Hisobotlar's report page never
 differ.
 
-**Hisobotlar** (`/projects/[id]/reports`) opens with the latest report's condition (`LatestReport`: its number,
-period and scope, the same gauge and areas as the report's summary, "Why 40?" under them (`ScoreReasons`, 17
-Nov: the areas as points out of 20 each, then what costs points, each with its fact and the open actions that
-raise it), "Open the report", and its link, Telegram and
-PDF). Then every report as a register: number, period, the condition it found (score, status, change), the five
-areas as marks, what happened that week (`weekEvents`), its PDF; a row opens its report; CSV with every area's
-score. Last, one line on where the report goes, with Telegram in one click and the rest (email, language, the
+**Hisobotlar** (`/projects/[id]/reports`) opens with the latest report (`LatestReport`: its number, period and
+scope, the same count and areas as the report's summary (`HeadlineSummary`), "Open the report", and its link,
+Telegram and PDF; "Why 40?" went with the score on 21 Nov 2026). Then every report as a register: number, period,
+the answers naming the client of that check's answers with who was named most (ties named together), what
+happened that week (`weekEvents`), its PDF; a row opens its report; CSV with the same counts. Last, one line on where the report goes, with Telegram in one click and the rest (email, language, the
 agency's name on the Agency plan) in a window. A report's page (`/projects/[id]/reports/[runId]`) is the document
 inside the workspace: its number, period and ways out in the strip under the title, its contents beside it, then
 the paper. The contents are a panel of their own (`ReportContents`; the user's correction the same day: "too many
@@ -886,14 +906,13 @@ the width of a sheet, in the middle of the screen. The dark cover of the first v
 
 Rules: a reader who stops after the summary has the decision, and everything after it is evidence for it. No
 number appears without what it is compared with. Nothing depends on hover: the report must read on paper, so a
-term is explained in the definitions and under the scorecard's names, and the scale of the score is written under
-the gauge. Its tables follow the sheet's own width, not the screen's (container queries: `@lg:` and so on), so
+term is explained in the definitions and under the scorecard's names. Its tables follow the sheet's own width, not the screen's (container queries: `@lg:` and so on), so
 they are right beside the contents, on a phone and on paper, where a sheet is about 700px wide. It is laid out for
 A4 (`@page` and the `print:` classes): the tools and filters are `print:hidden`, backgrounds print (or bars and
 marks would vanish), a section runs on from the one before, its heading and conclusion stay with what follows, a
 short table, a card and a table's row are never cut in two, and every page carries "3 / 13" at its foot (a page
-margin box in `@page`; a browser that doesn't know them leaves it out). The first page holds the letterhead and
-the whole condition: the summary's area rows keep their bar beside the name from 448px (`@md:`) for that. "PDF yuklab olish" (`PdfButton`, 18 Nov: the user
+margin box in `@page`; a browser that doesn't know them leaves it out). The first page holds the letterhead and the
+scope card; the summary (`HeadlineSummary`) is never cut in two, so it opens the second page. "PDF yuklab olish" (`PdfButton`, 18 Nov: the user
 "pdf download is not working, there are no pdf download button") downloads the file the backend makes by printing
 this same page with Chrome (`GET /projects/{id}/reports/{runId}/pdf`, by the report's link) when its `/health` says
 `pdf`; elsewhere, or when the download fails, it opens the print dialog as before. Its texts are the `Report`

@@ -19,7 +19,7 @@ from __future__ import annotations
 import datetime
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session as Db
@@ -200,14 +200,18 @@ def _proof(db: Db, project: Project, action: Action, runs: List[Run], client: Br
     if not before or not after:
         return None
 
-    def visibility(run: Run) -> float:
+    def counted(run: Run) -> Tuple[int, int]:
+        """The answers to the action's questions in a check, and those naming the client."""
         answers = list(db.scalars(select(Answer.id).where(Answer.run_id == run.id, Answer.prompt_id.in_(action.prompt_ids))))
         if not answers:
-            return 0.0
+            return 0, 0
         named = set(db.scalars(select(Mention.answer_id).where(Mention.answer_id.in_(answers), Mention.brand_id == client.id)))
-        return round(len(named) / len(answers), 4)
+        return len(named), len(answers)
 
-    return {"before": visibility(before[-1]), "after": visibility(after[-1]), "runs": len(after)}
+    (was, of_was), (now, of_now) = counted(before[-1]), counted(after[-1])
+    share = lambda named, answers: round(named / answers, 4) if answers else 0.0  # noqa: E731
+    # The counts too since 21 Nov 2026 (report spec Phase 0 item 0.3): the report shows each share beside its count
+    return {"before": share(was, of_was), "after": share(now, of_now), "runs": len(after), "counts": {"before": [was, of_was], "after": [now, of_now]}}
 
 
 def listed(db: Db, project: Project) -> List[Dict[str, Any]]:

@@ -28,7 +28,7 @@ from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
-from . import engines
+from . import engines, slots
 from .config import settings
 from .engines import web
 
@@ -547,10 +547,31 @@ def partial_of(name: str, spellings: List[str], rivals: List[str], questions: Li
 Live = Callable[[Dict[str, Any]], None]
 
 
-def check(draft: Dict[str, Any], confirmed: Dict[str, Any], progress: Progress, engine_names: Optional[List[str]] = None, live: Optional[Live] = None) -> Tuple[Dict[str, Any], Dict[str, Any], float]:
+def _plan_slots(log: Optional[slots.SlotLog], questions: List[Dict[str, Any]], jobs: List[Tuple[int, str]], asked: List[str], named_asks: List[Tuple[str, str, str]], brand_order: List[str], first_named: Dict[str, str], place: Tuple[str, str, str]) -> Dict[Tuple[str, Any, str], str]:
+    """The check's slot log before anything is asked: each question to each assistant, planned or left out by
+    the free check (`questions_for`), and each brand question the same (`brand_languages`). Returns the
+    slots' ids by what they are, for closing them."""
+    if log is None:
+        return {}
+    planned, named = set(jobs), {(engine, language) for engine, language, _ in named_asks}
+    left_out = {"status": "excluded", "reason": "free_check_subset"}
+    entries = [
+        (("discovery", q, engine), {"question_index": q, "question": questions[q]["text"], "language": questions[q]["language"], "prompt_group": "discovery", "engine": engine, "location": slots.location(engine, *place), **({} if (q, engine) in planned else left_out)})
+        for engine in asked
+        for q in range(len(questions))
+    ]
+    entries += [
+        (("branded", language, engine), {"question": first_named[language], "language": language, "prompt_group": "branded", "engine": engine, "location": slots.location(engine, *place), **({} if (engine, language) in named else left_out)})
+        for engine in asked
+        for language in brand_order
+    ]
+    return dict(zip([key for key, _ in entries], log.plan([row for _, row in entries])))
+
+
+def check(draft: Dict[str, Any], confirmed: Dict[str, Any], progress: Progress, engine_names: Optional[List[str]] = None, live: Optional[Live] = None, log: Optional[slots.SlotLog] = None) -> Tuple[Dict[str, Any], Dict[str, Any], float]:
     """The second half: the questions the owner confirmed asked to every assistant, and the answers counted.
     `confirmed` is the draft as the owner left it (`confirmed_of` gives its shape). Returns the Snapshot, the
-    raw answers and the cost in US dollars."""
+    raw answers and the cost in US dollars. With `log`, every call is written to the slot log as it goes."""
     asked = engine_names or settings.engines
     if not asked:
         raise FirstRunError("no_engines", "No assistant has a key")
@@ -584,37 +605,58 @@ def check(draft: Dict[str, Any], confirmed: Dict[str, Any], progress: Progress, 
         first_named.setdefault(question["language"], question["text"])
 
     # Every question to every assistant, a few at a time; one that fails is left out and the run goes on
-    jobs = [(q, engine) for engine in asked for q in questions_for(engine, asked, len(who["questions"]))]
+    count = len(who["questions"])
+    jobs = [(q, engine) for engine in asked for q in questions_for(engine, asked, count)]
+    # The brand questions go with them and are kept apart: not counted in the progress or in any score
+    brand_order = [language for language in languages if language in first_named] or list(first_named)
+    named_asks = [(engine, language, first_named[language]) for engine in asked for language in brand_languages(engine, asked, brand_order)] if first_named else []
+    slot_of = _plan_slots(log, who["questions"], jobs, asked, named_asks, brand_order, first_named, place)
     answers: List[Dict[str, Any]] = []
     progress("asking", 0, len(jobs))
     about_it: List[Dict[str, Any]] = []
-    with ThreadPoolExecutor(max_workers=5) as pool:
-        futures = {pool.submit(engines.ask, engine, who["questions"][q]["text"], *place): (q, engine) for q, engine in jobs}
-        # The brand questions go with them and are kept apart: not counted in the progress or in any score
-        named_asks = [(engine, language, first_named[language]) for engine in asked for language in brand_languages(engine, asked, [language for language in languages if language in first_named] or list(first_named))] if first_named else []
-        named_futures = [(pool.submit(engines.ask, engine, text, *place), engine, language, text) for engine, language, text in named_asks]
-        for done, future in enumerate(as_completed(futures), start=1):
-            q, engine = futures[future]
-            try:
-                answer = future.result()
-            except engines.EngineError as error:
-                answer = None
-                print(f"first run {domain}: {engine} failed on question {q + 1}: {error}")
-            if answer and answer["text"].strip():
-                answers.append({"question": q, **answer})
-                cost += answer["usd"] or 0.0
-                if live:
-                    live(partial_of(who["name"], spellings, [rival["name"] for rival in chosen], who["questions"], answers, len(jobs)))
-            progress("asking", done, len(jobs))
-        for future, engine, language, text in named_futures:
-            try:
-                answer = future.result()
-            except engines.EngineError as error:
-                print(f"first run {domain}: {engine} failed on the brand question ({language}): {error}")
-                continue
-            if answer["text"].strip():
-                about_it.append({"language": language, "asked": text, **answer})
-                cost += answer["usd"] or 0.0
+    try:
+        with ThreadPoolExecutor(max_workers=5) as pool:
+            futures = {pool.submit(engines.ask, engine, who["questions"][q]["text"], *place): (q, engine) for q, engine in jobs}
+            named_futures = [(pool.submit(engines.ask, engine, text, *place), engine, language, text) for engine, language, text in named_asks]
+            for done, future in enumerate(as_completed(futures), start=1):
+                q, engine = futures[future]
+                slot = slot_of.get(("discovery", q, engine))
+                try:
+                    answer = future.result()
+                except engines.EngineError as error:
+                    answer = None
+                    print(f"first run {domain}: {engine} failed on question {q + 1}: {error}")
+                    if log:
+                        log.close(slot, "failed", reason="error", detail=str(error))
+                if answer and answer["text"].strip():
+                    answers.append({"question": q, **answer})
+                    cost += answer["usd"] or 0.0
+                    if log:
+                        log.close(slot, "completed", answer=answer)
+                    if live:
+                        live(partial_of(who["name"], spellings, [rival["name"] for rival in chosen], who["questions"], answers, len(jobs)))
+                elif answer is not None and log:
+                    log.close(slot, "failed", reason="empty_answer", answer=answer)
+                progress("asking", done, len(jobs))
+            for future, engine, language, text in named_futures:
+                slot = slot_of.get(("branded", language, engine))
+                try:
+                    answer = future.result()
+                except engines.EngineError as error:
+                    print(f"first run {domain}: {engine} failed on the brand question ({language}): {error}")
+                    if log:
+                        log.close(slot, "failed", reason="error", detail=str(error))
+                    continue
+                if answer["text"].strip():
+                    about_it.append({"language": language, "asked": text, **answer})
+                    cost += answer["usd"] or 0.0
+                    if log:
+                        log.close(slot, "completed", answer=answer)
+                elif log:
+                    log.close(slot, "failed", reason="empty_answer", answer=answer)
+    finally:
+        if log:
+            log.flush()
     if not answers:
         raise FirstRunError("no_answers")
 

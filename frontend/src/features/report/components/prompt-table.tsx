@@ -129,14 +129,17 @@ export function PromptTable({ results, brands, youId }: { results: PromptResult[
                 )}
                 {/* Paper only: every answer, whichever row was open on screen */}
                 <ol className="hidden flex-col gap-2 px-4 pb-3 print:flex">
-                  {result.answers.map((answer) => (
-                    <li key={`${answer.engine ?? ""}-${answer.sample}`} className="flex flex-col gap-1 border-l-2 border-foreground/20 pl-3 print:break-inside-avoid">
-                      <span className="text-xs font-semibold">
-                        {paper("answerOf", { engine: answer.engine === "chatgpt" || answer.engine === "gemini" ? engines(answer.engine) : (answer.engine ?? "AI"), n: answer.sample })}
-                      </span>
-                      <p className="text-xs leading-relaxed text-pretty">{beginning(answer.text)}</p>
-                    </li>
-                  ))}
+                  {result.answers.map((answer) => {
+                    // An answer by its assistant; its run only when that assistant answered the question more than once
+                    const runs = result.answers.filter((other) => other.engine === answer.engine);
+                    const name = answer.engine === "chatgpt" || answer.engine === "gemini" ? engines(answer.engine) : (answer.engine ?? "AI");
+                    return (
+                      <li key={`${answer.engine ?? ""}-${answer.sample}`} className="flex flex-col gap-1 border-l-2 border-foreground/20 pl-3 print:break-inside-avoid">
+                        <span className="text-xs font-semibold">{runs.length > 1 ? paper("answerOfRun", { engine: name, n: runs.indexOf(answer) + 1 }) : name}</span>
+                        <p className="text-xs leading-relaxed text-pretty">{beginning(answer.text)}</p>
+                      </li>
+                    );
+                  })}
                 </ol>
               </li>
             );

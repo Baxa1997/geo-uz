@@ -1,6 +1,7 @@
-import { missingSources, outOf100, ownSourceShare, rankedBrands, scoreOf, totalAnswers } from "@/shared/helpers/scores";
-import type { Action, Report } from "@/shared/types/api";
-import { bestCompetitorSite, groupsAgainstLeader, openActions } from "./report";
+import { rankedBrands, scoreOf } from "@/shared/helpers/scores";
+import { shareOf } from "@/shared/hooks/use-count-words";
+import type { Action, Report, WaveMetrics } from "@/shared/types/api";
+import { openActions } from "./report";
 
 /** How much a risk can cost, or an opportunity can bring. */
 export type Level = "high" | "medium" | "low";
@@ -11,38 +12,36 @@ interface Entry {
   action: number | null;
 }
 
-/** What may cost the client customers, each with the numbers its sentence needs. */
+/** What may cost the client customers, each with the counts its sentence needs (no percentage: Phase 0 item 0.3). */
 export type Risk = Entry &
   (
     | { kind: "facts"; count: number; claim: string }
-    | { kind: "lostTopics"; topics: string[]; leader: string }
-    | { kind: "leaderGap"; leader: string; gap: number; leaderValue: number; you: number }
-    | { kind: "rivalRising"; name: string; points: number; value: number }
-    | { kind: "falling"; points: number; value: number }
-    | { kind: "tone"; score: number }
+    | { kind: "lostTopics"; topics: string[]; leaders: string[] }
+    | { kind: "leaderGap"; leader: string; leaderNamed: number; you: number; answers: number }
+    | { kind: "rivalRising"; name: string; points: number; named: number; answers: number }
+    | { kind: "falling"; points: number; named: number; answers: number }
+    | { kind: "tone"; negative: number; mentions: number }
   );
 
-/** Where the client can gain, the same way. Shares are whole percents. */
+/** Where the client can gain, the same way. */
 export type Opportunity = Entry &
   (
-    | { kind: "listings"; count: number; sites: { domain: string; share: number }[] }
+    | { kind: "listings"; count: number; answers: number; sites: { domain: string; cited: number }[] }
     | { kind: "closeTopics"; topics: string[]; gap: number }
-    | { kind: "ownSite"; you: number; rival: string; rivalValue: number }
+    | { kind: "ownSite"; you: number; rivals: string[]; rivalCited: number; answers: number }
     | { kind: "rivalFalling"; name: string; points: number }
-    | { kind: "language"; weak: string; weakValue: number; strong: string; strongValue: number }
+    | { kind: "language"; weak: string; weakNamed: number; weakAnswers: number; strong: string; strongNamed: number; strongAnswers: number }
   );
 
 /** A topic is lost when the client is never named there and a competitor is in at least this share of its answers. */
 const LOST_FROM = 50;
-/** A topic is within reach when the leader is ahead by no more than this many points. */
+/** A topic is within reach when the competitors named most are ahead by no more than this many points. */
 const CLOSE_WITHIN = 34;
 /** The leader's lead, in points, that is a risk, and one that is a high risk. */
 const GAP = { medium: 10, high: 30 };
 /** A week's change of visibility, in points, worth telling, and a large one. */
 const MOVE = { medium: 3, high: 8 };
-/** A tone at or under these is a risk. */
-const TONE = { medium: 45, high: 30 };
-/** A site missing the client is a large opportunity when at least this share of answers cites it. */
+/** A site missing the client is a large opportunity when at least this share of the answers citing a site cites it. */
 const LISTING_HIGH = 10;
 /** The client's own site against a competitor's, and one question language against the other: points apart worth telling. */
 const SITE_GAP = 5;
@@ -56,78 +55,92 @@ export const ACTIONS_SHOWN = 8;
 const ORDER: Record<Level, number> = { high: 0, medium: 1, low: 2 };
 const byLevel = <T extends Entry>(entries: T[]) => [...entries].sort((a, b) => ORDER[a.level] - ORDER[b.level]).slice(0, ENTRIES);
 
+/** A count's share in whole points by the one rounding rule, 0 when there is nothing to count over. */
+const points = (k: number, n: number) => shareOf(k, n) ?? 0;
+
 /**
- * The report's register of risks and opportunities, made from its own numbers, the gravest first: what may
- * cost the client customers (wrong facts, topics it is absent from, the leader's lead, a competitor gaining,
- * its own visibility or tone falling) and where it can gain (sites that don't list it, topics within reach,
- * its own site, a competitor losing ground, the weaker question language). Each entry points at the open
- * action that answers it, when the plan has one.
+ * The report's register of risks and opportunities, made from the check's counts (its data object, Phase 0
+ * item 0.3), the gravest first: what may cost the client customers (wrong facts, topics it is absent from, a
+ * leader's lead, a competitor gaining, its own visibility or tone falling) and where it can gain (sites that
+ * don't list it, topics within reach, its own site, a competitor losing ground, the weaker question language).
+ * Ties lead nobody, and every entry says its counts, never a percentage. A week's change is the report's
+ * history until the change log (spec §4.12). Each entry points at the open action that answers it.
  */
-export function outlook(report: Report, actions: Action[]): { risks: Risk[]; opportunities: Opportunity[] } {
+export function outlook(report: Report, actions: Action[], metrics: WaveMetrics): { risks: Risk[]; opportunities: Opportunity[] } {
   const { brand, competitors } = report.project;
   const open = openActions(actions);
   const numberOf = (matches: (action: Action) => boolean) => {
     const index = open.findIndex(matches);
     return index >= 0 && index < ACTIONS_SHOWN ? index + 1 : null;
   };
-  const points = (share: number) => Math.round(share * 100);
-  const you = scoreOf(report.scores, brand.id);
+  const { rows, leaders } = metrics.brands;
+  const answers = metrics.visibility.answers;
+  const client = rows.find((row) => row.own);
+  const rowOf = (id: string) => rows.find((row) => row.id === id);
+  const nameOf = (id: string) => rowOf(id)?.name ?? id;
   const compared = report.history.length > 1;
-  const topics = groupsAgainstLeader(report, (prompt) => prompt.topic);
-  const ranked = rankedBrands(report);
-  const leader = ranked[0];
-  const place = ranked.findIndex((row) => row.isYou);
-  const total = totalAnswers(report.prompts);
+  const trend = (id: string) => Math.round((scoreOf(report.scores, id)?.trend ?? 0) * 100);
 
   const risks: Risk[] = [];
   const [firstFact] = report.wrongFacts;
   if (firstFact) risks.push({ kind: "facts", level: "high", count: report.wrongFacts.length, claim: firstFact.claim, action: numberOf((action) => action.kind === "fact") });
 
-  const lost = topics.filter((topic) => topic.you === 0 && (topic.leader?.value ?? 0) >= LOST_FROM);
+  const lost = metrics.topics.filter((topic) => topic.named === 0 && topic.rivals.value > 0 && points(topic.rivals.value, topic.answers) >= LOST_FROM);
   const [worst] = lost;
-  if (worst?.leader) {
+  if (worst) {
     const keys = lost.map((topic) => topic.key);
-    risks.push({ kind: "lostTopics", level: "high", topics: keys.slice(0, NAMED), leader: worst.leader.name, action: numberOf((action) => action.kind === "content" && keys.includes(action.topic)) });
+    risks.push({ kind: "lostTopics", level: "high", topics: keys.slice(0, NAMED), leaders: worst.rivals.ids.map(nameOf), action: numberOf((action) => action.kind === "content" && keys.includes(action.topic)) });
   }
 
-  if (you && leader && !leader.isYou) {
-    const gap = points(leader.score.visibility) - points(you.visibility);
-    if (gap >= GAP.medium) {
-      risks.push({ kind: "leaderGap", level: gap >= GAP.high ? "high" : "medium", leader: leader.brand.name, gap, leaderValue: points(leader.score.visibility), you: points(you.visibility), action: null });
-    }
+  // A leader's lead only when one brand is named more often than every other: tied brands lead nobody
+  const [only] = leaders.length === 1 ? leaders.flatMap((id) => rows.filter((row) => row.id === id)) : [];
+  if (client && only && !only.own) {
+    const gap = points(only.named, answers) - points(client.named, answers);
+    if (gap >= GAP.medium) risks.push({ kind: "leaderGap", level: gap >= GAP.high ? "high" : "medium", leader: only.name, leaderNamed: only.named, you: client.named, answers, action: null });
   }
 
-  if (compared) {
+  if (compared && client) {
     const rising = competitors
-      .map((competitor) => ({ name: competitor.name, score: scoreOf(report.scores, competitor.id) }))
-      .flatMap(({ name, score }) => (score ? [{ name, points: points(score.trend), value: points(score.visibility) }] : []))
+      .map((competitor) => ({ id: competitor.id, points: trend(competitor.id) }))
       .sort((a, b) => b.points - a.points)[0];
-    if (rising && rising.points >= MOVE.medium) risks.push({ kind: "rivalRising", level: rising.points >= MOVE.high ? "high" : "medium", ...rising, action: null });
-    const fell = you ? -points(you.trend) : 0;
-    if (you && fell >= MOVE.medium) risks.push({ kind: "falling", level: fell >= MOVE.high ? "high" : "medium", points: fell, value: points(you.visibility), action: null });
+    const row = rising && rowOf(rising.id);
+    if (rising && row && rising.points >= MOVE.medium) {
+      risks.push({ kind: "rivalRising", level: rising.points >= MOVE.high ? "high" : "medium", name: row.name, points: rising.points, named: row.named, answers, action: null });
+    }
+    const fell = -trend(brand.id);
+    if (fell >= MOVE.medium) risks.push({ kind: "falling", level: fell >= MOVE.high ? "high" : "medium", points: fell, named: client.named, answers, action: null });
   }
 
-  if (you && you.sentiment !== null && you.sentiment <= TONE.medium) {
-    risks.push({ kind: "tone", level: you.sentiment <= TONE.high ? "high" : "medium", score: Math.round(you.sentiment), action: null });
+  // Tone counted per mention, summed up only from three mentions (report spec §6.3): mostly negative is a high
+  // risk, a mixed tone with negative mentions a medium one
+  const tone = client?.tone;
+  const negative = tone?.counts.negative ?? 0;
+  if (tone && negative > 0 && (tone.summary === "negative" || tone.summary === "mixed")) {
+    risks.push({ kind: "tone", level: tone.summary === "negative" ? "high" : "medium", negative, mentions: tone.mentions, action: null });
   }
 
   const opportunities: Opportunity[] = [];
-  const missing = missingSources(report.topSources, competitors);
+  const { sources } = metrics;
+  // Sites a business can be listed on that don't list the client, the most cited first
+  const missing = sources.rows.filter((row) => row.type !== "own" && row.type !== "competitor" && !row.listed);
   const [topMissing] = missing;
-  if (topMissing && total > 0) {
-    const sites = missing.slice(0, NAMED).map((source) => ({ domain: source.domain, share: Math.round((source.count / total) * 100) }));
-    const domains = missing.map((source) => source.domain);
+  if (topMissing) {
+    const domains = missing.map((row) => row.domain);
     opportunities.push({
       kind: "listings",
-      level: Math.round((topMissing.count / total) * 100) >= LISTING_HIGH ? "high" : "medium",
+      level: points(topMissing.cited, sources.cited_answers) >= LISTING_HIGH ? "high" : "medium",
       count: missing.length,
-      sites,
+      answers: sources.cited_answers,
+      sites: missing.slice(0, NAMED).map((row) => ({ domain: row.domain, cited: row.cited })),
       action: numberOf((action) => action.kind === "listing" && domains.includes(action.domain)),
     });
   }
 
-  const close = topics
-    .flatMap((topic) => (topic.leader && topic.you > 0 && topic.leader.value > topic.you && topic.leader.value - topic.you <= CLOSE_WITHIN ? [{ key: topic.key, gap: topic.leader.value - topic.you }] : []))
+  const close = metrics.topics
+    .flatMap((topic) => {
+      const gap = points(topic.rivals.value, topic.answers) - points(topic.named, topic.answers);
+      return topic.named > 0 && topic.rivals.value > topic.named && gap <= CLOSE_WITHIN ? [{ key: topic.key, gap }] : [];
+    })
     .sort((a, b) => a.gap - b.gap);
   const [nearest] = close;
   if (nearest) {
@@ -135,26 +148,45 @@ export function outlook(report: Report, actions: Action[]): { risks: Risk[]; opp
     opportunities.push({ kind: "closeTopics", level: "medium", topics: keys.slice(0, NAMED), gap: nearest.gap, action: numberOf((action) => action.kind === "content" && keys.includes(action.topic)) });
   }
 
-  const own = outOf100(ownSourceShare(report.prompts, brand.domain));
-  const rivalSite = bestCompetitorSite(report);
-  if (rivalSite && rivalSite.value - own >= SITE_GAP) {
-    opportunities.push({ kind: "ownSite", level: "medium", you: own, rival: rivalSite.name, rivalValue: rivalSite.value, action: numberOf((action) => action.kind === "technical") });
+  const rivalSite = metrics.brands.rivals_top.cited;
+  if (rivalSite.ids.length > 0 && points(rivalSite.value, sources.cited_answers) - points(metrics.visibility.client_cited, sources.cited_answers) >= SITE_GAP) {
+    opportunities.push({
+      kind: "ownSite",
+      level: "medium",
+      you: metrics.visibility.client_cited,
+      rivals: rivalSite.ids.map(nameOf),
+      rivalCited: rivalSite.value,
+      answers: sources.cited_answers,
+      action: numberOf((action) => action.kind === "technical"),
+    });
   }
 
-  if (compared && place > 0) {
+  if (compared) {
     // A competitor ahead of the client that is losing ground
+    const ranked = rankedBrands(report);
+    const place = ranked.findIndex((row) => row.isYou);
     const falling = ranked
-      .slice(0, place)
-      .map((row) => ({ name: row.brand.name, points: -points(row.score.trend) }))
+      .slice(0, Math.max(0, place))
+      .map((row) => ({ name: row.brand.name, points: -trend(row.brand.id) }))
       .sort((a, b) => b.points - a.points)[0];
     if (falling && falling.points >= MOVE.medium) opportunities.push({ kind: "rivalFalling", level: "low", ...falling, action: null });
   }
 
-  const languages = groupsAgainstLeader(report, (prompt) => prompt.language).sort((a, b) => a.you - b.you);
+  const languages = [...metrics.languages].sort((a, b) => points(a.named, a.answers) - points(b.named, b.answers));
   const weak = languages[0];
   const strong = languages.at(-1);
-  if (weak && strong && weak.key !== strong.key && strong.you - weak.you >= LANGUAGE_GAP) {
-    opportunities.push({ kind: "language", level: "low", weak: weak.key, weakValue: weak.you, strong: strong.key, strongValue: strong.you, action: null });
+  if (weak && strong && weak.key !== strong.key && points(strong.named, strong.answers) - points(weak.named, weak.answers) >= LANGUAGE_GAP) {
+    opportunities.push({
+      kind: "language",
+      level: "low",
+      weak: weak.key,
+      weakNamed: weak.named,
+      weakAnswers: weak.answers,
+      strong: strong.key,
+      strongNamed: strong.named,
+      strongAnswers: strong.answers,
+      action: null,
+    });
   }
 
   return { risks: byLevel(risks), opportunities: byLevel(opportunities) };

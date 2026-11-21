@@ -2,14 +2,9 @@ import { ArrowDownIcon as ArrowDown } from "@phosphor-icons/react/dist/ssr/Arrow
 import { ArrowRightIcon as ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight";
 import { ArrowUpIcon as ArrowUp } from "@phosphor-icons/react/dist/ssr/ArrowUp";
 import { useLocale, useTranslations } from "next-intl";
-import { conditionStatus, type ConditionStatus } from "@/shared/helpers/condition";
 import { formatDecimal } from "@/shared/helpers/numbers";
 import { cn } from "@/shared/helpers/utils";
-import { STATUS_FILL } from "../constants";
-
-/** A status as a light ground and as an edge (a conclusion's box). */
-const STATUS_TINT: Record<ConditionStatus, string> = { good: "bg-positive/8", fair: "bg-progress/10", weak: "bg-negative/8" };
-const STATUS_EDGE: Record<ConditionStatus, string> = { good: "border-positive", fair: "border-progress", weak: "border-negative" };
+import { useCountWords } from "@/shared/hooks/use-count-words";
 
 const ROMAN = ["I", "II", "III", "IV", "V", "VI"];
 
@@ -34,26 +29,15 @@ export function ReportPaper({ fill = false, children }: { fill?: boolean; childr
 }
 
 /**
- * A score out of 100 as its status: a colored dot and the word (good, fair, weak), with the score beside
- * it when `withScore`. The word carries the meaning, so the color is never alone.
+ * A count with the share it stands for: "2/7 · 29%", the share from the count shown by the one rounding rule
+ * (`shareOf`), marked with the count (`data-k`, `data-n`) so a reader and the acceptance tests can check it
+ * (Phase 0 item 0.3). Every percentage in the report goes through it. `text` says it in other words when given.
  */
-export function StatusChip({ score, withScore = false, className }: { score: number; withScore?: boolean; className?: string }) {
-  const t = useTranslations("Report");
-  const status = conditionStatus(score);
+export function Share({ k, n, text, className }: { k: number; n: number; text?: string; className?: string }) {
+  const words = useCountWords();
   return (
-    <span className={cn("inline-flex items-center gap-1.5 rounded-[3px] px-2 py-0.5 text-xs font-semibold whitespace-nowrap ring-1 ring-foreground/15", STATUS_TINT[status], className)}>
-      <span aria-hidden className={cn("size-2 shrink-0 rounded-full", STATUS_FILL[status])} />
-      {t(`status.${status}`)}
-      {withScore && <span className="font-medium text-muted-foreground tabular-nums">{t("condition.outOf100", { score })}</span>}
-    </span>
-  );
-}
-
-/** A score out of 100 as a bar against the whole scale, in its status's color. Its number stands beside it. */
-export function ScoreBar({ score, className }: { score: number; className?: string }) {
-  return (
-    <span aria-hidden className={cn("block h-2 overflow-hidden rounded-full bg-muted", className)}>
-      <span className={cn("block h-full rounded-full", STATUS_FILL[conditionStatus(score)])} style={{ width: `${Math.min(100, Math.max(0, score))}%` }} />
+    <span data-k={k} data-n={n} className={cn("tabular-nums", className)}>
+      {text ?? words.count(k, n)}
     </span>
   );
 }
@@ -81,14 +65,13 @@ export function PartHeading({ number, title }: { number: number; title: string }
 }
 
 /**
- * A section's conclusion, first under its title: what the evidence below adds up to, on the color of the
- * area's status. A reader who reads only these boxes has the report.
+ * A section's conclusion, first under its title: what the evidence below adds up to, in counts. A reader who
+ * reads only these boxes has the report. No status colors it since the score went (Phase 0 item 0.2).
  */
-export function Verdict({ score, children }: { score?: number; children: React.ReactNode }) {
+export function Verdict({ children }: { children: React.ReactNode }) {
   const t = useTranslations("Report.condition");
-  const status = score === undefined ? null : conditionStatus(score);
   return (
-    <div className={cn("flex flex-col gap-0.5 rounded-[3px] border-l-4 px-4 py-2.5 print:break-inside-avoid print:break-after-avoid", status ? [STATUS_TINT[status], STATUS_EDGE[status]] : "border-foreground/25 bg-muted")}>
+    <div className="flex flex-col gap-0.5 rounded-[3px] border-l-4 border-foreground/25 bg-muted px-4 py-2.5 print:break-inside-avoid print:break-after-avoid">
       <p className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">{t("conclusion")}</p>
       <p className="text-[0.9375rem] font-medium text-pretty">{children}</p>
     </div>
@@ -110,8 +93,8 @@ export function NextStep({ children }: { children: React.ReactNode }) {
 
 /**
  * A numbered section of the report, on the same page as the others: its number and title in capitals over
- * a rule, as an official document heads a section, with the status of the area it is the evidence for at
- * the line's end; then a sentence on what it shows, its conclusion, the evidence, and what to do. On paper
+ * a rule, as an official document heads a section; then a sentence on what it shows, its conclusion, the
+ * evidence, and what to do. On paper
  * a section runs on from the one before and may cross pages: its heading is never left at a page's foot,
  * and its parts (a conclusion, a table's row, a card) stay whole.
  */
@@ -120,7 +103,6 @@ export function ReportSection({
   number,
   title,
   lead,
-  score,
   verdict,
   next,
   children,
@@ -129,8 +111,6 @@ export function ReportSection({
   number: number;
   title: string;
   lead?: string;
-  /** The score of the area the section is the evidence for. */
-  score?: number;
   verdict?: React.ReactNode;
   next?: React.ReactNode;
   children: React.ReactNode;
@@ -143,11 +123,10 @@ export function ReportSection({
             <span className="tabular-nums">{number}.</span>
             {title}
           </h2>
-          {score !== undefined && <StatusChip score={score} withScore />}
         </div>
         {lead && <p className="text-sm text-pretty text-muted-foreground">{lead}</p>}
       </header>
-      {verdict && <Verdict score={score}>{verdict}</Verdict>}
+      {verdict && <Verdict>{verdict}</Verdict>}
       {children}
       {next}
     </section>

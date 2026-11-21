@@ -29,7 +29,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from sqlalchemy import select
 
-from . import delivery, engines, firstrun, fixes
+from . import delivery, engines, firstrun, fixes, slots
 from .config import settings
 from .db import Answer, Brand, Citation, Mention, Project, Prompt, Run, SessionLocal, create_tables, now
 from .engines import web
@@ -42,16 +42,22 @@ def _place(country: str, city: str) -> Tuple[str, str, str]:
     return (country, city, firstrun.TIMEZONES.get(country, ""))
 
 
-def _ask(engine: str, prompt: Prompt, country: str) -> Optional[Dict[str, Any]]:
+def _ask(engine: str, prompt: Prompt, country: str) -> Tuple[Optional[Dict[str, Any]], int, Optional[str], Optional[str]]:
+    """One question to one assistant, tried up to `ASK_TRIES` times. Returns the answer (None when every try
+    failed), how many times it was asked, and for a failure its reason (`slots.REASONS`) and the error."""
+    reason: Optional[str] = None
+    detail: Optional[str] = None
     for attempt in range(ASK_TRIES):
         try:
             answer = engines.ask(engine, prompt.text, *_place(country, prompt.location))
             if answer["text"].strip():
-                return answer
+                return answer, attempt + 1, None, None
+            reason, detail = "empty_answer", None
         except engines.EngineError as error:
             print(f"weekly: {engine} failed on prompt {prompt.id} (try {attempt + 1}): {error}")
+            reason, detail = "error", str(error)
         time.sleep(3 * (attempt + 1))
-    return None
+    return None, ASK_TRIES, reason, detail
 
 
 def _replay(db: Any, project: Project, run: Run) -> int:
@@ -91,10 +97,11 @@ def check(project_id: str) -> Optional[str]:
 
         try:
             if settings.first_run_replay:
+                # A replay asks nobody, so it logs no slot: its report rebuilds them from the answers (`wave`)
                 run.answered = run.total = _replay(db, project, run)
                 cost = 0.0
             else:
-                cost = _collect(db, project, brands, run, jobs)
+                cost = _collect(db, project, brands, run, jobs, slots.SlotLog(run_id=run_id, db=db))
             run.status, run.cost_usd, run.collected_at = ("done" if run.answered else "failed"), round(cost, 4), now()
             run.error = None if run.answered else "no_answers"
         except Exception as error:  # a run must never stay "running" for ever
@@ -122,7 +129,7 @@ def check(project_id: str) -> Optional[str]:
         return run_id
 
 
-def _brand_view(project: Project, client: Brand, run: Run) -> float:
+def _brand_view(project: Project, client: Brand, run: Run, log: Optional[slots.SlotLog] = None) -> float:
     """The project's brand questions, each asked to every assistant, as statements checked against the website
     as it is today. A part that fails is left out: the check itself stands. Returns the cost in US dollars."""
     questions = project.brand_questions or []
@@ -130,19 +137,30 @@ def _brand_view(project: Project, client: Brand, run: Run) -> float:
         run.brand_view = []
         return 0.0
     country = project.country or DEFAULT_COUNTRY
+    place = _place(country, project.city)
+    asks = [(question, engine) for question in questions for engine in settings.engines]
+    planned = log.plan([{"question": question["text"], "language": question["language"], "prompt_group": "branded", "engine": engine, "location": slots.location(engine, *place)} for question, engine in asks]) if log else [None] * len(asks)
     about_it: List[Dict[str, Any]] = []
     cost = 0.0
     with ThreadPoolExecutor(max_workers=5) as pool:
-        futures = [(pool.submit(engines.ask, engine, question["text"], *_place(country, project.city)), engine, question) for question in questions for engine in settings.engines]
-        for future, engine, question in futures:
+        futures = [(pool.submit(engines.ask, engine, question["text"], *place), engine, question, slot) for (question, engine), slot in zip(asks, planned)]
+        for future, engine, question, slot in futures:
             try:
                 answer = future.result()
             except engines.EngineError as error:
                 print(f"weekly: {engine} failed on a brand question of project {project.id}: {error}")
+                if log:
+                    log.close(slot, "failed", reason="error", detail=str(error))
                 continue
             if answer["text"].strip():
                 about_it.append({"language": question["language"], "asked": question["text"], **answer})
                 cost += answer["usd"] or 0.0
+                if log:
+                    log.close(slot, "completed", answer=answer)
+            elif log:
+                log.close(slot, "failed", reason="empty_answer", answer=answer)
+    if log:
+        log.flush()
     pages = web.read_site(client.domain, "ru") if about_it else []
     who = {"name": client.name, "category": project.category, "city": project.city, "country": country}
     views, usd = firstrun.brand_views_of(who, "\n\n".join(f"[{page['url']}]\n{page['text']}" for page in pages), about_it)
@@ -150,22 +168,35 @@ def _brand_view(project: Project, client: Brand, run: Run) -> float:
     return cost + usd
 
 
-def _collect(db: Any, project: Project, brands: List[Brand], run: Run, jobs: List[Tuple[Prompt, str, int]]) -> float:
+def _collect(db: Any, project: Project, brands: List[Brand], run: Run, jobs: List[Tuple[Prompt, str, int]], log: Optional[slots.SlotLog] = None) -> float:
     cost = 0.0
     client = next(brand for brand in brands if brand.own)
     answers: List[Dict[str, Any]] = []
+    country = project.country or DEFAULT_COUNTRY
+    # The slot log: every call written before anything is asked, and kept whatever happens to the check after
+    planned = log.plan([{"prompt_id": prompt.id, "question": prompt.text, "language": prompt.language, "prompt_group": "discovery", "engine": engine, "run_index": sample, "location": slots.location(engine, *_place(country, prompt.location))} for prompt, engine, sample in jobs]) if log else [None] * len(jobs)
+    slot_of = {(prompt.id, engine, sample): slot for (prompt, engine, sample), slot in zip(jobs, planned)}
+    db.commit()
     with ThreadPoolExecutor(max_workers=5) as pool:
-        country = project.country or DEFAULT_COUNTRY
         futures = {pool.submit(_ask, engine, prompt, country): (prompt, engine, sample) for prompt, engine, sample in jobs}
         for done, future in enumerate(as_completed(futures), start=1):
             prompt, engine, sample = futures[future]
-            answer = future.result()
+            answer, attempts, reason, detail = future.result()
+            slot = slot_of[(prompt.id, engine, sample)]
             if answer:
-                answers.append({"prompt": prompt, "sample": sample, **answer})
+                answers.append({"prompt": prompt, "sample": sample, "slot": slot, **answer})
                 cost += answer["usd"] or 0.0
+                if log:
+                    log.close(slot, "completed", attempts=attempts, answer=answer)
+            elif log:
+                log.close(slot, "failed", attempts=attempts, reason=reason, detail=detail)
             run.answered = len(answers)
             if done % 5 == 0:
+                if log:
+                    log.flush()
                 db.commit()
+    if log:
+        log.flush()
     if not answers:
         return cost
 
@@ -189,10 +220,13 @@ def _collect(db: Any, project: Project, brands: List[Brand], run: Run, jobs: Lis
         return next((brand for brand in brands if name.casefold() == brand.name.casefold() or web.names(name, [brand.name, *(brand.aliases or [])])), None)
 
     cited: Dict[str, Counter] = {}
+    attached: Dict[str, str] = {}
     for answer in answers:
         row = Answer(run_id=run.id, prompt_id=answer["prompt"].id, sample=answer["sample"], engine=answer["engine"], model=answer["model"], text=answer["text"], searches=answer["searches"])
         db.add(row)
         db.flush()
+        if answer["slot"]:
+            attached[answer["slot"]] = row.id
         mentions: List[Mention] = []
         for business in answer["businesses"]:
             written = mapping.get(business["name"].strip(), business["name"].strip())
@@ -217,8 +251,10 @@ def _collect(db: Any, project: Project, brands: List[Brand], run: Run, jobs: Lis
     rivals = [brand.name for brand in brands if not brand.own]
     sources = {domain: known.get(domain) or {"type": firstrun._kind(domain, client.domain, rivals), "brandListed": False} for domain in cited}
     run.sources = sources
+    if log:
+        log.attach(attached)
     cost += fixes.check_facts(db, project, run, answers)
-    cost += _brand_view(project, client, run)
+    cost += _brand_view(project, client, run, log)
     run.method = {**run.method, "model": ", ".join(sorted({answer["model"] for answer in answers}))}
     return cost
 

@@ -76,16 +76,62 @@
     "copied": "Link copied",
     "footer": "Prepared by Seenova AI from AI’s answers of {date}. The numbers describe those answers; they are not a forecast.",
     "meta": {
-      "period": "Period",
       "periodRange": "{from} – {to}",
       "issued": "Report date",
-      "scope": "Scope",
-      "scopeValue": "{prompts} questions × {samples} answers = {answers} answers",
-      "assistant": "AI assistant",
-      "assistantValue": "{engine}, web search on",
-      "number": "Report number",
-      "preparedBy": "Prepared by",
-      "preparedByValue": "Seenova AI platform"
+      "number": "Report number"
+    },
+    "scope": {
+      "title": "Scope of this check",
+      "check": "Check",
+      "baseline": "The first check: the baseline later checks are compared with",
+      "later": "Compared with the check before",
+      "collected": "collected {date}",
+      "assistants": "Assistants",
+      "answers": "{count, plural, one {# answer} other {# answers}}",
+      "surfaces": {
+        "api_web_search": "web search",
+        "api_grounded": "Google Search"
+      },
+      "located": "asked as from {place}",
+      "toldInInstructions": "told the place only in its instructions ({place}), not as a location setting",
+      "notLocated": "asked with no location",
+      "noCity": "{country}, no city",
+      "cityCountry": "{city}, {country}",
+      "varies": "not the same on every call",
+      "searched": "searched the web in {searched} of {completed, plural, one {# answer} other {# answers}}",
+      "notTracked": "Not checked yet",
+      "notTrackedNames": {
+        "google_ai_overviews": "Google's AI Overviews",
+        "yandex": "Yandex"
+      },
+      "questions": "Questions",
+      "buyerQuestions": "{count, plural, one {# buyer question} other {# buyer questions}}",
+      "brandQuestions": "{count, plural, one {# brand question} other {# brand questions}}",
+      "howto": "{count, plural, one {# how-to question} other {# how-to questions}}",
+      "slots": "Answers planned",
+      "slotQuestions": "{count, plural, one {# question} other {# questions}}",
+      "slotAssistants": "{count, plural, one {# assistant} other {# assistants}}",
+      "slotRuns": "{count, plural, one {# run} other {# runs}}",
+      "completed": "{count} completed",
+      "excluded": "{count} excluded",
+      "failed": "{count} failed",
+      "unfinished": "{count} unfinished",
+      "excludedWhy": "Why excluded",
+      "failedWhy": "Why failed",
+      "reasons": {
+        "free_check_subset": "the free first check asks ChatGPT {asked} of the {questions} questions, and Gemini all of them",
+        "brand_free_check_subset": "the free first check asks ChatGPT the brand question in the first language only",
+        "not_planned": "not planned in this check",
+        "error": "the assistant answered with an error, after its retries",
+        "empty_answer": "the assistant answered with no text",
+        "not_logged": "not written down: the check came before each planned answer was logged"
+      },
+      "byLanguage": "Answers by language",
+      "branded": "Brand questions",
+      "brandedValue": "{completed, plural, one {# answer} other {# answers}}, checked apart: not counted in any number above",
+      "brands": "Brands",
+      "brandsValue": "{tracked} tracked · {others, plural, =0 {no other names in the answers} one {# other name in the answers, not reviewed} other {# other names in the answers, not reviewed}}",
+      "rebuilt": "This check was made before each planned answer was logged (21 Nov 2026): its plan is rebuilt from the answers it saved."
     },
     "sections": {
       "summary": "Executive summary",
@@ -111,37 +157,43 @@
       "noActions": "Nothing is waiting to be done: every recommendation so far is done or declined."
     },
     "scorecard": {
-      "lead": "The five numbers this report follows: now, in the previous check, against the strongest competitor, and over the checks.",
+      "lead": "This check’s numbers, each with what it is counted over: yours beside the strongest competitor’s. Brands that tie are named together.",
       "metric": "Metric",
-      "now": "Now",
-      "before": "Before",
-      "change": "Change",
-      "best": "Best competitor",
+      "best": "Strongest competitor",
       "about": {
-        "visibility": "Share of answers that name you",
-        "shareOfVoice": "Your share of all mentions of the tracked brands",
-        "position": "Your average place in an answer; 1 is first",
-        "sentiment": "How positively you are spoken of, out of 100",
-        "usedAsSource": "Share of answers that link to your website"
+        "visibility": "Buyer answers that name you, of all of them",
+        "coverage": "Questions with at least one answer naming you",
+        "shareOfVoice": "Your mentions of all mentions of the tracked brands; shown from {minimum} mentions",
+        "sentiment": "How AI speaks of you, counted per mention",
+        "position": "Your place where an answer lists businesses in a numbered list",
+        "usedAsSource": "Answers citing your site, of the answers that cite a site"
       },
       "noChange": "no change",
       "better": "better by {amount}",
       "worse": "worse by {amount}",
-      "notNamed": "not named",
-      "gap": "Gap",
-      "ahead": "ahead by {amount}",
-      "behind": "behind by {amount}",
-      "level": "level",
-      "trend": "Trend",
-      "trendLabel": "{metric} over {count} checks: from {from} to {to}"
+      "you": "{brand}",
+      "tied": "tied",
+      "labels": {
+        "visibility": "Visibility",
+        "coverage": "Questions",
+        "shareOfVoice": "Share of voice",
+        "sentiment": "Tone",
+        "position": "Place in answer",
+        "usedAsSource": "Used as a source"
+      }
     },
     "competitors": {
-      "lead": "Every tracked brand in the latest check, the most visible first.",
+      "lead": "Every tracked brand in this check, the most named first. Brands named equally often share a rank.",
       "brand": "Brand",
-      "change": "Change",
       "chart": "Visibility over the checks",
       "chartLabel": "Line chart: visibility of {brands} brands over {count} checks",
-      "you": "you"
+      "you": "you",
+      "rank": "Rank",
+      "named": "Named in",
+      "tone": "Tone",
+      "position": "Place in answer",
+      "shareOfVoice": "Share of voice",
+      "noShareOfVoice": "No share of voice yet: the tracked brands are mentioned {mentions, plural, one {# time} other {# times}} in all, and it takes {minimum}."
     },
     "topics": {
       "lead": "Which of your customers' needs AI talks about with your name in the answer, and which with competitors only.",
@@ -188,8 +240,8 @@
       "own": "Your site",
       "competitor": "Competitor’s site",
       "more": "{count} more sites are cited less often.",
-      "split": "Whom AI’s citations work for",
-      "splitLabel": "How the citations split: {parts}",
+      "split": "Whom the cited sites work for",
+      "splitLabel": "How the cited sites split: {parts}",
       "parts": {
         "own": "Your own site",
         "listed": "Sites that list you",
@@ -197,21 +249,18 @@
         "competitors": "Competitors’ sites"
       },
       "sites": "{count, plural, one {# site} other {# sites}}",
-      "top": "The most cited sites"
+      "top": "The most cited sites",
+      "sitesOf": "{count} of {total} sites",
+      "usedOf": "Each site’s count: the answers citing it, of the {answers} answers that cite any site."
     },
     "accuracy": {
       "lead": "Two questions: in what tone AI speaks of you, and whether what it says is true. A wrong price or address costs customers.",
       "toneTitle": "A. The tone AI speaks of you in",
-      "toneHow": "Every answer that names you is rated positive (100), neutral (50) or negative (0). The score is their average: from 67 it reads positive, up to 33 negative.",
+      "toneHow": "Every mention of you is read as positive, neutral or negative and counted. A word for them all comes only from {minimum} mentions; with none, the tone is N/A.",
       "toneNone": "AI didn't name you in this check, so the tone can't be measured.",
       "toneOf": "In this check's answers you are named {count, plural, one {# time} other {# times}}:",
-      "truthTitle": "B. Whether what AI says is true",
+      "truthTitle": "B. Brand facts: what AI says when asked about you by name",
       "truthHow": "We ask the AI assistants about “{brand}” by name and compare each statement with what your website says.",
-      "checks": {
-        "confirmed": "statements match your website",
-        "contradicted": "statements contradict your website",
-        "unverified": "statements aren't on your website: can't be checked"
-      },
       "factsTitle": "Wrong facts",
       "none": "No wrong fact was found in this check.",
       "notChecked": "In this check what AI said has not been compared with your website yet.",
@@ -219,17 +268,25 @@
       "correct": "In fact (your website)",
       "where": "Where it was said",
       "question": "Question",
-      "since": "First seen"
+      "since": "First seen",
+      "toneFrom": "from {count, plural, one {# mention} other {# mentions}}",
+      "separate": "A separate check on the brand questions: not counted in any number of the buyers’ answers",
+      "verdicts": {
+        "verified": "verified: match your website",
+        "contradicted": "contradicted: your website says otherwise",
+        "unverified": "unverified: not on your website"
+      },
+      "verdictsOf": "{statements, plural, one {# statement} other {# statements}} in {answers, plural, one {# answer} other {# answers}} to the brand questions. Outdated facts aren’t checked yet: that needs the date of the page they are compared with."
     },
     "actions": {
-      "lead": "What to do, the most effective first. Each action follows from the sections above and improves one area of your condition.",
+      "lead": "What to do, the most effective first. Each action follows from the sections above and improves one of the five areas.",
       "what": "What to do",
       "impact": "Expected effect",
       "status": "Status",
       "none": "No open recommendations.",
       "more": "{count} more are on the Actions page of the app.",
       "doneTitle": "Done so far",
-      "doneProof": "Visibility on its questions: {before} → {after}",
+      "doneProof": "Named on its questions:",
       "donePending": "The result shows after the next check",
       "progress": "{done} of {total} actions done",
       "parts": {
@@ -242,50 +299,46 @@
     },
     "method": {
       "lead": "How the numbers were collected, so the report can be checked and repeated.",
-      "assistant": "AI assistant",
-      "assistantValue": "{engine}, with web search on",
-      "location": "Asked as",
-      "locationValue": "A customer in {city}",
-      "questions": "Questions",
-      "questionsValue": "{count} tracked questions: {split}",
-      "samples": "Answers per question",
-      "samplesValue": "{samples}: an assistant answers differently each time, so every question is asked several times",
+      "assistants": "How they were asked",
+      "assistantsValue": "{names}: each question in a new conversation, with the assistant's own web search on. The scope card at the top names each model and the place each was told.",
+      "runs": "Runs",
+      "runsValue": "Each question was put {runs, plural, one {once} other {# times}} to each assistant that was given it. An assistant answers differently each time, so one run can't tell a real change from chance.",
       "checks": "Checks",
       "checksValue": "Weekly. This check: {date}; the previous one: {previous}",
       "checksFirst": "Weekly. This is the first check: {date}",
       "brands": "Brands compared",
       "limits": "Limits",
-      "limitsValue": "An AI assistant’s answers vary from one asking to the next, and between its API and its app. The numbers are shares over all {answers} answers of this check; a change of a few points between two checks can be chance. A trend over several checks is more reliable than one week’s change.",
-      "condition": "Condition score",
-      "conditionValue": "The mean of {areas} areas, each rated from 0 to 100 from this check’s answers. {good} and above reads good, {fair} and above fair, under {fair} weak. How each area is counted is in the definitions.",
-      "questionsPart": "{count} in {language}"
+      "limitsValue": "An AI assistant’s answers vary from one asking to the next, and can differ from what its own app shows. The numbers are counts over the {answers} buyer answers of this check; one answer more or less between two checks can be chance. A trend over several checks is more reliable than one week’s change.",
+      "samples": "Small samples and ties",
+      "samplesValue": "Every number comes with what it is counted over. Under {answers} answers a count is marked a small sample; share of voice is shown only from {mentions} mentions of the tracked brands; a tone is summed up in a word only from {tone} mentions, and is N/A with none; a place in an answer is read only from a numbered list. Brands named equally often share a rank, and none of them leads."
     },
     "glossary": {
-      "visibility": "The share of answers that name the brand. 42% means 42 of every 100 answers.",
-      "shareOfVoice": "The brand’s mentions out of all mentions of the tracked brands. It shows how the attention is divided.",
-      "position": "Where the brand comes among the businesses an answer names. 1 is first; the smaller, the better. Averaged over the answers that name it.",
-      "sentiment": "How positively the brand is spoken of, from 0 (negative) to 100 (positive).",
-      "usedAsSource": "The share of answers that link to a site. For your own site it shows how much AI relies on what you publish.",
+      "visibility": "Buyer answers that name the brand, out of all the answers to the buyers’ questions in the check: a count (k/n) and its share.",
+      "shareOfVoice": "The brand’s mentions out of all mentions of the tracked brands. Shown only once they are mentioned often enough; under that, the counts.",
+      "position": "Where the brand comes when an answer lists businesses in a numbered list: the median place over those answers. A bulleted list, a table or a paragraph has no order, so it gives no place.",
+      "sentiment": "Each mention of the brand read as positive, neutral or negative and counted; a word for them all only from a few mentions. N/A when the brand isn’t named.",
+      "usedAsSource": "Answers that link to a site, out of the answers that link to any site. For your own site it shows how much AI relies on what you publish.",
       "checkTerm": "Check",
-      "check": "One weekly round in which every tracked question is asked several times.",
-      "numbers": "The five numbers",
-      "conditionTitle": "The condition score",
-      "conditionTerm": "Condition score",
-      "condition": "One number from 0 to 100 for how you stand with AI: the mean of the {areas} areas below.",
+      "check": "One round in which the tracked questions are put to the assistants. How many answers it planned and got is on the scope card.",
+      "numbers": "The numbers",
       "areas": {
-        "visibility": "Your visibility as a number: named in 42% of answers is 42.",
-        "competition": "Your visibility as a share of the most visible tracked brand’s. 100 when you lead.",
-        "coverage": "The share of tracked questions with at least one answer that names you.",
-        "sources": "Of AI’s citations of sites a business can be listed on (catalogs, maps, news, social pages), the share going to sites that list you.",
-        "accuracy": "Your tone out of 100, less {penalty} points for every wrong fact AI states about you."
+        "visibility": "The buyer answers that name you, of all of them.",
+        "competition": "Your rank among the tracked brands by how often each is named; brands named equally often share it.",
+        "coverage": "The questions with at least one answer naming you, of the questions asked.",
+        "sources": "The answers citing your site, of the answers that cite any site.",
+        "accuracy": "AI’s tone about you, counted per mention, and the wrong facts it states about you."
       },
-      "statusTerm": "Status",
-      "status": "How a score reads: good from {good}, fair from {fair}, weak under {fair}."
+      "coverage": "Questions with at least one answer that names the brand, out of the questions that got an answer.",
+      "areasTitle": "The five areas",
+      "tiesTerm": "Ties",
+      "ties": "Brands named equally often share a rank. One brand leads only when it is named more often than every other.",
+      "naTerm": "N/A",
+      "na": "Shown where there is nothing to measure, such as the tone of a brand AI didn’t name. It never stands for a middle value."
     },
     "appendix": {
       "lead": "Every question of the topics above: in how many answers you are named, and who is named beside you. Open a question to read its answers.",
       "printNote": "On paper each answer is shown by its beginning. The full answers are at the report's link.",
-      "answerOf": "{engine} · answer {n}"
+      "answerOfRun": "{engine} · run {n}"
     },
     "changes": {
       "lead": "The events behind the numbers: your place among the brands, the sites AI relies on, new wrong facts and the work done this week. The numbers themselves are in the section before.",
@@ -320,11 +373,6 @@
       "decisions": "Decisions",
       "reference": "Reference"
     },
-    "status": {
-      "good": "Good",
-      "fair": "Fair",
-      "weak": "Weak"
-    },
     "areas": {
       "visibility": "Visibility",
       "competition": "Competitive position",
@@ -333,50 +381,30 @@
       "accuracy": "Accuracy and tone"
     },
     "condition": {
-      "overall": "Overall condition",
-      "byArea": "Condition by area",
-      "score": "Score",
-      "status": "Status",
-      "outOf100": "{score}/100",
-      "gaugeLabel": "Condition score: {score} out of 100, {status}",
-      "first": "First report: nothing to compare with yet",
-      "changeUp": "{points} {points, plural, one {point} other {points}} higher",
-      "changeDown": "{points} {points, plural, one {point} other {points}} lower",
-      "changeSame": "Unchanged",
-      "columnsLabel": "Column chart: the condition score over {count} reports, from {from} to {to}",
-      "reports": "{count, plural, one {# report} other {# reports}}",
-      "scaleGood": "Good: {from}+",
-      "scaleFair": "Fair: {from}–{to}",
-      "scaleWeak": "Weak: 0–{to}",
-      "verdict": "Your overall condition is {status}: {score} out of 100.",
-      "verdictAreas": "Your strongest area is {strongest} ({strongestScore}), your weakest is {weakest} ({weakestScore}).",
       "conclusion": "Conclusion",
       "recommended": "Recommended",
-      "inPlan": "Action {number} of the plan, section {section}",
-      "since": "compared with the last report"
+      "inPlan": "Action {number} of the plan, section {section}"
     },
     "findings": {
-      "visibility": "AI names you in {you} of every 10 answers ({percent}).",
-      "visibilityUp": "That is {points} points more than in the last report.",
-      "visibilityDown": "That is {points} points less than in the last report.",
-      "visibilitySame": "The same as in the last report.",
-      "competitionBehind": "You rank {rank, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} of {of} tracked brands. {leader} leads with {leaderValue}, {gap} points ahead of you.",
-      "competitionFirst": "You lead the {of} tracked brands. {next} follows with {nextValue}.",
+      "visibility": "AI names you in {named} of {answers} buyer answers.",
       "competitionAlone": "No competitors are tracked yet, so there is no one to compare with.",
       "coverage": "AI names you in {named} of {total} questions.",
       "coverageMissing": "In {count, plural, one {# question} other {# questions}} it names competitors and never you.",
       "coverageAll": "There is no question where it names only competitors.",
-      "weakTopic": "Your weakest topic is “{topic}”: {value} against {leader}’s {leaderValue}.",
-      "sources": "{percent} of AI’s citations of sites a business can be listed on (catalogs, maps, news, social pages) go to sites that list you.",
-      "sourcesMissing": "{count, plural, one {# such site doesn’t} other {# such sites don’t}} list you; the most cited: {sites}.",
-      "sourcesAll": "You are on every one of them.",
-      "sourcesNoneCited": "AI cited no site a business can be listed on.",
-      "ownSite": "It links to your own site in {own} of its answers.",
-      "accuracy": "AI’s tone about you is {score} out of 100 ({tone}).",
-      "accuracyFacts": "It states {count, plural, one {# wrong fact} other {# wrong facts}} about you; each takes {penalty} points off this score.",
+      "accuracyFacts": "It states {count, plural, one {# wrong fact} other {# wrong facts}} about you.",
       "accuracyClean": "No wrong facts about you were found.",
       "accuracyNotChecked": "Wrong facts haven’t been checked yet.",
-      "accuracyNotNamed": "AI doesn’t name you, so there is no tone to measure yet."
+      "accuracyNotNamed": "AI doesn’t name you, so there is no tone to measure yet.",
+      "smallSample": "A small sample: one answer moves this count a lot.",
+      "competitionNobody": "No tracked brand is named in these answers: nobody leads.",
+      "competitionYouLead": "You are named most of the tracked brands: in {named} of {answers} answers.",
+      "competitionShared": "You share the lead with {names}: {named} of {answers} answers each.",
+      "competitionLeader": "{leader} is named most: in {named} of {answers} answers; you in {you}.",
+      "competitionTied": "Nobody leads: {names} are tied at {named} of {answers} answers; you are at {you}.",
+      "sourcesNoCitations": "No answer in this check cited a site.",
+      "sourcesClient": "Your site is cited in {cited} of the {answers} answers that cite a site.",
+      "accuracyFew": "AI names you {count, plural, one {once} other {# times}}: too few mentions to sum up its tone (it takes {minimum}).",
+      "accuracyTone": "AI’s tone about you: {tone}, over {count, plural, one {# mention} other {# mentions}}."
     },
     "events": {
       "placeUp": "You rose to {now, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} place",
@@ -425,31 +453,31 @@
           "detail": "A customer who asks about this hears of {leader}, not of you."
         },
         "leaderGap": {
-          "title": "{leader} is {gap} points ahead of you: {leaderValue} against your {you}.",
+          "title": "{leader} is named in {named} of {answers} answers; you in {you}.",
           "detail": "It is named in more answers, so more customers hear of it before they hear of you."
         },
         "rivalRising": {
-          "title": "{name} gained {points} points in a week and now stands at {value}.",
+          "title": "{name} gained {points} points in a week and is now named in {named} of {answers} answers.",
           "detail": "If it keeps the pace, it takes answers that name you today."
         },
         "falling": {
-          "title": "Your visibility fell {points} points in a week, to {value}.",
+          "title": "Your visibility fell {points} points in a week: you are named in {named} of {answers} answers.",
           "detail": "One week can be chance; a second week down is a trend to act on."
         },
         "tone": {
-          "title": "AI’s tone about you is {score} out of 100.",
+          "title": "{negative} of your {mentions} mentions are negative.",
           "detail": "It repeats what it reads in reviews. Answering them and fixing their cause moves it."
         },
         "listings": {
-          "title": "{count, plural, one {# site AI relies on doesn’t} other {# sites AI relies on don’t}} list you: {sites}.",
-          "detail": "The percentage is the share of answers that cite the site. Getting listed is the quickest way into those answers."
+          "title": "{count, plural, one {# site AI relies on doesn’t} other {# sites AI relies on don’t}} list you: {sites} (the answers citing each, of the {answers} that cite a site).",
+          "detail": "Each count is the answers citing the site, of the answers that cite any site. Getting listed is the quickest way into those answers."
         },
         "closeTopics": {
           "title": "The leader is within reach in {count, plural, one {the topic} other {the topics}} {topics}.",
           "detail": "The nearest is {gap} points away: one strong page on the topic can take it."
         },
         "ownSite": {
-          "title": "AI cites your site in {you} of its answers, and {rival}’s in {rivalValue}.",
+          "title": "AI cites your site in {you} of the {answers} answers that cite a site, and {rival}’s in {rivalCited}.",
           "detail": "Clear pages on services and prices get cited, and a cited site gets named."
         },
         "rivalFalling": {
@@ -457,7 +485,7 @@
           "detail": "A good moment to pass it in the topics you share."
         },
         "language": {
-          "title": "In {weak} questions your visibility is {weakValue}; in {strong} ones, {strongValue}.",
+          "title": "In {weak} questions you are named in {weakNamed} of {weakAnswers} answers; in {strong} ones, in {strongNamed} of {strongAnswers}.",
           "detail": "Pages and listings in {weak} close the gap."
         }
       }
@@ -506,7 +534,9 @@
         "contacts": "Contacts",
         "reputation": "Reputation",
         "other": "Other"
-      }
+      },
+      "tied": "tied",
+      "separate": "From the brand questions, asked by the business’s name: a separate check, not counted in any number above."
     },
     "pdf": {
       "download": "Download PDF",
@@ -517,6 +547,37 @@
       "printInstead": "Save from the print window",
       "printHint": "The report opens as A4 with the print window: choose “Save as PDF”.",
       "failedHint": "The PDF file didn’t come through. In the print window, choose “Save as PDF”."
+    },
+    "headline": {
+      "label": "Named in buyer answers",
+      "of": "of {answers} answers to the buyers' questions",
+      "smallSample": "Small sample",
+      "smallSampleNote": "Under {minimum} answers, one answer moves the count a lot.",
+      "byArea": "By area",
+      "verdict": "{brand} appeared in {named} of {answers} buyer answers."
+    },
+    "counts": {
+      "na": "N/A",
+      "notNamed": "not named",
+      "rank": {
+        "place": "{place, selectordinal, one {#st} two {#nd} few {#rd} other {#th}}",
+        "tied": "Tied {place, selectordinal, one {#st} two {#nd} few {#rd} other {#th}}",
+        "none": "No rank"
+      },
+      "tone": {
+        "mixed": "Mixed",
+        "mostly": "Mostly {tone}",
+        "count": "{tone}: {count}",
+        "few": "{counts} (too few mentions to sum up)"
+      },
+      "position": {
+        "unordered": "No rank (unordered)",
+        "numbered": "Median place {median} · numbered list in {k} of {n} answers"
+      },
+      "shareOfVoice": {
+        "tooFew": "Held back: too few mentions for share of voice ({mentions} of the {minimum} needed)"
+      },
+      "and": " and "
     }
   },
   "Headline": {
@@ -1402,13 +1463,7 @@
     "deleteFailed": "Couldn't delete it. Try again.",
     "deleteConfirm": "Delete",
     "cancel": "Cancel",
-    "condition": "Condition: {score}/100 · {status}",
-    "status": {
-      "good": "Good",
-      "fair": "Fair",
-      "weak": "Weak"
-    },
-    "lowest": "Holding the score down: {areas} →"
+    "namedOf": "named in {named} of {answers} answers"
   },
   "Overview": {
     "noDataTitle": "No measurements yet",
@@ -2406,7 +2461,7 @@
     "report": {
       "kicker": "Report",
       "title": "A weekly report your manager will understand",
-      "text": "After every check, one document: an overall condition score out of 100, five areas, what changed and the decisions to make. Share it by link or save it as a PDF; it also arrives in your inbox.",
+      "text": "After every check, one document: how many buyer answers named you and out of how many, the five areas by their counts, what changed and the decisions to make. Share it by link or save it as a PDF; it also arrives in your inbox.",
       "soon": "Soon",
       "frame": {
         "title": "Status report",
@@ -3741,11 +3796,11 @@
     "reports": {
       "latest": {
         "title": "The latest report",
-        "text": "Your condition this week: the overall score out of 100 with its status and change, and the five areas, each with the fact behind its score. “Open the report” shows every section; the link, Telegram and PDF are at the top."
+        "text": "Where you stand this week: the buyer answers that named you, as a count, and the five areas, each with its own count. “Open the report” shows every section; the link, Telegram and PDF are at the top."
       },
       "archive": {
         "title": "All reports",
-        "text": "One status report a week, with the condition it found and what happened that week. A row opens the report; the mark at its end saves it as a PDF."
+        "text": "One report a week, with how many answers named you and what happened that week. A row opens the report; the mark at its end saves it as a PDF."
       },
       "delivery": {
         "title": "Where the report goes",
@@ -3759,11 +3814,11 @@
       },
       "contents": {
         "title": "Contents",
-        "text": "The report’s four parts and twelve sections. A dot shows an area’s status; a click goes to the section, and the one you are reading is marked."
+        "text": "The report’s parts and sections. A click goes to the section, and the one you are reading is marked."
       },
       "condition": {
         "title": "The condition",
-        "text": "The overall score with its status, and the five areas it is made of, each with the fact behind its score."
+        "text": "The buyer answers that named you, as a count, and the five areas, each with its own count and the sentence behind it."
       },
       "decisions": {
         "title": "Highlights and decisions",
@@ -3784,44 +3839,40 @@
       "count": "{count, plural, one {# weekly report} other {# weekly reports}}",
       "latest": "Latest report",
       "open": "Open",
-      "change": "{points} points since the report before",
       "columns": {
         "number": "No.",
         "period": "Period",
-        "condition": "Condition",
-        "areas": "Areas",
-        "events": "The week’s events"
+        "events": "The week’s events",
+        "named": "In AI answers"
       },
       "hints": {
         "number": "The report’s number in the run of weekly reports.",
         "period": "The week the report covers: from the check before to its own. A row opens the full report.",
-        "condition": "The overall condition score out of 100, its status, and its change since the report before, in points.",
-        "areas": "The five areas of the condition in the report’s order: visibility, competitive position, question coverage, presence in sources, accuracy and tone. Green is good, amber fair, red weak; rest the mouse on a mark for its score.",
-        "events": "What happened that week: your place, who passed whom, new wrong facts, work done, large moves."
+        "events": "What happened that week: your place, who passed whom, new wrong facts, work done, large moves.",
+        "named": "The answers to the buyers’ questions that named you, of that check’s answers, and who was named most (every brand that ties)."
       },
       "csvLabel": "Export",
       "csvHint": "Download the table as CSV",
       "csv": {
         "date": "Date",
-        "visibility": "Visibility, %",
-        "shareOfVoice": "Share of voice, %",
-        "place": "Place",
-        "tone": "Tone",
-        "leader": "Leader",
+        "leader": "Named most",
         "facts": "Wrong facts",
         "done": "Actions done",
         "number": "No.",
-        "condition": "Condition, /100",
-        "status": "Status"
+        "named": "Answers naming you",
+        "answers": "Answers"
       },
       "firstReport": "First report",
       "weekly": "Weekly report",
-      "area": "{area}: {score}/100, {status}",
       "pdf": "PDF",
       "pdfHint": "Opens this report as A4 with the print window: choose “Save as PDF”.",
       "pdfOf": "PDF of report No. {number}",
       "eventsQuiet": "No notable change",
-      "eventsFirst": "The first check"
+      "eventsFirst": "The first check",
+      "namedOf": "named in {named} of {answers} answers",
+      "namedMost": "Named most: {names}",
+      "namedMostTied": "Named most, tied: {names}",
+      "nobodyNamed": "No tracked brand named"
     },
     "delivery": {
       "title": "Where the report goes",
@@ -3877,25 +3928,6 @@
     "detail": {
       "title": "Report of {date}",
       "contents": "Contents"
-    },
-    "reasons": {
-      "title": "Why {score}?",
-      "text": "The score is the average of the five areas: each gives up to {points} points. Below, what each gave and what holds the score down.",
-      "earned": "{points} / {max}",
-      "total": "Total",
-      "lowersTitle": "What holds the score down",
-      "lost": "−{points} pts",
-      "areaScore": "area: {score}/100",
-      "todo": "What to do",
-      "more": "{count, plural, one {# more action} other {# more actions}}",
-      "nothingLost": "Every area is at 100: nothing holds the score down.",
-      "advice": {
-        "visibility": "What would get you named — Actions",
-        "competition": "Where the leader wins — Competitors",
-        "coverage": "The questions that don't name you — Questions",
-        "sources": "Sites AI relies on that don't list you — Sources",
-        "accuracy": "Add your brand's facts: the answers are checked against them"
-      }
     }
   },
   "Pilot": {

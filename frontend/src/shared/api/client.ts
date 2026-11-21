@@ -56,6 +56,7 @@ import type {
   UpdatePromptsRequest,
   User,
   VerifyCodeRequest,
+  WaveResponse,
 } from "@/shared/types/api";
 
 export const USE_MOCKS = process.env.NEXT_PUBLIC_USE_MOCKS === "true";
@@ -137,6 +138,8 @@ export interface ApiClient {
   getReport(projectId: string, period?: ReportPeriod, filters?: ReportFilters): Promise<Report>;
   /** The report of one past run, as it stood then (Hisobotlar); the runs are `Report.history`. Readable without login, like the report. */
   getRunReport(projectId: string, runId: string): Promise<Report>;
+  /** A check's data object and its metrics ("latest": the newest finished check). Readable without login, like the report. */
+  getWave(projectId: string, runId: string): Promise<WaveResponse>;
   getReportSettings(projectId: string): Promise<ReportSettings>;
   updateReportSettings(projectId: string, body: UpdateReportSettingsRequest): Promise<ReportSettings>;
   getActions(projectId: string): Promise<Action[]>;
@@ -272,6 +275,7 @@ const httpApi: ApiClient = {
   getReport: (projectId, period = "week", filters = {}) =>
     request(`/projects/${id(projectId)}/report?${new URLSearchParams({ period, ...filters })}`),
   getRunReport: (projectId, runId) => request(`/projects/${id(projectId)}/reports/${id(runId)}`),
+  getWave: (projectId, runId) => request(`/projects/${id(projectId)}/waves/${id(runId)}`),
   getReportSettings: (projectId) => request(`/projects/${id(projectId)}/report-settings`),
   updateReportSettings: (projectId, body) => send("PATCH", `/projects/${id(projectId)}/report-settings`, body),
   getActions: (projectId) => request(`/projects/${id(projectId)}/actions`),
@@ -360,6 +364,7 @@ const mockBridge = (): ApiClient => ({
       getReport: (projectId, period, filters) =>
         mocks().then((m) => unwrap(m.getReport(projectId, period, filters))),
       getRunReport: (projectId, runId) => mocks().then((m) => unwrap(m.getRunReport(projectId, runId))),
+      getWave: (projectId, runId) => mocks().then((m) => unwrap(m.getWave(projectId, runId))),
       getReportSettings: (projectId) => mocks().then((m) => unwrap(m.getReportSettings(projectId))),
       updateReportSettings: (projectId, body) => mocks().then((m) => unwrap(m.updateReportSettings(projectId, body))),
       getActions: (projectId) => mocks().then((m) => unwrap(m.getActions(projectId))),

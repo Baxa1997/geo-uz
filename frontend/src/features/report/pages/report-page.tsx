@@ -5,7 +5,7 @@ import { cache } from "react";
 import { NoData } from "@/shared/components/no-data";
 import { setPageLocale } from "@/i18n/page-locale";
 import { api } from "@/shared/api/client";
-import { orNotFound } from "@/shared/api/errors";
+import { orNotFound, orNull } from "@/shared/api/errors";
 import { AutoPrint } from "../components/auto-print";
 import { ReportBody } from "../components/report-body";
 import { ReportToolbar } from "../components/report-header";
@@ -14,6 +14,8 @@ type Props = PageProps<"/[locale]/projects/[id]/report">;
 
 // Shared by generateMetadata and the page within one request: the latest report, or a past run's (`?run=`)
 const getReport = cache((id: string, run?: string) => orNotFound(run ? api.getRunReport(id, run) : api.getReport(id, "week")));
+// The same check's data object and metrics; none for a project with no finished check
+const getWave = (id: string, run?: string) => orNull(api.getWave(id, run ?? "latest"));
 
 const runOf = (query: Record<string, string | string[] | undefined>) => (typeof query.run === "string" ? query.run : undefined);
 
@@ -42,7 +44,7 @@ export default async function ReportPage({ params, searchParams }: Props) {
   const { locale: segment, id } = await params;
   setPageLocale(segment);
   const query = await searchParams;
-  const [report, actions] = await Promise.all([getReport(id, runOf(query)), orNotFound(api.getActions(id))]);
+  const [report, actions, wave] = await Promise.all([getReport(id, runOf(query)), orNotFound(api.getActions(id)), getWave(id, runOf(query))]);
 
   return (
     // Its chart, tools and appendix translate in the browser; nothing here saves, so no data cache
@@ -51,12 +53,12 @@ export default async function ReportPage({ params, searchParams }: Props) {
         <main className="flex w-full flex-col gap-3 px-3 py-4 sm:px-4 sm:py-6 print:p-0">
           {query.print === "1" && <AutoPrint />}
           <ReportToolbar projectId={report.project.id} runId={runOf(query) ?? report.history.at(-1)?.runId ?? ""} />
-          {report.prompts.length === 0 ? (
+          {report.prompts.length === 0 || !wave ? (
             <div className="mx-auto w-full max-w-224">
               <NoData projectId={report.project.id} />
             </div>
           ) : (
-            <ReportBody report={report} actions={actions} />
+            <ReportBody report={report} wave={wave} actions={actions} />
           )}
         </main>
       </div>

@@ -1,4 +1,4 @@
-import type { ActionKind, ConditionArea } from "@/shared/types/api";
+import type { ActionKind, ReportArea } from "@/shared/types/api";
 
 /**
  * The report's sections in the order they are numbered, as a status report runs: the condition and its
@@ -22,8 +22,8 @@ export const REPORT_PARTS = [
 
 export type ReportPartKey = (typeof REPORT_PARTS)[number]["key"];
 
-/** The area of the condition a section is the evidence for: its status stands beside the section's title. */
-export const SECTION_AREAS: Partial<Record<ReportSectionKey, ConditionArea>> = {
+/** The area a section is the evidence for: its sentence is the section's conclusion. */
+export const SECTION_AREAS: Partial<Record<ReportSectionKey, ReportArea>> = {
   scorecard: "visibility",
   competitors: "competition",
   topics: "coverage",
@@ -31,11 +31,8 @@ export const SECTION_AREAS: Partial<Record<ReportSectionKey, ConditionArea>> = {
   accuracy: "accuracy",
 };
 
-/** The area a kind of action improves, so the plan reads against the condition. */
-export const ACTION_AREAS: Record<ActionKind, ConditionArea> = { technical: "visibility", content: "coverage", listing: "sources", fact: "accuracy" };
+/** The area a kind of action improves, so the plan reads against the five areas. */
+export const ACTION_AREAS: Record<ActionKind, ReportArea> = { technical: "visibility", content: "coverage", listing: "sources", fact: "accuracy" };
 
 /** A section's number, for its title and the contents. */
 export const sectionNumber = (key: ReportSectionKey) => REPORT_SECTIONS.indexOf(key) + 1;
-
-// The status colours moved to the shared helpers with the gauge (16 Nov 2026: the landing page draws it too)
-export { STATUS_COLOR, STATUS_FILL } from "@/shared/helpers/condition";

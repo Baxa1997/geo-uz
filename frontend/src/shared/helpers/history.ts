@@ -44,6 +44,9 @@ export function groupHistory(history: HistoryPoint[], grain: Grain, timeZone: st
       {
         runId: latest.runId,
         collectedAt: latest.collectedAt,
+        // The period's answers and those naming the client, over all its checks
+        answers: checks.reduce((sum, check) => sum + check.answers, 0),
+        named: checks.reduce((sum, check) => sum + check.named, 0),
         scores: brandIds.map((brandId): Scored => {
           const scores = checks.flatMap((check) => check.scores.filter((score) => score.brandId === brandId));
           const positions = scores.flatMap((score) => score.avgPosition ?? []);

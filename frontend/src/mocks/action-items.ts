@@ -181,6 +181,14 @@ function visibilityOn(report: Report, promptIds: string[]) {
   return answers ? named / answers : 0;
 }
 
+/** A done action's proof as the backend gives it: the share before and after, and the counts they stand on. */
+function proofOf(report: Report, promptIds: string[], after: number): NonNullable<Action["proof"]> {
+  const asked = report.prompts.filter((result) => promptIds.includes(result.prompt.id)).reduce((sum, result) => sum + result.answers.length, 0);
+  const now = Math.round(after * asked);
+  const was = Math.max(0, now - Math.round(0.17 * asked));
+  return { before: asked ? round(was / asked) : 0, after: asked ? round(now / asked) : 0, runs: 3, counts: { before: [was, asked], after: [now, asked] } };
+}
+
 /**
  * The sample project's past: an Instagram page made three weeks ago, with what it changed on its
  * questions since, and one listing in progress with its first step done.
@@ -203,7 +211,7 @@ function sampleHistory(report: Report): Action[] {
       createdAt: weeksBefore(report.method.collectedAt, 5),
       doneAt: weeksBefore(report.method.collectedAt, 3),
       stepsDone: Array.from({ length: ACTION_STEP_COUNT }, (_, index) => index),
-      proof: { before: round(Math.max(0, after - 0.17)), after: round(after), runs: 3 },
+      proof: proofOf(report, done.promptIds, after),
     },
   ];
 }

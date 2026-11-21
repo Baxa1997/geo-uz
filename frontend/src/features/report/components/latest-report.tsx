@@ -3,31 +3,31 @@ import { useId } from "react";
 import { useLocale, useTimeZone, useTranslations } from "next-intl";
 import { buttonVariants } from "@/shared/components/ui/button";
 import { Link } from "@/i18n/navigation";
-import { engineOf, TIME_ZONE } from "@/shared/constants";
+import { TIME_ZONE } from "@/shared/constants";
 import { formatLongDate, formatShortDate } from "@/shared/helpers/dates";
-import { totalAnswers } from "@/shared/helpers/scores";
-import type { Action, Report } from "@/shared/types/api";
+import type { Report, WaveResponse } from "@/shared/types/api";
 import { REPORT_PARTS, REPORT_SECTIONS } from "../constants";
 import { useAreaFindings } from "../hooks/use-area-findings";
-import { ConditionSummary } from "./condition-summary";
-import { ScoreReasons } from "./score-reasons";
+import { HeadlineSummary } from "./headline-summary";
 
 /**
  * The latest weekly report as Hisobotlar opens: what it is (its number, the period, how much was asked),
- * the condition it found (the overall score with its status and change, and the five areas with the fact
- * behind each), and the ways on: the whole report, its link, Telegram and its PDF (`share`).
+ * where the client stands as the report's summary has it (the buyers' answers that name it, as a count, and
+ * the five areas each with its own count: no score since 21 Nov 2026, report spec Phase 0 item 0.2), and the
+ * ways on: the whole report, its link, Telegram and its PDF (`share`).
  */
-export function LatestReport({ report, actions, href, share }: { report: Report; actions: Action[]; /** The report's own page. */ href: string; share: React.ReactNode }) {
+export function LatestReport({ report, wave, href, share }: { report: Report; wave: WaveResponse; /** The report's own page. */ href: string; share: React.ReactNode }) {
   const t = useTranslations("Reports.latest");
   const document = useTranslations("Report");
   const engines = useTranslations("Engines");
   const locale = useLocale();
   const timeZone = useTimeZone() ?? TIME_ZONE;
   const id = useId();
-  const findings = useAreaFindings(report);
+  const { scope } = wave.metrics;
+  const findings = useAreaFindings(report, wave.metrics);
   const before = report.history.at(-2)?.collectedAt;
-  const issued = formatLongDate(report.method.collectedAt, locale, timeZone);
-  const condition = report.conditionHistory.at(-1);
+  const issued = formatLongDate(scope.wave.collected_at, locale, timeZone);
+  const names = scope.engines.map(({ engine }) => (engine === "chatgpt" || engine === "gemini" ? engines(engine) : engine)).join(", ");
   const sentences = {
     visibility: findings.visibility.finding,
     competition: findings.competition.finding,
@@ -41,7 +41,7 @@ export function LatestReport({ report, actions, href, share }: { report: Report;
       <header className="flex flex-wrap items-start justify-between gap-x-6 gap-y-3 border-b px-4 py-3.5 sm:px-5">
         <div className="flex min-w-0 flex-col gap-1">
           <p className="text-xs font-semibold tracking-[0.14em] text-muted-foreground uppercase tabular-nums">
-            {t("kicker")} · {document("number", { number: report.history.length })}
+            {t("kicker")} · {document("number", { number: scope.wave.number })}
           </p>
           <h2 id={id} className="text-xl font-semibold tracking-tight text-balance">
             {document("kicker")}
@@ -49,21 +49,15 @@ export function LatestReport({ report, actions, href, share }: { report: Report;
           <p className="text-sm text-pretty text-muted-foreground">
             {before ? document("meta.periodRange", { from: formatShortDate(before, locale, timeZone), to: issued }) : issued}
             {" · "}
-            {t("scope", { prompts: report.prompts.length, answers: totalAnswers(report.prompts), engine: engines(engineOf(report.method.engine)) })}
+            {t("scope", { prompts: scope.prompts.discovery, answers: scope.slots.completed, engine: names })}
           </p>
         </div>
         {share}
       </header>
 
       <div className="px-4 py-4 sm:px-5">
-        <ConditionSummary report={report} findings={sentences} />
+        <HeadlineSummary metrics={wave.metrics} findings={sentences} />
       </div>
-
-      {condition && (
-        <div className="border-t px-4 py-4 sm:px-5">
-          <ScoreReasons condition={condition} findings={sentences} actions={actions} projectId={report.project.id} />
-        </div>
-      )}
 
       <footer className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t bg-muted/50 px-4 py-3 sm:px-5">
         <p className="min-w-0 flex-1 basis-72 text-sm text-pretty text-muted-foreground">{t("inside", { parts: REPORT_PARTS.length, sections: REPORT_SECTIONS.length })}</p>

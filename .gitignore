@@ -16,3 +16,15 @@ node_modules/
 /backend/.venv/
 /backend/*.db
 __pycache__/
+.pytest_cache/
+
+# The report spec and its go-to-market companion name a client (the baseline of spec §3.3): kept on this
+# computer only, wherever they are put (the user's decision, 21 Nov 2026)
+/seenova-report-spec.md
+/seenova-go-to-market.md
+/docs/seenova-report-spec.md
+/docs/seenova-go-to-market.md
+
+# The tests' fixtures hold a client's answers in full: kept on this computer only (backend/tests/README.md)
+/backend/tests/fixtures/*
+!/backend/tests/fixtures/README.md

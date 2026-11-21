@@ -217,22 +217,18 @@ export interface HistoryPoint {
   /** ISO 8601 timestamp. */
   collectedAt: string;
   scores: Omit<BrandScore, "trend">[];
+  /** The run's answers, and those that name the client: the count Hisobotlar and the project cards show (no score since 21 Nov 2026). */
+  answers: number;
+  named: number;
 }
 
 /**
- * What a project's condition is rated on, each from 0 to 100 (the status report):
- * visibility: how often the answers name the client; competition: its visibility against the most visible
- * tracked brand's; coverage: the questions that name it at all; sources: how much of what ChatGPT cites
- * lists it; accuracy: how well and how truly it is spoken of.
+ * The five areas a report reads the client on, each by its own counts (Phase 0 item 0.2, 21 Nov 2026: no score
+ * and no status any more): visibility: the answers naming it; competition: where it stands among the tracked
+ * brands; coverage: the questions that name it at all; sources: how often its site is cited; accuracy: how it
+ * is spoken of, and what is said of it that is wrong.
  */
-export type ConditionArea = "visibility" | "competition" | "coverage" | "sources" | "accuracy";
-
-/** A run's condition: the five areas and their mean, the number a status report opens with. */
-export interface Condition {
-  /** The mean of the five areas, a whole number from 0 to 100. */
-  score: number;
-  areas: Record<ConditionArea, number>;
-}
+export type ReportArea = "visibility" | "competition" | "coverage" | "sources" | "accuracy";
 
 /**
  * A change to the project's brand profile (Sozlamalar › Profil): any of the fields, the rest stay. The
@@ -351,7 +347,13 @@ interface ActionBase {
    * Fix → proof: the brand's visibility (0–1) on `promptIds` in the last run before it was done, and
    * in the latest run, `runs` runs later. Null until a run has finished since it was done.
    */
-  proof: { before: number; after: number; runs: number } | null;
+  proof: {
+    before: number;
+    after: number;
+    runs: number;
+    /** The answers naming the brand, of the answers to `promptIds`, in each of the two runs: what the report shows each share beside. */
+    counts: { before: [number, number]; after: [number, number] };
+  } | null;
 }
 
 /** What a page of the client's website is, for an action that reworks it. */
@@ -433,8 +435,6 @@ export interface Report {
   history: HistoryPoint[];
   /** The cited sites over the same runs, oldest first, ending with this one (whose counts are `topSources`). */
   sourceHistory: SourceHistoryPoint[];
-  /** The project's condition after each of the same runs, oldest first, ending with this one; empty for a report over one question. */
-  conditionHistory: Condition[];
   /** Brands named in the answers but not tracked, most named first. */
   untrackedBrands: UntrackedBrand[];
   /** ISO 8601: when the project's questions are asked again (runs are weekly); null when nothing is scheduled. */
@@ -473,6 +473,251 @@ export interface ReportEngine {
   engine: string;
   name: string;
   answers: number;
+}
+
+// One check's data object and its metrics (report spec §10, Phase 0 item 0.1): `GET /projects/{id}/waves/{runId}`,
+// readable by the report's link; runId "latest" is the newest finished check. The report shows the metrics' numbers
+// and works out none of its own.
+
+/** What a call was told of where the customer is: `set` only when the search itself took it. */
+export interface WaveLocation {
+  country: string | null;
+  city: string | null;
+  timezone: string | null;
+  set: boolean;
+  /** "user_location" (ChatGPT's search tool), "instruction" (a sentence in Gemini's instructions), or null. */
+  how: string | null;
+}
+
+export type SlotStatus = "planned" | "completed" | "failed" | "excluded";
+
+/** Why a slot failed or was left out: "free_check_subset", "error", "empty_answer", "not_logged", "not_planned". */
+export type SlotReason = string;
+
+/** One planned call to an assistant: a question, an assistant, a run, what it was told and what came of it. */
+export interface WaveSlot {
+  id: string;
+  prompt_id: string;
+  group: "discovery" | "branded";
+  lang: string;
+  engine: string;
+  model: string | null;
+  /** "api_web_search" (ChatGPT) or "api_grounded" (Gemini with Google Search). */
+  surface: string | null;
+  location: WaveLocation;
+  run_index: number;
+  status: SlotStatus;
+  reason: SlotReason | null;
+  attempts: number;
+  answer_id: string | null;
+  searched: boolean | null;
+  cost_usd: number | null;
+  /** Rebuilt from what an older check saved, before the slot log (21 Nov 2026). */
+  reconstructed: boolean;
+}
+
+export interface Wave {
+  schema_version: number;
+  project: {
+    id: string;
+    brand: { id: string; name: string; aliases: string[]; domains: string[] };
+    competitors: { id: string; name: string; aliases: string[]; domains: string[] }[];
+    category: string;
+    /** The country the business serves, two letters. */
+    market: string;
+    city: string;
+  };
+  wave: {
+    id: string;
+    /** Its place among the project's finished checks, from 1. */
+    number: number;
+    is_baseline: boolean;
+    kind: string;
+    collected_at: string;
+    runs_per_prompt: number;
+    settings_hash: string;
+    reconstructed: boolean;
+  };
+  prompts: { id: string; text: string; lang: string; group: "discovery" | "branded"; topic: string; version: number }[];
+  slots: WaveSlot[];
+  answers: {
+    id: string;
+    prompt_id: string;
+    slot_id: string | null;
+    lang: string;
+    engine: string;
+    model: string | null;
+    /** The answer's run of its question on its assistant, from 1. */
+    run_index: number;
+    collected_at: string;
+    text: string;
+    searches: string[];
+    searched: boolean;
+    mentions: { brand_id: string | null; name: string; tracked: boolean; position: number; tone: string; recommended: boolean }[];
+    citations: { url: string; title: string | null; domain: string }[];
+  }[];
+  /** The sites the buyers' answers cite, with their kind and whether they list the client (as typed before item 0.4). */
+  domains: { domain: string; type: SourceType; listed: boolean }[];
+  branded: { engine: string; lang: string; question: string; known: string; statements: Record<string, unknown>[] }[];
+}
+
+/** How a set of slots came out. */
+export interface SlotTally {
+  slots: number;
+  /** Put to the assistant: every slot but the ones left out. */
+  asked: number;
+  completed: number;
+  failed: number;
+  excluded: number;
+  /** Planned and never closed: the check stopped before the call came back. */
+  unfinished: number;
+  failed_reasons: Record<SlotReason, number>;
+  excluded_reasons: Record<SlotReason, number>;
+}
+
+/** One assistant on the scope card: its models, surface, location, slots and searched answers. */
+export interface ScopeEngine extends SlotTally {
+  engine: string;
+  models: string[];
+  surface: string | null;
+  location: WaveLocation | null;
+  location_varies: boolean;
+  /** Of its completed answers, how many came with a web search behind them. */
+  searched: number;
+}
+
+/** The scope card (report spec §4.0), counted from the slot log only. */
+export interface WaveScope {
+  wave: { number: number; is_baseline: boolean; kind: string; collected_at: string; settings_hash: string; reconstructed: boolean };
+  engines: ScopeEngine[];
+  /** Assistants not checked yet: "google_ai_overviews", "yandex". */
+  not_tracked: string[];
+  prompts: { discovery: number; by_language: Record<string, number>; branded: number; howto: number };
+  runs_per_prompt: number;
+  /** The buyers' questions' slots. */
+  slots: SlotTally;
+  answers_by_language: Record<string, number>;
+  /** The brand questions' slots, kept apart from every number about the buyers' questions. */
+  branded: SlotTally & { engines: (SlotTally & { engine: string })[] };
+  brands_tracked: number;
+  /** Businesses the buyers' answers name that the project doesn't track, not reviewed. */
+  other_names: number;
+}
+
+/**
+ * The headline (report spec rule 1, §4.1; Phase 0 item 0.2): the buyers' answers naming the client out of all of
+ * them, and the questions it was named in at least once. Counts only, never a score.
+ */
+export interface WaveVisibility {
+  answers: number;
+  named: number;
+  /** Fewer than `small_sample_below` answers (20): the count carries the "small sample" badge (spec §6.3). */
+  small_sample: boolean;
+  small_sample_below: number;
+  /** Questions with at least one completed answer. */
+  prompts: number;
+  prompts_named: number;
+  /** Questions where a tracked competitor was named and the client never was. */
+  prompts_only_rivals: number;
+  /** Answers citing any site, and of them those citing the client's own (spec §6.3, client citation rate). */
+  cited_answers: number;
+  client_cited: number;
+}
+
+export type ToneSummary = Tone | "mixed";
+
+/** One tracked brand over the buyers' answers (spec §4.4, §6.3). */
+export interface WaveBrand {
+  id: string;
+  name: string;
+  own: boolean;
+  /** Answers naming it, out of `answers`. */
+  named: number;
+  answers: number;
+  prompts_named: number;
+  mentions: number;
+  /** Its place among the brands by `named`; brands named equally often share it (`tied`). Null when named nowhere. */
+  rank: { place: number; tied: number } | null;
+  /** Counted per mention; a word for them all (`summary`) only from 3 mentions; nothing at none. */
+  tone: { mentions: number; counts: Partial<Record<Tone, number>>; summary: ToneSummary | null };
+  /** A place only where an answer names it in a numbered list: in `numbered` of the `named` answers, their median item. */
+  position: { numbered: number; named: number; median: number | null };
+  /** Answers citing a site of its own. */
+  cited: number;
+}
+
+export interface WaveBrands {
+  /** The client first, then its competitors in the project's order. */
+  rows: WaveBrand[];
+  /** Who is named most: one brand leads only when it is alone here; empty when nobody is named. */
+  leaders: string[];
+  /** The strongest competitor on each count, every one of them on a tie; none at 0. */
+  rivals_top: Record<"named" | "prompts_named" | "mentions" | "cited", { value: number; ids: string[] }>;
+  /** A brand's tone is summed up in a word only from this many mentions (3). */
+  tone_summary_from: number;
+  /** Shown only from `minimum` mentions of the tracked brands in all; under it, `shares` is null. */
+  share_of_voice: { mentions: number; minimum: number; shown: boolean; shares: Record<string, { k: number; n: number }> | null };
+}
+
+/** Who is named most among some answers: every brand at the top count; none at 0. */
+export interface WaveTop {
+  value: number;
+  ids: string[];
+}
+
+/** One assistant over its own buyers' answers (Phase 0 item 0.3). */
+export interface WaveAssistant {
+  engine: string;
+  answers: number;
+  /** Those naming the client. */
+  named: number;
+  /** Who it names most, the client among them. */
+  top: WaveTop;
+}
+
+/** A topic, or a question language, over its buyers' answers: the client's count beside the competitors named most. */
+export interface WaveGroup {
+  key: string;
+  prompts: number;
+  answers: number;
+  named: number;
+  rivals: WaveTop;
+}
+
+export type SitePart = "own" | "listed" | "missing" | "competitors";
+
+/** The cited sites (spec §4.6, §6.3): each counted once per answer, over the answers that cite any site. */
+export interface WaveSources {
+  cited_answers: number;
+  sites: number;
+  rows: { domain: string; type: SourceType; listed: boolean; cited: number }[];
+  /** The sites by whom they work for, counted in sites. */
+  split: Partial<Record<SitePart, number>>;
+}
+
+/** The brand-question check (spec §4.7), apart from every count of the buyers' answers. */
+export interface WaveClaims {
+  answers: number;
+  statements: number;
+  verified: number;
+  unverified: number;
+  contradicted: number;
+}
+
+export interface WaveMetrics {
+  scope: WaveScope;
+  visibility: WaveVisibility;
+  brands: WaveBrands;
+  assistants: WaveAssistant[];
+  topics: WaveGroup[];
+  languages: WaveGroup[];
+  sources: WaveSources;
+  claims: WaveClaims;
+}
+
+export interface WaveResponse {
+  wave: Wave;
+  metrics: WaveMetrics;
 }
 
 // Request bodies

@@ -1,15 +1,14 @@
 import { CheckCircleIcon as CircleCheck } from "@phosphor-icons/react/dist/ssr/CheckCircle";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { ActionTitle } from "@/shared/components/actions/action-title";
 import { ActionWhy } from "@/shared/components/actions/action-why";
 import { ImpactBadge } from "@/shared/components/actions/impact-badge";
 import { StatusBadge } from "@/shared/components/actions/status-badge";
-import { formatPercent } from "@/shared/helpers/numbers";
 import type { Action, Report } from "@/shared/types/api";
 import { ACTION_AREAS } from "../constants";
 import { openActions } from "../helpers/report";
 import { ACTIONS_SHOWN } from "../helpers/risks";
-import { BlockTitle, ReportCard } from "./report-parts";
+import { BlockTitle, ReportCard, Share } from "./report-parts";
 
 /** The plan's columns from the width where they fit side by side (wider than a sheet of paper): number, action, area, effect, status. */
 const COLUMNS = "@3xl:grid-cols-[1.5rem_minmax(0,1fr)_9.5rem_7.5rem_6.5rem]";
@@ -24,7 +23,6 @@ const COLUMNS = "@3xl:grid-cols-[1.5rem_minmax(0,1fr)_9.5rem_7.5rem_6.5rem]";
 export function Recommendations({ report, actions }: { report: Report; actions: Action[] }) {
   const t = useTranslations("Report.actions");
   const areas = useTranslations("Report.areas");
-  const locale = useLocale();
   const competitors = new Map(report.project.competitors.map((competitor) => [competitor.id, competitor.name]));
   const open = openActions(actions);
   const done = actions.filter((action) => action.status === "done");
@@ -119,9 +117,15 @@ export function Recommendations({ report, actions }: { report: Report; actions: 
                       <ActionTitle action={action} />
                     </span>
                     <span className="text-xs text-muted-foreground">
-                      {action.proof
-                        ? t("doneProof", { before: formatPercent(action.proof.before, locale), after: formatPercent(action.proof.after, locale) })
-                        : t("donePending")}
+                      {action.proof ? (
+                        // Each share beside the answers it stands on, before and after (Phase 0 item 0.3)
+                        <>
+                          {t("doneProof")} <Share k={action.proof.counts.before[0]} n={action.proof.counts.before[1]} /> →{" "}
+                          <Share k={action.proof.counts.after[0]} n={action.proof.counts.after[1]} />
+                        </>
+                      ) : (
+                        t("donePending")
+                      )}
                     </span>
                   </span>
                 </li>

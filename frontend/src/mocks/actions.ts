@@ -168,6 +168,10 @@ export async function getReport(projectId: string, period?: ReportPeriod, filter
   return run((m) => m.getReport(projectId, period, filters));
 }
 
+export async function getWave(projectId: string, runId: string) {
+  return run((m) => m.getWave(projectId, runId));
+}
+
 export async function getRunReport(projectId: string, runId: string) {
   return run((m) => m.getRunReport(projectId, runId));
 }
