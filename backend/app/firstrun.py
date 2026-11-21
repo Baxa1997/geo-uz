@@ -28,16 +28,12 @@ from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
-from . import engines, slots
+from . import domains, engines, slots
 from .config import settings
 from .engines import web
 
 Progress = Callable[[str, int, int], None]
 
-# Kinds of cited sites, in the frontend's words. A short list for a start: the rest is "other".
-NEWS = ["afisha.uz", "kursiv.media", "weproject.media", "gazeta.uz", "kun.uz", "daryo.uz", "spot.uz", "podrobno.uz", "repost.uz", "uznews.uz", "tengrinews.kz", "forbes.kz"]
-DIRECTORIES = ["goldenpages.uz", "yellowpages.uz", "2gis.uz", "2gis.kz", "oblako.uz", "sprav.uz", "orginfo.uz", "google.com", "yandex.uz", "yandex.kz", "tripadvisor.com"]
-SOCIAL = ["t.me", "instagram.com", "facebook.com", "youtube.com", "tiktok.com"]
 AI_BOTS = ["gptbot", "oai-searchbot", "chatgpt-user", "google-extended", "perplexitybot", "claudebot"]
 
 STR = {"type": "string"}
@@ -325,22 +321,10 @@ def conclusion(facts: Dict[str, Any]) -> Tuple[Optional[Dict[str, str]], float]:
 # --- the run -------------------------------------------------------------------------------------------
 
 
-def _kind(domain: str, own: str, competitors: List[str]) -> str:
-    def among(known: List[str]) -> bool:
-        return any(domain == site or domain.endswith(f".{site}") for site in known)
-
-    if domain == own:
-        return "own"
-    # Every part of the address but its ending, written together: a competitor's site may be a subdomain
-    slug = re.sub(r"[^a-z0-9]", "", "".join(domain.split(".")[:-1]))
-    # A competitor's own site carries its name: the whole name, or its first two words, written together. One
-    # word of a longer name proves nothing: "ielts" in a competitor's name made ielts.org a competitor's site
-    # (seen in the first weekly check, 16 Nov 2026)
-    for name in competitors:
-        words = re.findall(r"[a-z0-9]+", name.lower())
-        if any(len(written) >= 5 and written in slug for written in {"".join(words), "".join(words[:2])}):
-            return "competitor"
-    return "news" if among(NEWS) else "directory" if among(DIRECTORIES) else "social" if among(SOCIAL) else "other"
+def _kind(domain: str, own: str, competitors: List[Tuple[str, Optional[str]]]) -> str:
+    """A cited site's kind in the six the first check's statistics show, from its type by the seed list and the
+    competitors (`domains`; the AI types sites once the check is a project's)."""
+    return domains.kind(domains.resolve(domain, own, competitors, {})["type"])
 
 
 def questions_for(engine: str, asked: List[str], count: int) -> List[int]:
@@ -734,7 +718,7 @@ def check(draft: Dict[str, Any], confirmed: Dict[str, Any], progress: Progress, 
     own = domain
     rival_sites = {rival["domain"] for rival in chosen if rival["domain"]}
     ranked = sorted(sites, key=lambda site: (-len(sites[site]["answers"]), site))[:12]
-    kinds = {site: "competitor" if site in rival_sites else _kind(site, own, rivals) for site in ranked}
+    kinds = {site: "competitor" if site in rival_sites else _kind(site, own, [(name, (given.get(name) or {}).get("domain")) for name in rivals]) for site in ranked}
     to_read = [site for site in ranked if kinds[site] not in ("own", "competitor")][:5]
     with ThreadPoolExecutor(max_workers=5) as pool:
         fetched = dict(zip(to_read, pool.map(lambda site: web.fetch(sites[site]["pages"].most_common(1)[0][0]), to_read)))

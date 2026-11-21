@@ -149,7 +149,7 @@ The "what to do" half: the part that keeps a small business paying.
 | Manba sifatida (used as a source) | Answers citing the client's own site ÷ all answers (the report, since 21 Nov: ÷ the answers that cite any site, spec §6.3) | counted from citations | yes |
 | Each assistant apart | The same numbers per assistant (ChatGPT, Gemini) | counted | yes, both (the pages' switcher, 16 Nov) |
 | Change since last week | This check minus the one before | needs two checks | yes, since the live check of 16 Nov |
-| Cited sites and pages | Which sites the answers rely on, their kind, how often | citations of the answers | yes |
+| Cited sites and pages | Which sites the answers rely on, their kind, how often | citations of the answers; the type from the project, a review, our seed list or the AI (`app/domains.py`) | yes; the report shows the spec's types since 21 Nov (Phase 0 item 0.4), the other pages six kinds worked out from them |
 | "Are you on them" | Whether a cited site lists the client | reading the cited pages | yes, for the most cited pages |
 | What the assistant searched | The web searches behind an answer | the search tool's report | yes: a question's page and an opened answer |
 | Untracked brands | Businesses the answers name that aren't tracked | names in the answers | yes (AI assistants named among them are not yet left out) |

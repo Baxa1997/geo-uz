@@ -41,8 +41,6 @@ const CLOSE_WITHIN = 34;
 const GAP = { medium: 10, high: 30 };
 /** A week's change of visibility, in points, worth telling, and a large one. */
 const MOVE = { medium: 3, high: 8 };
-/** A site missing the client is a large opportunity when at least this share of the answers citing a site cites it. */
-const LISTING_HIGH = 10;
 /** The client's own site against a competitor's, and one question language against the other: points apart worth telling. */
 const SITE_GAP = 5;
 const LANGUAGE_GAP = 10;
@@ -61,8 +59,8 @@ const points = (k: number, n: number) => shareOf(k, n) ?? 0;
 /**
  * The report's register of risks and opportunities, made from the check's counts (its data object, Phase 0
  * item 0.3), the gravest first: what may cost the client customers (wrong facts, topics it is absent from, a
- * leader's lead, a competitor gaining, its own visibility or tone falling) and where it can gain (sites that
- * don't list it, topics within reach, its own site, a competitor losing ground, the weaker question language).
+ * leader's lead, a competitor gaining, its own visibility or tone falling) and where it can gain (sites it can
+ * get onto, topics within reach, its own site, a competitor losing ground, the weaker question language).
  * Ties lead nobody, and every entry says its counts, never a percentage. A week's change is the report's
  * history until the change log (spec §4.12). Each entry points at the open action that answers it.
  */
@@ -121,14 +119,17 @@ export function outlook(report: Report, actions: Action[], metrics: WaveMetrics)
 
   const opportunities: Opportunity[] = [];
   const { sources } = metrics;
-  // Sites a business can be listed on that don't list the client, the most cited first
-  const missing = sources.rows.filter((row) => row.type !== "own" && row.type !== "competitor" && !row.listed);
+  // The placement targets (spec §7, Phase 0 item 0.4): directories, media, UGC and Telegram with a known way onto
+  // them that name competitors and not the client, the most cited first. Its level is the first one's action's
+  // impact, so the register and the plan never disagree (defect 4: "medium" in one place, "big" in another)
+  const missing = sources.rows.filter((row) => row.target);
   const [topMissing] = missing;
   if (topMissing) {
     const domains = missing.map((row) => row.domain);
+    const first = open.find((action) => action.kind === "listing" && action.domain === topMissing.domain);
     opportunities.push({
       kind: "listings",
-      level: points(topMissing.cited, sources.cited_answers) >= LISTING_HIGH ? "high" : "medium",
+      level: first?.impact ?? "medium",
       count: missing.length,
       answers: sources.cited_answers,
       sites: missing.slice(0, NAMED).map((row) => ({ domain: row.domain, cited: row.cited })),

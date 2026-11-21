@@ -24,12 +24,11 @@ from typing import Any, Dict, List, Optional, Tuple
 from sqlalchemy import select
 from sqlalchemy.orm import Session as Db
 
-from . import engines, projects
+from . import domains, engines, projects
 from .db import Action, Answer, Brand, Mention, Project, Prompt, Run, SessionLocal, WrongFact, now
 from .engines import web
 from .firstrun import STR, arr, obj
 
-LISTABLE = ("news", "directory", "social", "other")
 MAX_LISTINGS = 8
 PAGES_TO_READ = 15
 STEP_COUNT = 3  # `ACTION_STEP_COUNT` in the frontend
@@ -43,7 +42,8 @@ PRICE_WORDS = ("price", "narx", "цен", "стоим", "tarif", "тариф", "
 
 
 def read_pages(project_id: str, run_id: str) -> None:
-    """Reads the run's most cited pages on sites a business can be listed on, and keeps who each names."""
+    """Reads the run's most cited pages on sites a business can be listed on (`domains.PLACEABLE`), and keeps
+    who each names: whether the client is there, and which competitors are."""
     with SessionLocal() as db:
         project, run = db.get(Project, project_id), db.get(Run, run_id)
         if project is None or run is None:
@@ -51,7 +51,7 @@ def read_pages(project_id: str, run_id: str) -> None:
         brands = projects.brands_of(db, project_id)
         client = next(brand for brand in brands if brand.own)
         report = projects.report(db, project, run_id=run_id)
-        pages = [(source["domain"], page["url"]) for source in report["topSources"] if source["type"] in LISTABLE for page in source["pages"][:2]]
+        pages = [(source["domain"], page["url"]) for source in report["topSources"] if source["domainType"] in domains.PLACEABLE for page in source["pages"][:2]]
         known = dict(run.sources or {})
         pages = [(domain, url) for domain, url in pages if url not in ((known.get(domain) or {}).get("pages") or {})][:PAGES_TO_READ]
     if not pages:
@@ -62,7 +62,8 @@ def read_pages(project_id: str, run_id: str) -> None:
         run = db.get(Run, run_id)
         sources = {domain: dict(found) for domain, found in (run.sources or {}).items()}
         for (domain, url), page in zip(pages, fetched):
-            site = sources.setdefault(domain, {"type": next((source["type"] for source in report["topSources"] if source["domain"] == domain), "other"), "brandListed": False})
+            # A site's type is read from `domains` whenever the report is made: only what was found is kept here
+            site = sources.setdefault(domain, {"brandListed": False})
             named = [brand.id for brand in brands if web.names(page[0], [brand.name, *(brand.aliases or [])])] if page else None
             site["pages"] = {**(site.get("pages") or {}), url: named}
             if named and client.id in named:
@@ -95,14 +96,10 @@ def suggested(db: Db, project: Project, report: Dict[str, Any]) -> List[Dict[str
             # A wrong price or opening hour costs customers directly
             found.append({"key": f"fact:{fact.id}", "kind": "fact", "details": {"claim": fact.claim, "correct": fact.correct}, "impact": "high", "promptIds": [fact.prompt_id] if fact.prompt_id else []})
 
-    def lists_businesses(source: Dict[str, Any]) -> bool:
-        """News, directories and social pages take listings. Any other site only when a page of it, once read,
-        names two or more tracked competitors: a comparison or a catalog, not one business's own website."""
-        if source["type"] != "other":
-            return True
-        return any(len(set(page["mentions"] or []) & set(rivals)) >= 2 for page in source["pages"])
-
-    unlisted = [source for source in report["topSources"] if not source["brandListed"] and source["type"] in LISTABLE and lists_businesses(source)]
+    # Spec §7, third-party placement: a directory, listing, media, UGC or Telegram site with a known route onto it,
+    # citing competitors and not the client (Phase 0 item 0.4). Platform docs, competitor sites, search engines and
+    # unclassified sites get no action: the report shows them, to watch
+    unlisted = [source for source in report["topSources"] if domains.placeable(source["domainType"], source["route"], source["brandListed"], source["rivals"])]
     for source in unlisted[:MAX_LISTINGS]:
         domain = source["domain"]
         citing = [result for result in results if _cites(result, domain) > 0]
@@ -114,7 +111,7 @@ def suggested(db: Db, project: Project, report: Dict[str, Any]) -> List[Dict[str
             {
                 "key": f"listing:{domain}",
                 "kind": "listing",
-                "details": {"domain": domain, "sourceType": source["type"], "answers": source["count"], "competitorIds": [brand_id for brand_id, _ in beside.most_common()]},
+                "details": {"domain": domain, "sourceType": source["type"], "domainType": source["domainType"], "route": source["route"], "answers": source["count"], "competitorIds": [brand_id for brand_id, _ in beside.most_common()]},
                 # A site cited by a tenth of the answers or more is worth the most
                 "impact": "high" if share >= 0.1 else "medium" if share >= 0.05 else "low",
                 "promptIds": [result["prompt"]["id"] for result in citing],
@@ -214,10 +211,30 @@ def _proof(db: Db, project: Project, action: Action, runs: List[Run], client: Br
     return {"before": share(was, of_was), "after": share(now, of_now), "runs": len(after), "counts": {"before": [was, of_was], "after": [now, of_now]}}
 
 
+def _allowed_now(db: Db, project: Project, actions: List[Action], brands: List[Brand]) -> List[Action]:
+    """The actions without an untouched "get listed" one that the site's type or route no longer allows (spec §7,
+    Phase 0 item 0.4): such an action stops showing at once, and `sync` removes it at the next check. One the
+    client started or finished stays."""
+    untouched = [action for action in actions if action.kind == "listing" and action.status == "new"]
+    if not untouched:
+        return actions
+    client = next(brand for brand in brands if brand.own)
+    rivals = [(brand.name, brand.domain) for brand in brands if not brand.own]
+    sites = {action.id: str((action.details or {}).get("domain") or "") for action in untouched}
+    stored = domains.stored_for(db, sites.values(), project.id)
+    refused = set()
+    for action_id, domain in sites.items():
+        typed = domains.resolve(domain, client.domain, rivals, stored, project.id)
+        if typed["type"] not in domains.PLACEABLE or not typed["route"]:
+            refused.add(action_id)
+    return [action for action in actions if action.id not in refused]
+
+
 def listed(db: Db, project: Project) -> List[Dict[str, Any]]:
     runs = list(db.scalars(select(Run).where(Run.project_id == project.id, Run.status == "done").order_by(Run.collected_at)))
-    client = next(brand for brand in projects.brands_of(db, project.id) if brand.own)
-    actions = list(db.scalars(select(Action).where(Action.project_id == project.id)))
+    brands = projects.brands_of(db, project.id)
+    client = next(brand for brand in brands if brand.own)
+    actions = _allowed_now(db, project, list(db.scalars(select(Action).where(Action.project_id == project.id))), brands)
     actions.sort(key=lambda action: (IMPACTS.index(action.impact) if action.impact in IMPACTS else 1, action.created_at))
     return [action_json(db, project, action, runs, client) for action in actions]
 
@@ -391,8 +408,14 @@ def check_facts(db: Db, project: Project, run: Run, answers: List[Dict[str, Any]
 
 
 def after_creation(project_id: str, run_id: str) -> None:
-    """A new project, outside the request that made it: the cited pages read, then the actions brought in line."""
+    """A new project, outside the request that made it: the sites nothing else types typed by the AI (Phase 0 item
+    0.4), the cited pages read, then the actions brought in line."""
     try:
+        with SessionLocal() as db:
+            project, run = db.get(Project, project_id), db.get(Run, run_id)
+            if project and run:
+                run.cost_usd = round((run.cost_usd or 0.0) + domains.classify(db, project, run), 4)
+                db.commit()
         read_pages(project_id, run_id)
         with SessionLocal() as db:
             project = db.get(Project, project_id)

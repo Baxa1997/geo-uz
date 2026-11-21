@@ -20,7 +20,7 @@ from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.orm import Session as Db
 
-from . import firstrun, metrics, projects
+from . import domains, firstrun, metrics, projects
 from . import slots as slot_log
 from .db import Answer, Citation, FirstRun, Mention, Project, Prompt, Run, Slot
 from .engines import ENGINE_NAMES
@@ -130,12 +130,17 @@ class AnswerRecord(BaseModel):
 
 
 class DomainRecord(BaseModel):
-    """A site the buyers' answers cite, with its kind and whether it lists the client, as the report has typed
-    them so far (`projects._Check.sources`); item 0.4 brings the spec's domain types (§4.6) in their place."""
+    """A site the buyers' answers cite (spec §4.6, §10): its type and who controls it, the route onto it when one
+    is known, who typed it (`seed`, `automated`, `founder-reviewed`), whether it lists the client and the tracked
+    competitors beside it (`domains.resolve`, `projects._Check.sources`; Phase 0 item 0.4)."""
 
     domain: str
     type: str
+    control: str
+    route: Optional[Dict[str, str]]
+    review: str
     listed: bool
+    rivals: List[str]
 
 
 class BrandedView(BaseModel):
@@ -426,10 +431,11 @@ def build(db: Db, project: Project, run_id: str) -> Dict[str, Any]:
         prompts=records,
         slots=found,
         answers=answers,
-        # Each cited site's kind, as the report types it today (0.3; 0.4 replaces the typing)
+        # Each cited site's type by the spec (0.4)
         domains=[
-            DomainRecord(domain=site["domain"], type=site["type"], listed=bool(site["brandListed"]))
-            for site in projects._Check(run, [row for row in rows if row.prompt_id in prompts], mentions, citations).sources(brands)
+            DomainRecord(domain=site["domain"], type=site["domainType"], control=site["control"], route=site["route"], review=site["review"], listed=bool(site["brandListed"]), rivals=site["rivals"])
+            for check in [projects._Check(run, [row for row in rows if row.prompt_id in prompts], mentions, citations)]
+            for site in check.sources(brands, domains.stored_for(db, check.domains(), project.id))
         ],
         branded=[BrandedView(engine=str(view.get("engine") or ""), lang=str(view.get("language") or ""), question=str(view.get("question") or ""), known=str(view.get("known") or "unknown"), statements=list(view.get("statements") or [])) for view in run.brand_view or []],
     )

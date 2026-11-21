@@ -22,6 +22,8 @@ import statistics
 from collections import Counter
 from typing import Any, Dict, List, Optional
 
+from . import domains
+
 # The assistants the scope card lists, in its order, and the ones not checked yet (spec §2, Phase 2)
 ENGINE_ORDER = ["chatgpt", "gemini"]
 NOT_TRACKED = ["google_ai_overviews", "yandex"]
@@ -305,31 +307,38 @@ def groups(wave: Dict[str, Any], by: str) -> List[Dict[str, Any]]:
     return found
 
 
-# The parts of the cited sites, for the client: its own, sites that list it, sites that don't, competitors'
-SITE_PARTS = ["own", "listed", "missing", "competitors"]
-
-
-def _part(domain: Dict[str, Any]) -> str:
-    if domain["type"] == "own":
-        return "own"
-    if domain["type"] == "competitor":
-        return "competitors"
-    return "listed" if domain["listed"] else "missing"
-
-
 def sources(wave: Dict[str, Any]) -> Dict[str, Any]:
     """The sites the buyers' answers cite (spec §4.6, §6.3): each counted once per answer, over the answers that
-    cite any site, the most cited first, with its kind and whether it lists the client; and the sites as one
-    split by whom they work for, counted in sites."""
+    cite any site, the most cited first, with its type, who controls it, who typed it, whether it lists the client
+    and how many tracked competitors are beside it; the sites by type, counted in sites; and the placement target
+    list, the only sites a "get listed" action may name (§7: `domains.placeable`)."""
     answers = [answer for answer in _discovery(wave) if answer["citations"]]
-    kinds = {domain["domain"]: domain for domain in wave["domains"]}
+    typed = {domain["domain"]: domain for domain in wave["domains"]}
     cited: Counter = Counter(domain for answer in answers for domain in {citation["domain"] for citation in answer["citations"]})
-    rows = [
-        {"domain": domain, "type": kinds.get(domain, {}).get("type", "other"), "listed": bool(kinds.get(domain, {}).get("listed")), "cited": count}
-        for domain, count in sorted(cited.items(), key=lambda item: (-item[1], item[0]))
-    ]
-    parts = Counter(_part(row) for row in rows)
-    return {"cited_answers": len(answers), "sites": len(rows), "rows": rows, "split": {part: parts[part] for part in SITE_PARTS if parts[part]}}
+    rows = []
+    for domain, count in sorted(cited.items(), key=lambda item: (-item[1], item[0])):
+        site = typed.get(domain) or {"type": "unclassified", "control": "not_addressable", "route": None, "review": "seed", "listed": False, "rivals": []}
+        rows.append(
+            {
+                "domain": domain,
+                "type": site["type"],
+                "control": site["control"],
+                "review": site["review"],
+                "route": site["route"],
+                "listed": bool(site["listed"]),
+                "rivals": len(site["rivals"]),
+                "cited": count,
+                "target": domains.placeable(site["type"], site["route"], bool(site["listed"]), site["rivals"]),
+            }
+        )
+    by_type = Counter(row["type"] for row in rows)
+    return {
+        "cited_answers": len(answers),
+        "sites": len(rows),
+        "rows": rows,
+        "types": {kind: by_type[kind] for kind in domains.TYPES if by_type[kind]},
+        "targets": [row["domain"] for row in rows if row["target"]],
+    }
 
 
 # The brand-question check's verdicts as the spec names them (§4.7), from what the check calls them

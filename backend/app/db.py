@@ -1,7 +1,7 @@
 """The tables, for SQLite on this computer and Supabase's Postgres on the server (the same models).
 
 People, their sessions and login codes, first runs, and projects with their brands, questions, runs and
-answers, and the slot log of every check (since 21 Nov 2026). The rest of `backend/PLAN.md`'s data model
+answers, the slot log of every check and the cited sites' types (since 21 Nov 2026). The rest of `backend/PLAN.md`'s data model
 (suggestions, actions, wrong facts) comes with the pages that need it.
 """
 
@@ -12,7 +12,7 @@ import time
 import uuid
 from typing import Any, Optional
 
-from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Integer, String, Text, create_engine, event, exc, inspect, text
+from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint, create_engine, event, exc, inspect, text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
 
 from .config import settings
@@ -289,6 +289,28 @@ class Slot(Base):
     created_at: Mapped[datetime.datetime] = mapped_column(DateTime, default=now)
     finished_at: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime, nullable=True)
 
+
+
+class DomainType(Base):
+    """A cited site's type (report spec §4.6) as a person reviewed it (`founder-reviewed`, for one project or
+    every project) or as the AI read it at the end of a check (`automated`, for that project). The seed list and
+    the project's own sites are in `domains.py`, not here (Phase 0 item 0.4)."""
+
+    __tablename__ = "domain_types"
+    __table_args__ = (UniqueConstraint("domain", "project_id", "review"),)
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=new_id)
+    domain: Mapped[str] = mapped_column(String(253), index=True)
+    # None: a review that holds for every project
+    project_id: Mapped[Optional[str]] = mapped_column(String(32), nullable=True)
+    # One of `domains.TYPES`
+    type: Mapped[str] = mapped_column(String(20))
+    # How a business gets onto the site, {"how", "url"}: only from a review by hand, never from the AI
+    route: Mapped[Optional[Any]] = mapped_column(JSON, nullable=True)
+    review: Mapped[str] = mapped_column(String(20))
+    model: Mapped[Optional[str]] = mapped_column(String(80), nullable=True)
+    # The AI's reason, in a few words
+    reason: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    updated_at: Mapped[datetime.datetime] = mapped_column(DateTime, default=now)
 
 _SQLITE = settings.database_url.startswith("sqlite")
 # Every statement is a round trip to the database, which on the server is far away (Supabase's region, 17 Nov

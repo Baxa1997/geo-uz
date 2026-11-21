@@ -207,7 +207,7 @@ mail server. On the server it needs Chrome or Chromium installed and `FRONTEND_O
 about ten seconds and asks no assistant; its result carries `replayed: true`. For building pages. Never on the
 server.
 
-## The slot log and the data object (21 Nov 2026, Phase 0 items 0.1 to 0.3 of the report spec)
+## The slot log and the data object (21 Nov 2026, Phase 0 items 0.1 to 0.4 of the report spec)
 
 **The slot log** (`app/slots.py`, table `slots`): every call a check plans to an assistant, written before
 anything is asked, and closed with what came of it (report spec §6.1). A slot is one question (or brand
@@ -244,12 +244,36 @@ questions and who is named most, from the object. Since 0.3 (21 Nov 2026) one ro
 (a whole percent, half up), which the report shows beside its count, and the counts of the report's other
 sections: `assistants` (each assistant's answers, those naming the client, who it names most), `topics` and
 `languages` (each group's answers, the client's count, the competitors named most, ties together), `sources`
-(each cited site once an answer, over the answers that cite any site, spec §6.3; the sites split by whom they work
-for, in sites) and `claims` (the brand-question check's verdicts, verified, unverified, contradicted, apart from
-every count of the buyers' answers). The object carries each cited site's kind and whether it lists the client
-(`domains`, today's typing until 0.4), and a done action's proof its counts (`proof.counts`). Kept like the
+(each cited site once an answer, over the answers that cite any site, spec §6.3; the sites by type, in sites; the
+placement targets) and `claims` (the brand-question check's verdicts, verified, unverified, contradicted, apart from
+every count of the buyers' answers). A done action's proof carries its counts (`proof.counts`). Kept like the
 report, until the project changes. Tested on the baseline client's check and with stand-in assistants:
-`tests/test_wave.py`, `tests/test_metrics.py`.
+`tests/test_wave.py`, `tests/test_metrics.py`, `tests/test_domains.py`.
+
+**The cited sites' types** (0.4, 21 Nov 2026; `app/domains.py`, table `domain_types`): each cited site in the object
+(`domains`) has the spec's type (§4.6: `client_owned`, `client_managed`, `competitor_site`, `directory`, `media`,
+`ugc`, `telegram`, `reference`, `platform_docs`, `unclassified`), who controls it (`owned`, `managed`, `earned`,
+`not_addressable`), the route onto it (`{how, url}`: a listing page, a form or the editors' contact), who typed it
+(`seed`, `automated`, `founder-reviewed`), whether it lists the client and the tracked competitors beside it. The
+type comes from the first that knows it: the project (the client's site, a tracked competitor's), a review by hand
+(for one project or all), the seed list in `domains.py` (spec §9's sites for Uzbekistan, Kazakhstan and Kyrgyzstan,
+the platforms' help pages, social networks, Telegram, search engines), the AI's answer, else `unclassified`. The AI
+(`domains.classify`, the reading model) is asked once per site and project, at the end of a live check (`weekly.py`)
+and when a first check becomes a project (`fixes.after_creation`): one call for the sites nothing else types, under a
+cent, added to the check's cost; never in a replay or without a model. A route comes only from the seed list (each
+opened and read on 21 Nov 2026) or a review, never from the AI (the user's decision, 21 Nov 2026). A "get listed"
+action is made only for a placement target (spec §7, `domains.placeable`): a directory, media, UGC or Telegram site
+with a route, a competitor beside it and the client not on it; an untouched one that no longer qualifies stops
+showing at once (`fixes.listed`) and goes at the next check. The report's `topSources` keep the six kinds the other
+pages show (`type`, from `domains.kind`) beside the new fields. By hand:
+
+```bash
+python -m app.admin domains                                    # each project's latest check: its unclassified sites
+python -m app.admin domain <domain> <type> [--project <id>] [--route listing_page|form|editor_contact <url>]
+python -m app.admin classify <project id>                      # the AI types the latest check's unknown sites (paid, under a cent)
+```
+
+The pages keep a report two minutes, so a site typed by hand shows within that.
 
 ## On the server (since 15 Nov 2026)
 

@@ -22,9 +22,9 @@ from sqlalchemy import select
 from sqlalchemy import update as sql_update
 from sqlalchemy.orm import Session as Db
 
-from . import firstrun
+from . import domains, firstrun
 from .config import settings
-from .db import Action, Answer, Brand, Citation, FirstRun, Mention, Project, Prompt, Run, Slot, User, WrongFact, now
+from .db import Action, Answer, Brand, Citation, DomainType, FirstRun, Mention, Project, Prompt, Run, Slot, User, WrongFact, now
 from .engines import ENGINE_NAMES, web
 
 # What each plan allows (`frontend/src/shared/constants`, PLAN_LIMITS)
@@ -370,35 +370,46 @@ class _Check:
             )
         return scores
 
-    def sources(self, brands: List[Brand]) -> List[Dict[str, Any]]:
-        """The cited sites, the most cited first. A site's count is the answers citing it."""
+    def domains(self) -> List[str]:
+        """Every site this check's answers cite."""
+        return sorted({citation.domain for answer in self.answers for citation in self.citations[answer.id]})
+
+    def sources(self, brands: List[Brand], stored: Optional[Dict[str, List[DomainType]]] = None) -> List[Dict[str, Any]]:
+        """The cited sites, the most cited first. A site's count is the answers citing it. Each has its type by
+        the report spec (`domainType`, `control`, `route`, `review`: `domains.resolve`, Phase 0 item 0.4), the
+        six kinds the app's other pages show (`type`), whether it lists the client and which tracked competitors
+        are beside it (named in the answers citing it, or on its pages once read). `stored` holds the reviews
+        and the AI's answers for these sites (`domains.stored_for`)."""
         client = next(brand for brand in brands if brand.own)
         rivals = [brand for brand in brands if not brand.own]
+        rival_ids = {brand.id for brand in rivals}
         sites: Dict[str, Dict[str, Any]] = {}
         for answer in self.answers:
+            named = {mention.brand_id for mention in self.mentions[answer.id]} & rival_ids
             for citation in self.citations[answer.id]:
-                site = sites.setdefault(citation.domain, {"answers": set(), "pages": defaultdict(set), "titles": {}})
+                site = sites.setdefault(citation.domain, {"answers": set(), "pages": defaultdict(set), "titles": {}, "rivals": set()})
                 site["answers"].add(answer.id)
                 site["pages"][citation.url].add(answer.id)
+                site["rivals"] |= named
                 if citation.title:
                     site["titles"].setdefault(citation.url, citation.title)
         found = []
         for domain in sorted(sites, key=lambda domain: (-len(sites[domain]["answers"]), domain)):
             known = (self.run.sources or {}).get(domain) or {}
-            if domain == client.domain:
-                kind = "own"
-            elif any(rival.domain and rival.domain == domain for rival in rivals):
-                kind = "competitor"
-            else:
-                kind = known.get("type") or firstrun._kind(domain, client.domain, [rival.name for rival in rivals])
-                kind = "other" if kind == "own" else kind
+            typed = domains.resolve(domain, client.domain, [(rival.name, rival.domain) for rival in rivals], stored or {}, client.project_id)
+            on_pages = {brand_id for names in (known.get("pages") or {}).values() for brand_id in names or []} & rival_ids
             pages = sorted(sites[domain]["pages"].items(), key=lambda page: (-len(page[1]), page[0]))
             found.append(
                 {
                     "domain": domain,
-                    "type": kind,
+                    "type": domains.kind(typed["type"]),
+                    "domainType": typed["type"],
+                    "control": typed["control"],
+                    "route": typed["route"],
+                    "review": typed["review"],
                     "count": len(sites[domain]["answers"]),
-                    "brandListed": kind == "own" or bool(known.get("brandListed")),
+                    "brandListed": typed["type"] == "client_owned" or bool(known.get("brandListed")),
+                    "rivals": sorted(sites[domain]["rivals"] | on_pages),
                     # Who a page names is known once it was read (`fixes.read_pages`)
                     "pages": [{"url": url, "title": sites[domain]["titles"].get(url), "count": len(cited), "mentions": (known.get("pages") or {}).get(url)} for url, cited in pages[:10]],
                 }
@@ -515,6 +526,8 @@ def report(db: Db, project: Project, language: Optional[str] = None, topic: Opti
         engine = None
     latest = checks[-1] if checks else None
     before = checks[-2] if len(checks) > 1 else None
+    # The cited sites' reviews and AI types, read once for every check shown
+    stored = domains.stored_for(db, {domain for check in checks for domain in check.domains()}, project.id)
 
     client_id = next(brand.id for brand in brands if brand.own)
     scores = latest.scores(brands) if latest else [{"brandId": brand.id, "visibility": 0.0, "shareOfVoice": 0.0, "avgPosition": None, "sentiment": None} for brand in brands]
@@ -527,7 +540,7 @@ def report(db: Db, project: Project, language: Optional[str] = None, topic: Opti
         "method": {**method, "collectedAt": iso(latest.run.collected_at if latest else now())},
         "scores": [{**score, "trend": round(score["visibility"] - earlier.get(score["brandId"], score["visibility"]), 4)} for score in scores],
         "prompts": latest.results(prompts, brands) if latest else [],
-        "topSources": latest.sources(brands) if latest else [],
+        "topSources": latest.sources(brands, stored) if latest else [],
         "wrongFacts": wrong,
         # False: nobody checked this run's answers against the client's facts, so an empty list is not "none found"
         "factsChecked": bool(latest and latest.run.facts_checked),
@@ -544,7 +557,7 @@ def report(db: Db, project: Project, language: Optional[str] = None, topic: Opti
             {
                 "collectedAt": iso(check.run.collected_at),
                 "answers": len(check.answers),
-                "sources": [{"domain": source["domain"], "type": source["type"], "count": source["count"], "pages": [{"url": page["url"], "count": page["count"]} for page in source["pages"]]} for source in check.sources(brands)],
+                "sources": [{"domain": source["domain"], "type": source["type"], "count": source["count"], "pages": [{"url": page["url"], "count": page["count"]} for page in source["pages"]]} for source in check.sources(brands, stored)],
             }
             for check in checks
         ],

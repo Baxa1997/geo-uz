@@ -29,7 +29,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from sqlalchemy import select
 
-from . import delivery, engines, firstrun, fixes, slots
+from . import delivery, domains, engines, firstrun, fixes, slots
 from .config import settings
 from .db import Answer, Brand, Citation, Mention, Project, Prompt, Run, SessionLocal, create_tables, now
 from .engines import web
@@ -111,8 +111,11 @@ def check(project_id: str) -> Optional[str]:
             run.status, run.error = "failed", "internal"
         db.commit()
         if run.status == "done":
-            # The cited pages read, the actions brought in line, and in a live check the briefs written
+            # The sites nothing else types typed by the AI (a live check only), the cited pages read, the actions
+            # brought in line, and in a live check the briefs written
             try:
+                run.cost_usd = round((run.cost_usd or 0.0) + domains.classify(db, project, run), 4)
+                db.commit()
                 fixes.read_pages(project_id, run_id)
                 db.expire_all()
                 project = db.get(Project, project_id)
@@ -248,8 +251,8 @@ def _collect(db: Any, project: Project, brands: List[Brand], run: Run, jobs: Lis
     known: Dict[str, Any] = {}
     for earlier in db.scalars(select(Run).where(Run.project_id == project.id, Run.status == "done").order_by(Run.collected_at)):
         known.update(earlier.sources or {})
-    rivals = [brand.name for brand in brands if not brand.own]
-    sources = {domain: known.get(domain) or {"type": firstrun._kind(domain, client.domain, rivals), "brandListed": False} for domain in cited}
+    # A site's type is read from `domains` whenever the report is made (Phase 0 item 0.4): only what was found is kept
+    sources = {domain: known.get(domain) or {"brandListed": False} for domain in cited}
     run.sources = sources
     if log:
         log.attach(attached)

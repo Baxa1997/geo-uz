@@ -230,28 +230,34 @@
       "language": "Language"
     },
     "sources": {
-      "lead": "The sites AI cites most. Being on them is the quickest way into its answers.",
+      "lead": "The sites AI cites, each with its type. Getting onto the ones open to you is the quickest way into its answers.",
       "site": "Site",
-      "kind": "Kind",
       "used": "Used",
       "you": "Are you there?",
       "listed": "Yes",
       "notListed": "No",
       "own": "Your site",
       "competitor": "Competitor’s site",
-      "more": "{count} more sites are cited less often.",
-      "split": "Whom the cited sites work for",
-      "splitLabel": "How the cited sites split: {parts}",
-      "parts": {
-        "own": "Your own site",
-        "listed": "Sites that list you",
-        "missing": "Sites that don’t list you",
-        "competitors": "Competitors’ sites"
-      },
       "sites": "{count, plural, one {# site} other {# sites}}",
-      "top": "The most cited sites",
       "sitesOf": "{count} of {total} sites",
-      "usedOf": "Each site’s count: the answers citing it, of the {answers} answers that cite any site."
+      "usedOf": "Each site’s count: the answers citing it, of the {answers} answers that cite any site.",
+      "typesTitle": "The cited sites by type",
+      "typesLabel": "How the cited sites split by type: {parts}",
+      "typesNote": "Each site is typed from our own checked list, the websites of the business and its competitors, a review by hand, or by AI (marked “automated”). A site none of these can type is “unclassified”, and nothing is suggested for it.",
+      "targetsTitle": "Sites you can get onto",
+      "targetsLead": "Directories, media and community sites with a known way onto them, where the answers name your competitors and not you.",
+      "targetsNone": "None yet. A site comes here only when it is a directory, media or community site, the way onto it is known, and the answers citing it name your competitors and not you. The rest are in the table below, to watch.",
+      "route": {
+        "listing_page": "Add your business",
+        "form": "Fill in the form",
+        "editor_contact": "Contact the editors"
+      },
+      "allTitle": "Every cited site",
+      "type": "Type",
+      "rivals": "Competitors beside it",
+      "notChecked": "Not checked",
+      "notCheckedHint": "Nothing is suggested for a site of this type, so whether you are on it isn’t checked.",
+      "dashNote": "A dash under “Are you there?”: not checked, since nothing is suggested for a site of that type."
     },
     "accuracy": {
       "lead": "Two questions: in what tone AI speaks of you, and whether what it says is true. A wrong price or address costs customers.",
@@ -310,7 +316,9 @@
       "limits": "Limits",
       "limitsValue": "An AI assistant’s answers vary from one asking to the next, and can differ from what its own app shows. The numbers are counts over the {answers} buyer answers of this check; one answer more or less between two checks can be chance. A trend over several checks is more reliable than one week’s change.",
       "samples": "Small samples and ties",
-      "samplesValue": "Every number comes with what it is counted over. Under {answers} answers a count is marked a small sample; share of voice is shown only from {mentions} mentions of the tracked brands; a tone is summed up in a word only from {tone} mentions, and is N/A with none; a place in an answer is read only from a numbered list. Brands named equally often share a rank, and none of them leads."
+      "samplesValue": "Every number comes with what it is counted over. Under {answers} answers a count is marked a small sample; share of voice is shown only from {mentions} mentions of the tracked brands; a tone is summed up in a word only from {tone} mentions, and is N/A with none; a place in an answer is read only from a numbered list. Brands named equally often share a rank, and none of them leads.",
+      "sites": "Types of sites",
+      "sitesValue": "Each cited site is typed from our own checked list of sites, the websites of the business and its competitors, a review by hand, or by AI (marked “automated”); a site none of these types is unclassified. A step to get listed is suggested only on a directory, media or community site with a known way onto it, where the answers name competitors and not the business; platform help pages, competitors’ sites, search engines and unclassified sites are only watched."
     },
     "glossary": {
       "visibility": "Buyer answers that name the brand, out of all the answers to the buyers’ questions in the check: a count (k/n) and its share.",
@@ -333,7 +341,8 @@
       "tiesTerm": "Ties",
       "ties": "Brands named equally often share a rank. One brand leads only when it is named more often than every other.",
       "naTerm": "N/A",
-      "na": "Shown where there is nothing to measure, such as the tone of a brand AI didn’t name. It never stands for a middle value."
+      "na": "Shown where there is nothing to measure, such as the tone of a brand AI didn’t name. It never stands for a middle value.",
+      "typesTitle": "Types of sites"
     },
     "appendix": {
       "lead": "Every question of the topics above: in how many answers you are named, and who is named beside you. Open a question to read its answers.",
@@ -469,8 +478,8 @@
           "detail": "It repeats what it reads in reviews. Answering them and fixing their cause moves it."
         },
         "listings": {
-          "title": "{count, plural, one {# site AI relies on doesn’t} other {# sites AI relies on don’t}} list you: {sites} (the answers citing each, of the {answers} that cite a site).",
-          "detail": "Each count is the answers citing the site, of the answers that cite any site. Getting listed is the quickest way into those answers."
+          "title": "{count, plural, one {# site AI relies on is} other {# sites AI relies on are}} open to you and {count, plural, one {doesn’t} other {don’t}} list you yet: {sites} (the answers citing each, of the {answers} that cite a site).",
+          "detail": "Only directories, media and community sites with a known way onto them, where the answers name your competitors and not you. Getting listed is the quickest way into those answers."
         },
         "closeTopics": {
           "title": "The leader is within reach in {count, plural, one {the topic} other {the topics}} {topics}.",
@@ -4383,6 +4392,43 @@
       "confirmedHint": "Your website says the same.",
       "contradictedHint": "Your website says otherwise: the assistant gives customers wrong information.",
       "unverifiedHint": "Your website says nothing about this, so it could not be checked. The assistant took it from other sites."
+    }
+  },
+  "DomainTypes": {
+    "names": {
+      "client_owned": "Your site",
+      "client_managed": "Your listing",
+      "competitor_site": "Competitor’s site",
+      "directory": "Directory or listing",
+      "media": "Media",
+      "ugc": "Community",
+      "telegram": "Telegram",
+      "reference": "Reference",
+      "platform_docs": "Platform help pages",
+      "unclassified": "Unclassified"
+    },
+    "about": {
+      "client_owned": "Your own website.",
+      "client_managed": "A page about you on another site that you manage, such as your profile in a directory.",
+      "competitor_site": "The website of a business that offers what you offer: a competitor you track, or another one.",
+      "directory": "A catalog, map, marketplace, classifieds or review site that lists many businesses, such as 2GIS or Google Maps.",
+      "media": "A news site, magazine or blog with editors.",
+      "ugc": "A social network, forum, Q&A or reviews written by users.",
+      "telegram": "Telegram channels and groups.",
+      "reference": "An encyclopedia, laws, a state or statistics site, or a search engine’s own pages.",
+      "platform_docs": "A platform’s help, support or documentation pages, such as Google’s or OpenAI’s. Not a place to be listed.",
+      "unclassified": "A site none of the ways of typing could place. Nothing is suggested for it until it is typed."
+    },
+    "control": {
+      "owned": "you own it",
+      "managed": "you manage it",
+      "earned": "you can be added",
+      "not_addressable": "not yours to change"
+    },
+    "review": {
+      "seed": "our list",
+      "automated": "automated",
+      "founder-reviewed": "reviewed"
     }
   }
 }

@@ -157,7 +157,7 @@ def test_the_baseline_sections_count_what_they_show(db: Any, project: Any, run_i
     assert [sorted(row["rivals"]["ids"]) for row in found["topics"] if row["rivals"]["ids"]] == [tied]
     # Sites counted in sites: every cited site once, each over the answers that cite any site
     sources = found["sources"]
-    assert sources["sites"] == expected["cited_domains"] == sum(sources["split"].values())
+    assert sources["sites"] == expected["cited_domains"] == sum(sources["types"].values())
     assert all(0 < row["cited"] <= sources["cited_answers"] for row in sources["rows"])
     # The brand-question check apart: its verdicts, and none of its answers among the buyers'
     claims = found["claims"]
@@ -180,17 +180,26 @@ def test_assistants_topics_and_languages_group_ties() -> None:
     assert {row["key"]: (row["named"], row["answers"]) for row in found["languages"]} == {"ru": (0, 1), "uz": (1, 1)}
 
 
-def test_sites_are_counted_once_an_answer_and_split_in_sites() -> None:
+def _site(domain: str, kind: str, route: Optional[str] = None, listed: bool = False, rivals: List[str] = ()) -> Dict[str, Any]:
+    from app import domains
+
+    return {"domain": domain, "type": kind, "control": domains.CONTROL.get(kind, "not_addressable"), "route": {"how": "form", "url": route} if route else None, "review": "seed", "listed": listed, "rivals": list(rivals)}
+
+
+def test_sites_are_counted_once_an_answer_and_split_by_type_in_sites() -> None:
     answers = [
         _answer("a1", "p1", "", [], cites=["2gis.uz", "2gis.uz", "bolt.uz"]),
-        _answer("a2", "p2", "", [], cites=["2gis.uz", "acme.uz"]),
+        _answer("a2", "p2", "", [], cites=["2gis.uz", "acme.uz", "help.example.com"]),
         _answer("a3", "p3", "", [], cites=[]),
     ]
-    domains = [{"domain": "2gis.uz", "type": "directory", "listed": False}, {"domain": "bolt.uz", "type": "competitor", "listed": False}, {"domain": "acme.uz", "type": "own", "listed": True}]
+    domains = [_site("2gis.uz", "directory", "https://example.org/add", rivals=["bolt"]), _site("bolt.uz", "competitor_site"), _site("acme.uz", "client_owned", listed=True), _site("help.example.com", "platform_docs")]
     found = metrics.sources(_wave(answers, domains=domains))
-    assert found["cited_answers"] == 2 and found["sites"] == 3
-    assert [(row["domain"], row["cited"]) for row in found["rows"]] == [("2gis.uz", 2), ("acme.uz", 1), ("bolt.uz", 1)]
-    assert found["split"] == {"own": 1, "missing": 1, "competitors": 1}
+    assert found["cited_answers"] == 2 and found["sites"] == 4
+    assert [(row["domain"], row["cited"]) for row in found["rows"]] == [("2gis.uz", 2), ("acme.uz", 1), ("bolt.uz", 1), ("help.example.com", 1)]
+    assert found["types"] == {"client_owned": 1, "competitor_site": 1, "directory": 1, "platform_docs": 1}
+    # The one site a "get listed" action may name: a directory with a route, a competitor beside it, the client not there
+    assert found["targets"] == ["2gis.uz"]
+    assert {row["domain"]: row["control"] for row in found["rows"]} == {"2gis.uz": "earned", "acme.uz": "owned", "bolt.uz": "not_addressable", "help.example.com": "not_addressable"}
 
 
 def test_the_brand_check_counts_each_verdict() -> None:
