@@ -28,7 +28,7 @@ from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
-from . import domains, engines, slots
+from . import domains, engines, places, slots
 from .config import settings
 from .engines import web
 
@@ -113,7 +113,8 @@ def site_checks(pages: List[Dict[str, str]], html: Optional[str], robots: Option
 # --- the profile and the questions ---------------------------------------------------------------------
 
 # The time zone told to the search tool with the country; left out for the others
-TIMEZONES = {"UZ": "Asia/Tashkent", "KZ": "Asia/Almaty", "KG": "Asia/Bishkek", "TJ": "Asia/Dushanbe", "TM": "Asia/Ashgabat"}
+# The countries' time zones live with the rest of where a call is told the customer is (`places`, Phase 0 item 0.7)
+TIMEZONES = places.TIMEZONES
 
 # The languages the questions are written in, by the country the business serves (the user's choice,
 # 16 Nov 2026: "questions by country"): Uzbek and Russian in Uzbekistan, Russian where customers type in
@@ -395,7 +396,7 @@ def search_competitors(who: Dict[str, Any], domain: str, country: str) -> Tuple[
     place = f", {city}" if city else f", {country}"
     question = COMPETITOR_QUESTIONS[language].format(name=who["name"], site=domain, category=who["category"], place=place)
     try:
-        answer = engines.ask(asked[0], question, country, who["cityEn"] or who["city"], TIMEZONES.get(country, ""))
+        answer = engines.ask(asked[0], question, *places.place(country, who["cityEn"] or who["city"]))
         cited = "\n".join(f"- {citation.get('title') or ''} {citation['url']}" for citation in answer["citations"][:30])
         found, usd = engines.read(COMPETITOR_RULES, f"Business: {who['name']} ({domain}), {who['category']}\n\nAnswer:\n{answer['text'][:8000]}\n\nCited pages:\n{cited}", "competitors", COMPETITOR_SCHEMA)
     except engines.EngineError as error:
@@ -540,12 +541,12 @@ def _plan_slots(log: Optional[slots.SlotLog], questions: List[Dict[str, Any]], j
     planned, named = set(jobs), {(engine, language) for engine, language, _ in named_asks}
     left_out = {"status": "excluded", "reason": "free_check_subset"}
     entries = [
-        (("discovery", q, engine), {"question_index": q, "question": questions[q]["text"], "language": questions[q]["language"], "prompt_group": "discovery", "engine": engine, "location": slots.location(engine, *place), **({} if (q, engine) in planned else left_out)})
+        (("discovery", q, engine), {"question_index": q, "question": questions[q]["text"], "language": questions[q]["language"], "prompt_group": "discovery", "engine": engine, "location": slots.location(engine, *place, live=True), **({} if (q, engine) in planned else left_out)})
         for engine in asked
         for q in range(len(questions))
     ]
     entries += [
-        (("branded", language, engine), {"question": first_named[language], "language": language, "prompt_group": "branded", "engine": engine, "location": slots.location(engine, *place), **({} if (engine, language) in named else left_out)})
+        (("branded", language, engine), {"question": first_named[language], "language": language, "prompt_group": "branded", "engine": engine, "location": slots.location(engine, *place, live=True), **({} if (engine, language) in named else left_out)})
         for engine in asked
         for language in brand_order
     ]
@@ -580,7 +581,8 @@ def check(draft: Dict[str, Any], confirmed: Dict[str, Any], progress: Progress, 
     checks = draft["checks"]
     spellings = [who["name"]] + who["aliases"]
     country = confirmed["country"] or draft["country"]
-    place = (country, who["cityEn"] or who["city"], TIMEZONES.get(country, ""))
+    # Where every call is told the customer is: the business's city, else its market's main city (0.7)
+    place = places.place(country, who["cityEn"] or who["city"])
     languages = languages_for(country)
     chosen = [rival for rival in confirmed["competitors"] if not web.names(rival["name"], spellings)][:COMPETITOR_LIMIT]
     # Of the brand questions the owner kept, the first in each language is asked now; all are kept for the weekly checks

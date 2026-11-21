@@ -34,7 +34,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from sqlalchemy import select
 
-from . import delivery, domains, engines, firstrun, fixes, slots
+from . import delivery, domains, engines, firstrun, fixes, places, slots
 from .config import settings
 from .db import Answer, Brand, Citation, Mention, Project, Prompt, Run, SessionLocal, create_tables, now
 from .engines import web
@@ -43,8 +43,9 @@ from .projects import CHECK_DAYS, DEFAULT_COUNTRY, brands_of, prompts_of
 
 ASK_TRIES = 3
 def _place(country: str, city: str) -> Tuple[str, str, str]:
-    """Where the search tool is told the customer is: the country, the city (may be empty), the time zone."""
-    return (country, city, firstrun.TIMEZONES.get(country, ""))
+    """Where the search tool is told the customer is: the country, the city (the question's or project's, else
+    the market's main city: Phase 0 item 0.7), the time zone."""
+    return places.place(country, city)
 
 
 def _ask(engine: str, prompt: Prompt, country: str) -> Tuple[Optional[Dict[str, Any]], int, Optional[str], Optional[str]]:
@@ -175,7 +176,7 @@ def _brand_view(project: Project, client: Brand, run: Run, log: Optional[slots.S
     country = project.country or DEFAULT_COUNTRY
     place = _place(country, project.city)
     asks = [(question, engine) for question in questions for engine in settings.engines]
-    planned = log.plan([{"question": question["text"], "language": question["language"], "prompt_group": "branded", "engine": engine, "location": slots.location(engine, *place)} for question, engine in asks]) if log else [None] * len(asks)
+    planned = log.plan([{"question": question["text"], "language": question["language"], "prompt_group": "branded", "engine": engine, "location": slots.location(engine, *place, live=True)} for question, engine in asks]) if log else [None] * len(asks)
     about_it: List[Dict[str, Any]] = []
     cost = 0.0
     with ThreadPoolExecutor(max_workers=5) as pool:
@@ -210,7 +211,7 @@ def _collect(db: Any, project: Project, brands: List[Brand], run: Run, jobs: Lis
     answers: List[Dict[str, Any]] = []
     country = project.country or DEFAULT_COUNTRY
     # The slot log: every call written before anything is asked, and kept whatever happens to the check after
-    planned = log.plan([{"prompt_id": prompt.id, "question": prompt.text, "language": prompt.language, "prompt_group": "discovery", "engine": engine, "run_index": sample, "location": slots.location(engine, *_place(country, prompt.location))} for prompt, engine, sample in jobs]) if log else [None] * len(jobs)
+    planned = log.plan([{"prompt_id": prompt.id, "question": prompt.text, "language": prompt.language, "prompt_group": "discovery", "engine": engine, "run_index": sample, "location": slots.location(engine, *_place(country, prompt.location), live=True)} for prompt, engine, sample in jobs]) if log else [None] * len(jobs)
     slot_of = {(prompt.id, engine, sample): slot for (prompt, engine, sample), slot in zip(jobs, planned)}
     db.commit()
     with ThreadPoolExecutor(max_workers=5) as pool:

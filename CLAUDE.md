@@ -101,8 +101,8 @@ beside its count), merged, pushed and deployed; 0.1–0.3 confirmed by the user,
 waits for their look. The open work, in the order the user picks (ask as a short choice):
 
 0. **Phase 0 of the report spec, item by item, a plan shown before each** (section "Seenova report: source of
-   truth" below): 0.4 (site types) and 0.5 (evidence) deployed, 0.6 (runs) built, all waiting for the user's look;
-   then 0.7 (location), 0.8 (snapshot and digest), 0.9 (template clean-up).
+   truth" below): 0.4 (site types), 0.5 (evidence) and 0.6 (runs) deployed, 0.7 (location) built, all waiting for
+   the user's look; then 0.8 (snapshot and digest), 0.9 (template clean-up).
 1. The rest of the user's list of 17 Nov: the report's competitors and sources (3–4), the bug in the dynamics
    window. Each waits for its screenshots. (Savollar, point 5, was made simple on 18 Nov from the user's own
    screenshot of it.)
@@ -202,6 +202,19 @@ that is committed.
    that no key and no client's name is in it.
 
 ## Done (as of 18 November 2026)
+
+- **Built, waiting for the user's look: Phase 0 item 0.7 of the report spec, the customer's location on every
+  assistant call (21 Nov), on the branch `phase0-location`; merged and pushed the same day, when the user chose
+  "Ship 0.7, then plan 0.8".** The user: "Ship 0.6, then plan 0.7";
+  after the plan they chose, when asked, the market's main city for a project without one, and one test call to
+  Gemini. `app/places.py`: every call is told a city (the project's, else Tashkent, Almaty or Bishkek) and the
+  time zone; ChatGPT as its `user_location`, Gemini on Vertex as its grounding's latitude and longitude besides the
+  sentence it had. The test call, from a copy on the server away from the live service: accepted, 12 cited pages,
+  searches about Tashkent, $0.035. The slot log records how each call was located (`lat_lng` for Gemini now); a
+  check made before keeps what it was told. Tests: `pytest` 46 pass and 1 expected failure (0.8); `-m page` 16
+  pass and 1 expected failure (0.8). Not looked at in a browser: no check has been made with it yet, and the scope
+  card's wording for it is the one ChatGPT's location already used ("asked as from Tashkent, Uzbekistan"). No new
+  variable, no new table; one paid request ($0.035).
 
 - **Built, waiting for the user's look: Phase 0 item 0.6 of the report spec, several runs of each question
   (21 Nov), on the branch `phase0-runs`; merged, pushed and deployed the same day, when the user chose "Ship 0.6,
@@ -1262,6 +1275,7 @@ All from `frontend/`: `npm run dev` (development), `npm run build` then `npm run
 - Use the baseline client's first check (spec §3.3) as the test fixture. Acceptance tests are in spec §11.1; they run in `backend/tests/` on that check's data, which stays on this computer (`backend/tests/README.md`). Never write the client's name, its competitors' names or its project's id into a committed file.
 - Work on one Phase 0 item at a time. Show me a plan before writing code.
 - Decided with the user on 21 Nov 2026, while planning Phase 0: the baseline's scope card shows 20 slots, 15 completed and 5 excluded, with the reason that the free check asks ChatGPT 5 of the 10 questions (nothing failed: only 15 were planned); a Gemini answer that ran no web search counts as completed and says so ("Gemini searched in k of n"); the report surfaces (the report, its Hisobotlar copy, the PDF, the snapshot, the digest, the email) read the single data object in Phase 0, and the 0–100 score goes from everywhere (Hisobotlar's register, the dashboard's project cards, the landing page's sample report, the email too), while the other pages move to the object later.
+- Decided with the user on 21 Nov 2026, for item 0.7: a project without a city is asked from its market's main city (Uzbekistan Tashkent, Kazakhstan Almaty, Kyrgyzstan Bishkek); a project's own city wins; other countries are told the country alone. Gemini on Vertex gets the city's coordinates as its grounding's location (one test call approved and made).
 - Decided with the user on 21 Nov 2026, for item 0.6: three runs of each question only for the paid First Audit, started by hand (`--runs 3`); weekly checks stay at one run until prices are set for more (three would cost Standard more than its $39.99). With several runs the PDF prints in full only the questions where the client or a tracked competitor is named, the others by their beginning.
 - Decided with the user on 21 Nov 2026, for item 0.5: every buyer answer is printed in full, word for word, in the report's PDF too (its evidence section), not by its beginning.
 - Decided with the user on 21 Nov 2026, for item 0.4: a cited site our list, the project and a review don't type is typed by the AI (`automated`) at the end of every live check, and once on the two live projects' latest checks; a route onto a site (which a "get listed" action needs) comes only from our checked seed list or a review by hand, never from the AI.

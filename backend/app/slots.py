@@ -19,6 +19,7 @@ from typing import Any, Callable, Dict, List, Optional
 
 from sqlalchemy import update
 
+from . import places
 from .config import settings
 from .db import SessionLocal, Slot, new_id, now
 
@@ -37,16 +38,20 @@ BATCH = 5
 OPTIONAL = ("prompt_id", "question_index", "reason", "detail", "model", "location", "searched", "answer_id", "cost_usd", "finished_at")
 
 
-def location(engine: str, country: str, city: str, timezone: str, vertex: Optional[bool] = None) -> Dict[str, Any]:
+def location(engine: str, country: str, city: str, timezone: str, vertex: Optional[bool] = None, live: bool = False) -> Dict[str, Any]:
     """What a call is told of where the customer is, as `engines.ask` tells it (report spec §9.1).
 
     ChatGPT's search tool takes it as its `user_location`: set. Gemini on Vertex is told it in one sentence of
-    its instructions, which is no setting of the search itself (`set` false; Phase 0 item 0.7 adds the
-    setting); Gemini by a key is told nothing. `vertex` says which Gemini it was, for a check rebuilt later."""
+    its instructions and, since Phase 0 item 0.7 (`live`: a call made now), the city's latitude and longitude as
+    its grounding's location when the city has them (`places.coordinates`): set, `lat_lng`. A check rebuilt from
+    before then had the sentence only (`instruction`, not set). Gemini by a key is told nothing. `vertex` says
+    which Gemini it was, for a check rebuilt later."""
     country, city, timezone = country or None, city or None, timezone or None
     if engine == "chatgpt":
         return {"country": country, "city": city, "timezone": timezone, "set": bool(country or city or timezone), "how": "user_location"}
     told = bool(settings.google_cloud_project if vertex is None else vertex) and bool(country or city)
+    if told and live and places.coordinates(city):
+        return {"country": country, "city": city, "timezone": None, "set": True, "how": "lat_lng"}
     return {"country": country if told else None, "city": city if told else None, "timezone": None, "set": False, "how": "instruction" if told else None}
 
 
