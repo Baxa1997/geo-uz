@@ -166,6 +166,31 @@ export interface PromptResult {
  */
 export type SourceType = "own" | "competitor" | "news" | "directory" | "social" | "other";
 
+/**
+ * A cited site's type by the report spec (§4.6, Phase 0 item 0.4). The report reads these; the app's other pages
+ * still show the six `SourceType` kinds, which the backend works out from them.
+ */
+export type DomainType =
+  | "client_owned"
+  | "client_managed"
+  | "competitor_site"
+  | "directory"
+  | "media"
+  | "ugc"
+  | "telegram"
+  | "reference"
+  | "platform_docs"
+  | "unclassified";
+/** Who controls what a site says of the client. */
+export type DomainControl = "owned" | "managed" | "earned" | "not_addressable";
+/** Who typed a site: our seed list or the project's own sites, the AI, or a person. */
+export type DomainReview = "seed" | "automated" | "founder-reviewed";
+/** How a business gets onto a site: only from our checked list or a person's review, never from the AI. */
+export interface DomainRoute {
+  how: "listing_page" | "form" | "editor_contact";
+  url: string;
+}
+
 export interface CitedPage {
   url: string;
   /** The page's title, as it was cited; null when unknown. */
@@ -185,6 +210,13 @@ export interface Source {
   brandListed: boolean;
   /** The domain's pages the answers cite, most cited first. */
   pages: CitedPage[];
+  /** Its type by the report spec, who controls it, the route onto it, who typed it (a real project's report). */
+  domainType?: DomainType;
+  control?: DomainControl;
+  route?: DomainRoute | null;
+  review?: DomainReview;
+  /** The tracked competitors beside it: named in the answers citing it, or on its pages once read. */
+  rivals?: string[];
 }
 
 export interface WrongFact {
@@ -385,6 +417,9 @@ export type Action = ActionBase &
         kind: "listing";
         domain: string;
         sourceType: SourceType;
+        /** The site's type by the report spec and the way onto it (a real project, since Phase 0 item 0.4). */
+        domainType?: DomainType;
+        route?: DomainRoute | null;
         /** Answers citing the site. */
         answers: number;
         /** Tracked competitors named in those answers, most named first. */
@@ -557,7 +592,7 @@ export interface Wave {
     citations: { url: string; title: string | null; domain: string }[];
   }[];
   /** The sites the buyers' answers cite, with their kind and whether they list the client (as typed before item 0.4). */
-  domains: { domain: string; type: SourceType; listed: boolean }[];
+  domains: { domain: string; type: DomainType; control: DomainControl; route: DomainRoute | null; review: DomainReview; listed: boolean; rivals: string[] }[];
   branded: { engine: string; lang: string; question: string; known: string; statements: Record<string, unknown>[] }[];
 }
 
@@ -684,15 +719,31 @@ export interface WaveGroup {
   rivals: WaveTop;
 }
 
-export type SitePart = "own" | "listed" | "missing" | "competitors";
+/** A cited site in the report: its type, who controls and typed it, whether it lists the client. */
+export interface WaveSource {
+  domain: string;
+  type: DomainType;
+  control: DomainControl;
+  review: DomainReview;
+  route: DomainRoute | null;
+  listed: boolean;
+  /** How many tracked competitors are beside it. */
+  rivals: number;
+  /** The answers citing it, once an answer. */
+  cited: number;
+  /** A placement target (spec §7): the only kind of site a "get listed" action may name. */
+  target: boolean;
+}
 
 /** The cited sites (spec §4.6, §6.3): each counted once per answer, over the answers that cite any site. */
 export interface WaveSources {
   cited_answers: number;
   sites: number;
-  rows: { domain: string; type: SourceType; listed: boolean; cited: number }[];
-  /** The sites by whom they work for, counted in sites. */
-  split: Partial<Record<SitePart, number>>;
+  rows: WaveSource[];
+  /** The sites by type, counted in sites. */
+  types: Partial<Record<DomainType, number>>;
+  /** The placement targets' domains, the most cited first. */
+  targets: string[];
 }
 
 /** The brand-question check (spec §4.7), apart from every count of the buyers' answers. */

@@ -705,8 +705,13 @@ Types:
   client's site of answers citing any site) and `brands` (every tracked brand's count, rank with ties grouped,
   tone per mention with a word only from 3 mentions, place only from numbered lists, share of voice only from 10
   mentions); since 0.3 also `assistants`, `topics`, `languages`, `sources` (each site over the answers citing any
-  site; the split in sites) and `claims` (the brand-question check's verdicts), and the object's `domains` (each
-  cited site's kind). Types in shared/types/api.ts (`WaveMetrics`)
+  site) and `claims` (the brand-question check's verdicts); since 0.4 each cited site has the spec's type
+  (`DomainType`: client_owned, client_managed, competitor_site, directory, media, ugc, telegram, reference,
+  platform_docs, unclassified), its control, its route (`{how, url}`, only from our checked list or a review), who
+  typed it (`seed`, `automated`, `founder-reviewed`), whether it lists the client and the competitors beside it;
+  `sources.types` counts the sites by type and `sources.targets` lists the placement targets (spec §7). The report's
+  `topSources` keep the six `SourceType` kinds for the other pages, with the spec's fields beside them. Types in
+  shared/types/api.ts (`WaveMetrics`)
 - SourceHistoryPoint { collectedAt, answers (answers of that run), sources: { domain, type, count (answers citing
   it), pages: { url, count }[] }[] } (a site the run didn't cite is left out; the last point's counts are
   `topSources`. The sites chart, a site's own chart and "what changed" are made from it in the frontend)
@@ -773,7 +778,15 @@ from the check's data object (`WaveMetrics`), each with what it is counted over 
   `data-k`, `data-n`), by one rounding rule: `shareOf` (use-count-words), a whole percent rounded half up, the
   same as the backend's `metrics.share` (Phase 0 item 0.3). A site's share is over the answers that cite any site
   (spec §6.3), not over every answer.
-The Overview and the other pages keep Peec's four numbers (`BrandScore`) until they move to the data object.
+- the report's Sources (`sources.tsx`, since Phase 0 item 0.4): the sites by the spec's type as one bar (counted in
+  sites), then "Sites you can get onto" (the placement targets, each with its route as a link; a sentence when there
+  is none), then every cited site with its type, control, "automated" when the AI typed it, its count, whether the
+  client is there (a dash, explained under the table, for a type nothing is suggested for) and the competitors
+  beside it. Its table has fixed columns (a long address is cut on a screen with the whole of it on hover, written
+  out on paper). The glossary lists the types; the method says how a site is typed; the risks register's
+  "listings" reads the targets, at the level of the first one's action (`impact`).
+The Overview and the other pages keep Peec's four numbers (`BrandScore`) and the six site kinds until they move to
+the data object.
 
 ## Charts
 - Where every tracked brand is drawn (the Overview's chart and table), each has its own color: `--series-1`

@@ -230,28 +230,34 @@
       "language": "Til"
     },
     "sources": {
-      "lead": "AI eng koʻp havola beradigan saytlar. Ularda boʻlish — javoblarga kirishning eng tez yoʻli.",
+      "lead": "AI havola beradigan saytlar va har birining turi. Sizga ochiqlariga joylashish — javoblarga kirishning eng tez yoʻli.",
       "site": "Sayt",
-      "kind": "Turi",
       "used": "Ishlatilgan",
       "you": "Siz bormisiz?",
       "listed": "Ha",
       "notListed": "Yoʻq",
       "own": "Sizning saytingiz",
       "competitor": "Raqobatchi sayti",
-      "more": "Yana {count} ta saytga kamroq havola berilgan.",
-      "split": "Keltirilgan saytlar kimga ishlaydi",
-      "splitLabel": "Keltirilgan saytlar taqsimoti: {parts}",
-      "parts": {
-        "own": "Oʻz saytingiz",
-        "listed": "Siz bor saytlar",
-        "missing": "Siz yoʻq saytlar",
-        "competitors": "Raqobatchilar saytlari"
-      },
       "sites": "{count} ta sayt",
-      "top": "Eng koʻp keltirilgan saytlar",
       "sitesOf": "{total} ta saytdan {count} tasi",
-      "usedOf": "Har bir sayt hisobi: unga havola bergan javoblar, biror saytga havola bergan {answers} ta javobdan."
+      "usedOf": "Har bir sayt hisobi: unga havola bergan javoblar, biror saytga havola bergan {answers} ta javobdan.",
+      "typesTitle": "Keltirilgan saytlar turlari boʻyicha",
+      "typesLabel": "Keltirilgan saytlar turlari boʻyicha: {parts}",
+      "typesNote": "Saytning turi bizning tekshirilgan roʻyxatimizdan, biznes va raqobatchilari saytlaridan, qoʻlda tekshiruvdan yoki AI orqali («avtomatik» belgisi bilan) olinadi. Turini aniqlab boʻlmagan sayt — «turi aniqlanmagan», unga hech narsa taklif qilinmaydi.",
+      "targetsTitle": "Siz joylasha oladigan saytlar",
+      "targetsLead": "Joylashish yoʻli maʼlum boʻlgan kataloglar, OAV va hamjamiyatlar: ularga havola bergan javoblar raqobatchilaringizni tilga oladi, sizni emas.",
+      "targetsNone": "Hozircha yoʻq. Sayt bu yerga faqat katalog, OAV yoki hamjamiyat boʻlsa, unga joylashish yoʻli maʼlum boʻlsa va unga havola bergan javoblar sizni emas, raqobatchilaringizni tilga olsa tushadi. Qolganlari quyidagi jadvalda, kuzatish uchun.",
+      "route": {
+        "listing_page": "Biznesingizni qoʻshish",
+        "form": "Shaklni toʻldirish",
+        "editor_contact": "Tahririyatga yozish"
+      },
+      "allTitle": "Barcha keltirilgan saytlar",
+      "type": "Turi",
+      "rivals": "Yonidagi raqobatchilar",
+      "notChecked": "Tekshirilmagan",
+      "notCheckedHint": "Bu turdagi saytga hech narsa taklif qilinmaydi, shuning uchun unda bor-yoʻqligingiz tekshirilmaydi.",
+      "dashNote": "«Siz bormisiz?» ustunidagi chiziqcha: tekshirilmagan, chunki bu turdagi saytga hech narsa taklif qilinmaydi."
     },
     "accuracy": {
       "lead": "Ikki savol: AI siz haqingizda qanday ohangda gapiradi va aytgani toʻgʻrimi. Notoʻgʻri narx yoki manzil mijoz yoʻqotishga olib keladi.",
@@ -310,7 +316,9 @@
       "limits": "Cheklovlar",
       "limitsValue": "AI yordamchining javoblari har safar farq qiladi va uning oʻz ilovasida koʻrinadigan javobdan boshqacha boʻlishi mumkin. Raqamlar — shu tekshiruvdagi {answers} ta xaridor javobi boʻyicha hisoblar; ikki tekshiruv orasidagi bir javoblik farq tasodif boʻlishi mumkin. Bir necha tekshiruv davomidagi yoʻnalish bir haftalik oʻzgarishdan ishonchliroq.",
       "samples": "Kichik namunalar va tenglik",
-      "samplesValue": "Har bir raqam nimadan hisoblangani bilan beriladi. {answers} tadan kam javobda hisob kichik namuna deb belgilanadi; ovoz ulushi kuzatilayotgan brendlar {mentions} marta tilga olingandan keyingina koʻrsatiladi; ohang bitta soʻz bilan faqat {tone} ta tilga olinishdan boshlab ifodalanadi, tilga olinmasa — oʻlchanmaydi; javobdagi oʻrin faqat raqamlangan roʻyxatdan olinadi. Teng tilga olingan brendlar bir oʻrinni boʻlishadi, ularning hech biri yetakchi emas."
+      "samplesValue": "Har bir raqam nimadan hisoblangani bilan beriladi. {answers} tadan kam javobda hisob kichik namuna deb belgilanadi; ovoz ulushi kuzatilayotgan brendlar {mentions} marta tilga olingandan keyingina koʻrsatiladi; ohang bitta soʻz bilan faqat {tone} ta tilga olinishdan boshlab ifodalanadi, tilga olinmasa — oʻlchanmaydi; javobdagi oʻrin faqat raqamlangan roʻyxatdan olinadi. Teng tilga olingan brendlar bir oʻrinni boʻlishadi, ularning hech biri yetakchi emas.",
+      "sites": "Saytlar turlari",
+      "sitesValue": "Har bir keltirilgan saytning turi bizning tekshirilgan roʻyxatimizdan, biznes va raqobatchilari saytlaridan, qoʻlda tekshiruvdan yoki AI orqali («avtomatik» belgisi bilan) olinadi; hech biri aniqlay olmagan sayt — turi aniqlanmagan. «Joylashish» qadami faqat joylashish yoʻli maʼlum boʻlgan katalog, OAV yoki hamjamiyat uchun, javoblar biznesni emas, raqobatchilarni tilga olgan joyda taklif qilinadi; platforma yordami, raqobatchilar saytlari, qidiruv tizimlari va turi aniqlanmagan saytlar faqat kuzatiladi."
     },
     "glossary": {
       "visibility": "Brendni tilga olgan xaridor javoblari — tekshiruvdagi xaridorlar savollariga berilgan barcha javoblardan: hisob (k/n) va uning ulushi.",
@@ -333,7 +341,8 @@
       "tiesTerm": "Tenglik",
       "ties": "Teng tilga olingan brendlar bir oʻrinni boʻlishadi. Brend boshqa hammasidan koʻproq tilga olingandagina yetakchi hisoblanadi.",
       "naTerm": "Oʻlchanmaydi",
-      "na": "Oʻlchaydigan narsa boʻlmaganda koʻrsatiladi, masalan, AI tilga olmagan brendning ohangi. U hech qachon oʻrtacha qiymat oʻrnida turmaydi."
+      "na": "Oʻlchaydigan narsa boʻlmaganda koʻrsatiladi, masalan, AI tilga olmagan brendning ohangi. U hech qachon oʻrtacha qiymat oʻrnida turmaydi.",
+      "typesTitle": "Saytlar turlari"
     },
     "appendix": {
       "lead": "Yuqoridagi mavzularga kirgan har bir savol: nechta javobda tilga olingansiz va yoningizda kim tilga olingan. Javoblarni oʻqish uchun savolni oching.",
@@ -469,8 +478,8 @@
           "detail": "U sharhlarda oʻqiganini takrorlaydi. Sharhlarga javob bering va sababini bartaraf eting — baho oʻzgaradi."
         },
         "listings": {
-          "title": "AI tayanadigan {count} ta saytda siz yoʻqsiz: {sites} (har biriga havola bergan javoblar, saytga havola bergan {answers} tadan).",
-          "detail": "Har bir hisob — saytga havola bergan javoblar, biror saytga havola bergan javoblardan. Ularga joylashish — shu javoblarga kirishning eng tez yoʻli."
+          "title": "AI tayanadigan {count} ta sayt sizga ochiq, lekin u yerda hali yoʻqsiz: {sites} (har biriga havola bergan javoblar, saytga havola bergan {answers} tadan).",
+          "detail": "Faqat joylashish yoʻli maʼlum boʻlgan kataloglar, OAV va hamjamiyatlar: u yerdagi javoblar raqobatchilaringizni tilga oladi, sizni emas. Ularga joylashish — shu javoblarga kirishning eng tez yoʻli."
         },
         "closeTopics": {
           "title": "{topics} {count, plural, one {mavzusida} other {mavzularida}} yetakchiga yaqinsiz.",
@@ -4383,6 +4392,43 @@
       "confirmedHint": "Saytingizda ham shu maʼlumot yozilgan.",
       "contradictedHint": "Saytingizda boshqacha yozilgan: yordamchi mijozga notoʻgʻri maʼlumot beryapti.",
       "unverifiedHint": "Saytingizda bu haqda hech narsa yoʻq, shuning uchun tekshirib boʻlmadi. Yordamchi buni boshqa saytlardan olgan."
+    }
+  },
+  "DomainTypes": {
+    "names": {
+      "client_owned": "Sizning saytingiz",
+      "client_managed": "Sizning sahifangiz",
+      "competitor_site": "Raqobatchi sayti",
+      "directory": "Katalog yoki maydoncha",
+      "media": "OAV",
+      "ugc": "Hamjamiyat",
+      "telegram": "Telegram",
+      "reference": "Maʼlumotnoma",
+      "platform_docs": "Platforma yordami",
+      "unclassified": "Turi aniqlanmagan"
+    },
+    "about": {
+      "client_owned": "Oʻz saytingiz.",
+      "client_managed": "Boshqa saytdagi siz boshqaradigan sahifa, masalan, katalogdagi kartochkangiz.",
+      "competitor_site": "Siz taklif qiladigan narsani taklif qiladigan biznes sayti: siz kuzatayotgan raqobatchi yoki boshqasi.",
+      "directory": "Koʻp bizneslar roʻyxati boʻlgan katalog, xarita, marketpleys, eʼlonlar yoki sharhlar sayti, masalan, 2GIS yoki Google Maps.",
+      "media": "Tahririyati bor yangilik sayti, jurnal yoki blog.",
+      "ugc": "Foydalanuvchilar yozadigan ijtimoiy tarmoq, forum, savol-javob yoki sharhlar.",
+      "telegram": "Telegram kanallari va guruhlari.",
+      "reference": "Ensiklopediya, qonunlar, davlat yoki statistika sayti yoxud qidiruv tizimining oʻz sahifalari.",
+      "platform_docs": "Platformaning yordam, qoʻllab-quvvatlash yoki hujjat sahifalari, masalan, Google yoki OpenAI. U yerga joylashilmaydi.",
+      "unclassified": "Turini aniqlab boʻlmagan sayt. Turi berilmaguncha unga hech narsa taklif qilinmaydi."
+    },
+    "control": {
+      "owned": "sizniki",
+      "managed": "siz boshqarasiz",
+      "earned": "joylashish mumkin",
+      "not_addressable": "sizga bogʻliq emas"
+    },
+    "review": {
+      "seed": "bizning roʻyxat",
+      "automated": "avtomatik",
+      "founder-reviewed": "tekshirilgan"
     }
   }
 }

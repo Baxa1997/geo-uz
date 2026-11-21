@@ -90,16 +90,9 @@ def test_the_fixture_loads(db: Any, baseline: Dict[str, Any]) -> None:
 # counts its scope from the slot log (`metrics.scope`), and test_acceptance.py checks the page. Defects 1, 5, 6
 # and 9 (the composite from a default 50, a rank among ties, the share, tone and place of a single mention, tone
 # with no mention) went with 0.2 the same day: the report shows counts (`metrics.visibility`, `metrics.brands`),
-# and test_metrics.py and test_acceptance.py check them.
-
-
-def test_defect_4_platform_docs_typed_a_directory_with_a_listing(db: Any, project: Any, report: Dict[str, Any], expected: Dict[str, Any]) -> None:
-    """Goes with 0.4."""
-    from app import fixes
-
-    domain = expected["audited"]["listing_domain"]
-    assert next(source["type"] for source in report["topSources"] if source["domain"] == domain) == "directory"
-    assert any(action["kind"] == "listing" and action["details"]["domain"] == domain for action in fixes.suggested(db, project, report))
+# and test_metrics.py and test_acceptance.py check them. Defect 4 (a platform's help pages typed a directory, with
+# a listing action) went with 0.4: every cited site has the spec's type (`domains.resolve`) and only §7's sites get
+# an action (test_domains.py, test_acceptance.py).
 
 
 @pytest.mark.page

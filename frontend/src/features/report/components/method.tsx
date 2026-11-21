@@ -4,6 +4,7 @@ import { REPORT_AREAS } from "@/shared/helpers/areas";
 import { formatLongDate } from "@/shared/helpers/dates";
 import type { Report, WaveMetrics } from "@/shared/types/api";
 import { BlockTitle, ReportCard } from "./report-parts";
+import { DOMAIN_TYPES } from "./sources";
 
 /** A label beside its text, one under another; on a phone the label goes above. */
 function Rows({ rows }: { rows: { key: string; label: string; value: string }[] }) {
@@ -26,7 +27,8 @@ function Rows({ rows }: { rows: { key: string; label: string; value: string }[] 
  * assistants were asked, how many runs, when, which brands were compared, and what the numbers can't say.
  * What was asked of whom, with which model and as from where, is the scope card's at the top (from the slot
  * log, Phase 0 item 0.1): this section doesn't count it again. Since 0.2 it says the rules that keep a small
- * count honest (the small-sample badge, share of voice, tone, place, ties), with the thresholds the metrics use.
+ * count honest (the small-sample badge, share of voice, tone, place, ties), with the thresholds the metrics use,
+ * and since 0.4 how each cited site is typed and which sites a step to get listed may name (spec §4.6, §7).
  */
 export function Method({ report, metrics }: { report: Report; metrics: WaveMetrics }) {
   const t = useTranslations("Report.method");
@@ -55,6 +57,7 @@ export function Method({ report, metrics }: { report: Report; metrics: WaveMetri
           label: t("samples"),
           value: t("samplesValue", { answers: metrics.visibility.small_sample_below, mentions: metrics.brands.share_of_voice.minimum, tone: metrics.brands.tone_summary_from }),
         },
+        { key: "sites", label: t("sites"), value: t("sitesValue") },
         { key: "limits", label: t("limits"), value: t("limitsValue", { answers: metrics.visibility.answers }) },
       ]}
     />
@@ -63,13 +66,15 @@ export function Method({ report, metrics }: { report: Report; metrics: WaveMetri
 
 /**
  * The report's terms in a sentence or two each: the numbers and what a check is, then how the five areas are
- * read (each by its own counts, since 21 Nov 2026: no score and no status), ties and N/A. A reader on paper
- * has no hover. No example here is a number of the client's.
+ * read (each by its own counts, since 21 Nov 2026: no score and no status), ties and N/A, then the types of
+ * cited sites (spec §4.6, Phase 0 item 0.4). A reader on paper has no hover. No example here is a number of the
+ * client's.
  */
 export function Glossary() {
   const t = useTranslations("Report.glossary");
   const labels = useTranslations("Report.scorecard.labels");
   const areas = useTranslations("Report.areas");
+  const types = useTranslations("DomainTypes");
   return (
     <div className="flex flex-col gap-3.5">
       <div className="flex flex-col gap-2">
@@ -90,6 +95,10 @@ export function Glossary() {
             { key: "na", label: t("naTerm"), value: t("na") },
           ]}
         />
+      </div>
+      <div className="flex flex-col gap-2">
+        <BlockTitle>{t("typesTitle")}</BlockTitle>
+        <Rows rows={DOMAIN_TYPES.map(({ type }) => ({ key: type, label: types(`names.${type}`), value: types(`about.${type}`) }))} />
       </div>
     </div>
   );

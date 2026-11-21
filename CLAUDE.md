@@ -101,8 +101,8 @@ beside its count), merged, pushed and deployed; 0.1–0.3 confirmed by the user,
 waits for their look. The open work, in the order the user picks (ask as a short choice):
 
 0. **Phase 0 of the report spec, item by item, a plan shown before each** (section "Seenova report: source of
-   truth" below): 0.4 next (each cited site's kind from a list of our own and the AI, unknown sites
-   `unclassified` and never an action, spec §7's rules for actions), then 0.5 to 0.9.
+   truth" below): 0.4 built and waiting for the user's look (each cited site's type, spec §7's rules for actions),
+   then 0.5 to 0.9.
 1. The rest of the user's list of 17 Nov: the report's competitors and sources (3–4), the bug in the dynamics
    window. Each waits for its screenshots. (Savollar, point 5, was made simple on 18 Nov from the user's own
    screenshot of it.)
@@ -202,6 +202,33 @@ that is committed.
    that no key and no client's name is in it.
 
 ## Done (as of 18 November 2026)
+
+- **Built, waiting for the user's look: Phase 0 item 0.4 of the report spec, a type for every cited site and
+  the actions a type allows (21 Nov), on the branch `phase0-domain-types`; merged and pushed the same day, when the
+  user chose "Ship 0.4, then plan 0.5".** The user: "commit, push,
+  then plan 0.4"; after the plan they chose, when asked, the AI's typing in every new check plus once now on the two
+  live projects, and routes only from our checked list or their review. `app/domains.py` (a new table
+  `domain_types`) gives each cited site the spec's type (§4.6), its control, the route onto it and who typed it:
+  the project's own sites, a review by hand (`python -m app.admin domain`), the seed list (spec §9's sites, the
+  platforms' help pages, social networks, Telegram, search engines; every route opened and its page read: 2GIS's
+  forms for Uzbekistan and Kazakhstan, Golden Pages, Uzum, Kaspi, lalafo, Google's business profile, two editors'
+  contacts), the AI's answer (`automated`, once a site and project at the end of a live check, never a route),
+  else `unclassified`. Actions follow §7: "get listed" only on a directory, media, UGC or Telegram site with a
+  route, a competitor beside it and the client not there; an untouched one that no longer qualifies stops showing
+  at once. The report's Sources: the sites by type, "Sites you can get onto" with each route, every cited site
+  with its type, control and the competitors beside it; the risks register's listings read the targets at their
+  action's impact (defect 4's other half); the method and the glossary explain the types; the other pages keep six
+  kinds worked out from the types, so support.google.com is no longer a directory anywhere. On the baseline
+  without the AI: the two help pages are platform docs, the two tracked rivals' sites competitors' sites, 22
+  unclassified, no site to get onto, and its support.google.com action gone. Found on the way and fixed: on a
+  phone the sources table's last column ran off its card (it did in 0.3 too); its columns are fixed now. Tests:
+  `pytest` 37 pass and 1 expected failure (0.8); `-m page` 15 pass and 2 expected failures (0.5, 0.8); all 49
+  percentages on the baseline report stand beside their count; the type check and the linter are clean. Looked at
+  in headless Chrome on the baseline (with one site typed by hand and one by a stand-in AI, in the look's own
+  database): the Sources in English on desktop and as print, Russian on desktop and phone, Uzbek on phone, and
+  Hisobotlar's copy in Uzbek on desktop and phone; nothing wider than the screen, no console error. Not done yet:
+  the AI's one-off typing on the two live projects (after the deploy, `python -m app.admin classify`). No new
+  variable; one new table.
 
 - **Finished, confirmed by the user on 21 Nov: Phase 0 item 0.3 of the report spec, every percentage beside its
   count (21 Nov); merged, pushed and deployed with step 1, 0.1 and 0.2 (the branch `phase0-wave-object`) the same
@@ -1191,4 +1218,5 @@ All from `frontend/`: `npm run dev` (development), `npm run build` then `npm run
 - Use the baseline client's first check (spec §3.3) as the test fixture. Acceptance tests are in spec §11.1; they run in `backend/tests/` on that check's data, which stays on this computer (`backend/tests/README.md`). Never write the client's name, its competitors' names or its project's id into a committed file.
 - Work on one Phase 0 item at a time. Show me a plan before writing code.
 - Decided with the user on 21 Nov 2026, while planning Phase 0: the baseline's scope card shows 20 slots, 15 completed and 5 excluded, with the reason that the free check asks ChatGPT 5 of the 10 questions (nothing failed: only 15 were planned); a Gemini answer that ran no web search counts as completed and says so ("Gemini searched in k of n"); the report surfaces (the report, its Hisobotlar copy, the PDF, the snapshot, the digest, the email) read the single data object in Phase 0, and the 0–100 score goes from everywhere (Hisobotlar's register, the dashboard's project cards, the landing page's sample report, the email too), while the other pages move to the object later.
+- Decided with the user on 21 Nov 2026, for item 0.4: a cited site our list, the project and a review don't type is typed by the AI (`automated`) at the end of every live check, and once on the two live projects' latest checks; a route onto a site (which a "get listed" action needs) comes only from our checked seed list or a review by hand, never from the AI.
 - Decided with the user on 21 Nov 2026, for item 0.2: with the score gone, each of the report's five areas shows its count and no status (no Weak/Fair/Good, no coloured dot); the client's "used as a source" is spec §6.3's, answers citing its site over answers that cite any site (0 of 7 on the baseline), not over every answer.

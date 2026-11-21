@@ -184,7 +184,6 @@ def test_every_percentage_equals_its_count(report_page: Page) -> None:
 
 
 @page
-@todo("0.4", "a type for every cited domain; no action on platform docs")
 def test_every_cited_domain_typed_and_no_action_on_platform_docs(report_page: Page, site: Any, baseline: Dict[str, Any], expected: Dict[str, Any]) -> None:
     types = report_page.domains()
     assert len(types) == expected["cited_domains"] and all(types.values())

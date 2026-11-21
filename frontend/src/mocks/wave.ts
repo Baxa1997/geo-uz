@@ -1,12 +1,15 @@
 // A sample check's data object and scope (`GET /projects/{id}/waves/{runId}`), for the mocks: the sample data has no
 // slot log, so its slots are rebuilt from its answers, as the backend rebuilds a check made before the log
 // (`backend/app/wave.py`). Its counting follows `backend/app/metrics.py`: the scope card, the headline count and
-// the brands (no score: Phase 0 item 0.2).
+// the brands (no score: Phase 0 item 0.2), the cited sites by type (0.4).
 import { PROMPT_LANGUAGES } from "@/shared/constants";
 import type {
+  DomainControl,
+  DomainRoute,
+  DomainType,
   Report,
-  SitePart,
   SlotTally,
+  SourceType,
   Tone,
   ToneSummary,
   Wave,
@@ -29,6 +32,16 @@ const TONES: Tone[] = ["positive", "neutral", "negative"];
 const NUMBERED = /^\s*(\d{1,3})[.)]\s+/;
 
 const host = (domain: string) => domain.trim().toLowerCase().replace(/^www\./, "");
+
+// The sample's sites by the spec's types, from the six kinds it has (`backend/app/domains.py` types a real one)
+const TYPE_OF_KIND: Record<SourceType, DomainType> = { own: "client_owned", competitor: "competitor_site", news: "media", directory: "directory", social: "ugc", other: "unclassified" };
+const CONTROL: Partial<Record<DomainType, DomainControl>> = { client_owned: "owned", client_managed: "managed", directory: "earned", media: "earned", ugc: "earned", telegram: "earned" };
+const PLACEABLE: DomainType[] = ["directory", "media", "ugc", "telegram"];
+// The seed list's checked routes, for the sample's sites that have one
+const ROUTES: Record<string, DomainRoute> = {
+  "2gis.uz": { how: "form", url: "https://reklama.2gis.uz/add-info" },
+  "goldenpages.uz": { how: "listing_page", url: "https://www.goldenpages.uz/add/" },
+};
 
 function visibilityOf(wave: Wave): WaveVisibility {
   const client = wave.project.brand.id;
@@ -97,16 +110,22 @@ function groupsOf(wave: Wave, by: "topic" | "lang"): WaveGroup[] {
 
 function sourcesOf(wave: Wave): WaveSources {
   const cited = wave.answers.filter((answer) => answer.citations.length > 0);
-  const kinds = new Map(wave.domains.map((domain) => [domain.domain, domain]));
+  const typed = new Map(wave.domains.map((domain) => [domain.domain, domain]));
   const counts = new Map<string, number>();
   for (const answer of cited) for (const domain of new Set(answer.citations.map((citation) => citation.domain))) counts.set(domain, (counts.get(domain) ?? 0) + 1);
   const rows = [...counts.entries()]
     .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-    .map(([domain, count]) => ({ domain, type: kinds.get(domain)?.type ?? "other", listed: Boolean(kinds.get(domain)?.listed), cited: count }));
-  const part = (row: (typeof rows)[number]): SitePart => (row.type === "own" ? "own" : row.type === "competitor" ? "competitors" : row.listed ? "listed" : "missing");
-  const split: Partial<Record<SitePart, number>> = {};
-  for (const row of rows) split[part(row)] = (split[part(row)] ?? 0) + 1;
-  return { cited_answers: cited.length, sites: rows.length, rows, split };
+    .map(([domain, count]) => {
+      const site = typed.get(domain);
+      const type = site?.type ?? "unclassified";
+      const route = site?.route ?? null;
+      const listed = Boolean(site?.listed);
+      const rivals = site?.rivals.length ?? 0;
+      return { domain, type, control: site?.control ?? "not_addressable", review: site?.review ?? "seed", route, listed, rivals, cited: count, target: PLACEABLE.includes(type) && route !== null && !listed && rivals > 0 };
+    });
+  const types: Partial<Record<DomainType, number>> = {};
+  for (const row of rows) types[row.type] = (types[row.type] ?? 0) + 1;
+  return { cited_answers: cited.length, sites: rows.length, rows, types, targets: rows.filter((row) => row.target).map((row) => row.domain) };
 }
 
 function brandsOf(wave: Wave): WaveBrands {
@@ -228,7 +247,12 @@ export function mockWave(report: Report, runId: string, number: number): WaveRes
     prompts: prompts.map((prompt) => ({ id: prompt.id, text: prompt.text, lang: prompt.language, group: "discovery", topic: prompt.topic, version: 1 })),
     slots,
     answers,
-    domains: report.topSources.map((source) => ({ domain: source.domain, type: source.type, listed: source.brandListed })),
+    domains: report.topSources.map((source) => {
+      const type = TYPE_OF_KIND[source.type];
+      const rivals = new Set(project.competitors.map((brand) => brand.id));
+      const beside = new Set(answers.filter((answer) => answer.citations.some((citation) => citation.domain === source.domain)).flatMap((answer) => answer.mentions.flatMap((mention) => (mention.brand_id && rivals.has(mention.brand_id) ? [mention.brand_id] : []))));
+      return { domain: source.domain, type, control: CONTROL[type] ?? "not_addressable", route: ROUTES[source.domain] ?? null, review: "seed", listed: source.brandListed, rivals: [...beside] };
+    }),
     branded: [],
   };
   return {
