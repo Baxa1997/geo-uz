@@ -101,8 +101,8 @@ beside its count), merged, pushed and deployed; 0.1–0.3 confirmed by the user,
 waits for their look. The open work, in the order the user picks (ask as a short choice):
 
 0. **Phase 0 of the report spec, item by item, a plan shown before each** (section "Seenova report: source of
-   truth" below): every item built (step 1, 0.1–0.9), 0.1–0.3 confirmed, the rest waiting for the user's look; 0.9
-   not yet deployed. Spec §2: Phase 1 waits for the demand signal (at least 5 paid First Audits out of 20 offers);
+   truth" below): every item built and deployed (step 1, 0.1–0.9, 21 Nov), 0.1–0.3 confirmed, the rest waiting for
+   the user's look. Spec §2: Phase 1 waits for the demand signal (at least 5 paid First Audits out of 20 offers);
    until then the First Audits are made with these tools plus the founder's review.
 1. The rest of the user's list of 17 Nov: the report's competitors and sources (3–4), the bug in the dynamics
    window. Each waits for its screenshots. (Savollar, point 5, was made simple on 18 Nov from the user's own
@@ -205,8 +205,10 @@ that is committed.
 ## Done (as of 18 November 2026)
 
 - **Built, waiting for the user's look: Phase 0 item 0.9 of the report spec, the template clean-up (21 Nov), on the
-  branch `phase0-template`; merged and pushed the same day, when the user chose "Ship 0.9": the last item of
-  Phase 0.** The user: "Ship 0.8, then plan 0.9"; after
+  branch `phase0-template`; merged, pushed and deployed the same day, when the user chose "Ship 0.9": the last item
+  of Phase 0 (Vercel's build passed; the server's previous `app/` is kept as `app.bak-before-template`; live, the
+  paid project's 6 topics are ranked, 4 with enough answers, and its page action still qualifies; the baseline's 10
+  are not).** The user: "Ship 0.8, then plan 0.9"; after
   the plan they chose, when asked, the same rule for page actions as for topics. Spec §6.3's topic ranking
   (`metrics.topic_ranking`): a topic gets a standing only with 3 answers, and the topics are counted and ordered worst
   first only when 3 of them qualify, else a line says why (the baseline: 10 topics of 1 or 2 answers, unranked, and
