@@ -4,8 +4,13 @@
                                             UTC): Standard on Mondays, Pro and Enterprise on Mondays and Thursdays
     python -m app.weekly --all              every paid project, whatever the day
     python -m app.weekly --project <id>     one project, by hand, paid or not
+    python -m app.weekly --project <id> --runs 3
+                                            the same, each question asked 3 times on each assistant: the paid First
+                                            Audit (report spec §6.2; the user's decision, 21 Nov 2026: weekly checks
+                                            stay at `RUN_SAMPLES`, 1). The planned answers and their likely cost are
+                                            printed first
 
-    ask                each tracked question to every assistant with a key, `RUN_SAMPLES` times, a few at a
+    ask                each tracked question to every assistant with a key, `--runs` or `RUN_SAMPLES` times, a few at a
                        time; a question that fails is asked again twice, then left out
     read the answers   which businesses each names, in order, in what tone, and which it recommends
     one name each      the spellings of one business brought together, the tracked brands' among them
@@ -80,8 +85,36 @@ def _replay(db: Any, project: Project, run: Run) -> int:
     return saved
 
 
-def check(project_id: str) -> Optional[str]:
-    """One project's check. Returns the run's id, or None when the project has nothing to ask."""
+# The most runs a check may ask each question (report spec §6.2 asks 3 for the paid First Audit)
+RUNS_MAX = 5
+
+
+def runs_of(asked: Optional[int]) -> int:
+    """How many times a check asks each question on each assistant: `--runs` when given, else `RUN_SAMPLES`,
+    between 1 and `RUNS_MAX`."""
+    return max(1, min(RUNS_MAX, asked if asked else settings.run_samples))
+
+
+def jobs_of(prompts: List[Prompt], asked: List[str], runs: int) -> List[Tuple[Prompt, str, int]]:
+    """Every call a check makes, as (question, assistant, run): each question on each assistant, `runs` times."""
+    return [(prompt, engine, run) for prompt in prompts for engine in asked for run in range(1, runs + 1)]
+
+
+def estimate(project_id: str, runs: int) -> Tuple[int, int, int, Optional[float]]:
+    """A check's plan before it is made: its questions, its assistants, the answers it asks for, and what they
+    are likely to cost at the project's last check's price an answer (None before any check)."""
+    with SessionLocal() as db:
+        prompts = [prompt for prompt in prompts_of(db, project_id) if prompt.archived_at is None]
+        last = db.scalar(select(Run).where(Run.project_id == project_id, Run.status == "done", Run.answered > 0).order_by(Run.collected_at.desc()).limit(1))
+    planned = len(prompts) * len(settings.engines) * runs
+    each = (last.cost_usd or 0.0) / last.answered if last and last.answered and last.cost_usd else None
+    return len(prompts), len(settings.engines), planned, round(each * planned, 2) if each is not None else None
+
+
+def check(project_id: str, runs: Optional[int] = None) -> Optional[str]:
+    """One project's check, each question asked `runs` times on each assistant (`runs_of`). Returns the run's
+    id, or None when the project has nothing to ask."""
+    runs = runs_of(runs)
     with SessionLocal() as db:
         project = db.get(Project, project_id)
         prompts = [prompt for prompt in prompts_of(db, project_id) if prompt.archived_at is None] if project else []
@@ -89,8 +122,8 @@ def check(project_id: str) -> Optional[str]:
         if not project or not prompts or not (asked or settings.first_run_replay):
             return None
         brands = brands_of(db, project_id)
-        jobs = [(prompt, engine, sample) for prompt in prompts for engine in asked for sample in range(1, settings.run_samples + 1)]
-        run = Run(project_id=project_id, kind="weekly", status="running", total=len(jobs), method={"engine": " + ".join(engines.ENGINE_NAMES[engine] for engine in asked), "model": "", "webSearch": True, "samples": settings.run_samples}, sources={})
+        jobs = jobs_of(prompts, asked, runs)
+        run = Run(project_id=project_id, kind="weekly", status="running", total=len(jobs), method={"engine": " + ".join(engines.ENGINE_NAMES[engine] for engine in asked), "model": "", "webSearch": True, "samples": runs}, sources={})
         db.add(run)
         db.commit()
         run_id = run.id
@@ -266,7 +299,10 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="The weekly check")
     parser.add_argument("--project", help="one project's id, paid or not")
     parser.add_argument("--all", action="store_true", help="every paid project, whatever the day")
+    parser.add_argument("--runs", type=int, help=f"with --project: each question asked this many times on each assistant (1 to {RUNS_MAX})")
     chosen = parser.parse_args()
+    if chosen.runs is not None and (not chosen.project or not 1 <= chosen.runs <= RUNS_MAX):
+        parser.error(f"--runs goes with --project, from 1 to {RUNS_MAX}")
     create_tables()
     today = now().weekday()
     with SessionLocal() as db:
@@ -274,7 +310,11 @@ def main() -> None:
         ids = [chosen.project] if chosen.project else [project.id for project in paid if chosen.all or today in CHECK_DAYS.get(project.plan, [0])]
     for project_id in ids:
         started = time.time()
-        run_id = check(project_id)
+        if chosen.runs:
+            questions, assistants, planned, usd = estimate(project_id, runs_of(chosen.runs))
+            cost = f", about ${usd:.2f} at the last check's price an answer" if usd is not None else ""
+            print(f"project {project_id}: {questions} questions × {assistants} assistants × {runs_of(chosen.runs)} runs = {planned} answers planned{cost}")
+        run_id = check(project_id, chosen.runs)
         with SessionLocal() as db:
             run = db.get(Run, run_id) if run_id else None
             print(f"project {project_id}: " + (f"{run.status}, {run.answered}/{run.total} answers, ${run.cost_usd or 0:.2f}, {time.time() - started:.0f}s" if run else "nothing to ask"))

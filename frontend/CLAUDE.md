@@ -793,7 +793,9 @@ from the check's data object (`WaveMetrics`), each with what it is counted over 
   full under its question with its cited pages, on screen and on paper (smaller type and two columns on paper),
   with "Answers as CSV" (`answers-csv.tsx`, made in the browser). An answer's own words are marked `data-verbatim`:
   a percentage an assistant wrote is not one of the report's. The "every question" appendix no longer prints the
-  answers' beginnings on paper.
+  answers' beginnings on paper. With several runs (0.6) each answer says "run 2 of 3", and on paper only the
+  questions where the client or a tracked competitor is named print in full, the others by their beginning (whole
+  on the screen and in the CSV).
 The Overview and the other pages keep Peec's four numbers (`BrandScore`) and the six site kinds until they move to
 the data object.
 
