@@ -42,6 +42,12 @@ FRONTEND_ORIGIN=https://<the site>
 SECURE_COOKIES=true
 ```
 
+**Tests** (since 21 Nov 2026, for Phase 0 of the report spec; `tests/README.md`): once
+`.venv/bin/pip install -r requirements-dev.txt`, then `.venv/bin/python -m pytest` for the data and the backend,
+or `-m page` for the report as a real frontend renders it. They run on the baseline client's check, exported
+read-only from the server into `tests/fixtures/`, which stays on this computer; nothing they do reaches the
+server, an assistant or an inbox.
+
 ## What is built
 
 | Endpoint | What it does |
@@ -71,6 +77,7 @@ SECURE_COOKIES=true
 | `PATCH /projects/{id}` | The brand profile, and the brand questions (`brandQuestions`, replaced as a whole) |
 | `GET`, `PUT /projects/{id}/facts`; `GET`, `PATCH /projects/{id}/report-settings`; `POST /projects/{id}/plan-requests` | The brand's facts against the plan's limit; where the report goes (connecting Telegram answers 501: no bot yet); a plan request, written to the log and emailed to the team's inbox with the account, the project and the command that switches the plan on (16 Nov) |
 | `GET /projects/{id}/reports/{runId}/pdf` `?lang=` | The run's report as a PDF (503 when no browser is installed) |
+| `GET /projects/{id}/waves/{runId}` | A check's data object and its metrics (report spec §10; `runId` `latest` is the newest finished check), read by the report's link like the report: `{wave, metrics}`. Since 21 Nov 2026 the report's scope card and its counts read it (no 0–100 score); see "The slot log and the data object" |
 | `GET /projects/{id}/actions` | The recommended fixes, each with its proof once done (read without login, like the report) |
 | `PATCH /projects/{id}/actions/{actionId}`, `PATCH /projects/{id}/actions`, `POST /projects/{id}/actions` | An action's status and ticked steps; one status for several; "Add a page" (a page of the client's to rework) |
 | `GET /projects/{id}/prompt-suggestions`, `GET /members` | Empty or default answers, so those pages open on a real project; nothing is kept for them yet |
@@ -152,8 +159,8 @@ without a brand id when the project doesn't track it: the "new competitor" list)
 first run matches its competitors and questions to what the client kept in the setup, by name and by text: a
 competitor the client dropped becomes an untracked name, one the client added is looked for in the answers'
 text, a question the client removed loses its answers, a new one waits for the next check. The report is
-counted in plain code from those rows for any set of questions, with the condition score by the formula of
-`frontend/src/shared/helpers/condition.ts`. A new project is a trial with Standard's limits (`DEFAULT_PLAN`,
+counted in plain code from those rows for any set of questions (with no condition score since 21 Nov 2026: the
+report's counts are the data object's, below). A new project is a trial with Standard's limits (`DEFAULT_PLAN`,
 `billing.status` "trial") until a plan is switched on by hand. The plan's limits on questions, competitors and
 facts are enforced. Not built: suggested questions (they need a model), facts read from the website, inviting
 members.
@@ -189,7 +196,9 @@ run**: Standard keeps no facts, and no Pro project has been checked.
 project's id (32 random characters) is what the link's holder knows. The PDF is that page
 (`FRONTEND_ORIGIN/{lang}/projects/{id}/report?run=`) printed by a headless Chrome, so paper and page can't
 differ. After a weekly check the report is emailed to the address in the project's report settings, in the
-language chosen there: the condition, visibility with its change, the place among the brands, the link, the
+language chosen there: the answers naming the client of all of them, the questions naming it, who is named
+most with every brand that ties (from the data object since 21 Nov 2026; it said the condition score and a place),
+the link, the
 PDF attached (sent without it when no browser is found). `python -m app.delivery <project id> [<run id>]`
 sends one again. Tried on this computer: the page without login, a 10-page PDF, the email into a local test
 mail server. On the server it needs Chrome or Chromium installed and `FRONTEND_ORIGIN` set to the public site.
@@ -197,6 +206,50 @@ mail server. On the server it needs Chrome or Chromium installed and `FRONTEND_O
 **Without paying** (`FIRST_RUN_REPLAY=true` in `backend/.env`): a first run replays the latest saved one over
 about ten seconds and asks no assistant; its result carries `replayed: true`. For building pages. Never on the
 server.
+
+## The slot log and the data object (21 Nov 2026, Phase 0 items 0.1 to 0.3 of the report spec)
+
+**The slot log** (`app/slots.py`, table `slots`): every call a check plans to an assistant, written before
+anything is asked, and closed with what came of it (report spec §6.1). A slot is one question (or brand
+question) to one assistant for one run: its wording and language, `discovery` or `branded`, the engine, the
+run, the location the call was told (`{country, city, timezone, set, how}`: ChatGPT's `user_location` is set;
+Gemini on Vertex is told the place in one sentence of its instructions, which is no location setting), and
+then its status: `completed` (with the model, the cost, whether it searched the web, the answer's row),
+`failed` (with a reason code and the error) or `excluded` (left out, with why: the free first check asks
+ChatGPT half the questions, `free_check_subset`). A retry fills its own slot. The first check writes its slots
+against its first run (`first_run_id`), and `projects._save_first_run` hands those of the questions kept to the
+project's first check; the weekly check writes them against its run, inside its own transaction. A check made
+before the log has its slots rebuilt when it is read, each marked `reconstructed`, from what it saved: a first
+check from its first run's plan and answers (nothing failed when every planned answer came back), a weekly
+check from its answers. So the baseline's 20 slots, 15 completed and 5 excluded, come without a write to the
+live database.
+
+**The data object** (`app/wave.py`): one finished check as report spec §10 has it, the parts Phase 0 uses, as
+a validated model: the project, the wave (its number among the checks, baseline or not, runs per question, a
+hash of the settings two checks must share to be compared), the questions, the slots, the answers (each with
+its run on its assistant, what it names and cites), and the brand-question check. **The metrics**
+(`app/metrics.py`) are every number the report shows, computed from the object alone; since 0.1 the scope card
+(spec §4.0): the assistants with their models, surface, location and how many answers searched the web, what
+is not checked yet, the questions, the answers planned against completed, excluded and failed with why, the
+answers by language, the brand questions apart, the brands. Since 0.2 (21 Nov 2026, in the place of the 0–100
+condition score, which is gone from the report's API, `conditionHistory`) also `visibility`, the headline count:
+the buyers' answers naming the client of all of them (`small_sample` under 20), the questions it was named in, and
+the answers citing its site of the answers citing any site (spec §6.3); and `brands`: every tracked brand's count,
+its rank (ties share it, a brand named nowhere has none, `leaders` holds more than one when they tie), its tone
+per mention (a word only from 3 mentions, nothing at none: never a default), its place only where an answer names
+it in a numbered list, the answers citing its site, and share of voice only from 10 mentions of the tracked
+brands. Brand questions' answers are never counted in them. The report's `history` carries each check's
+`answers` and `named` for Hisobotlar's register, and the report's email (`app/delivery.py`) tells the count, the
+questions and who is named most, from the object. Since 0.3 (21 Nov 2026) one rounding rule, `metrics.share`
+(a whole percent, half up), which the report shows beside its count, and the counts of the report's other
+sections: `assistants` (each assistant's answers, those naming the client, who it names most), `topics` and
+`languages` (each group's answers, the client's count, the competitors named most, ties together), `sources`
+(each cited site once an answer, over the answers that cite any site, spec §6.3; the sites split by whom they work
+for, in sites) and `claims` (the brand-question check's verdicts, verified, unverified, contradicted, apart from
+every count of the buyers' answers). The object carries each cited site's kind and whether it lists the client
+(`domains`, today's typing until 0.4), and a done action's proof its counts (`proof.counts`). Kept like the
+report, until the project changes. Tested on the baseline client's check and with stand-in assistants:
+`tests/test_wave.py`, `tests/test_metrics.py`.
 
 ## On the server (since 15 Nov 2026)
 

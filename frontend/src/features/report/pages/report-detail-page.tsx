@@ -8,9 +8,8 @@ import { setPageLocale } from "@/i18n/page-locale";
 import { api } from "@/shared/api/client";
 import { orNotFound } from "@/shared/api/errors";
 import { TIME_ZONE } from "@/shared/constants";
-import { conditionStatus } from "@/shared/helpers/condition";
 import { formatLongDate, formatShortDate } from "@/shared/helpers/dates";
-import { REPORT_PARTS, SECTION_AREAS, sectionNumber, type ReportSectionKey } from "../constants";
+import { REPORT_PARTS, sectionNumber, type ReportSectionKey } from "../constants";
 import { ReportBody } from "../components/report-body";
 import { ReportContents, type ContentsPart } from "../components/report-contents";
 import { ReportShare } from "../components/report-share";
@@ -38,9 +37,11 @@ export default async function ReportDetailPage({ params }: Props) {
   const { locale: segment, id, runId: rawRunId } = await params;
   const locale = setPageLocale(segment);
   const runId = decodeURIComponent(rawRunId);
-  const [report, actions, t, tReports, tReport] = await Promise.all([
+  const [report, actions, wave, t, tReports, tReport] = await Promise.all([
     getRunReport(id, runId),
     orNotFound(api.getActions(id)),
+    // The check's data object and metrics: the scope card at the paper's top (Phase 0 item 0.1)
+    orNotFound(api.getWave(id, runId)),
     getTranslations({ locale, namespace: "Sidebar" }),
     getTranslations({ locale, namespace: "Reports" }),
     getTranslations({ locale, namespace: "Report" }),
@@ -58,22 +59,11 @@ export default async function ReportDetailPage({ params }: Props) {
   }
 
   const shared = getPathname({ href: { pathname: `/projects/${project.id}/report`, query: { run: runId } }, locale });
-  const condition = report.conditionHistory.at(-1);
   const before = report.history.at(-2)?.collectedAt;
   const parts: ContentsPart[] = REPORT_PARTS.map((part) => ({
     key: part.key,
     title: tReport(`parts.${part.key}`),
-    sections: part.sections.map((key: ReportSectionKey) => {
-      const area = SECTION_AREAS[key];
-      const score = area && condition ? condition.areas[area] : undefined;
-      return {
-        id: key,
-        number: sectionNumber(key),
-        title: tReport(`sections.${key}`),
-        score,
-        status: score === undefined ? undefined : tReport(`status.${conditionStatus(score)}`),
-      };
-    }),
+    sections: part.sections.map((key: ReportSectionKey) => ({ id: key, number: sectionNumber(key), title: tReport(`sections.${key}`) })),
   }));
 
   return (
@@ -98,12 +88,12 @@ export default async function ReportDetailPage({ params }: Props) {
         <div className="mx-auto grid w-full max-w-440 gap-4 @5xl:grid-cols-[15rem_minmax(0,1fr)]">
           <aside className="hidden @5xl:block">
             <div className="sticky top-[3.75rem]">
-              <ReportContents parts={parts} score={condition?.score} />
+              <ReportContents parts={parts} />
             </div>
           </aside>
           {/* Clear of the page's sticky title when the contents jump to a section */}
           <div className="min-w-0 [&_section]:scroll-mt-16">
-            <ReportBody report={report} actions={actions} fill />
+            <ReportBody report={report} wave={wave} actions={actions} fill />
           </div>
         </div>
       </div>

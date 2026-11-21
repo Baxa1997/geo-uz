@@ -95,7 +95,8 @@ Every project is checked again each Monday, and a question added on Tuesday is a
 
 After each check the client gets its status report.
 
-- Backend: the condition score for every run (the formula is in `frontend/src/shared/helpers/condition.ts`);
+- Backend: every check's counts, from its data object and slot log (`app/wave.py`, `app/metrics.py`,
+  `app/slots.py`; the 0–100 condition score went on 21 Nov, Phase 0 item 0.2 of the report spec);
   a past run's report; a PDF printed from the report's own page by a headless browser on the server; an email
   with the summary, the link and the PDF.
 - Frontend: Hisobotlar and the public report read the backend.
@@ -142,10 +143,10 @@ The "what to do" half: the part that keeps a small business paying.
 | --- | --- | --- | --- |
 | Tilga olinish (visibility) | Answers naming the brand ÷ all answers | counted from the answers | yes |
 | Tavsiya qilindi (recommended) | Answers that advise choosing the brand | a model reads each answer | yes |
-| Ovoz ulushi (share of voice) | The brand's mentions ÷ all tracked brands' mentions | counted | yes |
-| Oʻrni (position) | The brand's mean place among the businesses an answer names | counted | yes |
-| Baho (tone) | Mean of positive 100, neutral 50, negative 0 over its mentions | a model reads each answer | yes |
-| Manba sifatida (used as a source) | Answers citing the client's own site ÷ all answers | counted from citations | yes |
+| Ovoz ulushi (share of voice) | The brand's mentions ÷ all tracked brands' mentions | counted (the report, since 21 Nov: shown from 10 mentions) | yes |
+| Oʻrni (position) | The brand's mean place among the businesses an answer names | counted (the report, since 21 Nov: the median place, from numbered lists only) | yes |
+| Baho (tone) | Mean of positive 100, neutral 50, negative 0 over its mentions | a model reads each answer (the report, since 21 Nov: counted per mention, a word from 3 mentions, never a number, N/A at none) | yes |
+| Manba sifatida (used as a source) | Answers citing the client's own site ÷ all answers (the report, since 21 Nov: ÷ the answers that cite any site, spec §6.3) | counted from citations | yes |
 | Each assistant apart | The same numbers per assistant (ChatGPT, Gemini) | counted | yes, both (the pages' switcher, 16 Nov) |
 | Change since last week | This check minus the one before | needs two checks | yes, since the live check of 16 Nov |
 | Cited sites and pages | Which sites the answers rely on, their kind, how often | citations of the answers | yes |
@@ -154,7 +155,8 @@ The "what to do" half: the part that keeps a small business paying.
 | Untracked brands | Businesses the answers name that aren't tracked | names in the answers | yes (AI assistants named among them are not yet left out) |
 | Site checks | AI bots blocked, prices as pictures, no business markup, contacts missing | reading the client's site | first check |
 | Wrong facts | Claims about the client that contradict its website or its own facts | the brand answers against the website (since 16 Nov); a model against the client's facts | from the website: yes, from the first check; from the client's facts: written, never run |
-| Condition score | One number from 0 to 100 over five areas | a formula over the values above | counted for every check |
+| Condition score | One number from 0 to 100 over five areas | — | removed on 21 Nov (Phase 0 item 0.2): the report shows counts, every percentage beside its count, ties grouped, N/A where nothing was counted |
+| The report's scope card | What a check asked, of which assistant and model, and what came of every call | the slot log | yes, since 21 Nov (a check before it has its slots rebuilt when read) |
 | Risks and opportunities | The report's register | written from the numbers in the frontend | yes, in a real project's report |
 | Recommended actions | Fixes with impact, steps, questions and proof | rules over the answers and sites | yes, from the first check; a page's brief first ran in the live check of 16 Nov |
 

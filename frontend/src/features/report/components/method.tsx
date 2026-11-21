@@ -1,10 +1,8 @@
-import { useLocale, useMessages, useTimeZone, useTranslations } from "next-intl";
-import { engineOf, PROMPT_LANGUAGES, TIME_ZONE } from "@/shared/constants";
-import { CONDITION_AREAS, FAIR_FROM, GOOD_FROM, WRONG_FACT_PENALTY } from "@/shared/helpers/condition";
+import { useLocale, useTimeZone, useTranslations } from "next-intl";
+import { TIME_ZONE } from "@/shared/constants";
+import { REPORT_AREAS } from "@/shared/helpers/areas";
 import { formatLongDate } from "@/shared/helpers/dates";
-import { placeLabel } from "@/shared/helpers/labels";
-import { totalAnswers } from "@/shared/helpers/scores";
-import type { Report } from "@/shared/types/api";
+import type { Report, WaveMetrics } from "@/shared/types/api";
 import { BlockTitle, ReportCard } from "./report-parts";
 
 /** A label beside its text, one under another; on a phone the label goes above. */
@@ -24,49 +22,53 @@ function Rows({ rows }: { rows: { key: string; label: string; value: string }[] 
 }
 
 /**
- * How the numbers were collected, so a reader can judge them and anyone can repeat the measurement: which
- * assistant and how it was asked, as whom, what was asked and how many times, when, which brands were
- * compared, and what the numbers can't say.
+ * How the numbers were collected, so a reader can judge them and anyone can repeat the measurement: how the
+ * assistants were asked, how many runs, when, which brands were compared, and what the numbers can't say.
+ * What was asked of whom, with which model and as from where, is the scope card's at the top (from the slot
+ * log, Phase 0 item 0.1): this section doesn't count it again. Since 0.2 it says the rules that keep a small
+ * count honest (the small-sample badge, share of voice, tone, place, ties), with the thresholds the metrics use.
  */
-export function Method({ report }: { report: Report }) {
+export function Method({ report, metrics }: { report: Report; metrics: WaveMetrics }) {
   const t = useTranslations("Report.method");
   const engines = useTranslations("Engines");
-  const languages = useTranslations("Locales");
-  const messages = useMessages();
   const locale = useLocale();
   const timeZone = useTimeZone() ?? TIME_ZONE;
-  const { project, method } = report;
+  const { project } = report;
+  const { scope } = metrics;
   const date = (iso: string) => formatLongDate(iso, locale, timeZone);
   const previous = report.history.at(-2)?.collectedAt;
-  const inLanguage = (language: string) => report.prompts.filter((result) => result.prompt.language === language).length;
+  const names = scope.engines.map(({ engine }) => (engine === "chatgpt" || engine === "gemini" ? engines(engine) : engine)).join(", ");
 
   return (
     <Rows
       rows={[
-        { key: "assistant", label: t("assistant"), value: t("assistantValue", { engine: engines(engineOf(method.engine)) }) },
-        { key: "location", label: t("location"), value: t("locationValue", { city: placeLabel(messages.Cities, locale, project) }) },
-        { key: "questions", label: t("questions"), value: t("questionsValue", { count: report.prompts.length, split: PROMPT_LANGUAGES.filter((language) => inLanguage(language) > 0).map((language) => t("questionsPart", { count: inLanguage(language), language: languages(language) })).join(", ") }) },
-        { key: "samples", label: t("samples"), value: t("samplesValue", { samples: method.samples }) },
+        { key: "assistants", label: t("assistants"), value: t("assistantsValue", { names }) },
+        { key: "runs", label: t("runs"), value: t("runsValue", { runs: scope.runs_per_prompt }) },
         {
           key: "checks",
           label: t("checks"),
-          value: previous ? t("checksValue", { date: date(method.collectedAt), previous: date(previous) }) : t("checksFirst", { date: date(method.collectedAt) }),
+          value: previous ? t("checksValue", { date: date(scope.wave.collected_at), previous: date(previous) }) : t("checksFirst", { date: date(scope.wave.collected_at) }),
         },
         { key: "brands", label: t("brands"), value: [project.brand, ...project.competitors].map((brand) => brand.name).join(", ") },
-        { key: "condition", label: t("condition"), value: t("conditionValue", { areas: CONDITION_AREAS.length, good: GOOD_FROM, fair: FAIR_FROM }) },
-        { key: "limits", label: t("limits"), value: t("limitsValue", { answers: totalAnswers(report.prompts) }) },
+        {
+          key: "samples",
+          label: t("samples"),
+          value: t("samplesValue", { answers: metrics.visibility.small_sample_below, mentions: metrics.brands.share_of_voice.minimum, tone: metrics.brands.tone_summary_from }),
+        },
+        { key: "limits", label: t("limits"), value: t("limitsValue", { answers: metrics.visibility.answers }) },
       ]}
     />
   );
 }
 
 /**
- * The report's terms in a sentence or two each: the five numbers and what a check is, then the condition
- * score, how each of its areas is counted and where a status begins. A reader on paper has no hover.
+ * The report's terms in a sentence or two each: the numbers and what a check is, then how the five areas are
+ * read (each by its own counts, since 21 Nov 2026: no score and no status), ties and N/A. A reader on paper
+ * has no hover. No example here is a number of the client's.
  */
 export function Glossary() {
   const t = useTranslations("Report.glossary");
-  const labels = useTranslations("Kpi.labels");
+  const labels = useTranslations("Report.scorecard.labels");
   const areas = useTranslations("Report.areas");
   return (
     <div className="flex flex-col gap-3.5">
@@ -74,18 +76,18 @@ export function Glossary() {
         <BlockTitle>{t("numbers")}</BlockTitle>
         <Rows
           rows={[
-            ...(["visibility", "shareOfVoice", "position", "sentiment", "usedAsSource"] as const).map((term) => ({ key: term, label: labels(term), value: t(term) })),
+            ...(["visibility", "coverage", "shareOfVoice", "position", "sentiment", "usedAsSource"] as const).map((term) => ({ key: term, label: labels(term), value: t(term) })),
             { key: "check", label: t("checkTerm"), value: t("check") },
           ]}
         />
       </div>
       <div className="flex flex-col gap-2">
-        <BlockTitle>{t("conditionTitle")}</BlockTitle>
+        <BlockTitle>{t("areasTitle")}</BlockTitle>
         <Rows
           rows={[
-            { key: "condition", label: t("conditionTerm"), value: t("condition", { areas: CONDITION_AREAS.length }) },
-            ...CONDITION_AREAS.map((area) => ({ key: area, label: areas(area), value: t(`areas.${area}`, { penalty: WRONG_FACT_PENALTY }) })),
-            { key: "status", label: t("statusTerm"), value: t("status", { good: GOOD_FROM, fair: FAIR_FROM }) },
+            ...REPORT_AREAS.map((area) => ({ key: area, label: areas(area), value: t(`areas.${area}`) })),
+            { key: "ties", label: t("tiesTerm"), value: t("ties") },
+            { key: "na", label: t("naTerm"), value: t("na") },
           ]}
         />
       </div>

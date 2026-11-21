@@ -7,7 +7,7 @@ import { PageSection } from "@/shared/components/page-section";
 import { getPathname } from "@/i18n/navigation";
 import { setPageLocale } from "@/i18n/page-locale";
 import { api } from "@/shared/api/client";
-import { orNotFound } from "@/shared/api/errors";
+import { orNotFound, orNull } from "@/shared/api/errors";
 import { TIME_ZONE } from "@/shared/constants";
 import { formatLongDate } from "@/shared/helpers/dates";
 import { DeliveryBanner } from "../components/delivery-banner";
@@ -28,17 +28,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 /**
  * Hisobotlar: the weekly status reports (the user's correction of Oct 10: "professional business report
- * about condition, and advanced report structure"). First the latest report's condition: the overall
- * score with its status and change, the five areas with the fact behind each, and the way into the whole
- * report, its link, Telegram and PDF. Then every report as a register: its number, period, the condition
- * it found, the areas as marks, what happened that week, its PDF. Last, one line on where the report
- * goes, its settings in a window.
+ * about condition, and advanced report structure"). First the latest report: the buyers' answers that name
+ * the client as a count, the five areas by their counts (no score since 21 Nov 2026), and the way into the
+ * whole report, its link, Telegram and PDF. Then every report as a register: its number, period, the count
+ * it found, what happened that week, its PDF. Last, one line on where the report goes, its settings in a
+ * window.
  */
 export default async function ReportsPage({ params }: Props) {
   const { locale: segment, id } = await params;
   const locale = setPageLocale(segment);
-  const [report, actions, settings, t, tReports] = await Promise.all([
+  const [report, wave, actions, settings, t, tReports] = await Promise.all([
     orNotFound(api.getReport(id)),
+    // The latest check's data object and metrics: the counts at the top (no score since Phase 0 item 0.2)
+    orNull(api.getWave(id, "latest")),
     orNotFound(api.getActions(id)),
     orNotFound(api.getReportSettings(id)),
     getTranslations({ locale, namespace: "Sidebar" }),
@@ -47,7 +49,7 @@ export default async function ReportsPage({ params }: Props) {
   const { project } = report;
   const latest = report.history.at(-1);
 
-  if (report.prompts.length === 0 || !latest) {
+  if (report.prompts.length === 0 || !latest || !wave) {
     return (
       <Page title={t("reports")} engines={!report.engines}>
         <NoData projectId={project.id} />
@@ -64,7 +66,7 @@ export default async function ReportsPage({ params }: Props) {
       <div className="flex flex-col gap-6 sm:gap-7">
         <LatestReport
           report={report}
-          actions={actions}
+          wave={wave}
           href={`${base}/${encodeURIComponent(latest.runId)}`}
           share={<ReportShare path={shared} text={tReports("share.text", { brand: project.brand.name, date })} projectId={project.id} runId={latest.runId} />}
         />
@@ -73,7 +75,6 @@ export default async function ReportsPage({ params }: Props) {
           <ReportsArchive
             project={{ brand: project.brand, competitors: project.competitors }}
             history={report.history}
-            conditionHistory={report.conditionHistory}
             sourceHistory={report.sourceHistory}
             factDates={report.wrongFacts.map((fact) => fact.foundAt)}
             doneDates={actions.flatMap((action) => (action.doneAt ? [action.doneAt] : []))}

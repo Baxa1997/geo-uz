@@ -19,11 +19,12 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from sqlalchemy import delete as sql_delete
 from sqlalchemy import select
+from sqlalchemy import update as sql_update
 from sqlalchemy.orm import Session as Db
 
 from . import firstrun
 from .config import settings
-from .db import Action, Answer, Brand, Citation, FirstRun, Mention, Project, Prompt, Run, User, WrongFact, now
+from .db import Action, Answer, Brand, Citation, FirstRun, Mention, Project, Prompt, Run, Slot, User, WrongFact, now
 from .engines import ENGINE_NAMES, web
 
 # What each plan allows (`frontend/src/shared/constants`, PLAN_LIMITS)
@@ -40,7 +41,6 @@ CHECK_DAYS = {"start": [0], "business": [0, 3], "agency": [0, 3]}
 DEFAULT_PLAN = "start"
 DEFAULT_COUNTRY = "UZ"
 TONE = {"positive": 100, "neutral": 50, "negative": 0}
-WRONG_FACT_PENALTY = 10
 
 
 class ProjectError(RuntimeError):
@@ -152,6 +152,10 @@ def delete(db: Db, project: Project) -> None:
         db.execute(sql_delete(Mention).where(Mention.answer_id.in_(answers)))
         db.execute(sql_delete(Citation).where(Citation.answer_id.in_(answers)))
         db.execute(sql_delete(Answer).where(Answer.id.in_(answers)))
+    if runs:
+        # A weekly check's slots go with it; a first run's stay with the first run, free to be saved again
+        db.execute(sql_delete(Slot).where(Slot.run_id.in_(runs), Slot.first_run_id.is_(None)))
+        db.execute(sql_update(Slot).where(Slot.run_id.in_(runs)).values(run_id=None, prompt_id=None, answer_id=None))
     for table in (WrongFact, Action, Run, Prompt, Brand):
         db.execute(sql_delete(table).where(table.project_id == project.id))
     db.delete(project)
@@ -287,22 +291,27 @@ def _save_first_run(db: Db, project: Project, client: Brand, competitors: List[B
         raw_by_question[answer["question"]].append(answer)
 
     saved = 0
+    kept: Dict[int, Prompt] = {}
+    answer_of: Dict[Tuple[int, str], str] = {}
     for q, asked in enumerate(result.get("prompts", [])):
         prompt = next((prompt for prompt in prompts if _same(prompt.text, asked["prompt"]["text"])), None)
         if prompt is None:
             continue
+        kept[q] = prompt
         for index, given in enumerate(asked["answers"]):
-            answer = Answer(run_id=run.id, prompt_id=prompt.id, sample=given.get("sample", index + 1), engine=given.get("engine") or "chatgpt", text=given["text"], searches=given.get("searches") or [])
+            # The first run's raw reading of the same answer: its model, and the businesses it didn't follow
+            source = raw_by_question[q][index] if index < len(raw_by_question[q]) else {}
+            answer = Answer(run_id=run.id, prompt_id=prompt.id, sample=given.get("sample", index + 1), engine=given.get("engine") or "chatgpt", model=source.get("model"), text=given["text"], searches=given.get("searches") or [])
             db.add(answer)
             db.flush()
+            answer_of[(q, answer.engine)] = answer.id
             saved += 1
             mentions: List[Mention] = []
             for mention in given.get("mentions", []):
                 brand, written = was.get(mention["brandId"], (None, ""))
                 if written:
                     mentions.append(Mention(answer_id=answer.id, brand_id=brand.id if brand else None, name=written, position=mention["position"], tone=mention["tone"], recommended=bool(mention.get("recommended"))))
-            # The businesses the first run didn't follow, from its raw reading of the same answer
-            source = raw_by_question[q][index] if index < len(raw_by_question[q]) else {}
+            # The businesses the first run didn't follow
             others = source.get("order") or source.get("businesses") or []
             for place, other in enumerate(others, start=1):
                 written = _clean(other.get("name"))
@@ -318,6 +327,16 @@ def _save_first_run(db: Db, project: Project, client: Brand, competitors: List[B
             db.add_all(mentions)
             db.add_all(Citation(answer_id=answer.id, url=citation["url"], domain=citation.get("domain") or web.domain_of(citation["url"]), title=citation.get("title")) for citation in given.get("citations", []))
     run.answered = run.total = saved
+    # The first run's slot log becomes this check's: the slots of the questions kept, with their answers, and
+    # of the brand questions kept. A first run replayed (development) logged none: `wave` rebuilds them.
+    if project.first_run_id:
+        brand_texts = [question["text"] for question in project.brand_questions or []]
+        for slot in db.scalars(select(Slot).where(Slot.first_run_id == project.first_run_id)):
+            if slot.prompt_group == "discovery" and slot.question_index in kept:
+                slot.run_id, slot.prompt_id = run.id, kept[slot.question_index].id
+                slot.answer_id = answer_of.get((slot.question_index, slot.engine)) if slot.status == "completed" else None
+            elif slot.prompt_group == "branded" and any(_same(slot.question, text) for text in brand_texts):
+                slot.run_id = run.id
     return run.id
 
 
@@ -329,6 +348,10 @@ class _Check:
 
     def __init__(self, run: Run, answers: List[Answer], mentions: Dict[str, List[Mention]], citations: Dict[str, List[Citation]]) -> None:
         self.run, self.answers, self.mentions, self.citations = run, answers, mentions, citations
+
+    def named(self, brand_id: str) -> int:
+        """The answers of this check that name the brand."""
+        return sum(1 for answer in self.answers if any(mention.brand_id == brand_id for mention in self.mentions[answer.id]))
 
     def scores(self, brands: List[Brand]) -> List[Dict[str, Any]]:
         ids = {brand.id for brand in brands}
@@ -424,27 +447,6 @@ class _Check:
                     spelled.setdefault(key, mention.name)
         return [{"name": spelled[key], "answers": len(answers), "dismissed": key in hidden} for key, answers in sorted(named.items(), key=lambda item: (-len(item[1]), item[0]))]
 
-    def condition(self, brands: List[Brand], wrong_facts: int = 0) -> Dict[str, Any]:
-        """The condition score, by the formula of `frontend/src/shared/helpers/condition.ts`."""
-        client = next(brand for brand in brands if brand.own)
-        scores = self.scores(brands)
-        mine = next(score for score in scores if score["brandId"] == client.id)
-        leader = max([score["visibility"] for score in scores], default=0.0)
-        questions = {answer.prompt_id for answer in self.answers}
-        named = {answer.prompt_id for answer in self.answers if any(mention.brand_id == client.id for mention in self.mentions[answer.id])}
-        listable = [source for source in self.sources(brands) if source["type"] not in ("own", "competitor")]
-        cited = sum(source["count"] for source in listable)
-        listed = sum(source["count"] for source in listable if source["brandListed"])
-        out_of_100 = lambda value: min(100, max(0, half_up(value)))  # noqa: E731
-        areas = {
-            "visibility": out_of_100(mine["visibility"] * 100),
-            "competition": out_of_100(mine["visibility"] / leader * 100) if leader > 0 else 0,
-            "coverage": out_of_100(len(named) / len(questions) * 100) if questions else 0,
-            "sources": out_of_100(listed / cited * 100) if cited > 0 else 100,
-            "accuracy": out_of_100((mine["sentiment"] if mine["sentiment"] is not None else 50) - WRONG_FACT_PENALTY * wrong_facts),
-        }
-        return {"score": half_up(sum(areas.values()) / len(areas)), "areas": areas}
-
 
 def _checks(db: Db, project: Project, prompt_ids: List[str], until: Optional[str]) -> List[_Check]:
     """The project's finished runs, oldest first, each over the questions asked for; a run that asked none of them is left out."""
@@ -514,6 +516,7 @@ def report(db: Db, project: Project, language: Optional[str] = None, topic: Opti
     latest = checks[-1] if checks else None
     before = checks[-2] if len(checks) > 1 else None
 
+    client_id = next(brand.id for brand in brands if brand.own)
     scores = latest.scores(brands) if latest else [{"brandId": brand.id, "visibility": 0.0, "shareOfVoice": 0.0, "avgPosition": None, "sentiment": None} for brand in brands]
     earlier = {score["brandId"]: score["visibility"] for score in before.scores(brands)} if before else {}
     wrong = _wrong_facts(db, project, checks, {prompt.id for prompt in prompts})
@@ -531,7 +534,12 @@ def report(db: Db, project: Project, language: Optional[str] = None, topic: Opti
         # What each assistant said of the business by name at this check; [] when no brand question was asked
         "brandView": [view for view in (latest.run.brand_view if latest else None) or [] if not engine or view.get("engine") == engine],
         "engines": assistants,
-        "history": [{"runId": check.run.id, "collectedAt": iso(check.run.collected_at), "scores": check.scores(brands)} for check in checks],
+        # Each check's answers and those naming the client: Hisobotlar's register and the project cards show the
+        # count in the place of the 0–100 score (report spec Phase 0 item 0.2)
+        "history": [
+            {"runId": check.run.id, "collectedAt": iso(check.run.collected_at), "scores": check.scores(brands), "answers": len(check.answers), "named": check.named(client_id)}
+            for check in checks
+        ],
         "sourceHistory": [
             {
                 "collectedAt": iso(check.run.collected_at),
@@ -540,8 +548,6 @@ def report(db: Db, project: Project, language: Optional[str] = None, topic: Opti
             }
             for check in checks
         ],
-        # A condition is the whole project's
-        "conditionHistory": [] if prompt_id is not None else [check.condition(brands, len(wrong) if check is latest else 0) for check in checks],
         "untrackedBrands": latest.untracked(brands, project.dismissed or []) if latest else [],
         "nextRunAt": next_check(project.plan) if settings.weekly_runs and project.paid and prompts and run_id is None else None,
     }

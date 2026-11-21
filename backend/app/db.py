@@ -1,8 +1,8 @@
 """The tables, for SQLite on this computer and Supabase's Postgres on the server (the same models).
 
 People, their sessions and login codes, first runs, and projects with their brands, questions, runs and
-answers. The rest of `backend/PLAN.md`'s data model (suggestions, actions, wrong facts) comes with the pages
-that need it.
+answers, and the slot log of every check (since 21 Nov 2026). The rest of `backend/PLAN.md`'s data model
+(suggestions, actions, wrong facts) comes with the pages that need it.
 """
 
 from __future__ import annotations
@@ -249,6 +249,45 @@ class Citation(Base):
     url: Mapped[str] = mapped_column(Text)
     domain: Mapped[str] = mapped_column(String(255))
     title: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+
+class Slot(Base):
+    """One call a check plans to an assistant (report spec §6.1): which question, which assistant, which run of
+    it, with what settings, and what came of it. Written before anything is asked, every call left out too
+    (status `excluded`, with why), and closed when its answer comes or fails. A first run's slots carry
+    `first_run_id` and get `run_id` when the run becomes a project's first check (`projects._save_first_run`)."""
+
+    __tablename__ = "slots"
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=new_id)
+    run_id: Mapped[Optional[str]] = mapped_column(String(32), nullable=True, index=True)
+    first_run_id: Mapped[Optional[str]] = mapped_column(String(32), nullable=True, index=True)
+    # The project's question once there is one; a first run's questions are only their place in its list
+    prompt_id: Mapped[Optional[str]] = mapped_column(String(32), nullable=True)
+    question_index: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    # The wording asked: a brand question has no row of its own, and a question's text may change later
+    question: Mapped[str] = mapped_column(Text)
+    language: Mapped[str] = mapped_column(String(2))
+    # discovery (a customer's question) or branded (a question that names the business)
+    prompt_group: Mapped[str] = mapped_column(String(12), default="discovery")
+    engine: Mapped[str] = mapped_column(String(20))
+    run_index: Mapped[int] = mapped_column(Integer, default=1)
+    # planned, completed, failed, excluded
+    status: Mapped[str] = mapped_column(String(12), default="planned")
+    # Why it failed or was left out, as a code the pages put into words (`slots.REASONS`), and the error itself
+    reason: Mapped[Optional[str]] = mapped_column(String(40), nullable=True)
+    detail: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    attempts: Mapped[int] = mapped_column(Integer, default=0)
+    model: Mapped[Optional[str]] = mapped_column(String(80), nullable=True)
+    # api_web_search (ChatGPT's search tool) or api_grounded (Gemini with Google Search)
+    surface: Mapped[Optional[str]] = mapped_column(String(30), nullable=True)
+    # What the call was told of where the customer is: {"country", "city", "timezone", "set", "how"}
+    location: Mapped[Optional[Any]] = mapped_column(JSON, nullable=True)
+    # Whether the answer came with a web search behind it
+    searched: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True)
+    answer_id: Mapped[Optional[str]] = mapped_column(String(32), nullable=True)
+    cost_usd: Mapped[Optional[float]] = mapped_column(nullable=True)
+    created_at: Mapped[datetime.datetime] = mapped_column(DateTime, default=now)
+    finished_at: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime, nullable=True)
 
 
 _SQLITE = settings.database_url.startswith("sqlite")

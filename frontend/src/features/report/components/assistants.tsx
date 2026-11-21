@@ -2,10 +2,10 @@ import { CheckIcon as Check } from "@phosphor-icons/react/dist/ssr/Check";
 import { MinusIcon as Minus } from "@phosphor-icons/react/dist/ssr/Minus";
 import { XIcon as X } from "@phosphor-icons/react/dist/ssr/X";
 import { useLocale, useTranslations } from "next-intl";
-import { formatPercent } from "@/shared/helpers/numbers";
 import { cn } from "@/shared/helpers/utils";
-import type { Answer, BrandView, Report } from "@/shared/types/api";
-import { BlockTitle, PercentBar, ReportCard, ReportTable } from "./report-parts";
+import { shareOf, useCountWords } from "@/shared/hooks/use-count-words";
+import type { BrandView, Report, WaveMetrics } from "@/shared/types/api";
+import { BlockTitle, PercentBar, ReportCard, ReportTable, Share } from "./report-parts";
 
 type Locale = "uz" | "ru" | "en";
 
@@ -17,29 +17,22 @@ const CHECK_MARK = {
 
 const KNOWN_TONE: Record<BrandView["known"], string> = { knows: "text-positive", confuses: "text-progress", unknown: "text-negative" };
 
-/** One assistant's answers in the report: how many, how many name the client, and whom they name most. */
-function standingOn(report: Report, answers: Answer[]) {
-  const { brand, competitors } = report.project;
-  const named = (id: string) => answers.filter((answer) => answer.mentions.some((mention) => mention.brandId === id)).length;
-  const leader = [brand, ...competitors].map((item) => ({ brand: item, named: named(item.id) })).sort((a, b) => b.named - a.named)[0];
-  return { answers: answers.length, you: named(brand.id), leader: leader && leader.named > 0 ? leader : null };
-}
-
 /**
  * Each assistant apart (the user, 17 Nov 2026: "AI overview, Gemini, ChatGPT – facts about our brand, what AI
  * knows" and "separate … shares of knowing the brand"). A: how often each names the client, beside whom it
- * names most, counted over its own answers. B: what each says when asked about the business by name, every
- * statement against the website: the same, different (with what the website says), or not on the website.
+ * names most (every brand that ties), counted over its own answers, from the check's data object (Phase 0
+ * item 0.3). B: what each says when asked about the business by name, a separate check apart from every count
+ * of the buyers' answers: every statement against the website, the same, different (with what the website
+ * says), or not on the website.
  * Google's AI answers in Search are not asked yet, and the section says so.
  */
-export function Assistants({ report }: { report: Report }) {
+export function Assistants({ report, metrics }: { report: Report; metrics: WaveMetrics }) {
   const t = useTranslations("Report.assistants");
+  const engineNames = useTranslations("Engines");
   const locale = useLocale() as Locale;
-  const answers = report.prompts.flatMap((result) => result.answers);
-  const asked = (report.engines?.length ? report.engines : [{ engine: answers[0]?.engine ?? "chatgpt", name: report.method.engine, answers: answers.length }]).map((item) => ({
-    ...item,
-    ...standingOn(report, report.engines?.length ? answers.filter((answer) => (answer.engine ?? "chatgpt") === item.engine) : answers),
-  }));
+  const words = useCountWords();
+  const { brand, competitors } = report.project;
+  const nameOf = (id: string) => [brand, ...competitors].find((item) => item.id === id)?.name ?? id;
   const views = report.brandView ?? [];
 
   return (
@@ -57,26 +50,28 @@ export function Assistants({ report }: { report: Report }) {
               </>
             }
           >
-            {asked.map((row) => (
+            {metrics.assistants.map((row) => (
               <tr key={row.engine}>
                 <th scope="row" className="text-left font-semibold">
-                  {row.name}
+                  {row.engine === "chatgpt" || row.engine === "gemini" ? engineNames(row.engine) : row.engine}
                 </th>
                 <td className="text-right tabular-nums">{row.answers}</td>
                 <td>
                   <span className="flex items-center gap-3">
-                    <PercentBar value={row.answers ? (row.you / row.answers) * 100 : 0} className="min-w-16 flex-1" />
-                    <span className="shrink-0 font-semibold whitespace-nowrap tabular-nums">
-                      {t("named", { count: row.you, total: row.answers, percent: formatPercent(row.answers ? row.you / row.answers : 0, locale) })}
-                    </span>
+                    <PercentBar value={(shareOf(row.named, row.answers) ?? 0)} className="min-w-16 flex-1" />
+                    <Share k={row.named} n={row.answers} className="shrink-0 font-semibold whitespace-nowrap" />
                   </span>
                 </td>
                 <td className="text-pretty">
-                  {row.leader ? (
+                  {row.top.ids.length > 0 ? (
                     <>
-                      {row.leader.brand.name}
-                      {row.leader.brand.id === report.project.brand.id && <span className="text-muted-foreground"> ({t("youLead")})</span>}
-                      <span className="text-muted-foreground tabular-nums"> · {t("leaderNamed", { count: row.leader.named, total: row.answers })}</span>
+                      {words.names(row.top.ids.map(nameOf))}
+                      {row.top.ids.includes(brand.id) && <span className="text-muted-foreground"> ({t("youLead")})</span>}
+                      <span className="text-muted-foreground tabular-nums">
+                        {" "}
+                        · {t("leaderNamed", { count: row.top.value, total: row.answers })}
+                        {row.top.ids.length > 1 && ` · ${t("tied")}`}
+                      </span>
                     </>
                   ) : (
                     <span className="text-muted-foreground">{t("nobody")}</span>
@@ -91,6 +86,7 @@ export function Assistants({ report }: { report: Report }) {
 
       <div className="flex flex-col gap-3">
         <BlockTitle>{t("knowsTitle", { brand: report.project.brand.name })}</BlockTitle>
+        <p className="text-xs text-pretty text-muted-foreground">{t("separate")}</p>
         {views.length === 0 ? (
           <p className="text-sm text-pretty">{t("notAsked")}</p>
         ) : (

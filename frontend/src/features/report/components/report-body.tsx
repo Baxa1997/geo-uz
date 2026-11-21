@@ -3,7 +3,7 @@ import { Fragment } from "react";
 import { ActionTitle } from "@/shared/components/actions/action-title";
 import { TIME_ZONE } from "@/shared/constants";
 import { formatLongDate } from "@/shared/helpers/dates";
-import type { Action, ConditionArea, Report } from "@/shared/types/api";
+import type { Action, ReportArea, Report, WaveResponse } from "@/shared/types/api";
 import { ACTION_AREAS, REPORT_PARTS, SECTION_AREAS, sectionNumber, type ReportSectionKey } from "../constants";
 import { openActions } from "../helpers/report";
 import { ACTIONS_SHOWN } from "../helpers/risks";
@@ -32,22 +32,36 @@ const SIGNED_AFTER = "decisions";
 /**
  * The report as one official document on one paper (the user's correction of Oct 10: "inside of report
  * make as official report page"): the letterhead and title; part I, the condition (the summary with the
- * overall score and the five areas, the key figures, what changed); part II, the analysis, a section per
- * area, each opening with its status and its conclusion and closing with the action that answers it; part
+ * count of answers naming the client and the five areas by their counts, the key figures, what changed;
+ * no score since 21 Nov 2026); part II, the analysis, a section per area, each opening with its conclusion
+ * and closing with the action that answers it; part
  * III, the decisions (risks and opportunities, the action plan); the sign-off; part IV, the reference
  * (method, definitions, every question); and a line on what the numbers are. The same in the shared
  * report and on its page in Hisobotlar.
  */
-export function ReportBody({ report, actions, fill = false }: { report: Report; actions: Action[]; /** The paper takes the whole width it is given. */ fill?: boolean }) {
+export function ReportBody({
+  report,
+  wave,
+  actions,
+  fill = false,
+}: {
+  report: Report;
+  /** The check's data object and its metrics: the scope card, the counts and every section built on them read it (Phase 0 items 0.1, 0.2). */
+  wave: WaveResponse;
+  actions: Action[];
+  /** The paper takes the whole width it is given. */
+  fill?: boolean;
+}) {
+  const { metrics } = wave;
+  const { scope } = metrics;
   const t = useTranslations("Report");
   const locale = useLocale();
   const timeZone = useTimeZone() ?? TIME_ZONE;
-  const findings = useAreaFindings(report);
-  const condition = report.conditionHistory.at(-1);
+  const findings = useAreaFindings(report, metrics);
   const { brand, competitors } = report.project;
   const open = openActions(actions);
   // The plan's first action for an area: what its section recommends
-  const nextFor = (area: ConditionArea) => {
+  const nextFor = (area: ReportArea) => {
     const index = open.findIndex((action) => ACTION_AREAS[action.kind] === area);
     const action = open[index];
     return action && index < ACTIONS_SHOWN ? { action, number: index + 1 } : null;
@@ -58,6 +72,7 @@ export function ReportBody({ report, actions, fill = false }: { report: Report; 
       <ExecutiveSummary
         report={report}
         actions={actions}
+        metrics={metrics}
         findings={{
           visibility: findings.visibility.finding,
           competition: findings.competition.finding,
@@ -67,16 +82,16 @@ export function ReportBody({ report, actions, fill = false }: { report: Report; 
         }}
       />
     ),
-    scorecard: <Scorecard report={report} />,
+    scorecard: <Scorecard report={report} metrics={metrics} />,
     changes: <ReportChanges report={report} actions={actions} />,
-    assistants: <Assistants report={report} />,
-    competitors: <CompetitivePosition report={report} />,
-    topics: <Topics report={report} />,
-    sources: <Sources report={report} />,
-    accuracy: <Accuracy report={report} />,
-    risks: <Risks report={report} actions={actions} />,
+    assistants: <Assistants report={report} metrics={metrics} />,
+    competitors: <CompetitivePosition report={report} metrics={metrics} />,
+    topics: <Topics report={report} metrics={metrics} />,
+    sources: <Sources metrics={metrics} />,
+    accuracy: <Accuracy report={report} metrics={metrics} />,
+    risks: <Risks report={report} actions={actions} metrics={metrics} />,
     actions: <Recommendations report={report} actions={actions} />,
-    method: <Method report={report} />,
+    method: <Method report={report} metrics={metrics} />,
     glossary: <Glossary />,
     appendix: <PromptTable results={report.prompts} brands={[brand, ...competitors]} youId={brand.id} />,
   };
@@ -88,7 +103,7 @@ export function ReportBody({ report, actions, fill = false }: { report: Report; 
 
   return (
     <ReportPaper fill={fill}>
-      <ReportLetterhead report={report} />
+      <ReportLetterhead report={report} scope={scope} />
       {REPORT_PARTS.map((part, index) => (
         <Fragment key={part.key}>
           <PartHeading number={index + 1} title={t(`parts.${part.key}`)} />
@@ -103,7 +118,6 @@ export function ReportBody({ report, actions, fill = false }: { report: Report; 
                 number={sectionNumber(key)}
                 title={t(`sections.${key}`)}
                 lead={lead(key)}
-                score={area && condition ? condition.areas[area] : undefined}
                 verdict={finding ? [finding.finding, finding.detail].filter(Boolean).join(" ") : undefined}
                 next={
                   next ? (

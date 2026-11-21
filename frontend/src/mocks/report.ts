@@ -7,7 +7,6 @@ import type {
   Brand,
   BrandScore,
   Citation,
-  Condition,
   HistoryPoint,
   NewBrand,
   Project,
@@ -25,9 +24,8 @@ import type {
   UntrackedBrand,
   WrongFact,
 } from "@/shared/types/api";
-import { conditionFacts, isListable, rateCondition } from "@/shared/helpers/condition";
 import { normalizeDomain } from "@/shared/helpers/domain";
-import { scoreOf, TONE_POINTS } from "@/shared/helpers/scores";
+import { TONE_POINTS } from "@/shared/helpers/scores";
 import { ANSWERS, WRONG_FACTS } from "./answers";
 import {
   ARCHIVED_PROMPT,
@@ -330,7 +328,7 @@ export const runIdOf = (collectedAt: string) => `run_${collectedAt.slice(0, 10)}
  * earlier weeks drift the same way with a small wobble. Position and sentiment wobble
  * around today's values. A first run has no past.
  */
-function history(scores: BrandScore[], run: MockRun): HistoryPoint[] {
+function history(scores: BrandScore[], run: MockRun, answers: number): HistoryPoint[] {
   const weeks = run.hasPrevious ? HISTORY_WEEKS : 1;
   return Array.from({ length: weeks }, (_, index) => {
     const back = weeks - 1 - index;
@@ -349,6 +347,9 @@ function history(scores: BrandScore[], run: MockRun): HistoryPoint[] {
     return {
       runId: runIdOf(collectedAt),
       collectedAt,
+      // The client is the first of the scores; its count follows its visibility that week
+      answers,
+      named: Math.round((visibilities[0] ?? 0) * answers),
       scores: scores.map(({ brandId, avgPosition, sentiment }, brand) => {
         const named = (visibilities[brand] ?? 0) > 0;
         // A brand that gains visibility was named later in the lists, and less warmly, before
@@ -427,7 +428,14 @@ function promptHistory(scores: BrandScore[], prompt: Prompt, asked: string[], an
   const seed = [...prompt.id].reduce((sum, char) => sum + char.charCodeAt(0), 0);
   return asked.map((collectedAt, index) => {
     const back = asked.length - 1 - index;
-    if (back === 0) return { runId: runIdOf(collectedAt), collectedAt, scores: scores.map(({ brandId, visibility, shareOfVoice, avgPosition, sentiment }) => ({ brandId, visibility, shareOfVoice, avgPosition, sentiment })) };
+    if (back === 0)
+      return {
+        runId: runIdOf(collectedAt),
+        collectedAt,
+        answers,
+        named: Math.round((scores[0]?.visibility ?? 0) * answers),
+        scores: scores.map(({ brandId, visibility, shareOfVoice, avgPosition, sentiment }) => ({ brandId, visibility, shareOfVoice, avgPosition, sentiment })),
+      };
     const named = scores.map(({ visibility }, brand) => {
       const wave = Math.sin((seed + brand * 7) * 1.3 + back * 1.1);
       const step = wave > 0.8 ? 1 : wave < -0.8 ? -1 : 0;
@@ -438,6 +446,9 @@ function promptHistory(scores: BrandScore[], prompt: Prompt, asked: string[], an
     return {
       runId: runIdOf(collectedAt),
       collectedAt,
+      // The client is the first of the scores
+      answers,
+      named: named[0] ?? 0,
       scores: scores.map(({ brandId, avgPosition, sentiment }, brand) => {
         const count = named[brand] ?? 0;
         const sway = Math.round(Math.sin(back * 1.3 + brand * 1.9) * 1.4);
@@ -493,35 +504,6 @@ function wrongFacts(
   });
 }
 
-/**
- * The project's condition after each check, ending with this one's, rated from the report itself. An earlier
- * check is rated from its own scores, the sites it cited and the wrong facts found by then. The mock keeps
- * one run of answers, so the questions naming the client are the latest check's in every week: a past
- * report's score then agrees with the questions it shows.
- */
-function conditionHistory(report: Omit<Report, "conditionHistory">): Condition[] {
-  const now = conditionFacts(report);
-  const youId = report.project.brand.id;
-  const listed = new Map(report.topSources.map((source) => [source.domain, source.brandListed]));
-  return report.history.map((point, index) => {
-    if (index === report.history.length - 1) return rateCondition(now);
-    const you = scoreOf(point.scores, youId);
-    const visibility = you?.visibility ?? 0;
-    const cited = (report.sourceHistory[index]?.sources ?? []).filter(isListable);
-    const when = Date.parse(point.collectedAt);
-    return rateCondition({
-      visibility,
-      leaderVisibility: Math.max(0, ...point.scores.map((score) => score.visibility)),
-      questionsNamed: now.questionsNamed,
-      questions: now.questions,
-      listedCitations: cited.filter((source) => listed.get(source.domain)).reduce((sum, source) => sum + source.count, 0),
-      listableCitations: cited.reduce((sum, source) => sum + source.count, 0),
-      sentiment: you?.sentiment ?? null,
-      wrongFacts: report.wrongFacts.filter((fact) => Date.parse(fact.foundAt) <= when).length,
-    });
-  });
-}
-
 export function buildReport(
   project: Project,
   allPrompts: Prompt[],
@@ -539,7 +521,7 @@ export function buildReport(
   const scores = computeScores(tracked, results, cast, run.hasPrevious);
   const sources = topSources(project.brand, project.competitors, results, cast, pageMentions(cast, rewrite), pageTitles(rewrite));
   const answers = results.reduce((sum, result) => sum + result.answers.length, 0);
-  const report = {
+  return {
     project,
     period,
     method: { ...METHOD, collectedAt: run.collectedAt },
@@ -547,13 +529,12 @@ export function buildReport(
     prompts: results,
     topSources: sources,
     wrongFacts: wrongFacts(project.brand, results, run, cast, rewrite),
-    history: results.length > 0 ? history(scores, run) : [],
+    history: results.length > 0 ? history(scores, run, answers) : [],
     sourceHistory: results.length > 0 ? sourceHistory(sources, run, answers) : [],
     untrackedBrands: untrackedBrands(prompts, run, cast),
     // Depends on the clock: the mock backend fills it in
     nextRunAt: null,
   };
-  return { ...report, conditionHistory: conditionHistory(report) };
 }
 
 /**
@@ -574,7 +555,6 @@ export function pastReport(latest: Report, runId: string): Report | null {
     method: { ...latest.method, collectedAt: point.collectedAt },
     history: latest.history.slice(0, index + 1),
     sourceHistory: latest.sourceHistory.slice(0, index + 1),
-    conditionHistory: latest.conditionHistory.slice(0, index + 1),
     scores: point.scores.map((score) => {
       const earlier = before?.scores.find((past) => past.brandId === score.brandId)?.visibility ?? score.visibility;
       return { ...score, trend: round(score.visibility - earlier) };
@@ -616,8 +596,6 @@ export function buildPromptReport(project: Project, prompt: Prompt, period: Repo
     history,
     // The question's own checks: it may have been added later, or archived earlier
     sourceHistory: report.sourceHistory.slice(-asked.length),
-    // A condition is the whole project's
-    conditionHistory: [],
     scores: report.scores.map((score) => {
       const before = previous?.find((past) => past.brandId === score.brandId)?.visibility ?? score.visibility;
       return { ...score, trend: round(score.visibility - before) };

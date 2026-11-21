@@ -1,12 +1,11 @@
 import { useTranslations } from "next-intl";
 import { ActionTitle } from "@/shared/components/actions/action-title";
 import { ImpactBadge } from "@/shared/components/actions/impact-badge";
-import { conditionStatus, extremes } from "@/shared/helpers/condition";
-import type { Action, ConditionArea, Report } from "@/shared/types/api";
+import type { Action, Report, ReportArea, WaveMetrics } from "@/shared/types/api";
 import { ACTION_AREAS, sectionNumber } from "../constants";
 import { openActions } from "../helpers/report";
 import { weekEvents } from "../helpers/weeks";
-import { ConditionSummary } from "./condition-summary";
+import { HeadlineSummary } from "./headline-summary";
 import { BlockTitle, Verdict } from "./report-parts";
 import { WeekEventLine } from "./week-event";
 
@@ -15,30 +14,29 @@ const HIGHLIGHTS = 4;
 const FIRST_ACTIONS = 3;
 
 /**
- * The report's answer on one page, for the reader who reads nothing else, laid out as a status report's
- * first page: the overall condition (its score, status, change and columns over the reports) beside the
- * five areas with the fact behind each; the conclusion in a sentence; then the week's highlights beside
- * the decisions it asks for (the plan's first three actions). Everything after this page is the evidence.
+ * The report's answer on one page, for the reader who reads nothing else: the buyers' answers that name the
+ * client, as a count, beside the five areas each with its own count (no score since 21 Nov 2026: report spec
+ * Phase 0 item 0.2); the conclusion in a sentence, the count and who is named most; then the week's
+ * highlights beside the decisions it asks for (the plan's first three actions). Everything after this page
+ * is the evidence.
  */
 export function ExecutiveSummary({
   report,
   actions,
+  metrics,
   findings,
   moreHref = "#actions",
 }: {
   report: Report;
   actions: Action[];
-  /** The sentence on each area of the condition. */
-  findings: Record<ConditionArea, string>;
+  metrics: WaveMetrics;
+  /** The sentence on each area. */
+  findings: Record<ReportArea, string>;
   /** Where "the whole plan" leads: the section below, or the report's page from Hisobotlar. */
   moreHref?: string;
 }) {
   const t = useTranslations("Report");
-  const condition = report.conditionHistory.at(-1);
-  if (!condition) return null;
-
-  const status = conditionStatus(condition.score);
-  const { strongest, weakest } = extremes(condition);
+  const seen = metrics.visibility;
   const first = openActions(actions).slice(0, FIRST_ACTIONS);
   const compared = report.history.length > 1;
   const highlights = weekEvents(report.history.length - 1, {
@@ -51,17 +49,10 @@ export function ExecutiveSummary({
 
   return (
     <div className="flex flex-col gap-4">
-      <ConditionSummary report={report} findings={findings} />
+      <HeadlineSummary metrics={metrics} findings={findings} />
 
-      <Verdict score={condition.score}>
-        {t("condition.verdict", { status: t(`status.${status}`).toLowerCase(), score: condition.score })}
-        {strongest !== weakest &&
-          ` ${t("condition.verdictAreas", {
-            strongest: t(`areas.${strongest}`).toLowerCase(),
-            strongestScore: condition.areas[strongest],
-            weakest: t(`areas.${weakest}`).toLowerCase(),
-            weakestScore: condition.areas[weakest],
-          })}`}
+      <Verdict>
+        {t("headline.verdict", { brand: report.project.brand.name, named: seen.named, answers: seen.answers })} {findings.competition}
       </Verdict>
 
       {/* Side by side once there is room: on paper too */}

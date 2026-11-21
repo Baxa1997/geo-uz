@@ -32,6 +32,7 @@ import * as onboarding from "./onboarding";
 import { discoveryDrafts, keywordDrafts, KNOWN_TOPICS, poolFor, type Draft } from "./suggestions";
 import { buildPromptReport, buildReport, buildSnapshot, firstRun, METHOD, NO_RUN, pastReport, SEEDED_RUN, type MockRun } from "./report";
 import { clearSessionToken, readSessionToken, writeSessionToken } from "./session";
+import { mockWave } from "./wave";
 
 const LATENCY_MS = 300;
 const RESEND_SECONDS = 60;
@@ -720,6 +721,16 @@ export const mockApi: ApiClient = {
     const report = pastReport({ ...latest, nextRunAt: prompts.length > 0 ? nextWeeklyRun(Date.now()) : null }, runId);
     if (!report) throw new ApiError(404, `Run ${runId} not found`);
     return respond(report);
+  },
+
+  getWave: async (projectId, runId) => {
+    const project = findProject(projectId);
+    const latest = buildReport(project, trackedOf(projectId), "week", finishedRun(projectId));
+    const id = runId === "latest" ? (latest.history.at(-1)?.runId ?? "latest") : runId;
+    const report = runId === "latest" ? latest : pastReport(latest, runId);
+    if (!report) throw new ApiError(404, `Run ${runId} not found`);
+    const number = latest.history.findIndex((point) => point.runId === id) + 1;
+    return respond(mockWave(report, id, number > 0 ? number : latest.history.length));
   },
 
   getReportSettings: async (projectId) => {

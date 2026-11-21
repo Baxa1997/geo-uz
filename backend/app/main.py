@@ -27,7 +27,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sqlalchemy import func, select
 
-from . import cache, delivery, firstrun, fixes, mail, projects
+from . import cache, delivery, firstrun, fixes, mail, projects, slots, wave
 from .config import settings
 from .db import Brand, DemoRequest, FirstRun, LoginCode, Project, ReadSession, Run, Session, SessionLocal, User, create_tables, now
 
@@ -327,7 +327,8 @@ def work_check(run_id: str, draft: Dict[str, Any], confirmed: Dict[str, Any], sp
         if settings.first_run_replay:
             outcome: Dict[str, Any] = replay(run_id, progress, live)
         else:
-            snapshot, raw, cost = firstrun.check(draft, confirmed, progress, live=live)
+            # Every call to the assistants goes into the slot log as it is planned and as it comes back
+            snapshot, raw, cost = firstrun.check(draft, confirmed, progress, live=live, log=slots.SlotLog(first_run_id=run_id))
             outcome = {"status": "done", "result": {"id": run_id, **snapshot}, "raw": raw, "cost_usd": round(spent + cost, 4)}
     except firstrun.FirstRunError as error:
         outcome = {"status": "failed", "error": error.code}
@@ -624,6 +625,13 @@ def get_prompt_report(project_id: str, prompt_id: str, user: User = Depends(curr
 @app.get("/projects/{project_id}/reports/{run_id}")
 def get_run_report(project_id: str, run_id: str) -> Any:
     return kept(project_id, None, "report", projects.report, run_id=run_id)
+
+
+# A check's data object and every number computed from it (report spec §10, Phase 0 item 0.1): what the report's
+# scope card reads. Read by the report's link, like the report; `latest` is the newest finished check.
+@app.get("/projects/{project_id}/waves/{run_id}")
+def get_wave(project_id: str, run_id: str) -> Any:
+    return kept(project_id, None, "wave", wave.payload, run_id=run_id)
 
 
 # Read by the report's link, like the report itself (17 Nov 2026: the "PDF" button downloads a file now, where it

@@ -22,7 +22,7 @@ from typing import Any, Dict, Optional
 
 from sqlalchemy import select
 
-from . import mail, projects
+from . import mail, projects, wave
 from .config import settings
 from .db import Project, Run, SessionLocal
 
@@ -38,47 +38,44 @@ WORDS = {
     "uz": {
         "subject": "{brand}: AI koʻrinish hisoboti, {date}",
         "intro": "Haftalik tekshiruv yakunlandi. Qisqacha:",
-        "condition": "Umumiy holat",
         "visibility": "Tilga olinish",
-        "place": "Kuzatilayotgan brendlar orasidagi oʻrin",
-        "answers": "{answers} ta javobdan {named} tasida tilga olindingiz",
-        "change": "oʻtgan tekshiruvga nisbatan {delta}",
-        "same": "oʻtgan tekshiruvga nisbatan oʻzgarmadi",
-        "first": "birinchi tekshiruv",
+        "answers": "xaridorlarning {answers} ta javobidan {named} tasida tilga olindingiz",
+        "small": "kichik namuna",
+        "questions": "Sizni tilga olgan savollar",
+        "leaders": "Eng koʻp tilga olingan",
+        "nobody": "kuzatilayotgan brendlardan hech biri tilga olinmadi",
+        "tied": "teng",
         "open": "Toʻliq hisobotni ochish",
         "attached": "Hisobot PDF koʻrinishida xatga ilova qilingan.",
         "why": "Bu xat sizga Seenova AI loyihangiz sozlamalarida koʻrsatilgan manzil boʻyicha yuborildi.",
-        "points": "punkt",
     },
     "ru": {
         "subject": "{brand}: отчёт о видимости в AI, {date}",
         "intro": "Еженедельная проверка завершена. Коротко:",
-        "condition": "Общее состояние",
         "visibility": "Упоминаемость",
-        "place": "Место среди отслеживаемых брендов",
-        "answers": "вас назвали в {named} из {answers} ответов",
-        "change": "{delta} к прошлой проверке",
-        "same": "без изменений к прошлой проверке",
-        "first": "первая проверка",
+        "answers": "вас назвали в {named} из {answers} ответов покупателям",
+        "small": "малая выборка",
+        "questions": "Вопросы, где вас назвали",
+        "leaders": "Чаще всех называют",
+        "nobody": "ни один отслеживаемый бренд не назван",
+        "tied": "поровну",
         "open": "Открыть полный отчёт",
         "attached": "Отчёт в PDF приложен к письму.",
         "why": "Письмо отправлено на адрес, указанный в настройках вашего проекта Seenova AI.",
-        "points": "п.",
     },
     "en": {
         "subject": "{brand}: AI visibility report, {date}",
         "intro": "The weekly check is done. In short:",
-        "condition": "Overall condition",
         "visibility": "Visibility",
-        "place": "Place among the tracked brands",
-        "answers": "named in {named} of {answers} answers",
-        "change": "{delta} since the last check",
-        "same": "no change since the last check",
-        "first": "the first check",
+        "answers": "named in {named} of {answers} buyer answers",
+        "small": "small sample",
+        "questions": "Questions that name you",
+        "leaders": "Named most",
+        "nobody": "no tracked brand was named",
+        "tied": "tied",
         "open": "Open the full report",
         "attached": "The report is attached as a PDF.",
         "why": "This email was sent to the address in your Seenova AI project's settings.",
-        "points": "points",
     },
 }
 
@@ -123,39 +120,34 @@ def pdf(project_id: str, run_id: str, language: str) -> bytes:
         return target.read_bytes()
 
 
-def summary(report: Dict[str, Any]) -> Dict[str, Any]:
-    """The few facts the email tells, from the report."""
-    client = report["project"]["brand"]
-    mine = next(score for score in report["scores"] if score["brandId"] == client["id"])
-    ranked = sorted(report["scores"], key=lambda score: -score["visibility"])
-    answers = [answer for result in report["prompts"] for answer in result["answers"]]
-    conditions = report["conditionHistory"]
+def summary(found: Dict[str, Any]) -> Dict[str, Any]:
+    """The few facts the email tells, from the check's data object and its metrics (`wave.payload`): counts, no
+    score (report spec rule 1), and who is named most with every brand that ties."""
+    seen = found["metrics"]["visibility"]
+    rows = {row["id"]: row for row in found["metrics"]["brands"]["rows"]}
     return {
-        "brand": client["name"],
-        "date": report["method"]["collectedAt"][:10],
-        "condition": conditions[-1]["score"] if conditions else None,
-        "condition_change": conditions[-1]["score"] - conditions[-2]["score"] if len(conditions) > 1 else None,
-        "visibility": round(mine["visibility"] * 100),
-        "visibility_change": round(mine["trend"] * 100) if len(report["history"]) > 1 else None,
-        "place": 1 + sum(1 for score in ranked if score["visibility"] > mine["visibility"]),
-        "brands": len(ranked),
-        "answers": len(answers),
-        "named": sum(1 for answer in answers if any(mention["brandId"] == client["id"] for mention in answer["mentions"])),
+        "brand": found["wave"]["project"]["brand"]["name"],
+        "date": found["wave"]["wave"]["collected_at"][:10],
+        "named": seen["named"],
+        "answers": seen["answers"],
+        "small_sample": seen["small_sample"],
+        "prompts_named": seen["prompts_named"],
+        "prompts": seen["prompts"],
+        "leaders": [{"name": rows[key]["name"], "named": rows[key]["named"]} for key in found["metrics"]["brands"]["leaders"]],
     }
-
-
-def _change(words: Dict[str, str], delta: Optional[int], unit: str) -> str:
-    if delta is None:
-        return words["first"]
-    return words["same"] if delta == 0 else words["change"].format(delta=f"{delta:+d} {unit}".strip())
 
 
 def message(facts: Dict[str, Any], language: str, url: str, attachment: Optional[bytes]) -> EmailMessage:
     words = WORDS.get(language, WORDS["uz"])
+    leaders = facts["leaders"]
     rows = [
-        (words["condition"], f"{facts['condition']} / 100", _change(words, facts["condition_change"], "")),
-        (words["visibility"], f"{facts['visibility']}%", f"{words['answers'].format(named=facts['named'], answers=facts['answers'])}; {_change(words, facts['visibility_change'], words['points'])}"),
-        (words["place"], f"{facts['place']} / {facts['brands']}", ""),
+        (words["visibility"], f"{facts['named']}/{facts['answers']}", words["answers"].format(named=facts["named"], answers=facts["answers"]) + (f"; {words['small']}" if facts["small_sample"] else "")),
+        (words["questions"], f"{facts['prompts_named']}/{facts['prompts']}", ""),
+        (
+            words["leaders"],
+            ", ".join(f"{leader['name']} {leader['named']}/{facts['answers']}" for leader in leaders) if leaders else words["nobody"],
+            words["tied"] if len(leaders) > 1 else "",
+        ),
     ]
     email = EmailMessage()
     email["Subject"] = words["subject"].format(brand=facts["brand"], date=facts["date"])
@@ -194,10 +186,10 @@ def deliver(project_id: str, run_id: Optional[str] = None) -> str:
             run_id = db.scalar(select(Run.id).where(Run.project_id == project_id, Run.status == "done").order_by(Run.collected_at.desc()))
         where = projects.report_settings(project)
         try:
-            report = projects.report(db, project, run_id=run_id) if run_id else None
+            found = wave.payload(db, project, run_id) if run_id else None
         except projects.ProjectError:
-            report = None
-    if not report or not report["history"] or report["history"][-1]["runId"] != run_id:
+            found = None
+    if not found:
         return "no_report"
     if not where["email"]:
         return "no_address"
@@ -210,7 +202,7 @@ def deliver(project_id: str, run_id: Optional[str] = None) -> str:
         print(f"delivery: no PDF for project {project_id}: {error}")
         attachment = None
     try:
-        mail.send(where["email"], message(summary(report), language, link(project_id, run_id, language), attachment))
+        mail.send(where["email"], message(summary(found), language, link(project_id, run_id, language), attachment))
     except (OSError, smtplib.SMTPException) as error:
         print(f"delivery: email failed for project {project_id}: {error!r}")
         return "failed"
