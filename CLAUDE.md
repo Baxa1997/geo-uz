@@ -108,8 +108,8 @@ waits for their look. The open work, in the order the user picks (ask as a short
    truth" below): every item built and deployed (step 1, 0.1–0.9, 21 Nov), 0.1–0.3 confirmed, the rest waiting for
    the user's look. Spec §2: Phase 1 waits for the demand signal (at least 5 paid First Audits out of 20 offers);
    until then the First Audits are made with these tools plus the founder's review. The Phase 0 review (21 Nov)
-   found three gaps before the demand test; the close-out (branch `phase0-closeout`, 21 Nov) handles them: Gemini
-   paused for Google's terms (deployed to the server the same day), each evidence card's channel and place, the
+   found three gaps before the demand test; the close-out (branch `phase0-closeout`, merged and deployed 21 Nov) handles them:
+   Gemini paused for Google's terms, each evidence card's channel and place, the
    digest's change over the same questions; the links wait for Vercel's login to go.
 1. The rest of the user's list of 17 Nov: the report's competitors and sources (3–4), the bug in the dynamics
    window. Each waits for its screenshots. (Savollar, point 5, was made simple on 18 Nov from the user's own
@@ -216,8 +216,11 @@ that is committed.
 
 ## Done (as of 18 November 2026)
 
-- **Built, waiting for the user's look: the Phase 0 close-out (21 Nov), on the branch `phase0-closeout`, not committed;
-  its first part deployed to the server the same day.** After the review of Phase 0 the user asked "what is next";
+- **Built, waiting for the user's look: the Phase 0 close-out (21 Nov), on the branch `phase0-closeout`; merged, pushed
+  and deployed the same day, when the user chose "Commit, push, deploy" (Vercel's build passed; the switch went to
+  the server first, before the paid project's Monday check, then `digest.py`; the server's previous `app/` is kept
+  as `app.bak-before-closeout`; live, `/health` lists ChatGPT alone and both projects' digests answer, the paid
+  project's saying its first check was asked another way).** After the review of Phase 0 the user asked "what is next";
   of the plan they chose the close-out of the three gaps the review found before the demand test, then "Pause it in
   new checks" for Gemini and "Yes, build it" for the evidence cards. (1) Google's terms for Gemini with Google Search
   (Service Specific Terms 20(k); spec §9.3 question 2) allow its answers to be shown only to the person who asked
