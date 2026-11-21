@@ -615,7 +615,10 @@
         "text": "Answer text",
         "yes": "yes",
         "no": "no"
-      }
+      },
+      "runOf": "run {run} of {runs}",
+      "beginningNote": "(on paper by its beginning; in full on the report’s page and in the CSV)",
+      "paperKey": "On paper, the questions where you or a tracked competitor are named print in full; the others by their beginning."
     },
     "topFinding": {
       "title": "Top finding",
@@ -626,7 +629,8 @@
       "client": "{brand} is named in {named} of {answers}; no tracked competitor is.",
       "cited": "{count, plural, =0 {no cited page} one {# cited page} other {# cited pages}}",
       "openEvidence": "Open evidence",
-      "printNote": "The whole answers ({answers}) with their cited pages are in section {section}."
+      "printNote": "The whole answers ({answers}) with their cited pages are in section {section}.",
+      "runOf": "run {run} of {runs}"
     }
   },
   "Headline": {

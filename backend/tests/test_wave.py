@@ -13,7 +13,7 @@ import pytest
 from sqlalchemy import delete, select
 
 from app import engines, firstrun, projects, slots, wave, weekly
-from app.db import Answer, Brand, Citation, FirstRun, Mention, Project, Prompt, Run, Slot, User
+from app.db import Answer, Brand, Citation, FirstRun, Mention, Project, Prompt, Run, Slot, User, now
 
 # --- the baseline ---------------------------------------------------------------------------------------
 
@@ -188,6 +188,47 @@ def test_a_weekly_check_logs_every_slot_with_its_tries(db: Any, project: Any, st
         assert {row.id for row in db.scalars(select(Answer).where(Answer.run_id == run.id))} == {slot.answer_id for slot in done}
     finally:
         FAILS.discard(("gemini", prompts[0].text))
+        answer_ids = list(db.scalars(select(Answer.id).where(Answer.run_id == run.id)))
+        if answer_ids:
+            db.execute(delete(Mention).where(Mention.answer_id.in_(answer_ids)))
+            db.execute(delete(Citation).where(Citation.answer_id.in_(answer_ids)))
+            db.execute(delete(Answer).where(Answer.id.in_(answer_ids)))
+        db.execute(delete(Slot).where(Slot.run_id == run.id))
+        db.execute(delete(Run).where(Run.id == run.id))
+        db.commit()
+
+
+# --- several runs of each question (0.6) -----------------------------------------------------------------
+
+
+def test_runs_come_from_the_check_and_stay_within_bounds() -> None:
+    assert weekly.runs_of(3) == 3 and weekly.runs_of(None) == weekly.settings.run_samples
+    assert weekly.runs_of(9) == weekly.RUNS_MAX and weekly.runs_of(0) == weekly.settings.run_samples
+    jobs = weekly.jobs_of(["q1", "q2"], ["chatgpt", "gemini"], 3)  # type: ignore[list-item]
+    assert len(jobs) == 12 and [run for prompt, engine, run in jobs[:3]] == [1, 2, 3]
+
+
+def test_a_check_of_three_runs_is_counted_over_every_run(db: Any, project: Any, stand_ins: None) -> None:
+    prompts = [prompt for prompt in projects.prompts_of(db, project.id) if prompt.archived_at is None][:2]
+    brands = projects.brands_of(db, project.id)
+    run = Run(project_id=project.id, kind="weekly", status="running", method={"engine": "ChatGPT + Gemini", "model": "", "webSearch": True, "samples": 3}, sources={})
+    db.add(run)
+    db.commit()
+    try:
+        weekly._collect(db, project, brands, run, weekly.jobs_of(prompts, ["chatgpt", "gemini"], 3), slots.SlotLog(run_id=run.id, db=db))
+        run.status, run.collected_at = "done", now()
+        db.commit()
+        found = [slot for slot in logged(db, run_id=run.id) if slot.prompt_group == "discovery"]
+        # Every run of each question on each assistant planned and closed in its own slot
+        assert len(found) == 12 and sorted({slot.run_index for slot in found}) == [1, 2, 3]
+        assert all(slot.status == "completed" for slot in found)
+        payload = wave.payload(db, project, run.id)
+        scope, seen = payload["metrics"]["scope"], payload["metrics"]["visibility"]
+        assert scope["runs_per_prompt"] == 3 and scope["slots"]["slots"] == 12 and scope["slots"]["completed"] == 12
+        assert seen["answers"] == 12 and seen["prompts"] == 2
+        # Each answer knows its run, so the report can say "run 2 of 3"
+        assert sorted(answer["run_index"] for answer in payload["wave"]["answers"]) == [1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3]
+    finally:
         answer_ids = list(db.scalars(select(Answer.id).where(Answer.run_id == run.id)))
         if answer_ids:
             db.execute(delete(Mention).where(Mention.answer_id.in_(answer_ids)))

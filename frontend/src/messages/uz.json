@@ -615,7 +615,10 @@
         "text": "Javob matni",
         "yes": "ha",
         "no": "yoʻq"
-      }
+      },
+      "runOf": "{runs} tadan {run}-takror",
+      "beginningNote": "(qogʻozda boshi; toʻliq — hisobot sahifasida va CSV’da)",
+      "paperKey": "Qogʻozda siz yoki kuzatilayotgan raqobatchi tilga olingan savollar toʻliq, qolganlari boshi bilan berilgan."
     },
     "topFinding": {
       "title": "Asosiy xulosa",
@@ -626,7 +629,8 @@
       "client": "{brand} {answers} tadan {named} tasida tilga olingan; kuzatilayotgan raqobatchilar tilga olinmagan.",
       "cited": "{count, plural, =0 {manba sahifa yoʻq} other {# ta manba sahifa}}",
       "openEvidence": "Dalillarni ochish",
-      "printNote": "Toʻliq javoblar ({answers}) manba sahifalari bilan {section}-boʻlimda."
+      "printNote": "Toʻliq javoblar ({answers}) manba sahifalari bilan {section}-boʻlimda.",
+      "runOf": "{runs} tadan {run}-takror"
     }
   },
   "Headline": {

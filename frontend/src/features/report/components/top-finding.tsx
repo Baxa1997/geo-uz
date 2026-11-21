@@ -67,7 +67,9 @@ export function TopFinding({ wave, brands, youId }: { wave: WaveResponse; brands
           {answers.map((answer) => (
             <li key={answer.id} className="flex flex-col gap-0.5 border-l-2 border-foreground/20 pl-3 text-sm print:break-inside-avoid">
               <span className="text-xs text-muted-foreground">
-                <span className="font-semibold text-foreground tabular-nums">A{numbers.get(answer.id)}</span> · {engineName(answer.engine)} · {formatLongDate(answer.collected_at, locale, timeZone)} ·{" "}
+                <span className="font-semibold text-foreground tabular-nums">A{numbers.get(answer.id)}</span> · {engineName(answer.engine)}
+                {wave.wave.wave.runs_per_prompt > 1 && ` · ${t("runOf", { run: answer.run_index, runs: wave.wave.wave.runs_per_prompt })}`} ·{" "}
+                {formatLongDate(answer.collected_at, locale, timeZone)} ·{" "}
                 {t("cited", { count: answer.citations.length })}
               </span>
               <span data-verbatim className="text-pretty">
@@ -84,7 +86,7 @@ export function TopFinding({ wave, brands, youId }: { wave: WaveResponse; brands
           </summary>
           <div className="mt-3 flex flex-col gap-4">
             {answers.map((answer) => (
-              <AnswerCard key={answer.id} answer={answer} number={numbers.get(answer.id) ?? 0} brands={brands} youId={youId} anchor={false} />
+              <AnswerCard key={answer.id} answer={answer} number={numbers.get(answer.id) ?? 0} brands={brands} youId={youId} anchor={false} runs={wave.wave.wave.runs_per_prompt} />
             ))}
           </div>
         </details>

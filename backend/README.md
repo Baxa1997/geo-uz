@@ -275,6 +275,12 @@ python -m app.admin domain <domain> <type> [--project <id>] [--route listing_pag
 python -m app.admin classify <project id>                      # the AI types the latest check's unknown sites (paid, under a cent)
 ```
 
+**Runs** (0.6, 21 Nov 2026): `python -m app.weekly --project <id> --runs 3` makes one check that asks each question
+3 times on each assistant (the paid First Audit, spec §6.2; 1 to 5), after printing the answers it plans and their
+likely cost at the project's last check's price an answer. Each run is a slot of its own (`run_index`); every count is
+over all the answers, a question counts as covered when the client is named in one run. Weekly checks stay at
+`RUN_SAMPLES` (1), the user's decision of 21 Nov 2026: three runs would cost Standard more than its price.
+
 The pages keep a report two minutes, so a site typed by hand shows within that.
 
 ## On the server (since 15 Nov 2026)

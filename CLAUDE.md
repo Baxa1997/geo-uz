@@ -101,8 +101,8 @@ beside its count), merged, pushed and deployed; 0.1–0.3 confirmed by the user,
 waits for their look. The open work, in the order the user picks (ask as a short choice):
 
 0. **Phase 0 of the report spec, item by item, a plan shown before each** (section "Seenova report: source of
-   truth" below): 0.4 (site types) deployed and 0.5 (evidence) built, both waiting for the user's look; then 0.6
-   (runs), 0.7 (location), 0.8 (snapshot and digest), 0.9 (template clean-up).
+   truth" below): 0.4 (site types) and 0.5 (evidence) deployed, 0.6 (runs) built, all waiting for the user's look;
+   then 0.7 (location), 0.8 (snapshot and digest), 0.9 (template clean-up).
 1. The rest of the user's list of 17 Nov: the report's competitors and sources (3–4), the bug in the dynamics
    window. Each waits for its screenshots. (Savollar, point 5, was made simple on 18 Nov from the user's own
    screenshot of it.)
@@ -202,6 +202,22 @@ that is committed.
    that no key and no client's name is in it.
 
 ## Done (as of 18 November 2026)
+
+- **Built, waiting for the user's look: Phase 0 item 0.6 of the report spec, several runs of each question
+  (21 Nov), on the branch `phase0-runs`; merged and pushed the same day, when the user chose "Ship 0.6, then plan
+  0.7".** The user: "Ship 0.5, then plan 0.6"; after the plan they
+  chose, when asked, three runs for the First Audit only, by hand, and on paper the key questions in full when a
+  check has several runs. `python -m app.weekly --project <id> --runs 3` asks each question 3 times on each
+  assistant (1 to 5), after printing the planned answers and their likely cost at the last check's price an answer;
+  each run is planned and closed in its own slot, and the report counts over every run (the scope card's "× 3 runs",
+  the headline, coverage from one run, the top finding's answers across runs, "run 2 of 3" on each answer). Weekly
+  checks stay at `RUN_SAMPLES` (1). Tests: `pytest` 42 pass and 1 expected failure (0.8), with a 3-run check made by
+  stand-in assistants (12 slots, every count over them); `-m page` 16 pass and 1 expected failure (0.8); the type
+  check and the linter are clean. Looked at in headless Chrome on the baseline copied as three runs in the look's own
+  database: the scope card, the summary with its top finding of 6 answers, the evidence section in Uzbek at 390px and
+  as print (the competitors' question in full for every run, the others by their beginning); the PDF stays at 26
+  pages with 45 answers. Not done: a real 3-run check (about $5 on the paid project, the user's choice). No new
+  variable (`RUN_SAMPLES` now says how runs are asked for a First Audit), no new table, no paid request.
 
 - **Built, waiting for the user's look: Phase 0 item 0.5 of the report spec, evidence for every finding and the
   answers as a CSV (21 Nov), on the branch `phase0-evidence`; merged, pushed and deployed the same day, when the
@@ -1245,6 +1261,7 @@ All from `frontend/`: `npm run dev` (development), `npm run build` then `npm run
 - Use the baseline client's first check (spec §3.3) as the test fixture. Acceptance tests are in spec §11.1; they run in `backend/tests/` on that check's data, which stays on this computer (`backend/tests/README.md`). Never write the client's name, its competitors' names or its project's id into a committed file.
 - Work on one Phase 0 item at a time. Show me a plan before writing code.
 - Decided with the user on 21 Nov 2026, while planning Phase 0: the baseline's scope card shows 20 slots, 15 completed and 5 excluded, with the reason that the free check asks ChatGPT 5 of the 10 questions (nothing failed: only 15 were planned); a Gemini answer that ran no web search counts as completed and says so ("Gemini searched in k of n"); the report surfaces (the report, its Hisobotlar copy, the PDF, the snapshot, the digest, the email) read the single data object in Phase 0, and the 0–100 score goes from everywhere (Hisobotlar's register, the dashboard's project cards, the landing page's sample report, the email too), while the other pages move to the object later.
+- Decided with the user on 21 Nov 2026, for item 0.6: three runs of each question only for the paid First Audit, started by hand (`--runs 3`); weekly checks stay at one run until prices are set for more (three would cost Standard more than its $39.99). With several runs the PDF prints in full only the questions where the client or a tracked competitor is named, the others by their beginning.
 - Decided with the user on 21 Nov 2026, for item 0.5: every buyer answer is printed in full, word for word, in the report's PDF too (its evidence section), not by its beginning.
 - Decided with the user on 21 Nov 2026, for item 0.4: a cited site our list, the project and a review don't type is typed by the AI (`automated`) at the end of every live check, and once on the two live projects' latest checks; a route onto a site (which a "get listed" action needs) comes only from our checked seed list or a review by hand, never from the AI.
 - Decided with the user on 21 Nov 2026, for item 0.2: with the score gone, each of the report's five areas shows its count and no status (no Weak/Fair/Good, no coloured dot); the client's "used as a source" is spec §6.3's, answers citing its site over answers that cite any site (0 of 7 on the baseline), not over every answer.
