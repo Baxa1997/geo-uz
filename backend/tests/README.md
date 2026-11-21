@@ -27,7 +27,10 @@ SQLite file and blanks every key before `app` is imported, and checks that it he
   that starts passing fail the run until its mark comes off. Its docstring lists the `data-*` marks the page
   tests read, which each item adds to the report as it builds its part.
 - `export_baseline.py` (read-only) writes `fixtures/baseline.json`; `fixture_db.py` loads it into the tests'
-  database; `pagetools.py` starts the servers and reads the page.
+  database; `pagetools.py` starts the servers and reads the page. It moves the parts React streams late
+  (`<div hidden id="S:n">`) into their places (`<template id="P:n">`), as the browser's script does, and its
+  percentage check leaves out answers quoted word for word (`data-verbatim`) as it does glossary examples
+  (`data-example`): both since Phase 0 item 0.5 (21 Nov 2026).
 
 Names, counts and texts of the baseline come from `fixtures/baseline.expected.json`, never from a test file:
 the repository is public. So does the project's id, which opens its report by link.

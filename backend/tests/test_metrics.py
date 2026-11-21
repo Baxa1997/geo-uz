@@ -205,3 +205,38 @@ def test_sites_are_counted_once_an_answer_and_split_by_type_in_sites() -> None:
 def test_the_brand_check_counts_each_verdict() -> None:
     branded = [{"statements": [{"check": "confirmed"}, {"check": "contradicted"}, {"check": "unverified"}]}, {"statements": [{"check": "confirmed"}]}]
     assert metrics.claims(_wave([], branded=branded)) == {"answers": 2, "statements": 4, "verified": 2, "unverified": 1, "contradicted": 1}
+
+
+# --- the top finding (0.5) ------------------------------------------------------------------------------
+
+
+def test_the_baseline_top_finding_is_the_question_where_competitors_appear(db: Any, project: Any, run_id: str, brand_ids: Dict[str, str], baseline: Dict[str, Any], expected: Dict[str, Any]) -> None:
+    found = wave.payload(db, project, run_id)["metrics"]["top_finding"]
+    prompts = {prompt["id"]: prompt["text"] for prompt in baseline["tables"]["prompts"]}
+    assert found["kind"] == "competitor" and prompts[found["prompt_id"]] == expected["top_finding"]["prompt"]
+    assert len(found["answers"]) == found["of"] == expected["top_finding"]["answers"] and found["client_named"] == 0
+    assert sorted(found["named"]) == sorted(brand_ids[name] for name in expected["tied_at_one"])
+
+
+def test_the_top_finding_prefers_competitors_where_the_client_is_absent() -> None:
+    answers = [
+        _answer("a1", "p1", "Acme, Bolt", [("acme", "", "positive"), ("bolt", "", "neutral")]),
+        _answer("a2", "p1", "Bolt", [("bolt", "", "neutral")]),
+        _answer("a3", "p2", "Bolt", [("bolt", "", "neutral")]),
+        _answer("a4", "p3", "Cora", [("cora", "", "neutral")], engine="chatgpt"),
+        _answer("a5", "p3", "Bolt, Cora", [("bolt", "", "neutral"), ("cora", "", "neutral")]),
+    ]
+    found = metrics.top_finding(_wave(answers))
+    # p3: competitors in 2 answers and the client in none, ahead of p1 where the client is beside them
+    assert found["kind"] == "competitor" and found["prompt_id"] == "p3" and found["of"] == 2
+    # ChatGPT's answer first, then the competitors by how many answers name them
+    assert found["answers"] == ["a4", "a5"] and found["named"] == ["cora", "bolt"]
+    shared = metrics.top_finding(_wave(answers[:2]))
+    assert shared["kind"] == "shared" and shared["prompt_id"] == "p1" and shared["client_named"] == 1
+
+
+def test_an_open_shelf_and_no_answer() -> None:
+    assert metrics.top_finding(_wave([_answer("a1", "p1", "Nobody", [])])) == {"kind": "open", "prompt_id": None, "answers": [], "named": [], "client_named": 0, "of": 0}
+    alone = metrics.top_finding(_wave([_answer("a1", "p1", "Nobody", []), _answer("a2", "p2", "Acme", [("acme", "", "positive")])]))
+    assert alone["kind"] == "client" and alone["prompt_id"] == "p2"
+    assert metrics.top_finding(_wave([])) is None

@@ -785,6 +785,15 @@ from the check's data object (`WaveMetrics`), each with what it is counted over 
   beside it. Its table has fixed columns (a long address is cut on a screen with the whole of it on hover, written
   out on paper). The glossary lists the types; the method says how a site is typed; the risks register's
   "listings" reads the targets, at the level of the first one's action (`impact`).
+- evidence (since Phase 0 item 0.5): every buyer answer is numbered A1, A2… in the report's order
+  (`helpers/evidence.ts`: its question's order, the assistant, the run). The summary's top finding
+  (`top-finding.tsx`, from `metrics.top_finding`) shows the question, who appeared, each answer's passage, and
+  "Open evidence" with the whole answers (on paper it points to section 14). Each entry of the risks register
+  names its answers ("Evidence: A2, A3", links). Section 14, "Evidence" (`evidence.tsx`), prints every answer in
+  full under its question with its cited pages, on screen and on paper (smaller type and two columns on paper),
+  with "Answers as CSV" (`answers-csv.tsx`, made in the browser). An answer's own words are marked `data-verbatim`:
+  a percentage an assistant wrote is not one of the report's. The "every question" appendix no longer prints the
+  answers' beginnings on paper.
 The Overview and the other pages keep Peec's four numbers (`BrandScore`) and the six site kinds until they move to
 the data object.
 

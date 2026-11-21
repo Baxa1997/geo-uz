@@ -1,12 +1,13 @@
 import { useTranslations } from "next-intl";
 import { ActionTitle } from "@/shared/components/actions/action-title";
 import { ImpactBadge } from "@/shared/components/actions/impact-badge";
-import type { Action, Report, ReportArea, WaveMetrics } from "@/shared/types/api";
+import type { Action, Report, ReportArea, WaveResponse } from "@/shared/types/api";
 import { ACTION_AREAS, sectionNumber } from "../constants";
 import { openActions } from "../helpers/report";
 import { weekEvents } from "../helpers/weeks";
 import { HeadlineSummary } from "./headline-summary";
 import { BlockTitle, Verdict } from "./report-parts";
+import { TopFinding } from "./top-finding";
 import { WeekEventLine } from "./week-event";
 
 /** The summary tells this many of the week's events, and this many of the plan's first actions. */
@@ -16,26 +17,28 @@ const FIRST_ACTIONS = 3;
 /**
  * The report's answer on one page, for the reader who reads nothing else: the buyers' answers that name the
  * client, as a count, beside the five areas each with its own count (no score since 21 Nov 2026: report spec
- * Phase 0 item 0.2); the conclusion in a sentence, the count and who is named most; then the week's
- * highlights beside the decisions it asks for (the plan's first three actions). Everything after this page
- * is the evidence.
+ * Phase 0 item 0.2); the conclusion in a sentence, the count and who is named most; the top finding with its
+ * answers (0.5); then the week's highlights beside the decisions it asks for (the plan's first three actions).
+ * Everything after this page is the evidence.
  */
 export function ExecutiveSummary({
   report,
   actions,
-  metrics,
+  wave,
   findings,
   moreHref = "#actions",
 }: {
   report: Report;
   actions: Action[];
-  metrics: WaveMetrics;
+  /** The check's data object and metrics: the counts and the top finding's answers. */
+  wave: WaveResponse;
   /** The sentence on each area. */
   findings: Record<ReportArea, string>;
   /** Where "the whole plan" leads: the section below, or the report's page from Hisobotlar. */
   moreHref?: string;
 }) {
   const t = useTranslations("Report");
+  const { metrics } = wave;
   const seen = metrics.visibility;
   const first = openActions(actions).slice(0, FIRST_ACTIONS);
   const compared = report.history.length > 1;
@@ -54,6 +57,8 @@ export function ExecutiveSummary({
       <Verdict>
         {t("headline.verdict", { brand: report.project.brand.name, named: seen.named, answers: seen.answers })} {findings.competition}
       </Verdict>
+
+      <TopFinding wave={wave} brands={[report.project.brand, ...report.project.competitors]} youId={report.project.brand.id} />
 
       {/* Side by side once there is room: on paper too */}
       <div data-tour="decisions" className="@container print:break-inside-avoid">

@@ -21,6 +21,7 @@ import type {
   WaveSlot,
   WaveSources,
   WaveTop,
+  WaveTopFinding,
   WaveVisibility,
 } from "@/shared/types/api";
 
@@ -126,6 +127,45 @@ function sourcesOf(wave: Wave): WaveSources {
   const types: Partial<Record<DomainType, number>> = {};
   for (const row of rows) types[row.type] = (types[row.type] ?? 0) + 1;
   return { cited_answers: cited.length, sites: rows.length, rows, types, targets: rows.filter((row) => row.target).map((row) => row.domain) };
+}
+
+// The top finding's kinds, the strongest first (`metrics.top_finding`)
+const FINDING_KINDS: WaveTopFinding["kind"][] = ["competitor", "shared", "client", "open"];
+const ENGINES = ["chatgpt", "gemini"];
+
+function topFindingOf(wave: Wave): WaveTopFinding | null {
+  if (wave.answers.length === 0) return null;
+  const client = wave.project.brand.id;
+  const rivals = wave.project.competitors.map((brand) => brand.id);
+  const order = new Map(wave.prompts.map((prompt, index) => [prompt.id, index]));
+  const names = (answer: Wave["answers"][number], ids: string[]) => answer.mentions.some((mention) => mention.brand_id !== null && ids.includes(mention.brand_id));
+  const candidates = [...new Set(wave.answers.map((answer) => answer.prompt_id))].map((promptId) => {
+    const theirs = wave.answers.filter((answer) => answer.prompt_id === promptId);
+    const withRivals = theirs.filter((answer) => names(answer, rivals)).length;
+    const named = theirs.filter((answer) => names(answer, [client])).length;
+    const kind: WaveTopFinding["kind"] = withRivals && !named ? "competitor" : withRivals ? "shared" : named ? "client" : "open";
+    return { promptId, theirs, withRivals, named, kind };
+  });
+  candidates.sort(
+    (a, b) =>
+      FINDING_KINDS.indexOf(a.kind) - FINDING_KINDS.indexOf(b.kind) ||
+      b.withRivals - a.withRivals ||
+      b.named - a.named ||
+      b.theirs.length - a.theirs.length ||
+      (order.get(a.promptId) ?? 0) - (order.get(b.promptId) ?? 0),
+  );
+  const [best] = candidates;
+  if (!best || best.kind === "open") return { kind: "open", prompt_id: null, answers: [], named: [], client_named: 0, of: 0 };
+  const theirs = [...best.theirs].sort((a, b) => ENGINES.indexOf(a.engine) - ENGINES.indexOf(b.engine) || a.run_index - b.run_index || a.id.localeCompare(b.id));
+  const counts = rivals.map((id) => ({ id, named: theirs.filter((answer) => names(answer, [id])).length }));
+  return {
+    kind: best.kind,
+    prompt_id: best.promptId,
+    answers: theirs.map((answer) => answer.id),
+    named: counts.filter((row) => row.named > 0).sort((a, b) => b.named - a.named).map((row) => row.id),
+    client_named: best.named,
+    of: theirs.length,
+  };
 }
 
 function brandsOf(wave: Wave): WaveBrands {
@@ -266,6 +306,7 @@ export function mockWave(report: Report, runId: string, number: number): WaveRes
       sources: sourcesOf(wave),
       // Sample data has no brand-question check
       claims: { answers: 0, statements: 0, verified: 0, unverified: 0, contradicted: 0 },
+      top_finding: topFindingOf(wave),
       scope: {
         wave: { number, is_baseline: number === 1, kind: wave.wave.kind, collected_at: method.collectedAt, settings_hash: "sample", reconstructed: true },
         engines: engines.map((engine) => {

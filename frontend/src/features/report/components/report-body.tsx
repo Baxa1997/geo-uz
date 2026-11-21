@@ -11,6 +11,7 @@ import { useAreaFindings } from "../hooks/use-area-findings";
 import { Accuracy } from "./accuracy";
 import { Assistants } from "./assistants";
 import { CompetitivePosition } from "./competitive-position";
+import { Evidence } from "./evidence";
 import { ExecutiveSummary } from "./executive-summary";
 import { Glossary, Method } from "./method";
 import { PromptTable } from "./prompt-table";
@@ -24,7 +25,7 @@ import { Sources } from "./sources";
 import { Topics } from "./topics";
 
 /** The sections with a line under their title on what they show and how to read them. */
-const WITH_LEAD = ["scorecard", "changes", "assistants", "competitors", "topics", "sources", "accuracy", "risks", "actions", "method", "appendix"] as const;
+const WITH_LEAD = ["scorecard", "changes", "assistants", "competitors", "topics", "sources", "accuracy", "risks", "actions", "method", "appendix", "evidence"] as const;
 
 /** The part after which the report proper ends and is signed off; the reference follows. */
 const SIGNED_AFTER = "decisions";
@@ -36,7 +37,7 @@ const SIGNED_AFTER = "decisions";
  * no score since 21 Nov 2026); part II, the analysis, a section per area, each opening with its conclusion
  * and closing with the action that answers it; part
  * III, the decisions (risks and opportunities, the action plan); the sign-off; part IV, the reference
- * (method, definitions, every question); and a line on what the numbers are. The same in the shared
+ * (method, definitions, every answer in full as the findings' evidence); and a line on what the numbers are. The same in the shared
  * report and on its page in Hisobotlar.
  */
 export function ReportBody({
@@ -72,7 +73,7 @@ export function ReportBody({
       <ExecutiveSummary
         report={report}
         actions={actions}
-        metrics={metrics}
+        wave={wave}
         findings={{
           visibility: findings.visibility.finding,
           competition: findings.competition.finding,
@@ -89,11 +90,12 @@ export function ReportBody({
     topics: <Topics report={report} metrics={metrics} />,
     sources: <Sources metrics={metrics} />,
     accuracy: <Accuracy report={report} metrics={metrics} />,
-    risks: <Risks report={report} actions={actions} metrics={metrics} />,
+    risks: <Risks report={report} actions={actions} wave={wave} />,
     actions: <Recommendations report={report} actions={actions} />,
     method: <Method report={report} metrics={metrics} />,
     glossary: <Glossary />,
     appendix: <PromptTable results={report.prompts} brands={[brand, ...competitors]} youId={brand.id} />,
+    evidence: <Evidence wave={wave.wave} brands={[brand, ...competitors]} youId={brand.id} />,
   };
   // The summary and the definitions say what they are without a line under their title
   const lead = (key: ReportSectionKey) => {

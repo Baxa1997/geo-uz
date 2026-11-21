@@ -146,7 +146,8 @@
       "actions": "Harakatlar rejasi",
       "method": "Usul va qamrov",
       "glossary": "Atamalar",
-      "appendix": "Barcha savollar va javoblar"
+      "appendix": "Barcha savollar va javoblar",
+      "evidence": "Dalillar: barcha javoblar toʻliq"
     },
     "summary": {
       "highlights": "Hafta yangiliklari",
@@ -346,8 +347,7 @@
     },
     "appendix": {
       "lead": "Yuqoridagi mavzularga kirgan har bir savol: nechta javobda tilga olingansiz va yoningizda kim tilga olingan. Javoblarni oʻqish uchun savolni oching.",
-      "printNote": "Qogʻozda har bir javobning boshi berilgan. Javoblarning toʻliq matni — hisobot havolasida.",
-      "answerOfRun": "{engine} · {n}-takror"
+      "printNote": "Qogʻozda har bir javob {section}-boʻlimda («Dalillar») toʻliq, soʻzma-soʻz berilgan."
     },
     "changes": {
       "lead": "Raqamlar ortidagi voqealar: brendlar orasidagi oʻrningiz, AI tayanadigan saytlar, yangi notoʻgʻri faktlar va bu hafta bajarilgan ishlar. Raqamlarning oʻzi oldingi boʻlimda.",
@@ -587,6 +587,46 @@
         "tooFew": "Koʻrsatilmaydi: ovoz ulushi uchun tilga olinishlar kam (kerakli {minimum} tadan {mentions} ta)"
       },
       "and": " va "
+    },
+    "evidence": {
+      "lead": "Ushbu tekshiruvdagi xaridorga berilgan har bir javob soʻzma-soʻz, oʻz savoli ostida, havola bergan sahifalari bilan. Yuqoridagi xulosalar ularni raqami bilan ataydi (A1, A2…).",
+      "count": "{questions} ta savolga {answers} ta javob.",
+      "answersOf": "{answers}",
+      "engineModel": "{engine} ({model})",
+      "searched": "internetdan qidirgan",
+      "notSearched": "internetdan qidirmagan",
+      "cited": "{count, plural, =0 {Manba sahifalar} one {Manba sahifa} other {Manba sahifalar (#)}}",
+      "noCitations": "Bu javob hech qaysi sahifaga havola bermaydi.",
+      "evidence": "Dalillar:",
+      "csv": {
+        "label": "Javoblar CSV",
+        "hint": "Ushbu tekshiruvdagi xaridorga berilgan har bir javob: savol, yordamchi, sana, tilga olingan brendlar, manba sahifalar va toʻliq matn.",
+        "number": "Javob",
+        "question": "Savol",
+        "language": "Til",
+        "topic": "Mavzu",
+        "assistant": "Yordamchi",
+        "model": "Model",
+        "date": "Sana",
+        "searched": "Internetdan qidiruv",
+        "client": "Sizni tilga oladi",
+        "brands": "Tilga olingan kuzatilayotgan brendlar",
+        "cited": "Manba sahifalar",
+        "text": "Javob matni",
+        "yes": "ha",
+        "no": "yoʻq"
+      }
+    },
+    "topFinding": {
+      "title": "Asosiy xulosa",
+      "open": "Hali hech bir javobda kuzatilayotgan biznes tilga olinmagan: javoblardagi joy birinchi kelganniki boʻladi.",
+      "meta": "{lang} · {answers} ta javob",
+      "competitor": "Tilga olingan: {names}. {brand}: yoʻq.",
+      "shared": "Tilga olingan: {names}, {brand} esa {answers} tadan {named} tasida.",
+      "client": "{brand} {answers} tadan {named} tasida tilga olingan; kuzatilayotgan raqobatchilar tilga olinmagan.",
+      "cited": "{count, plural, =0 {manba sahifa yoʻq} other {# ta manba sahifa}}",
+      "openEvidence": "Dalillarni ochish",
+      "printNote": "Toʻliq javoblar ({answers}) manba sahifalari bilan {section}-boʻlimda."
     }
   },
   "Headline": {

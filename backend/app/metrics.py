@@ -50,6 +50,7 @@ def compute(wave: Dict[str, Any]) -> Dict[str, Any]:
         "languages": groups(wave, "lang"),
         "sources": sources(wave),
         "claims": claims(wave),
+        "top_finding": top_finding(wave),
     }
 
 
@@ -338,6 +339,48 @@ def sources(wave: Dict[str, Any]) -> Dict[str, Any]:
         "rows": rows,
         "types": {kind: by_type[kind] for kind in domains.TYPES if by_type[kind]},
         "targets": [row["domain"] for row in rows if row["target"]],
+    }
+
+
+# What a top finding shows, the strongest first: competitors named where the client isn't, competitors beside
+# the client, the client alone, and the open shelf when no tracked business is named at all
+FINDING_KINDS = ["competitor", "shared", "client", "open"]
+
+
+def top_finding(wave: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    """The report's top finding (spec §4.1, §4.14): one buyer question with every answer to it, the evidence a
+    reader opens. The question where tracked competitors are named in the most answers and the client in none;
+    else the one where they are named beside the client; else the one naming the client most; else, when no
+    tracked business is named at all, the open shelf (no question). Ties go to more answers, then the questions'
+    order. None when there is no buyer answer."""
+    answers = _discovery(wave)
+    if not answers:
+        return None
+    client = wave["project"]["brand"]["id"]
+    rivals = [brand["id"] for brand in wave["project"]["competitors"]]
+    order = {prompt["id"]: index for index, prompt in enumerate(wave["prompts"])}
+    candidates = []
+    for prompt_id in dict.fromkeys(answer["prompt_id"] for answer in answers):
+        theirs = [answer for answer in answers if answer["prompt_id"] == prompt_id]
+        with_rivals = sum(1 for answer in theirs if any(mention["brand_id"] in rivals for mention in answer["mentions"]))
+        named = _named_in(theirs, client)
+        kind = "competitor" if with_rivals and not named else "shared" if with_rivals else "client" if named else "open"
+        candidates.append((FINDING_KINDS.index(kind), -with_rivals, -named, -len(theirs), order.get(prompt_id, 0), prompt_id, kind, theirs))
+    best = min(candidates)
+    kind, theirs = best[6], best[7]
+    if kind == "open":
+        return {"kind": "open", "prompt_id": None, "answers": [], "named": [], "client_named": 0, "of": 0}
+    engines = {engine: index for index, engine in enumerate(ENGINE_ORDER)}
+    theirs = sorted(theirs, key=lambda answer: (engines.get(answer["engine"], len(engines)), answer.get("run_index", 1), answer["id"]))
+    counts = [(rival, _named_in(theirs, rival)) for rival in rivals]
+    return {
+        "kind": kind,
+        "prompt_id": best[5],
+        "answers": [answer["id"] for answer in theirs],
+        # The competitors named in its answers, the most named first (ties in the project's order)
+        "named": [rival for rival, count in sorted(counts, key=lambda item: -item[1]) if count > 0],
+        "client_named": _named_in(theirs, client),
+        "of": len(theirs),
     }
 
 

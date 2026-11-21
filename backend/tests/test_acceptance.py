@@ -197,7 +197,6 @@ def test_every_cited_domain_typed_and_no_action_on_platform_docs(report_page: Pa
 
 
 @page
-@todo("0.5", "the top finding opens its answers")
 def test_the_top_finding_opens_both_answers(report_page: Page, baseline: Dict[str, Any], expected: Dict[str, Any]) -> None:
     block = report_page.block("top-finding")
     assert block is not None and expected["top_finding"]["prompt"] in block.text

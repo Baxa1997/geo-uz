@@ -157,7 +157,8 @@ The "what to do" half: the part that keeps a small business paying.
 | Wrong facts | Claims about the client that contradict its website or its own facts | the brand answers against the website (since 16 Nov); a model against the client's facts | from the website: yes, from the first check; from the client's facts: written, never run |
 | Condition score | One number from 0 to 100 over five areas | — | removed on 21 Nov (Phase 0 item 0.2): the report shows counts, every percentage beside its count, ties grouped, N/A where nothing was counted |
 | The report's scope card | What a check asked, of which assistant and model, and what came of every call | the slot log | yes, since 21 Nov (a check before it has its slots rebuilt when read) |
-| Risks and opportunities | The report's register | written from the numbers in the frontend | yes, in a real project's report |
+| Risks and opportunities | The report's register | written from the numbers in the frontend | yes, in a real project's report; since 21 Nov each entry names the answers it stands on |
+| Top finding and evidence | One buyer question with its answers; every answer in full, numbered, in the report and the PDF, and as a CSV | `metrics.top_finding`; the data object's answers | yes, since 21 Nov (Phase 0 item 0.5) |
 | Recommended actions | Fixes with impact, steps, questions and proof | rules over the answers and sites | yes, from the first check; a page's brief first ran in the live check of 16 Nov |
 
 ## Decisions the user owes

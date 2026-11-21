@@ -33,7 +33,7 @@ const components: Components = {
 };
 
 /** One answer as ChatGPT wrote it, tracked brand names highlighted (the client's in its own color). */
-export function AnswerMarkdown({ answer, brands, youId }: { answer: Answer; brands: Brand[]; youId: string }) {
+export function AnswerMarkdown({ answer, brands, youId }: { answer: Pick<Answer, "text">; brands: Brand[]; youId: string }) {
   const rehypePlugins = useMemo<Options["rehypePlugins"]>(
     () => [
       [

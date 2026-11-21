@@ -101,8 +101,8 @@ beside its count), merged, pushed and deployed; 0.1–0.3 confirmed by the user,
 waits for their look. The open work, in the order the user picks (ask as a short choice):
 
 0. **Phase 0 of the report spec, item by item, a plan shown before each** (section "Seenova report: source of
-   truth" below): 0.4 built and waiting for the user's look (each cited site's type, spec §7's rules for actions),
-   then 0.5 to 0.9.
+   truth" below): 0.4 (site types) deployed and 0.5 (evidence) built, both waiting for the user's look; then 0.6
+   (runs), 0.7 (location), 0.8 (snapshot and digest), 0.9 (template clean-up).
 1. The rest of the user's list of 17 Nov: the report's competitors and sources (3–4), the bug in the dynamics
    window. Each waits for its screenshots. (Savollar, point 5, was made simple on 18 Nov from the user's own
    screenshot of it.)
@@ -202,6 +202,26 @@ that is committed.
    that no key and no client's name is in it.
 
 ## Done (as of 18 November 2026)
+
+- **Built, waiting for the user's look: Phase 0 item 0.5 of the report spec, evidence for every finding and the
+  answers as a CSV (21 Nov), on the branch `phase0-evidence`; merged and pushed the same day, when the user chose
+  "Ship 0.5, then plan 0.6".** The user: "Ship 0.4, then plan 0.5";
+  after the plan they chose, when asked, every answer in full in the PDF too. `metrics.top_finding` picks the
+  report's top finding (spec §4.1, §4.14): the buyer question where tracked competitors are named in the most
+  answers and the client in none (else beside it, else the client alone, else the open shelf). On the baseline:
+  one Russian question with 2 answers, the two tied rivals named, the client absent. Every
+  buyer answer is numbered (A1…); the summary's top finding shows each answer's passage and opens the whole answers;
+  each entry of the risks register names its answers as links; a new section 14, "Evidence", has every answer in
+  full, word for word, with its cited pages and the assistant, model, date and web search, and "Answers as CSV".
+  Paper: the answers print in a smaller type and two columns; the PDF of the baseline is 26 pages (17 after 0.2;
+  41 with the answers in the screen's type, more than the 5 extra pages first estimated). The test harness learned
+  two things (`backend/tests/README.md`): it places the parts React streams late, as a browser does, and its
+  percentage check leaves out quoted answers. Tests: `pytest` 40 pass and 1 expected failure (0.8); `-m page` 16
+  pass and 1 expected failure (0.8); the report's own 49 percentages stand beside their count (3 more are inside
+  quoted answers); the type check and the linter are clean. Looked at in headless Chrome on the baseline: the
+  summary in English and Russian on desktop, opened and closed, and as print; the risks register; the evidence
+  section in English on desktop and as print, in Uzbek and Russian at 390px; two printed PDF pages; nothing wider
+  than the screen, no console error. No new variable, no new table, no paid request.
 
 - **Built, waiting for the user's look: Phase 0 item 0.4 of the report spec, a type for every cited site and
   the actions a type allows (21 Nov), on the branch `phase0-domain-types`; merged, pushed and deployed the same day,
@@ -1223,5 +1243,6 @@ All from `frontend/`: `npm run dev` (development), `npm run build` then `npm run
 - Use the baseline client's first check (spec §3.3) as the test fixture. Acceptance tests are in spec §11.1; they run in `backend/tests/` on that check's data, which stays on this computer (`backend/tests/README.md`). Never write the client's name, its competitors' names or its project's id into a committed file.
 - Work on one Phase 0 item at a time. Show me a plan before writing code.
 - Decided with the user on 21 Nov 2026, while planning Phase 0: the baseline's scope card shows 20 slots, 15 completed and 5 excluded, with the reason that the free check asks ChatGPT 5 of the 10 questions (nothing failed: only 15 were planned); a Gemini answer that ran no web search counts as completed and says so ("Gemini searched in k of n"); the report surfaces (the report, its Hisobotlar copy, the PDF, the snapshot, the digest, the email) read the single data object in Phase 0, and the 0–100 score goes from everywhere (Hisobotlar's register, the dashboard's project cards, the landing page's sample report, the email too), while the other pages move to the object later.
+- Decided with the user on 21 Nov 2026, for item 0.5: every buyer answer is printed in full, word for word, in the report's PDF too (its evidence section), not by its beginning.
 - Decided with the user on 21 Nov 2026, for item 0.4: a cited site our list, the project and a review don't type is typed by the AI (`automated`) at the end of every live check, and once on the two live projects' latest checks; a route onto a site (which a "get listed" action needs) comes only from our checked seed list or a review by hand, never from the AI.
 - Decided with the user on 21 Nov 2026, for item 0.2: with the score gone, each of the report's five areas shows its count and no status (no Weak/Fair/Good, no coloured dot); the client's "used as a source" is spec §6.3's, answers citing its site over answers that cite any site (0 of 7 on the baseline), not over every answer.

@@ -115,11 +115,36 @@ class _Builder(HTMLParser):
         self.current.children.append(data)
 
 
+def _place_streamed(root: Node) -> None:
+    """React sends a part of the page that was late as `<div hidden id="S:n">` at the end, and a script moves its
+    content into the place held by `<template id="P:n">`. A browser runs that script; this reader doesn't, so it
+    moves them the same way, until none is left (a late part may hold the places of others). Seen on 21 Nov 2026:
+    the evidence cards' contents (Phase 0 item 0.5) arrived that way, and read empty where they stand."""
+    segments = {node.attrs["id"][2:]: node for node in root.walk() if node.tag == "div" and node.attrs.get("id", "").startswith("S:")}
+    for _ in range(len(segments) + 1):
+        moved = False
+        for node in list(root.walk()):
+            segment = segments.get(node.attrs.get("id", "")[2:]) if node.tag == "template" and node.attrs.get("id", "").startswith("P:") else None
+            if segment is None or segment.parent is None or node.parent is None:
+                continue
+            segment.parent.children.remove(segment)
+            for child in segment.children:
+                if isinstance(child, Node):
+                    child.parent = node.parent
+            at = node.parent.children.index(node)
+            node.parent.children[at : at + 1] = segment.children
+            segment.parent = None
+            moved = True
+        if not moved:
+            break
+
+
 class Page:
     def __init__(self, html: str, url: str = "") -> None:
         builder = _Builder()
         builder.feed(html)
         builder.close()
+        _place_streamed(builder.root)
         self.root, self.html, self.url = builder.root, html, url
 
     @property
@@ -182,11 +207,13 @@ class Page:
 
     def percentages(self) -> List[Tuple[str, Optional[int], Optional[int]]]:
         """Every percentage a reader sees, with the count it stands on: the `data-k` and `data-n` of the
-        nearest element that carries both, else None. Glossary examples (`data-example`) are left out."""
+        nearest element that carries both, else None. Glossary examples (`data-example`) are left out, and so are
+        the answers quoted word for word as evidence (`data-verbatim`, Phase 0 item 0.5): a percentage an
+        assistant wrote is its, not a number of the report's."""
         found: List[Tuple[str, Optional[int], Optional[int]]] = []
 
         def visit(node: Node) -> None:
-            if node.tag in HIDDEN or "data-example" in node.attrs:
+            if node.tag in HIDDEN or "data-example" in node.attrs or "data-verbatim" in node.attrs:
                 return
             for child in node.children:
                 if isinstance(child, Node):
