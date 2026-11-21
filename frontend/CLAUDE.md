@@ -803,6 +803,10 @@ from the check's data object (`WaveMetrics`), each with what it is counted over 
   `about`), and the digest with Copy (`copy-digest.tsx`). One A4 page on paper (smaller type, the questions in two
   columns, the form left out). Hisobotlar shows the latest check's digest with Copy under the latest report, and a
   link to the snapshot of the first check (`Project.firstRunId`).
+- topics (Phase 0 item 0.9, spec §6.3): a topic with fewer than 3 answers gets no standing ("too few answers"), and
+  the topics are counted by standing and ordered worst first only when at least 3 of them have 3 answers
+  (`metrics.topic_ranking`); otherwise a line says why. The risks register judges only such topics. A block with
+  nothing to show says "No data:" and why, never a table of headings alone.
 The Overview and the other pages keep Peec's four numbers (`BrandScore`) and the six site kinds until they move to
 the data object.
 

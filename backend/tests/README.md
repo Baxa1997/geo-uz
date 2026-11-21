@@ -30,7 +30,10 @@ SQLite file and blanks every key before `app` is imported, and checks that it he
   database; `pagetools.py` starts the servers and reads the page. It moves the parts React streams late
   (`<div hidden id="S:n">`) into their places (`<template id="P:n">`), as the browser's script does, and its
   percentage check leaves out answers quoted word for word (`data-verbatim`) as it does glossary examples
-  (`data-example`): both since Phase 0 item 0.5 (21 Nov 2026).
+  (`data-example`): both since Phase 0 item 0.5 (21 Nov 2026). Since 0.9 it also places the parts streamed inside
+  tables (`<tbody>` and `<tr>` of a `<table hidden>`). `empty_check.py` adds a made-up check with nothing to show
+  (nothing cited, nobody named, no brand question) for the empty states, and takes it out after; one page test prints
+  the report to PDF with Chrome and reads its section numbers (`pypdf`, in `requirements-dev.txt`).
 
 Names, counts and texts of the baseline come from `fixtures/baseline.expected.json`, never from a test file:
 the repository is public. So does the project's id, which opens its report by link.

@@ -5,19 +5,22 @@ import { shareOf, useCountWords } from "@/shared/hooks/use-count-words";
 import type { Report, WaveGroup, WaveMetrics } from "@/shared/types/api";
 import { BlockTitle, PercentBar, ReportCard, ReportTable, Share } from "./report-parts";
 
-/** How the client stands in a group of questions, the worst first. */
-type Standing = "absent" | "behind" | "level" | "ahead" | "nobody";
+/** How the client stands in a group of questions, the worst first; `small`: too few answers to judge (0.9). */
+type Standing = "absent" | "behind" | "level" | "ahead" | "nobody" | "small";
 
-const ORDER: Standing[] = ["absent", "behind", "level", "ahead", "nobody"];
+const ORDER: Standing[] = ["absent", "behind", "level", "ahead", "nobody", "small"];
 const TAG: Record<Standing, string> = {
   absent: "border-negative/40 bg-negative/10 text-negative",
   behind: "border-progress/40 bg-progress/10 text-progress",
   level: "border-foreground/20 bg-muted text-foreground",
   ahead: "border-positive/40 bg-positive/10 text-positive",
   nobody: "border-foreground/15 text-muted-foreground",
+  small: "border-dashed border-foreground/20 text-muted-foreground",
 };
 
-function standingOf(row: WaveGroup): Standing {
+/** A group's standing; one with fewer answers than spec §6.3's minimum isn't judged (Phase 0 item 0.9). */
+function standingOf(row: WaveGroup, minimum: number): Standing {
+  if (row.answers < minimum) return "small";
   const rival = row.rivals.value;
   if (row.named === 0) return rival > 0 ? "absent" : "nobody";
   return row.named > rival ? "ahead" : row.named < rival ? "behind" : "level";
@@ -30,7 +33,9 @@ function standingOf(row: WaveGroup): Standing {
  * worst first: its questions, the answers naming the client counted in answers ("0 / 2", its share beside it
  * only on a wide sheet), the competitors named most there (every one that ties), the standing as a word, and
  * what to do about it. The same by the language of the question. The counts are the check's data object's
- * (Phase 0 item 0.3). The questions themselves are the next section.
+ * (Phase 0 item 0.3). The questions themselves are the next section. Spec §6.3's rule (0.9): a topic with fewer
+ * than 3 answers gets no standing, and the topics are counted by standing and ordered worst first only when at
+ * least 3 of them have enough answers; otherwise they keep the questions' order, with a line saying why.
  */
 export function Topics({ report, metrics }: { report: Report; metrics: WaveMetrics }) {
   const t = useTranslations("Report.topics");
@@ -40,7 +45,9 @@ export function Topics({ report, metrics }: { report: Report; metrics: WaveMetri
   const nameOf = (id: string) => [brand, ...competitors].find((item) => item.id === id)?.name ?? id;
   const byTopic = metrics.topics;
   const byLanguage = metrics.languages;
-  const count = (standings: Standing[]) => byTopic.filter((row) => standings.includes(standingOf(row))).length;
+  const ranking = metrics.topic_ranking;
+  const minimum = ranking.minimum_answers;
+  const count = (standings: Standing[]) => byTopic.filter((row) => standings.includes(standingOf(row, minimum))).length;
   const totals = [
     { key: "strong", value: count(["ahead"]), color: "text-positive" },
     { key: "even", value: count(["level"]), color: "text-foreground" },
@@ -56,17 +63,23 @@ export function Topics({ report, metrics }: { report: Report; metrics: WaveMetri
         <p className="text-muted-foreground">{t("why")}</p>
       </div>
 
-      <dl className="grid grid-cols-3 gap-2 print:break-inside-avoid">
-        {totals.map((total) => (
-          <ReportCard key={total.key} className="flex flex-col gap-0.5 px-3.5 py-2.5">
-            <dd className={cn("text-2xl leading-tight font-semibold tabular-nums", total.color)}>{total.value}</dd>
-            <dt className="text-xs text-pretty text-muted-foreground">{t(`totals.${total.key}`)}</dt>
-          </ReportCard>
-        ))}
-      </dl>
+      {ranking.ranked ? (
+        <dl className="grid grid-cols-3 gap-2 print:break-inside-avoid">
+          {totals.map((total) => (
+            <ReportCard key={total.key} className="flex flex-col gap-0.5 px-3.5 py-2.5">
+              <dd className={cn("text-2xl leading-tight font-semibold tabular-nums", total.color)}>{total.value}</dd>
+              <dt className="text-xs text-pretty text-muted-foreground">{t(`totals.${total.key}`)}</dt>
+            </ReportCard>
+          ))}
+        </dl>
+      ) : (
+        <p data-block="topics-unranked" className="rounded-[3px] bg-muted px-3.5 py-2.5 text-sm text-pretty print:break-inside-avoid">
+          {t("unranked", { topics: ranking.topics, largest: ranking.largest, minimumTopics: ranking.minimum_topics, minimumAnswers: minimum })}
+        </p>
+      )}
 
       <ReportCard className="@container">
-        <GroupTable heading={t("topic")} rows={byTopic} label={(key) => labelFor(messages.Topics, key)} nameOf={nameOf} advice />
+        <GroupTable heading={t("topic")} rows={byTopic} label={(key) => labelFor(messages.Topics, key)} nameOf={nameOf} advice minimum={minimum} ranked={ranking.ranked} />
       </ReportCard>
 
       {/* One language has nothing to compare */}
@@ -74,7 +87,7 @@ export function Topics({ report, metrics }: { report: Report; metrics: WaveMetri
         <div className="flex flex-col gap-2 print:break-inside-avoid">
           <BlockTitle>{t("languageTitle")}</BlockTitle>
           <ReportCard className="@container">
-            <GroupTable heading={t("language")} rows={byLanguage} label={(key) => (key === "uz" || key === "ru" || key === "en" ? languages(key) : key)} nameOf={nameOf} />
+            <GroupTable heading={t("language")} rows={byLanguage} label={(key) => (key === "uz" || key === "ru" || key === "en" ? languages(key) : key)} nameOf={nameOf} minimum={minimum} ranked />
           </ReportCard>
         </div>
       )}
@@ -83,9 +96,9 @@ export function Topics({ report, metrics }: { report: Report; metrics: WaveMetri
 }
 
 /**
- * Groups of questions as rows, the worst standing first: the answers naming the client out of all the
- * group's answers with a bar, the competitors named most with their own count, the standing as a tag, and
- * (`advice`) what the standing asks for under the group's name.
+ * Groups of questions as rows, the worst standing first when `ranked` (else in the questions' order): the answers
+ * naming the client out of all the group's answers with a bar, the competitors named most with their own count,
+ * the standing as a tag (none under `minimum` answers), and (`advice`) what the standing asks for.
  */
 function GroupTable({
   heading,
@@ -93,17 +106,21 @@ function GroupTable({
   label,
   nameOf,
   advice = false,
+  minimum,
+  ranked,
 }: {
   heading: string;
   rows: WaveGroup[];
   label: (key: string) => string;
   nameOf: (id: string) => string;
   advice?: boolean;
+  minimum: number;
+  ranked: boolean;
 }) {
   const t = useTranslations("Report.topics");
   const words = useCountWords();
   const share = (row: WaveGroup) => shareOf(row.named, row.answers) ?? 0;
-  const sorted = [...rows].sort((a, b) => ORDER.indexOf(standingOf(a)) - ORDER.indexOf(standingOf(b)) || share(a) - share(b));
+  const sorted = ranked ? [...rows].sort((a, b) => ORDER.indexOf(standingOf(a, minimum)) - ORDER.indexOf(standingOf(b, minimum)) || share(a) - share(b)) : rows;
   const bar = "hidden w-14 shrink-0 @xl:block @3xl:w-24";
 
   return (
@@ -127,13 +144,14 @@ function GroupTable({
       }
     >
       {sorted.map((row) => {
-        const standing = standingOf(row);
+        const standing = standingOf(row, minimum);
         const rivals = words.names(row.rivals.ids.map(nameOf));
         return (
           <tr key={row.key} className="align-top print:break-inside-avoid">
             <th scope="row" className="text-left font-medium">
               {label(row.key)}
-              {advice && <span className="mt-0.5 block text-xs font-normal text-pretty text-muted-foreground">{t(`advice.${standing}`, { rival: rivals })}</span>}
+              {/* A topic too small to judge says so in its tag; the line above the table says why */}
+              {advice && standing !== "small" && <span className="mt-0.5 block text-xs font-normal text-pretty text-muted-foreground">{t(`advice.${standing}`, { rival: rivals })}</span>}
             </th>
             <td className="hidden text-muted-foreground tabular-nums @2xl:table-cell">{row.prompts}</td>
             <td>

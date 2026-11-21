@@ -252,6 +252,47 @@ def test_no_heading_stands_empty(report_page: Page) -> None:
 
 
 @page
+def test_a_check_with_nothing_to_show_says_why(db: Any, site: Any, baseline: Dict[str, Any]) -> None:
+    """Spec defect 13: an explicit empty state ("No data: reason") in the place of a bare heading or a table of
+    headings alone, on a made-up check where nothing is cited, nobody is named and no brand question was asked."""
+    import empty_check
+
+    project_id = empty_check.make(db, baseline["tables"]["projects"][0]["user_id"])
+    try:
+        shown = site.page(f"/en/projects/{project_id}/report")
+        assert shown.empty_headings() == []
+        assert shown.section_numbers() == list(range(1, len(shown.section_numbers()) + 1))
+        sources = shown.section("sources")
+        assert sources is not None and "No data: no answer in this check cited a site." in sources.text
+        assert not any(node.tag == "table" for node in sources.walk())
+        topics = shown.block("topics-unranked")
+        assert topics is not None and "aren't ranked" in topics.text
+        assert "No tracked business is named in any buyer answer yet" in shown.block("top-finding").text
+    finally:
+        empty_check.remove(db, project_id)
+
+
+@page
+def test_the_pdf_numbers_its_sections_without_gaps(site: Any, baseline: Dict[str, Any], tmp_path: Any) -> None:
+    """The printed report (0.9 checks the paper too): its section titles, written in capitals, run 1, 2, 3...
+    without a gap, read from the PDF Chrome prints of the report's page."""
+    import shutil
+    import subprocess
+
+    from pypdf import PdfReader
+
+    chrome = next((path for path in ("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", shutil.which("chromium"), shutil.which("google-chrome")) if path and shutil.os.path.exists(path)), None)
+    if chrome is None:
+        pytest.skip("no Chrome on this computer")
+    target = tmp_path / "report.pdf"
+    url = f"{site.web_url}/en/projects/{baseline['project_id']}/report"
+    subprocess.run([chrome, "--headless=new", "--disable-gpu", "--no-pdf-header-footer", "--virtual-time-budget=20000", f"--print-to-pdf={target}", url], capture_output=True, timeout=240)
+    text = "\n".join(page.extract_text() or "" for page in PdfReader(str(target)).pages)
+    numbers = [int(match.group(1)) for match in re.finditer(r"^(\d{1,2})\.\s*([^a-zа-яё\n]{4,})$", text, re.MULTILINE)]
+    assert numbers and numbers == list(range(1, len(numbers) + 1)), numbers
+
+
+@page
 def test_the_glossary_examples_are_marked(report_page: Page) -> None:
     """Passes since 0.2 (21 Nov 2026): the definitions were rewritten without the score, and hold no example number."""
     glossary = report_page.section("glossary")

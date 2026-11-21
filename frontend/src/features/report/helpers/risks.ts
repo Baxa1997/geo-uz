@@ -96,7 +96,9 @@ export function outlook(report: Report, actions: Action[], wave: WaveResponse): 
   const [firstFact] = report.wrongFacts;
   if (firstFact) risks.push({ kind: "facts", level: "high", count: report.wrongFacts.length, claim: firstFact.claim, action: numberOf((action) => action.kind === "fact"), evidence: [] });
 
-  const lost = metrics.topics.filter((topic) => topic.named === 0 && topic.rivals.value > 0 && points(topic.rivals.value, topic.answers) >= LOST_FROM);
+  // Only a topic with enough answers to judge (spec §6.3, Phase 0 item 0.9): one answer is never a lost topic
+  const judged = metrics.topics.filter((topic) => metrics.topic_ranking.eligible.includes(topic.key));
+  const lost = judged.filter((topic) => topic.named === 0 && topic.rivals.value > 0 && points(topic.rivals.value, topic.answers) >= LOST_FROM);
   const [worst] = lost;
   if (worst) {
     const keys = lost.map((topic) => topic.key);
@@ -169,7 +171,7 @@ export function outlook(report: Report, actions: Action[], wave: WaveResponse): 
     });
   }
 
-  const close = metrics.topics
+  const close = judged
     .flatMap((topic) => {
       const gap = points(topic.rivals.value, topic.answers) - points(topic.named, topic.answers);
       return topic.named > 0 && topic.rivals.value > topic.named && gap <= CLOSE_WITHIN ? [{ key: topic.key, gap }] : [];

@@ -218,7 +218,8 @@
         "behind": "Ortdasiz",
         "level": "Teng",
         "ahead": "Oldindasiz",
-        "nobody": "Hech kim yoʻq"
+        "nobody": "Hech kim yoʻq",
+        "small": "Javoblar kam"
       },
       "advice": {
         "absent": "AI bu yerda sizni umuman tilga olmadi, {rival}ni esa oldi. Shu mavzuda sahifa kerak.",
@@ -228,7 +229,8 @@
         "nobody": "AI bu yerda hech bir kuzatilayotgan brendni tilga olmadi: birinchi boʻlish imkoniyati."
       },
       "languageTitle": "Savol tili boʻyicha",
-      "language": "Til"
+      "language": "Til",
+      "unranked": "Mavzular saralanmaydi: buning uchun kamida {minimumTopics} ta mavzuda {minimumAnswers} tadan javob boʻlishi kerak, bu tekshiruvda esa {topics} ta mavzu, eng kattasida {largest} ta. Har biri oʻz hisobi bilan koʻrsatilgan."
     },
     "sources": {
       "lead": "AI havola beradigan saytlar va har birining turi. Sizga ochiqlariga joylashish — javoblarga kirishning eng tez yoʻli.",
@@ -258,7 +260,8 @@
       "rivals": "Yonidagi raqobatchilar",
       "notChecked": "Tekshirilmagan",
       "notCheckedHint": "Bu turdagi saytga hech narsa taklif qilinmaydi, shuning uchun unda bor-yoʻqligingiz tekshirilmaydi.",
-      "dashNote": "«Siz bormisiz?» ustunidagi chiziqcha: tekshirilmagan, chunki bu turdagi saytga hech narsa taklif qilinmaydi."
+      "dashNote": "«Siz bormisiz?» ustunidagi chiziqcha: tekshirilmagan, chunki bu turdagi saytga hech narsa taklif qilinmaydi.",
+      "noSites": "Maʼlumot yoʻq: bu tekshiruvda hech bir javob saytga havola bermagan."
     },
     "accuracy": {
       "lead": "Ikki savol: AI siz haqingizda qanday ohangda gapiradi va aytgani toʻgʻrimi. Notoʻgʻri narx yoki manzil mijoz yoʻqotishga olib keladi.",
