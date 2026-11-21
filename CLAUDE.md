@@ -79,7 +79,7 @@ reader's signature lines gone from the report; the landing page's indicator, the
 smaller headline; (19 Nov) full-height screens for the first check and the login, black and gray buttons in the
 dashboard, and Savollar made simple. **(21 Nov) Phase 0 of the report spec**, its test harness and items 0.1–0.3
 (the slot log and the data object with the scope card; counts in the place of the 0–100 score; every percentage
-beside its count), merged and pushed; 0.1–0.3 confirmed by the user, the harness waiting for their look.
+beside its count), merged, pushed and deployed; 0.1–0.3 confirmed by the user, the harness waiting for their look.
 
 **The user's decisions that hold now:**
 
@@ -204,8 +204,9 @@ that is committed.
 ## Done (as of 18 November 2026)
 
 - **Finished, confirmed by the user on 21 Nov: Phase 0 item 0.3 of the report spec, every percentage beside its
-  count (21 Nov); merged and pushed with step 1, 0.1 and 0.2 on the branch `phase0-wave-object` the same day, when
-  the user chose "commit, push", not deployed.** The user: "start 0.3";
+  count (21 Nov); merged, pushed and deployed with step 1, 0.1 and 0.2 (the branch `phase0-wave-object`) the same
+  day, when the user chose "commit, push" and then to deploy the backend with it, since a push to `main` redeploys
+  the site on Vercel (its build passed; the server's previous `app/` is kept as `app.bak-before-phase0`).** The user: "start 0.3";
   after the plan they chose, when asked, to move the sections it touches to the data object. One rounding rule,
   `metrics.share` (a whole percent, half up), mirrored by the frontend's `shareOf`; every percentage in the report
   goes through `Share` ("2/7 · 29%", with its count marked). The data object now carries each cited site's kind
@@ -226,7 +227,7 @@ that is committed.
   check; Phase 1's change log), the app pages outside the report. No new variable, no new table.
 
 - **Finished, confirmed by the user on 21 Nov: Phase 0 item 0.2 of the report spec, counts in the place of the
-  0–100 score (21 Nov); merged and pushed with step 1, 0.1 and 0.3 (`phase0-wave-object`), not deployed.** The user: "start 0.2";
+  0–100 score (21 Nov); merged, pushed and deployed with step 1, 0.1 and 0.3 (`phase0-wave-object`).** The user: "start 0.2";
   after the plan they chose, when asked, counts with no status for the five areas, and the client's citation rate
   over the answers that cite a site (spec §6.3). `app/metrics.py` adds `visibility` (the headline: 0 of 15 buyer
   answers on the baseline, "small sample" under 20, 0 of 10 questions, 0 of 7 answers citing a site) and `brands`
@@ -252,7 +253,7 @@ that is committed.
   variable, no new table.
 
 - **Finished, confirmed by the user on 21 Nov: Phase 0 item 0.1 of the report spec, the slot log, the data object
-  and the scope card (21 Nov); merged and pushed with step 1, 0.2 and 0.3 (`phase0-wave-object`), not deployed.** Built in a session
+  and the scope card (21 Nov); merged, pushed and deployed with step 1, 0.2 and 0.3 (`phase0-wave-object`).** Built in a session
   that ran out before writing it up; looked at and recorded the same day, when the user chose "Finish 0.1". The
   slot log (`app/slots.py`, a new table `slots`) writes every call a check plans to an assistant before anything
   is asked and closes it as completed, failed or excluded with why; a check made before the log has its slots
@@ -268,11 +269,13 @@ that is committed.
   the type check and the linter are clean. Looked at in headless Chrome on the baseline (the tests' own servers
   and database): the shared report in Uzbek, Russian and English on desktop and at a true 390px (nothing wider
   than the screen), the PDF's first page (16 pages), the method section, and Hisobotlar's copy in Uzbek on
-  desktop and at 390px. The rest of the report still has the 0–100 score and the 50s: item 0.2. Not deployed:
-  the server makes the `slots` table at start (locked on Supabase like the others). No new variable.
+  desktop and at 390px. The rest of the report still has the 0–100 score and the 50s: item 0.2. Deployed on
+  21 Nov: the server made the `slots` table at start, locked on Supabase like the others (row level security on,
+  no rights for `anon` and `authenticated`), and both live projects' checks read as rebuilt slots (the paid
+  project's weekly check 20 of 20 completed, the baseline 15 completed and 5 excluded). No new variable.
 
-- **Built, waiting for the user's look: Phase 0 step 1 of the report spec, the test harness (21 Nov); merged and
-  pushed with items 0.1–0.3 (`phase0-wave-object`; the branch `phase0-harness` holds no commit of its own).** The user: "start step 1", after the plan for spec §2's Phase 0 (ten
+- **Built, waiting for the user's look: Phase 0 step 1 of the report spec, the test harness (21 Nov); merged,
+  pushed and deployed with items 0.1–0.3 (`phase0-wave-object`; the branch `phase0-harness` holds no commit of its own).** The user: "start step 1", after the plan for spec §2's Phase 0 (ten
   steps, this one without a product change). `backend/tests/` (`backend/tests/README.md`): the baseline client's
   first check exported read-only from the server into `backend/tests/fixtures/` (ignored by git, as are the spec
   and its go-to-market companion: they name a client), loaded into a fresh SQLite database with every key
