@@ -204,8 +204,9 @@ that is committed.
 ## Done (as of 18 November 2026)
 
 - **Built, waiting for the user's look: Phase 0 item 0.8 of the report spec, the Free Snapshot and the Telegram
-  digest (21 Nov), on the branch `phase0-snapshot`; merged and pushed the same day, when the user chose "Ship 0.8,
-  then plan 0.9".** The user: "Ship 0.7, then plan 0.8"; after the
+  digest (21 Nov), on the branch `phase0-snapshot`; merged, pushed and deployed the same day, when the user chose
+  "Ship 0.8, then plan 0.9" (Vercel's build passed; the server's previous `app/` is kept as `app.bak-before-snapshot`;
+  `demo_requests.about` added at start; both live projects' digests and snapshots answer).** The user: "Ship 0.7, then plan 0.8"; after the
   plan they chose, when asked, a request button with no price, today's free check as it is asked, and the digest in
   Hisobotlar, on the snapshot and in the report's email. The snapshot, `/<lang>/snapshot/<first check's id>` (no
   login): what was asked ("10 buyer questions · ChatGPT 5 + Gemini 10 · 1 run") and the single-run note, who holds
