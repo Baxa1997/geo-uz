@@ -4,6 +4,7 @@ limit, so each is counted per connection and in all:
 
 - a login code sent: 5 an hour and 20 a day from one connection, 300 a day in all;
 - a free check asked (the owner confirmed the draft): 2 a day from one connection, `FREE_CHECKS_A_DAY` (20) in all;
+  past the day's limit for everyone a check joins the queue instead (`app/queue.py`), 2 a day from one connection;
 - a website read for a first check (a cent or so, the competitors' search): 6 a day from one connection;
 - a request form (a demo, the First Audit): 3 a day from one connection.
 
@@ -36,6 +37,7 @@ DAY = datetime.timedelta(days=1)
 LIMITS: Dict[str, Tuple[Tuple[Tuple[int, datetime.timedelta], ...], Optional[int]]] = {
     "code": (((5, HOUR), (20, DAY)), 300),
     "check": (((2, DAY),), None),
+    "queue": (((2, DAY),), None),
     "read": (((6, DAY),), None),
     "form": (((3, DAY),), None),
 }
@@ -83,6 +85,12 @@ def over(db: Db, kind: str, ip: str) -> Optional[str]:
         _alert_once(db, kind, everyone)
         return "everyone"
     return None
+
+
+def checks_full(db: Db) -> bool:
+    """Whether the day's free checks for everyone are taken: a check confirmed now joins the queue, and a website read
+    now skips the competitors' search on ChatGPT, since its check won't be asked today."""
+    return _count(db, "check", now() - DAY) >= settings.free_checks_a_day
 
 
 def record(db: Db, kind: str, ip: str) -> None:

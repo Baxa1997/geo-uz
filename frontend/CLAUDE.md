@@ -69,6 +69,14 @@ slices change in the contract below:
   asked for every three seconds (`getFirstRunPartial`); the finished check's page takes its place. The live
   counts come from the answers' own words, so a competitor the answers spell another way is counted only at
   the end, and the page says the final numbers come when the check ends.
+- **The free checks' queue (22 Nov; the user: "Cap at 2 a day + queue").** Past the day's free checks for everyone
+  (`FREE_CHECKS_A_DAY`) the draft comes with `queue: true`: step 4 opens with a note that the check joins the queue
+  and the report is emailed, and its button reads "Join the queue"; a website read past the limit had no competitor
+  search (`competitorsSearched: false`), so step 3 says they were suggested from the website. Confirming sends the
+  page's language (`language`, the email's). A check in the queue (`waiting`) shows `FirstRunQueued`: its place, the
+  address the report goes to, and "Back to the home page" in the bar; the page isn't polled. The team runs the queue
+  by hand (`backend/README.md`). The empty dashboard says the check is in the queue, its place and where the report
+  goes, with a link to it, in the place of "No projects yet" (the user's choice: "Queue on the dashboard").
 - **Every screen of the first check and the login is the window's height (18 Nov; the user: "full page not
   scrolling … buttons must be always visible").** The page never scrolls (`data-screen`, and globals.css keeps
   `html` from scrolling under it); a part inside does. The setup (`Shell`): the title and the numbered steps at

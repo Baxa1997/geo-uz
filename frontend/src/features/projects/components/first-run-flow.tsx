@@ -10,12 +10,14 @@ import type { FirstRun } from "@/shared/types/api";
 import { PARTIAL_POLL_MS, RUN_POLL_MS } from "../constants";
 import { FirstRunLive } from "./first-run-live";
 import { FirstRunProgress } from "./first-run-progress";
+import { FirstRunQueued } from "./first-run-queued";
 import { FirstRunResultView } from "./first-run-result";
 import { FirstRunScreen } from "./first-run-screen";
 import { FirstRunSetup } from "./first-run-setup";
 
-/** Nothing changes by itself in these: done and failed for good, `ready` until the owner confirms. */
-const isResting = (run: FirstRun) => run.status === "done" || run.status === "failed" || run.status === "ready";
+/** Nothing changes by itself in these: done and failed for good, `ready` until the owner confirms, `waiting` until
+ * the team runs the queue (its report is emailed, so the page isn't asked every second for days). */
+const isResting = (run: FirstRun) => run.status === "done" || run.status === "failed" || run.status === "ready" || run.status === "waiting";
 const BEFORE_CHECK = ["queued", "reading_site", "ready"];
 
 type Frame = { who: string | null; year: number };
@@ -56,6 +58,8 @@ function FirstRunStarted({ initial, ...frame }: Frame & { initial: FirstRun }) {
   const again = () => router.replace("/onboarding/first-run");
 
   if (BEFORE_CHECK.includes(run.status)) return <FirstRunSetup run={run} {...frame} />;
+
+  if (run.status === "waiting") return <FirstRunQueued run={run} who={frame.who} />;
 
   if (result.data) return <FirstRunResultView result={result.data} runId={run.id} onAgain={again} who={frame.who} />;
 
