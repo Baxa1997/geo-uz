@@ -100,8 +100,8 @@ questions to Gemini and five of them to ChatGPT too (`FIRST_RUN_CHATGPT_QUESTION
 gets all ten). The project saved from it is a trial (`billing.status` "trial", `projects.paid` empty): it
 keeps its first check and is not checked again. We switch a plan on by hand, `python -m app.admin plan
 <project id> start|business|agency` (`list` shows the projects), and from then the timer checks it:
-**Standard** (`start`, $39.99 a month) on Mondays with 25 questions, **Pro** (`business`, $89.99) on Mondays
-and Thursdays with 50 questions and the facts check, **Enterprise** (`agency`, by agreement) for several
+**Standard** (`start`, $34.99 a month) on Mondays with 25 questions, **Pro** (`business`, $79.99) on Mondays
+and Thursdays with 50 questions and the facts check, **Enterprise** (`agency`, custom price) for several
 projects. `python -m app.weekly` run every day picks the projects due that day. Gemini is reached through
 Vertex AI when `GOOGLE_CLOUD_PROJECT` is set (a credentials file, a plain POST, Google Search grounding; the
 cited pages come as Google's redirect links and are followed to their real addresses). Gemini first answered
@@ -327,8 +327,10 @@ for everyone emails the team once that day. The connection is `x-vercel-forwarde
 `X-Forwarded-For`, else `X-Real-IP`; the login-code route logs the three until a real login through the site has shown
 which one Vercel sends. Refused: 429 `too_many_codes`, `first_run_limit` (one connection) or `free_checks_busy` (all).
 
-**Paying with Stripe** (22 Nov 2026, `app/billing.py`; the user has a Stripe account): Standard ($39.99 a month,
-$399.90 a year) and Pro ($89.99, $899.90) through Stripe's checkout (`POST /projects/{id}/checkout` → the page's
+**Paying with Stripe** (22 Nov 2026, `app/billing.py`; the user has a Stripe account; its Standard and Pro monthly
+prices were made by hand in Stripe's dashboard the same day and are taken by `setup --use start:month=price_…
+--use business:month=price_…`, which gives each our lookup key and makes the yearly prices on the same products): Standard ($34.99 a month,
+$349.90 a year) and Pro ($79.99, $799.90; the user's prices of 22 Nov, were $39.99 and $89.99) through Stripe's checkout (`POST /projects/{id}/checkout` → the page's
 address) and Stripe's billing page (`POST /projects/{id}/billing-portal`: change plan, card, cancel at the period's
 end, invoices). Stripe's webhook (`POST /stripe/webhook`, its signature checked) reads the subscription again from
 Stripe on every event (they can come out of order) and keeps the project's plan, cycle, status (`billing_status`),

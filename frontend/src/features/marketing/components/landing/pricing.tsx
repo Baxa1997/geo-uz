@@ -9,6 +9,7 @@ import { formatPrice } from "@/shared/constants";
 import { MonoLabel } from "./mono-label";
 import { PlanTable } from "./plan-table";
 import { Panel, Section, SectionHead } from "./section";
+import { TargetLink } from "../free-check-link";
 import { SectionLink } from "../section-link";
 
 /** The plans as cards, the done-for-you service as a banner, then the full comparison. */
@@ -40,12 +41,12 @@ export function Pricing() {
                   </p>
                 </div>
                 <p className="min-h-10 text-sm text-pretty text-muted-foreground">{t(`tiers.${key}.for`)}</p>
-                <SectionLink
-                  hash={target}
+                <TargetLink
+                  target={target}
                   className={cn(buttonVariants({ variant: recommended ? "brand" : "secondary", size: "lg" }), "h-11 w-full")}
                 >
                   {t(`tiers.${key}.cta`)}
-                </SectionLink>
+                </TargetLink>
                 <div className="flex flex-col gap-3 text-sm">
                   <p className="text-muted-foreground">{t("includes")}</p>
                   <ul className="flex flex-col gap-3">

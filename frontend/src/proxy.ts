@@ -31,8 +31,10 @@ export default function proxy(request: NextRequest) {
     !request.nextUrl.searchParams.has("expired")
   ) {
     const next = request.nextUrl.searchParams.get("next");
-    // Only a path on this site: "/projects/x", never "//evil.com"
-    const target = next && /^\/(?![/\\])/.test(next) ? next : "/dashboard";
+    // Only a path on this site: "/projects/x", never "//evil.com". "Check for free" (?start=check) goes on to the
+    // dashboard, which opens the first check for an account that has no project yet
+    const fallback = request.nextUrl.searchParams.get("start") === "check" ? "/dashboard?start=check" : "/dashboard";
+    const target = next && /^\/(?![/\\])/.test(next) ? next : fallback;
     return NextResponse.redirect(new URL(`/${locale}${target}`, request.url));
   }
   return intl(request);

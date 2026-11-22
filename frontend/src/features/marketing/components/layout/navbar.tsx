@@ -4,10 +4,11 @@ import { Logo } from "@/shared/components/logo";
 import { buttonVariants } from "@/shared/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/shared/helpers/utils";
-import { NAV, SECTION, TILE_COLORS } from "../../constants";
+import { NAV, TILE_COLORS } from "../../constants";
 import { MobileMenu } from "./mobile-menu";
 import { NavMenu } from "./nav-menu";
 import { NavbarShell } from "./navbar-shell";
+import { FreeCheckLink } from "../free-check-link";
 import { SectionLink } from "../section-link";
 
 /** Logo, the menus (Product, Resources) and links (Pricing, Agencies), language, log in and the free check. */
@@ -66,12 +67,11 @@ export function Navbar() {
           {t("login")}
         </Link>
         {/* Under 380px the button doesn't fit beside the logo and the menu; the menu has it too */}
-        <SectionLink
-          hash={SECTION.check}
+        <FreeCheckLink
           className={cn(buttonVariants({ variant: "brand" }), "h-11 rounded-xl px-4 text-base font-semibold max-sm:px-3 max-[379px]:hidden")}
         >
           {t("cta")}
-        </SectionLink>
+        </FreeCheckLink>
         <MobileMenu />
       </div>
     </NavbarShell>

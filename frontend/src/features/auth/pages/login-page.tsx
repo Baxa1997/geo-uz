@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { cookies } from "next/headers";
 import { Logo } from "@/shared/components/logo";
-import { Link, redirect } from "@/i18n/navigation";
+import { redirect } from "@/i18n/navigation";
 import { setPageLocale } from "@/i18n/page-locale";
 import { AUTH_LIVE } from "@/shared/api/client";
 import { getCurrentUser } from "@/shared/api/session";
 import { SESSION_COOKIE } from "@/shared/constants";
 import { EmailLogin } from "../components/email-login";
-import { parseLoginTarget } from "../helpers/login-target";
+import { parseLoginTarget, startsFreeCheck } from "../helpers/login-target";
 
 type Props = PageProps<"/[locale]/login">;
 
@@ -26,6 +26,7 @@ export default async function LoginPage({ params, searchParams }: Props) {
     cookies(),
   ]);
   const target = parseLoginTarget(query);
+  const freeCheck = !target.snapshot && startsFreeCheck(query, target);
   // With a session cookie proxy.ts sends the visitor on before this page, unless a page found the session
   // ended (?expired=1). Without a cookie the backend isn't asked at all: the form shows at once. With one, it
   // is asked, since another tab may have logged in again meanwhile.
@@ -40,17 +41,14 @@ export default async function LoginPage({ params, searchParams }: Props) {
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-semibold tracking-tight">{t("heading")}</h1>
         {target.snapshot && <p className="text-sm text-pretty text-muted-foreground">{t("descriptionCheck")}</p>}
+        {freeCheck && <p className="text-sm text-pretty text-muted-foreground">{t("freeCheck")}</p>}
         {expired && query.expired && <p className="text-sm text-pretty text-muted-foreground">{t("expired")}</p>}
       </div>
 
       <EmailLogin target={target} />
 
-      <p className="text-center text-sm text-muted-foreground">
-        {t("noAccount")}{" "}
-        <Link href="/check" className="font-semibold text-foreground underline-offset-4 hover:underline">
-          {t("startFree")}
-        </Link>
-      </p>
+      {/* The free check starts after login, so a new visitor needs no link from here: the code makes the account */}
+      {!freeCheck && <p className="text-center text-sm text-pretty text-muted-foreground">{t("noAccount")}</p>}
 
       {demoEmail && (
         <p className="rounded-xl bg-muted px-3 py-2 text-xs text-pretty text-muted-foreground">

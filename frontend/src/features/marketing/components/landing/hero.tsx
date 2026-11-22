@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { ArrowRightIcon as ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight";
 import { SparkleIcon as Sparkle } from "@phosphor-icons/react/dist/ssr/Sparkle";
+import { FIRST_RUN_LIVE } from "@/shared/api/client";
 import { IconMentions, IconPlace, IconSources } from "@/shared/components/own-icons";
 import type { AppIcon } from "@/shared/types/icon";
 import { SECTION } from "../../constants";
@@ -71,7 +72,7 @@ export function Hero() {
           id={SECTION.check}
           className="mt-2 flex w-full max-w-2xl scroll-mt-28 flex-col gap-2 rounded-2xl border bg-background p-3 text-left shadow-xl shadow-brand/10 motion-safe:animate-rise [animation-delay:160ms] sm:p-4"
         >
-          <SiteForm examples={EXAMPLES.map((key) => examples(key))} />
+          <SiteForm examples={EXAMPLES.map((key) => examples(key))} loginFirst={FIRST_RUN_LIVE} />
         </div>
         <p className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-sm text-muted-foreground motion-safe:animate-rise [animation-delay:200ms]">
           <span>{t("micro")}</span>

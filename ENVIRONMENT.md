@@ -19,7 +19,8 @@ the user is told in the reply which variable, where to set it (this computer, Ve
 
 ## Frontend
 
-All three are public (built into the site), none is a secret.
+All three are public (built into the site), none is a secret. Nothing of Stripe's is set here: the backend makes the
+checkout and billing pages and the site only follows their links, so Stripe's keys live on the server alone.
 
 | Variable | What it does | This computer | Vercel |
 | --- | --- | --- | --- |

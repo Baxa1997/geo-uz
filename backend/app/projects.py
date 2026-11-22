@@ -29,8 +29,8 @@ from . import billing
 from .engines import ENGINE_NAMES, web
 
 # What each plan allows (`frontend/src/shared/constants`, PLAN_LIMITS)
-# The plans as the user set them on 15 Nov 2026: "start" is Standard ($39.99 a month, checked weekly),
-# "business" is Pro ($89.99, checked twice a week), "agency" is Enterprise (several projects, by agreement).
+# The plans as the user set them on 15 Nov 2026: "start" is Standard ($34.99 a month since 22 Nov 2026, checked
+# weekly), "business" is Pro ($79.99, checked twice a week), "agency" is Enterprise (several projects, custom).
 PLAN_LIMITS = {
     "start": {"prompts": 25, "competitors": 5, "facts": 0},
     "business": {"prompts": 50, "competitors": 5, "facts": 20},

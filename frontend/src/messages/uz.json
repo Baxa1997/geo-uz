@@ -2250,7 +2250,7 @@
       "perMonth": "oyiga",
       "includes": "Tarifga kiradi:",
       "managedTitle": "Tuzatishlarni biz bajaraylikmi?",
-      "managed": "Managed GEO — narxi kelishiladi: Pro tarifi va tuzatishlar jamoamizdan.",
+      "managed": "Managed GEO — narxi individual: Pro tarifi va tuzatishlar jamoamizdan.",
       "managedCta": "Bogʻlanish",
       "note": "Savol — mijoz AI yordamchiga beradigan bitta soʻrov, masalan: “Toshkentda qaysi oʻquv markazi yaxshi?” Har tekshiruv savollarni qaytadan beradi, chunki AI har safar biroz boshqacha javob beradi.",
       "tiers": {
@@ -2341,7 +2341,7 @@
           "several": "Bir nechta"
         }
       },
-      "byAgreement": "Kelishuv asosida"
+      "byAgreement": "Individual"
     },
     "faq": {
       "title": "Koʻp beriladigan savollar.",
@@ -3007,9 +3007,9 @@
         "text": "Har bir toʻlovning hisob-fakturasi, yuklab olish uchun."
       },
       "soon": "tez orada",
-      "priceByAgreement": "<b>Kelishuv asosida</b>",
+      "priceByAgreement": "<b>Individual</b>",
       "trial": "Bepul birinchi tekshiruv",
-      "byAgreement": "Kelishuv asosida",
+      "byAgreement": "Individual",
       "twiceWeekly": "Haftasiga 2 marta",
       "trialDays": "Sinov davri: {days} kun qoldi",
       "trialEnded": "Sinov davri tugadi",
@@ -3099,8 +3099,8 @@
     "mockHint": "Sinov rejimi: istalgan 6 xonali kod mos keladi. Maʼlumotli namuna hisob: {email}.",
     "heading": "Hisobingizga kiring",
     "expired": "Kirish muddati tugagan: emailingizni qayta kiriting.",
-    "noAccount": "Hisobingiz yoʻqmi?",
-    "startFree": "Bepul tekshiruvdan boshlang",
+    "noAccount": "Hisobingiz yoʻqmi? Emailingizni kiriting: kod bilan hisob ochiladi va bepul tekshiruv darhol boshlanadi.",
+    "freeCheck": "Bepul tekshiruv kirganingizdan soʻng darhol boshlanadi. Hisobingiz yoʻqmi? Emailga yuborilgan kod uni ochadi.",
     "panel": {
       "title": "AI sizni tavsiya qilyaptimi — har tekshiruvda koʻrib turing.",
       "items": {

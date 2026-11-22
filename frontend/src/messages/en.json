@@ -2250,7 +2250,7 @@
       "perMonth": "per month",
       "includes": "This includes:",
       "managedTitle": "Want us to apply the fixes?",
-      "managed": "Managed GEO — priced by agreement: the Pro plan, with the fixes done by our team.",
+      "managed": "Managed GEO — custom price: the Pro plan, with the fixes done by our team.",
       "managedCta": "Contact us",
       "note": "A question is one request a customer sends an AI assistant, e.g. “Which training centre in Tashkent is the best?” Every check asks the questions anew, because AI answers a little differently each time.",
       "tiers": {
@@ -2341,7 +2341,7 @@
           "several": "Several"
         }
       },
-      "byAgreement": "By agreement"
+      "byAgreement": "Custom"
     },
     "faq": {
       "title": "Frequently asked questions.",
@@ -3007,9 +3007,9 @@
         "text": "Every payment’s invoice, to download."
       },
       "soon": "soon",
-      "priceByAgreement": "<b>By agreement</b>",
+      "priceByAgreement": "<b>Custom</b>",
       "trial": "Free first check",
-      "byAgreement": "By agreement",
+      "byAgreement": "Custom",
       "twiceWeekly": "Twice a week",
       "trialDays": "Free trial, {days, plural, one {# day} other {# days}} left",
       "trialEnded": "Free trial ended",
@@ -3099,8 +3099,8 @@
     "mockHint": "Test mode: any 6-digit code works. Demo account with data: {email}.",
     "heading": "Log in to your account",
     "expired": "Your session has ended: enter your email again.",
-    "noAccount": "No account yet?",
-    "startFree": "Start with a free check",
+    "noAccount": "No account yet? Enter your email: the code creates one, and your free check starts right after.",
+    "freeCheck": "Your free check starts right after you log in. No account yet? The code we email you creates one.",
     "panel": {
       "title": "Does AI recommend you? See it after every check.",
       "items": {
