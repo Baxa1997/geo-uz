@@ -1569,7 +1569,14 @@
     "deleteFailed": "Couldn't delete it. Try again.",
     "deleteConfirm": "Delete",
     "cancel": "Cancel",
-    "namedOf": "named in {named} of {answers} answers"
+    "namedOf": "named in {named} of {answers} answers",
+    "queued": {
+      "title": "Your free check of {site} is in the queue",
+      "place": "Your place: {place}.",
+      "text": "Today's free checks were taken; we'll ask your questions and email the report to {email}. Your project appears here once it's ready.",
+      "yourEmail": "your email",
+      "open": "See the check"
+    }
   },
   "Overview": {
     "noDataTitle": "No measurements yet",
@@ -4403,7 +4410,8 @@
       },
       "competitors": {
         "title": "Your competitors",
-        "text": "The ones we found with a web search, each with its own website. Remove the wrong ones with ✕ or correct them, and add those that are missing (up to {max}). They stand beside you in the results; if places are left, the businesses the answers name most are added."
+        "text": "The ones we found with a web search, each with its own website. Remove the wrong ones with ✕ or correct them, and add those that are missing (up to {max}). They stand beside you in the results; if places are left, the businesses the answers name most are added.",
+        "textRecalled": "Suggested from what we read on your website, without a web search: check each one. Remove the wrong ones with ✕ or correct them, and add those that are missing (up to {max}). They stand beside you in the results; if places are left, the businesses the answers name most are added."
       },
       "questions": {
         "title": "Your questions to track",
@@ -4443,7 +4451,9 @@
       },
       "panel": {
         "tagline": "See what AI assistants tell your customers about you"
-      }
+      },
+      "queueNote": "Today's free checks are taken, so your check joins the queue. We'll ask exactly these questions and email you the report when it's ready.",
+      "joinQueue": "Join the queue"
     },
     "saving": "Saving…",
     "saveFailed": "Couldn't save the project. Try again.",
@@ -4478,6 +4488,14 @@
       "reading": "Reading the answers: the final numbers are about to appear",
       "note": "Results appear in the table below as they come in. The final numbers are counted when the check ends.",
       "empty": "The answers in hand cite no source yet."
+    },
+    "queued": {
+      "title": "You're in the queue",
+      "text": "Today's free checks are taken, so your check of {site} waits its turn. We'll ask exactly what you confirmed and email the report to {email}.",
+      "yourEmail": "your email",
+      "place": "Your place in the queue",
+      "next": "You can close this page. The email has a link to your results, and logging in again brings you back here.",
+      "home": "Back to the home page"
     }
   },
   "Trial": {

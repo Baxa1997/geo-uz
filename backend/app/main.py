@@ -31,7 +31,7 @@ from . import cache, delivery, firstrun, fixes, mail, projects, slots, wave
 from . import digest as telegram_digest
 from .config import settings
 from .db import Brand, DemoRequest, FirstRun, LoginCode, Project, ReadSession, Run, Session, SessionLocal, User, create_tables, now
-from . import billing, limits
+from . import billing, limits, queue
 import stripe
 from starlette.concurrency import run_in_threadpool
 
@@ -241,6 +241,15 @@ def run_json(run: FirstRun) -> Dict[str, Any]:
     return {"id": run.id, "domain": run.domain, "status": run.status, "answered": run.answered, "total": run.total, "error": run.error}
 
 
+def run_out(run: FirstRun, user: User) -> Dict[str, Any]:
+    """A run as its account's page reads it: a check in the queue also says its place and where its report goes."""
+    out = run_json(run)
+    if run.status == queue.WAITING:
+        with ReadSession() as db:
+            out.update(place=queue.place(db, run), email=user.email)
+    return out
+
+
 def _saved_run(db: Any, run_id: str) -> Optional[FirstRun]:
     # A run that kept its raw answers first: a project saved from the replay then has all of it
     return db.scalar(select(FirstRun).where(FirstRun.status == "done", FirstRun.id != run_id).order_by(FirstRun.raw.is_(None), FirstRun.created_at.desc()))
@@ -315,14 +324,15 @@ def _progress(run_id: str) -> Any:
     return progress
 
 
-def work_prepare(run_id: str, domain: str, category: Optional[str], city: Optional[str], country: Optional[str] = None, name: Optional[str] = None) -> None:
-    """Reads the website outside the request that started the run, and leaves the draft for the owner: `ready`."""
+def work_prepare(run_id: str, domain: str, category: Optional[str], city: Optional[str], country: Optional[str] = None, name: Optional[str] = None, search: bool = True) -> None:
+    """Reads the website outside the request that started the run, and leaves the draft for the owner: `ready`.
+    `search` False when the day's free checks are taken: the competitors come from the profile, not a paid search."""
     _progress(run_id)("reading_site", 0, 0)
     try:
         if settings.first_run_replay:
             draft, cost = replay_draft(run_id), 0.0
         else:
-            draft, cost = firstrun.prepare(domain, category, city, country, name)
+            draft, cost = firstrun.prepare(domain, category, city, country, name, search=search)
         _finish(run_id, {"status": "ready", "draft": draft, "cost_usd": cost}, over=False)
     except firstrun.FirstRunError as error:
         _finish(run_id, {"status": "failed", "error": error.code})
@@ -350,11 +360,16 @@ def work_check(run_id: str, draft: Dict[str, Any], confirmed: Dict[str, Any], sp
     except Exception as error:  # a run must never stay "asking" for ever
         print(f"first run {run_id} failed: {error!r}")
         outcome = {"status": "failed", "error": "internal"}
+    # The OpenAI balance ran out under it: back to the queue, whole, rather than a failure or a check with holes
+    if not settings.first_run_replay and queue.ran_dry(run_id):
+        queue.put_back(run_id, confirmed)
+        return
     _finish(run_id, outcome)
 
 
-# A check that asked the assistants: what the daily limit counts. Reading a website costs a cent, asking half a dollar.
-CHECKED = ("asking", "reading_answers", "done")
+# A check that asked the assistants, or waits in the queue to: the account's free one, and what the daily limit
+# counts. Reading a website costs a cent, asking half a dollar.
+CHECKED = ("waiting", "asking", "reading_answers", "done")
 
 
 def _checks_today(db: Any, user: User) -> int:
@@ -390,7 +405,11 @@ def start_first_run(body: FirstRunRequest, request: Request, user: User = Depend
         # The same website again within a day: the run it already has, not a second one to pay for
         again = db.scalar(select(FirstRun).where(FirstRun.user_id == user.id, FirstRun.domain == domain, FirstRun.created_at > day, FirstRun.status != "failed").order_by(FirstRun.created_at.desc()))
         if again:
-            return run_json(again)
+            return run_out(again, user)
+        # A check in the queue is the account's free one: its page shows the place, not a refusal
+        queued = db.scalar(select(FirstRun).where(FirstRun.user_id == user.id, FirstRun.status == queue.WAITING))
+        if queued:
+            return run_out(queued, user)
         if _free_check_used(db, user):
             raise HTTPException(402, "free_check_used")
         if not settings.first_run_replay and _checks_today(db, user) >= settings.first_runs_a_day:
@@ -404,11 +423,13 @@ def start_first_run(body: FirstRunRequest, request: Request, user: User = Depend
             if limits.over(db, "read", ip):
                 raise HTTPException(429, "first_run_limit")
             limits.record(db, "read", ip)
+        # The day's free checks taken: this one will wait in the queue, so the competitors' search isn't paid for
+        search = limits.exempt(user.email) or not limits.checks_full(db)
         run = FirstRun(user_id=user.id, domain=domain)
         db.add(run)
         db.commit()
         started = run_json(run)
-    threading.Thread(target=work_prepare, args=(started["id"], domain, body.category, body.city, projects._country(body.country) or None, _words(body.name, 120) or None), daemon=True).start()
+    threading.Thread(target=work_prepare, args=(started["id"], domain, body.category, body.city, projects._country(body.country) or None, _words(body.name, 120) or None, search), daemon=True).start()
     return started
 
 
@@ -435,6 +456,8 @@ def draft_json(run: FirstRun) -> Dict[str, Any]:
         "brandQuestions": draft.get("brandQuestions") or [],
         # How many customers' questions a first check asks
         "maxQuestions": settings.first_run_questions,
+        # False: the competitors are the profile's own, not a search's (the day's free checks were taken)
+        "competitorsSearched": bool(who.get("competitorsSearched", True)),
         "replayed": bool(draft.get("replayed")),
     }
 
@@ -444,7 +467,10 @@ def first_run_draft(run_id: str, user: User = Depends(current_user)) -> Dict[str
     run = own_run(run_id, user)
     if not run.draft:
         raise HTTPException(409, run.error or run.status)
-    return draft_json(run)
+    # `queue`: the day's free checks are taken, so the last step says the check will join the queue
+    with ReadSession() as db:
+        full = not limits.exempt(user.email) and limits.checks_full(db)
+    return {**draft_json(run), "queue": full}
 
 
 class Confirmed(BaseModel):
@@ -458,6 +484,8 @@ class Confirmed(BaseModel):
     competitors: List[Dict[str, Any]] = []
     prompts: List[Dict[str, Any]] = []
     brandQuestions: List[Dict[str, Any]] = []
+    # The page's language: the email of a check from the queue is written in it
+    language: str = ""
 
 
 @app.post("/first-runs/{run_id}/start", status_code=202)
@@ -467,7 +495,7 @@ def confirm_first_run(run_id: str, body: Confirmed, request: Request, user: User
     if run.status != "ready":
         # Pressed twice, or the page reloaded: the check that is running or done
         if run.status in CHECKED:
-            return run_json(run)
+            return run_out(run, user)
         raise HTTPException(409, run.error or run.status)
     draft = run.draft or {}
     language = lambda value: value if value in firstrun.QUESTION_LANGUAGES else "ru"  # noqa: E731
@@ -513,14 +541,22 @@ def confirm_first_run(run_id: str, body: Confirmed, request: Request, user: User
         found = db.get(FirstRun, run_id)
         # Taken here, in one transaction, so two presses start one check
         if found is None or found.status != "ready":
-            return run_json(found or run)
-        # Free checks from one connection in a day, and all of them (`FREE_CHECKS_A_DAY`): each costs about $0.6
+            return run_out(found or run, user)
+        # Free checks from one connection in a day, and all of them (`FREE_CHECKS_A_DAY`): each costs about $0.6.
+        # Past the day's checks for everyone it joins the queue (`app/queue.py`), asked when the balance allows
         if not limits.exempt(user.email):
             ip = limits.client_ip(request)
             reached = limits.over(db, "check", ip)
+            if reached == "connection" or (reached and limits.over(db, "queue", ip)):
+                raise HTTPException(429, "first_run_limit")
             if reached:
-                raise HTTPException(429, "first_run_limit" if reached == "connection" else "free_checks_busy")
+                limits.record(db, "queue", ip)
+                queue.join(found, confirmed, body.language)
+                db.commit()
+                return run_out(found, user)
             limits.record(db, "check", ip)
+        # Kept for the check's email, should the OpenAI balance run out under it and send it to the queue
+        found.draft = {**(found.draft or {}), "language": body.language if body.language in queue.LANGUAGES else "uz"}
         found.status, found.answered, found.total = "asking", 0, 0
         db.commit()
         started = run_json(found)
@@ -532,7 +568,8 @@ def confirm_first_run(run_id: str, body: Confirmed, request: Request, user: User
 def first_runs(user: User = Depends(current_user)) -> Any:
     """The account's first runs, newest first: after login the frontend goes on from the latest."""
     with SessionLocal() as db:
-        return [run_json(run) for run in db.scalars(select(FirstRun).where(FirstRun.user_id == user.id).order_by(FirstRun.created_at.desc()).limit(20))]
+        runs = list(db.scalars(select(FirstRun).where(FirstRun.user_id == user.id).order_by(FirstRun.created_at.desc()).limit(20)))
+    return [run_out(run, user) for run in runs]
 
 
 def own_run(run_id: str, user: User) -> FirstRun:
@@ -545,7 +582,7 @@ def own_run(run_id: str, user: User) -> FirstRun:
 
 @app.get("/first-runs/{run_id}")
 def first_run_progress(run_id: str, user: User = Depends(current_user)) -> Dict[str, Any]:
-    return run_json(own_run(run_id, user))
+    return run_out(own_run(run_id, user), user)
 
 
 @app.get("/first-runs/{run_id}/partial")

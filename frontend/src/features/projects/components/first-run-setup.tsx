@@ -5,7 +5,7 @@ import { ArrowRightIcon as ArrowRight } from "@phosphor-icons/react/dist/ssr/Arr
 import { CheckIcon as Check } from "@phosphor-icons/react/dist/ssr/Check";
 import { CircleNotchIcon as LoaderCircle } from "@phosphor-icons/react/dist/ssr/CircleNotch";
 import { InfoIcon as Info } from "@phosphor-icons/react/dist/ssr/Info";
-import { useMessages, useTranslations } from "next-intl";
+import { useLocale, useMessages, useTranslations } from "next-intl";
 import { useId, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { ChipInput } from "@/shared/components/chip-input";
 import { CountrySelect } from "@/shared/components/country-select";
@@ -211,6 +211,7 @@ function AskedOn() {
 function DraftSteps({ run, draft, onAnother, ...frame }: Frame & { run: FirstRun; draft: FirstRunDraft; onAnother: () => void }) {
   const t = useTranslations("FirstRun.setup");
   const o = useTranslations("Onboarding");
+  const locale = useLocale();
   const messages = useMessages();
   const queryClient = useQueryClient();
   const id = useId();
@@ -259,7 +260,8 @@ function DraftSteps({ run, draft, onAnother, ...frame }: Frame & { run: FirstRun
     setErrors(found);
     if (Object.keys(found).length > 0) return;
     if (step !== "questions") return go(index + 1);
-    confirm.mutate(onboardingRequest(site, choice, topics, written, brandQuestions.filter((question) => question.text).map((question) => ({ ...question, selected: true }))));
+    // The page's language goes with it: should the check wait in the queue, its email is written in it
+    confirm.mutate({ ...onboardingRequest(site, choice, topics, written, brandQuestions.filter((question) => question.text).map((question) => ({ ...question, selected: true }))), language: locale });
   }
 
   const status = confirm.error instanceof ApiError ? confirm.error.status : null;
@@ -269,11 +271,12 @@ function DraftSteps({ run, draft, onAnother, ...frame }: Frame & { run: FirstRun
     <Shell
       step={step}
       title={t(`${step}.title`, { brand: site.name.trim() || draft.domain })}
-      description={t(`${step}.text`, { max: step === "competitors" ? MAX_COMPETITORS : max })}
+      // Past the day's free checks no web search looked for the competitors: the step says they are the website's
+      description={step === "competitors" && draft.competitorsSearched === false ? t("competitors.textRecalled", { max: MAX_COMPETITORS }) : t(`${step}.text`, { max: step === "competitors" ? MAX_COMPETITORS : max })}
       onSubmit={submit}
       onBack={index === 1 ? onAnother : () => go(index - 1)}
       back={index === 1 ? t("anotherSite") : undefined}
-      submit={busy ? t("starting") : step === "questions" ? t("startCheck") : t("next")}
+      submit={busy ? t("starting") : step === "questions" ? t(draft.queue ? "joinQueue" : "startCheck") : t("next")}
       disabled={busy}
       {...frame}
     >
@@ -352,6 +355,12 @@ function DraftSteps({ run, draft, onAnother, ...frame }: Frame & { run: FirstRun
       )}
       {step === "questions" && (
         <>
+          {draft.queue && (
+            <p className="flex items-start gap-2 rounded-lg border border-progress/40 bg-progress/10 px-3 py-2.5 text-sm text-pretty">
+              <Info aria-hidden className="mt-0.5 size-4 shrink-0 text-progress" />
+              {t("queueNote")}
+            </p>
+          )}
           {errors.questions && (
             <p role="alert" className="text-sm text-destructive">
               {o(errors.questions, { max })}

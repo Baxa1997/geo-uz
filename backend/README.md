@@ -327,6 +327,20 @@ for everyone emails the team once that day. The connection is `x-vercel-forwarde
 `X-Forwarded-For`, else `X-Real-IP`; the login-code route logs the three until a real login through the site has shown
 which one Vercel sends. Refused: 429 `too_many_codes`, `first_run_limit` (one connection) or `free_checks_busy` (all).
 
+**The free checks' queue** (22 Nov 2026, the user's choice when the OpenAI balance was about $2: "Cap at 2 a day +
+queue", run "by hand"; `app/queue.py`): past `FREE_CHECKS_A_DAY` for everyone a confirmed free check isn't refused, it
+waits (`first_runs.status` `waiting`, what the owner confirmed and the page's language kept in its `draft`), 2 a day
+from one connection; it is the account's one free check, so another website shows it. The draft says so before the
+press (`queue: true`: step 4 reads "Join the queue"), and a website read past the limit skips the competitors' search
+on ChatGPT, the profile's own list taking its place (`competitorsSearched: false`: step 3 says so). A waiting run's
+`GET /first-runs/{id}` carries its `place` and the `email` its report goes to. The server can't see the OpenAI balance,
+so the queue runs only by hand, on the server: `python -m app.queue` lists it in order with what it would cost, and
+`python -m app.queue --run N` asks the first N one after another as the site would and emails each one done a link to
+its results in its language (it refuses while `FRONTEND_ORIGIN` is localhost). A check whose call found the balance
+empty (OpenAI's `insufficient_quota`) goes back to its place, its slots dropped, whether from the queue (the run stops
+there) or from the site (the visitor sees the queue, not a failure). Test: `tests/test_queue.py` (stand-in assistants,
+emails kept in a list).
+
 **Paying with Stripe** (22 Nov 2026, `app/billing.py`; the user has a Stripe account; its Standard and Pro monthly
 prices were made by hand in Stripe's dashboard the same day and are taken by `setup --use start:month=price_…
 --use business:month=price_…`, which gives each our lookup key and makes the yearly prices on the same products): Standard ($34.99 a month,

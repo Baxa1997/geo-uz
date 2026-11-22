@@ -1569,7 +1569,14 @@
     "deleteFailed": "Oʻchirib boʻlmadi. Qayta urinib koʻring.",
     "deleteConfirm": "Oʻchirish",
     "cancel": "Bekor qilish",
-    "namedOf": "{answers} ta javobdan {named} tasida tilga olingan"
+    "namedOf": "{answers} ta javobdan {named} tasida tilga olingan",
+    "queued": {
+      "title": "{site} bepul tekshiruvi navbatda",
+      "place": "Oʻrningiz: {place}.",
+      "text": "Oʻsha kungi bepul tekshiruvlar tugagan edi; savollaringizni beramiz va hisobotni {email} manziliga yuboramiz. Tayyor boʻlgach, loyihangiz shu yerda paydo boʻladi.",
+      "yourEmail": "emailingiz",
+      "open": "Tekshiruvni ochish"
+    }
   },
   "Overview": {
     "noDataTitle": "Hali oʻlchov yoʻq",
@@ -4403,7 +4410,8 @@
       },
       "competitors": {
         "title": "Raqobatchilaringiz",
-        "text": "Veb-qidiruv bilan topganlarimiz, har biri oʻz sayti bilan. Notoʻgʻrisini ✕ bilan olib tashlang yoki tuzating, yetishmayotganini qoʻshing ({max} tagacha). Ular natijada yoningizda turadi; boʻsh joy qolsa, javoblar eng koʻp tilga olgan bizneslar qoʻshiladi."
+        "text": "Veb-qidiruv bilan topganlarimiz, har biri oʻz sayti bilan. Notoʻgʻrisini ✕ bilan olib tashlang yoki tuzating, yetishmayotganini qoʻshing ({max} tagacha). Ular natijada yoningizda turadi; boʻsh joy qolsa, javoblar eng koʻp tilga olgan bizneslar qoʻshiladi.",
+        "textRecalled": "Saytingizdan oʻqiganlarimiz asosida, veb-qidiruvsiz taklif qilindi: har birini tekshiring. Notoʻgʻrisini ✕ bilan olib tashlang yoki tuzating, yetishmayotganini qoʻshing ({max} tagacha). Ular natijada yoningizda turadi; boʻsh joy qolsa, javoblar eng koʻp tilga olgan bizneslar qoʻshiladi."
       },
       "questions": {
         "title": "Kuzatiladigan savollar",
@@ -4443,7 +4451,9 @@
       },
       "panel": {
         "tagline": "AI yordamchilar mijozlaringizga siz haqingizda nima deyishini koʻring"
-      }
+      },
+      "queueNote": "Bugungi bepul tekshiruvlar tugadi, shuning uchun tekshiruvingiz navbatga qoʻyiladi. Aynan shu savollarni beramiz va hisobot tayyor boʻlgach, emailingizga yuboramiz.",
+      "joinQueue": "Navbatga turish"
     },
     "saving": "Saqlanmoqda…",
     "saveFailed": "Loyihani saqlab boʻlmadi. Qayta urinib koʻring.",
@@ -4478,6 +4488,14 @@
       "reading": "Javoblar oʻqilmoqda: yakuniy sonlar hozir chiqadi",
       "note": "Natijalar kelishi bilan quyidagi jadvalda koʻrinadi. Yakuniy sonlar tekshiruv tugagach hisoblanadi.",
       "empty": "Kelgan javoblarda hali manba koʻrsatilmagan."
+    },
+    "queued": {
+      "title": "Siz navbatdasiz",
+      "text": "Bugungi bepul tekshiruvlar tugadi, shuning uchun {site} tekshiruvi navbatini kutmoqda. Aynan siz tasdiqlagan savollarni beramiz va hisobotni {email} manziliga yuboramiz.",
+      "yourEmail": "emailingiz",
+      "place": "Navbatdagi oʻrningiz",
+      "next": "Bu sahifani yopishingiz mumkin. Xatda natijalarga havola boʻladi, keyingi safar kirganingizda esa shu yerga qaytasiz.",
+      "home": "Bosh sahifaga"
     }
   },
   "Trial": {

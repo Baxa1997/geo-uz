@@ -100,7 +100,8 @@ beside its count), merged, pushed and deployed; 0.1–0.3 confirmed by the user,
   Tilga olinish, Oʻrni, Baho; the name is Seenova AI and the mark two rounds (`frontend/CLAUDE.md`, "Our look").
 - A paid request (OpenAI, Gemini) is made only when the user has chosen it, as for the real checks of 16 Nov
   and the one request of 17 Nov. On this computer first checks are replayed (`FIRST_RUN_REPLAY=true`; the user,
-  16 Nov: "replay"). The one standing spend is the paid project on the server (below).
+  16 Nov: "replay"). Since 22 Nov nothing on the server spends by itself: the paid project is a trial again
+  (below), and free checks are capped at 2 a day (`FREE_CHECKS_A_DAY=2` on the server; the OpenAI balance is about $2).
 
 **Go on from here.** Nothing is finished until the user confirms it, and most of "Done" since 15 Nov still
 waits for their look. The open work, in the order the user picks (ask as a short choice):
@@ -138,8 +139,11 @@ waits for their look. The open work, in the order the user picks (ask as a short
 - (18 Nov) Vercel's login turned off (theirs, in Vercel): until then neither the server nor a client given a
   report's link can open the site. Chromium on the server: not yet (the user's choice).
 - The paid project on the server: the user's own site, switched to Standard by hand on 16 Nov for the first
-  weekly check. The timer checks it every Monday at about $1.63 until it goes back to a trial
-  (`python -m app.admin plan <id> start --trial`).
+  weekly check, and back to a trial on 22 Nov (the user's choice: "Skip it this week", to keep the OpenAI balance of
+  about $2 for visitors), so the timer leaves it. Back on: `python -m app.admin plan <id> start` (without `--trial`).
+- (22 Nov) The OpenAI balance is about $2, which the user can't top up for now; free checks are capped at 2 a day on
+  the server (`FREE_CHECKS_A_DAY=2`) until it is. Planned with the user, not built: a queue for the free checks past
+  the cap, so a post that goes viral collects websites and emails, run when the balance is topped up.
 - New passwords, since all were pasted in chat on 15 Nov: the server's root password (an SSH key is installed,
   so it is no longer needed), the Supabase database password (the same one) and the Gmail app password; each
   goes into `backend/.env.server` (ignored by git), not into chat.
@@ -216,6 +220,30 @@ that is committed.
    that no key and no client's name is in it.
 
 ## Done (as of 18 November 2026)
+
+- **Built, waiting for the user's look: the free checks' queue (22 Nov), on the branch `free-check-queue`, not
+  committed.** The user: the OpenAI balance is about $2 and can't be topped up for now, Gemini's isn't usable for the
+  answers (its terms), so a post that goes viral "won't be successful"; asked, they chose "Cap at 2 a day + queue" with
+  queued checks run "by hand", and to skip the paid project's Monday check. Done on the server the same day:
+  `FREE_CHECKS_A_DAY=2` in its `.env` (the backend restarted, `/health` answers) and the paid project back to a trial.
+  Found while planning: every website read ran a ChatGPT web search for competitors (about $0.075) before the cap,
+  which counts only confirmed checks, so readings alone could empty the balance. Built: past the day's free checks a
+  website read skips that search (the profile's own competitors, step 3 saying so), step 4 says the check will join
+  the queue and its button reads "Join the queue", a confirmed check waits (`waiting`, one an account, 2 a day a
+  connection) and its screen shows its place and the address the report goes to; `python -m app.queue` lists the
+  queue with its cost and `--run N` asks the first N and emails each a link to its results in its language (refused
+  while `FRONTEND_ORIGIN` is localhost); a check whose call found the OpenAI balance empty goes back to its place
+  instead of failing, from the queue or from the site (`backend/README.md`). Tests: `pytest` 70 pass (5 new, stand-in
+  assistants, emails kept in a list); type check and linter clean. Looked at in headless Chrome on this computer with
+  throwaway accounts (removed after), the draft's and the start's answers swapped in the browser since this computer
+  replays: steps 3 and 4 and the queue's screen in Uzbek on desktop, the queue's screen in Russian at 390px and in
+  English on desktop, step 4 in English at 390px; nothing wider than the screen, no console error. Then, asked what a
+  new user sees while waiting, the user chose "Queue on the dashboard": an account with no project and a check in the
+  queue sees it on the dashboard (its place, where the report goes, a link to it) in the place of "No projects yet";
+  looked at in Uzbek and English on desktop and Russian at 390px. No new variable
+  (`FREE_CHECKS_A_DAY` is 2 on the server), no new table or column. Not tried: a real email (the tests keep them), a
+  queued check on the server. Before a post: Vercel's login off and `FRONTEND_ORIGIN` the site's address, or nobody
+  can open the site or the emails' links.
 
 - **Built, waiting for the user's look: Vercel's Web Analytics (22 Nov), on the branch `vercel-analytics`; merged,
   pushed and deployed the same day, when the user said "commit push and deploy" (frontend only).** The user: "I need to enable the vercel analytics", with Vercel's own steps. `@vercel/analytics` 2.0.1

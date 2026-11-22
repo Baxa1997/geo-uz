@@ -421,7 +421,7 @@ def search_competitors(who: Dict[str, Any], domain: str, country: str) -> Tuple[
     return rivals, (answer["usd"] or 0.0) + usd
 
 
-def prepare(domain: str, category: Optional[str], city: Optional[str], country: Optional[str] = None, name: Optional[str] = None) -> Tuple[Dict[str, Any], float]:
+def prepare(domain: str, category: Optional[str], city: Optional[str], country: Optional[str] = None, name: Optional[str] = None, search: bool = True) -> Tuple[Dict[str, Any], float]:
     """The first half of a first check, before anybody is asked: the website read, and from it the profile,
     the competitors and the questions, for the owner to correct. Returns the draft the check is then made
     from (`check`) and what writing it cost."""
@@ -440,7 +440,8 @@ def prepare(domain: str, category: Optional[str], city: Optional[str], country: 
     who["brandQuestions"] = [question for question in who["brandQuestions"] if question["language"] in languages]
     general = [{"text": brand_question(language, who["name"], who["city"] if language == "ru" else who["cityEn"]), "language": language} for language in languages]
     # The competitors a search finds come first; the ones the profile recalled fill the places left
-    searched, spent = search_competitors(who, web.domain_of(pages[0]["url"]), country)
+    # `search` False: the day's free checks are taken, so the check joins the queue and the search's cost is saved
+    searched, spent = search_competitors(who, web.domain_of(pages[0]["url"]), country) if search else ([], 0.0)
     usd += spent
     recalled = [rival for rival in who.get("competitors") or [] if all(rival["name"].lower() != found["name"].lower() and not (rival["domain"] and rival["domain"] == found["domain"]) for found in searched)]
     who["competitors"] = (searched + ([] if len(searched) >= 3 else recalled))[:COMPETITOR_LIMIT]

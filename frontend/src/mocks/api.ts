@@ -885,6 +885,8 @@ export const mockApi: ApiClient = {
       questions: result.prompts.map(({ prompt }) => ({ text: prompt.text, language: prompt.language, topic: prompt.topic })),
       brandQuestions: [],
       maxQuestions: 10,
+      queue: false,
+      competitorsSearched: true,
       replayed: false,
     });
   },

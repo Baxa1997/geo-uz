@@ -1070,7 +1070,8 @@ export interface Snapshot {
  * `ready`: the website is read and the draft waits for the owner (`FirstRunDraft`); nobody is asked until
  * they confirm it (`confirmFirstRun`).
  */
-export type FirstRunStatus = "queued" | "reading_site" | "ready" | "asking" | "reading_answers" | "done" | "failed";
+/** `waiting`: confirmed past the day's free checks, in the queue until the team runs it (its report is emailed). */
+export type FirstRunStatus = "queued" | "reading_site" | "ready" | "waiting" | "asking" | "reading_answers" | "done" | "failed";
 
 /** What a first run read from the website, for the owner to correct before the check: GET /first-runs/{id}/draft. */
 export interface FirstRunDraft {
@@ -1091,6 +1092,10 @@ export interface FirstRunDraft {
   brandQuestions: BrandQuestion[];
   /** How many customers' questions a first check asks. */
   maxQuestions: number;
+  /** The day's free checks are taken: confirming puts the check in the queue, and its report is emailed. */
+  queue: boolean;
+  /** False when the competitors are the profile's own, not a web search's (the search is skipped once the day's free checks are taken). */
+  competitorsSearched: boolean;
   /** Development only: a saved check's business, not the website typed. */
   replayed: boolean;
 }
@@ -1109,7 +1114,7 @@ export interface FirstRunPartial {
 }
 
 /** The draft as the owner left it: POST /first-runs/{id}/start. The check asks exactly this. */
-export type FirstRunConfirm = Omit<CreateProjectRequest, "firstRunId">;
+export type FirstRunConfirm = Omit<CreateProjectRequest, "firstRunId"> & { /** The page's language: a queued check's email is written in it. */ language?: string };
 
 export interface FirstRunRequest {
   domain: string;
@@ -1129,6 +1134,9 @@ export interface FirstRun {
   total: number;
   /** Why it failed, as a code ("site_unreadable", "no_engines", "internal"); null otherwise. */
   error: string | null;
+  /** A `waiting` check only: its place in the queue, from 1, and the address its report is emailed to. */
+  place?: number;
+  email?: string;
 }
 
 type ThreeLanguages = Record<"uz" | "ru" | "en", string>;
