@@ -277,6 +277,9 @@ from Chrome's trace): 8 layers, no dropped frames while scrolling, and the page 
   components only the paths in `LANDING_CLIENT_MESSAGES` (marketing/constants), picked with
   `i18n/pick-messages.ts`: add a path when a client component of the navbar, the landing page or the
   dashboard preview starts using a new namespace, or the browser's console shows a missing message.
+- **Vercel's Web Analytics** (`@vercel/analytics`, the user, 22 Nov 2026) is in the root layout, on every page: a small
+  client component that loads Vercel's own deferred script (`/_vercel/insights/script.js` on Vercel; in development a
+  debug script that sends nothing). No cookies. Turned on in Vercel's dashboard (Analytics); nothing to set here.
 - **No app libraries on the landing page.** No TanStack Query (the demo form keeps its own state) and no
   Base UI: `ui/button`, `ui/input` and `ui/separator` are plain elements, and an InfoTip or a Hint downloads its
   bubble (`info-tip-popup.tsx`) the first time one is opened, like ExpandButton its window. Check after adding a

@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
@@ -39,6 +40,8 @@ export default async function LocaleLayout({
           adds the few parts its client components use.
         */}
         <NextIntlClientProvider messages={pickMessages(await getMessages(), ["Common"])}>{children}</NextIntlClientProvider>
+        {/* Vercel's Web Analytics (the user, 22 Nov 2026): visitors and page views, no cookies; it counts only on Vercel */}
+        <Analytics />
       </body>
     </html>
   );
