@@ -112,7 +112,7 @@ export default async function OverviewPage({ params, searchParams }: Props) {
       }
     >
       {/* The alert goes over the sentence, so the numbers and charts follow the sentence directly */}
-      {report.project.billing.status === "trial" && <TrialNotice href={`${base}/settings/plan`} />}
+      <TrialNotice href={`${base}/settings/plan`} billing={report.project.billing} />
       {report.wrongFacts.length > 0 && <WrongFactsAlert count={report.wrongFacts.length} href={to("/wrong-facts")} />}
       <div data-tour="verdict">
         <Verdict report={report} engine={filters.engine} />

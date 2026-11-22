@@ -25,6 +25,7 @@ from sqlalchemy.orm import Session as Db
 from . import domains, firstrun
 from .config import settings
 from .db import Action, Answer, Brand, Citation, DomainType, FirstRun, Mention, Project, Prompt, Run, Slot, User, WrongFact, now
+from . import billing
 from .engines import ENGINE_NAMES, web
 
 # What each plan allows (`frontend/src/shared/constants`, PLAN_LIMITS)
@@ -101,9 +102,8 @@ def project_json(db: Db, project: Project) -> Dict[str, Any]:
         "brandQuestions": project.brand_questions or [],
         "plan": project.plan,
         "limits": PLAN_LIMITS[project.plan],
-        # Billing doesn't exist yet: nothing renews
-        # "trial": the free first check only; "active": paid, checked on its plan's days
-        "billing": {"cycle": "month", "renewsAt": None, "status": "active" if project.paid else "trial"},
+        # Stripe's subscription, or the trial's 7 days (`billing.billing_json`)
+        "billing": billing.billing_json(project),
     }
 
 

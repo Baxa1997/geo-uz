@@ -65,15 +65,42 @@ export interface Project {
   billing: ProjectBilling;
 }
 
-/** How the plan is paid: monthly or for a year ahead, and when the period paid for ends (null until billing exists). */
+/**
+ * How the plan is paid (Stripe since 22 Nov 2026, `backend/app/billing.py`): monthly or for a year ahead, and when the
+ * period paid for ends.
+ */
 export interface ProjectBilling {
   cycle: BillingCycle;
   renewsAt: string | null;
   /**
-   * "trial": the account's free first check is all the project has; nothing more is checked until a plan is
-   * paid. "active": paid, checked on its plan's days. Absent means active.
+   * "trial": the 7 days after the free first check (its report stays; nothing more is checked until a plan is paid);
+   * "trial_ended": past them, unpaid; "active": paid up, checked on its plan's days; "unpaid": a payment failed, the
+   * checks paused until it goes through; "canceled": the subscription ended. Absent means active (sample data).
    */
-  status?: "trial" | "active";
+  status?: BillingStatus;
+  /** When the trial's 7 days end. */
+  trialEndsAt?: string | null;
+  /** When a cancellation takes effect: paid until then. */
+  cancelsAt?: string | null;
+  /** Stripe's checkout can be opened (the backend has its key); otherwise a plan is asked for and switched on by hand. */
+  online?: boolean;
+  /** Stripe's billing page can be opened: the project has a Stripe customer. */
+  portal?: boolean;
+}
+
+export type BillingStatus = "trial" | "trial_ended" | "active" | "unpaid" | "canceled";
+
+/** Stripe's checkout for Standard or Pro (`POST /projects/{id}/checkout`); answered with the page's address. */
+export interface CheckoutRequest {
+  plan: "start" | "business";
+  cycle: BillingCycle;
+  /** The language of the page Stripe sends the customer back to. */
+  language: "uz" | "ru" | "en";
+}
+
+/** An address on Stripe to send the browser to: its checkout or its billing page. */
+export interface StripePage {
+  url: string;
 }
 
 export type BillingCycle = "month" | "year";

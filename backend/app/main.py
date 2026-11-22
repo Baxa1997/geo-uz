@@ -31,7 +31,9 @@ from . import cache, delivery, firstrun, fixes, mail, projects, slots, wave
 from . import digest as telegram_digest
 from .config import settings
 from .db import Brand, DemoRequest, FirstRun, LoginCode, Project, ReadSession, Run, Session, SessionLocal, User, create_tables, now
-from . import limits
+from . import billing, limits
+import stripe
+from starlette.concurrency import run_in_threadpool
 
 SESSION_COOKIE = "geo_session"
 CODE_MINUTES = 10
@@ -852,6 +854,56 @@ def get_report_settings(project_id: str, user: User = Depends(current_user)) -> 
 @app.patch("/projects/{project_id}/report-settings")
 def set_report_settings(project_id: str, body: Json = Body(...), user: User = Depends(current_user)) -> Any:
     return changed(user, project_id, lambda db, project: projects.set_report_settings(db, project, body))
+
+
+# Paying for a plan with Stripe (`app/billing.py`, 22 Nov 2026): Stripe's checkout for Standard or Pro, Stripe's own
+# billing page for a customer (plan, card, cancel, invoices), and the webhook that keeps the project's plan
+@app.post("/projects/{project_id}/checkout")
+def start_checkout(project_id: str, body: Json = Body(...), user: User = Depends(current_user)) -> Dict[str, str]:
+    language = body.get("language") if body.get("language") in ("uz", "ru", "en") else "uz"
+
+    def work(db: Any) -> Dict[str, str]:
+        project = projects.own(db, user, project_id)
+        try:
+            return {"url": billing.checkout(db, project, user, str(body.get("plan") or ""), str(body.get("cycle") or "month"), language)}
+        except billing.BillingError as error:
+            raise HTTPException(error.status, error.code) from error
+        except stripe.StripeError as error:
+            print(f"checkout failed: {error!r}")
+            raise HTTPException(502, "billing_failed") from error
+
+    return in_project(work)
+
+
+@app.post("/projects/{project_id}/billing-portal")
+def open_billing_portal(project_id: str, body: Json = Body(...), user: User = Depends(current_user)) -> Dict[str, str]:
+    language = body.get("language") if body.get("language") in ("uz", "ru", "en") else "uz"
+
+    def work(db: Any) -> Dict[str, str]:
+        project = projects.own(db, user, project_id)
+        try:
+            return {"url": billing.portal(db, project, language)}
+        except billing.BillingError as error:
+            raise HTTPException(error.status, error.code) from error
+        except stripe.StripeError as error:
+            print(f"billing portal failed: {error!r}")
+            raise HTTPException(502, "billing_failed") from error
+
+    return in_project(work, read=True)
+
+
+@app.post("/stripe/webhook")
+async def stripe_webhook(request: Request) -> Dict[str, bool]:
+    """Stripe's events: a checkout completed, a subscription changed or ended, an invoice paid or failed."""
+    payload = await request.body()
+    try:
+        done = await run_in_threadpool(billing.handle, payload, request.headers.get("stripe-signature") or "")
+    except billing.BillingError as error:
+        raise HTTPException(error.status, error.code) from error
+    print(f"stripe: {done}")
+    for project_id in re.findall(r"project (\w+)", done):
+        cache.touch(project_id)
+    return {"received": True}
 
 
 @app.post("/projects/{project_id}/plan-requests", status_code=204)

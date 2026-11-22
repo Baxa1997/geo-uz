@@ -48,6 +48,10 @@ class Settings:
     smtp_from: Optional[str] = field(default_factory=lambda: os.environ.get("SMTP_FROM"))
     openai_key: Optional[str] = field(default_factory=lambda: os.environ.get("OPENAI_API_KEY"))
     gemini_key: Optional[str] = field(default_factory=lambda: os.environ.get("GEMINI_API_KEY"))
+    # Stripe (`app/billing.py`): the secret key (sk_test_… in test mode, then sk_live_…) and the webhook's signing
+    # secret, which `python -m app.billing setup` writes. Without the key, plans are switched on by hand as before
+    stripe_secret_key: Optional[str] = field(default_factory=lambda: os.environ.get("STRIPE_SECRET_KEY") or None)
+    stripe_webhook_secret: Optional[str] = field(default_factory=lambda: os.environ.get("STRIPE_WEBHOOK_SECRET") or None)
     # The assistants that answer customers' questions (comma-separated), of those with a key. Gemini with Google
     # Search is paused on the server (the user's decision, 21 Nov 2026): Google's terms for it (Service Specific
     # Terms 20(k)) allow its answers to be shown only to the person who asked, and forbid storing, analysing or

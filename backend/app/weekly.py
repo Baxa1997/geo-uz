@@ -34,7 +34,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from sqlalchemy import select
 
-from . import delivery, domains, engines, firstrun, fixes, places, slots
+from . import billing, delivery, domains, engines, firstrun, fixes, places, slots
 from .config import settings
 from .db import Answer, Brand, Citation, Mention, Project, Prompt, Run, SessionLocal, create_tables, now
 from .engines import web
@@ -307,6 +307,11 @@ def main() -> None:
     create_tables()
     today = now().weekday()
     with SessionLocal() as db:
+        # A project paying through Stripe is read again from Stripe first (`billing.refresh`): a missed webhook must
+        # neither keep checking one that stopped paying nor skip one that paid
+        for project in db.scalars(select(Project).where(Project.stripe_subscription_id.is_not(None))):
+            billing.refresh(db, project)
+        db.commit()
         paid = list(db.scalars(select(Project).where(Project.paid.is_(True)).order_by(Project.created_at)))
         ids = [chosen.project] if chosen.project else [project.id for project in paid if chosen.all or today in CHECK_DAYS.get(project.plan, [0])]
     for project_id in ids:

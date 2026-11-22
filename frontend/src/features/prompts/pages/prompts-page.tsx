@@ -1,3 +1,4 @@
+import { isPaid } from "@/shared/helpers/billing";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { cache } from "react";
@@ -51,7 +52,7 @@ export default async function PromptsPage({ params, searchParams }: Props) {
         projectId={report.project.id}
         plan={plan}
         limit={limits.prompts}
-        trial={report.project.billing.status === "trial"}
+        trial={!isPaid(report.project.billing)}
         initialPrompts={allPrompts}
         initialSuggestions={suggestions}
         initialTopics={topicList}

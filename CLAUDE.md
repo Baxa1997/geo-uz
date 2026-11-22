@@ -216,6 +216,23 @@ that is committed.
 
 ## Done (as of 18 November 2026)
 
+- **Built, waiting for the user's look: paying with Stripe (22 Nov), on the branch `stripe-billing`, not committed; no
+  Stripe key yet.** The user: "I have a stripe account … every company will have 7 days free trial"; asked, they chose
+  one free report with 7 days to look (no card), the report staying after them with the tracking stopped, and the
+  checks paused while a payment fails. `backend/app/billing.py`: Standard and Pro (monthly, or a year for 10 months)
+  through Stripe's checkout; the plan paid for, the card, cancelling and invoices on Stripe's billing page; the webhook
+  keeps each project's plan, status and "paid until" (new nullable columns on `projects`), reading the subscription
+  again from Stripe on every event; the weekly timer reads it again before a check. Enterprise and Managed GEO stay
+  by agreement. Tarif: "Choose" opens Stripe, the plan paid for "Manage billing", the billing card "Open billing"; the
+  plan's line and the Overview's strip say the trial's days left, its end, a failed payment or an ended subscription
+  (three languages). Set up by `python -m app.billing setup` in test mode first, which writes the webhook's secret
+  into the server's `.env`. Tests: `pytest` 64 pass (the trial, checkout, signed webhook events, the timer's re-read),
+  `-m page` 20 pass; type check and linter clean. Looked at in headless Chrome on the baseline with a placeholder key:
+  Tarif in English and Russian on desktop and Uzbek at 390px, the Overview's strip in English and Uzbek at 390px. New
+  variables `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` (`ENVIRONMENT.md`); new requirement `stripe`. Seen, not
+  changed: other pages still offer Telegram (Hisobotlar's "Connect Telegram"); the plan cards' "reports in Telegram" now
+  reads "Email and PDF reports" (the user's choice).
+
 - **Built, waiting for the user's look: limits against abuse (22 Nov), on the branch `abuse-limits`, not committed.**
   The user asked for "limits, and stripe integration"; asked, they chose the free checks, login codes and forms, with
   the numbers proposed: per connection 2 free checks, 6 websites read, 5 login codes an hour and 20 a day, 3 request

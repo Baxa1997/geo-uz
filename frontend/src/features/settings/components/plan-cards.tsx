@@ -7,7 +7,7 @@ import { LockIcon as Lock } from "@phosphor-icons/react/dist/ssr/Lock";
 import { MinusIcon as Minus } from "@phosphor-icons/react/dist/ssr/Minus";
 import { ArrowsClockwiseIcon as RefreshCw } from "@phosphor-icons/react/dist/ssr/ArrowsClockwise";
 import { UsersIcon as Users } from "@phosphor-icons/react/dist/ssr/Users";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { EngineIcon } from "@/shared/components/engine-icon";
 import { ConfirmModal } from "@/shared/components/modal";
@@ -16,7 +16,7 @@ import { Button } from "@/shared/components/ui/button";
 import { api } from "@/shared/api/client";
 import { ENGINES, formatPrice, PLAN_BRANDS, PLAN_CHECKS_A_WEEK, PLAN_LIMITS, PLAN_PRICES, PLANS, YEARLY_MONTHS_PAID } from "@/shared/constants";
 import { cn } from "@/shared/helpers/utils";
-import type { BillingCycle, Plan } from "@/shared/types/api";
+import type { BillingCycle, CheckoutRequest, Plan, ProjectBilling } from "@/shared/types/api";
 import type { AppIcon } from "@/shared/types/icon";
 
 type Choice = Plan | "managed";
@@ -44,9 +44,25 @@ const LIMITS: { key: "prompts" | "brands" | "competitors"; icon: AppIcon }[] = [
  * narrower panel. Each card: the name in gray, the price large, its numbers with their marks, the button
  * (the current plan's cancels it, the others switch to them, Managed GEO talks to us), the assistants it
  * asks (ChatGPT with web search; Gemini and Yandex "soon", locked) and what it includes, ✓ or a dash.
- * Billing isn't built: a switch or a cancel sends us a request after a "sure?", and the page says so.
+ * Since 22 Nov 2026 Standard and Pro are paid through Stripe (`billing.online`): "Choose" opens Stripe's checkout, and
+ * the plan paid for opens Stripe's billing page (change plan, card, cancel). Enterprise, Managed GEO, and every plan
+ * when Stripe isn't set up, send us a request after a "sure?", as before.
  */
-export function PlanCards({ projectId, current, cycle: initialCycle }: { projectId: string; /** The plan paid for; null while the project has only its free first check. */ current: Plan | null; cycle: BillingCycle }) {
+export function PlanCards({
+  projectId,
+  current,
+  cycle: initialCycle,
+  billing,
+  paidJustNow = false,
+}: {
+  projectId: string;
+  /** The plan paid for; null while the project isn't paid up. */
+  current: Plan | null;
+  cycle: BillingCycle;
+  billing: ProjectBilling;
+  /** Back from Stripe's checkout (`?checkout=done`): the webhook switches the plan on within a minute. */
+  paidJustNow?: boolean;
+}) {
   const t = useTranslations("Settings.plan");
   const plans = useTranslations("Plans");
   const engines = useTranslations("Engines");
@@ -56,6 +72,24 @@ export function PlanCards({ projectId, current, cycle: initialCycle }: { project
     mutationFn: (plan: Ask) => api.requestPlan(projectId, { plan, cycle }),
     onSuccess: () => setAsking(null),
   });
+  const locale = useLocale() as CheckoutRequest["language"];
+  // Stripe's own pages: the browser goes there and comes back to this page
+  const checkout = useMutation({
+    mutationFn: (plan: CheckoutRequest["plan"]) => api.startCheckout(projectId, { plan, cycle, language: locale }),
+    onSuccess: ({ url }) => window.location.assign(url),
+  });
+  const portal = useMutation({
+    mutationFn: () => api.openBillingPortal(projectId, { language: locale }),
+    onSuccess: ({ url }) => window.location.assign(url),
+  });
+  const online = billing.online === true;
+  const sold = (choice: Choice): choice is CheckoutRequest["plan"] => online && (choice === "start" || choice === "business");
+  const busy = request.isPending || checkout.isPending || portal.isPending;
+  const choose = (choice: Choice, isCurrent: boolean) => {
+    if (isCurrent) return billing.portal ? portal.mutate() : setAsking("cancel");
+    if (sold(choice)) return checkout.mutate(choice);
+    setAsking(choice);
+  };
   /** A plan's price a month in dollars; null for the ones priced by agreement (Enterprise, Managed GEO). */
   const priceOf = (choice: Choice) => (choice === "managed" ? null : PLAN_PRICES[choice]);
   const name = (choice: Choice) => (choice === "managed" ? t("managed") : plans(choice));
@@ -83,6 +117,16 @@ export function PlanCards({ projectId, current, cycle: initialCycle }: { project
         </Segmented>
       </header>
 
+      {paidJustNow && (
+        <p role="status" className="rounded-xl bg-positive/10 px-4 py-3 text-sm text-pretty ring-1 ring-positive/30">
+          {t("checkoutDone")}
+        </p>
+      )}
+      {(checkout.isError || portal.isError) && (
+        <p role="alert" className="rounded-xl bg-negative/10 px-4 py-3 text-sm text-pretty ring-1 ring-negative/30">
+          {t("checkoutFailed")}
+        </p>
+      )}
       {request.isSuccess && (
         <p role="status" className="rounded-xl bg-positive/10 px-4 py-3 text-sm text-pretty ring-1 ring-positive/30">
           {request.variables === "cancel" ? t("cancelRequested") : t("requested", { plan: name(request.variables) })}
@@ -126,11 +170,11 @@ export function PlanCards({ projectId, current, cycle: initialCycle }: { project
 
                 <Button
                   variant={isCurrent ? "outline" : "default"}
-                  disabled={request.isPending}
-                  onClick={() => setAsking(isCurrent ? "cancel" : choice)}
+                  disabled={busy}
+                  onClick={() => choose(choice, isCurrent)}
                   className={cn("mt-5 h-9 w-full text-[0.9375rem]", isCurrent && "bg-background text-foreground/80")}
                 >
-                  {isCurrent ? t("cancel") : choice === "managed" ? t("contact") : t("switch")}
+                  {isCurrent ? (billing.portal ? t("manage") : t("cancel")) : choice === "managed" ? t("contact") : sold(choice) ? t("choose") : t("switch")}
                 </Button>
 
                 <div className="mt-5 flex flex-col gap-3 border-t pt-5">

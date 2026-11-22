@@ -123,6 +123,15 @@ class Project(Base):
     # Whether the plan is paid for. Not yet: the account's free first check is all it has, and no further
     # check is made (the user's decision, 15 Nov 2026). We switch it on by hand: `python -m app.admin`.
     paid: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True)
+    # Stripe (`app/billing.py`, 22 Nov 2026): the customer and subscription, Stripe's status of it ("active",
+    # "past_due", "canceled"…), the cycle paid for, until when, and when a cancellation takes effect. Empty for a
+    # trial and for a plan switched on by hand
+    stripe_customer_id: Mapped[Optional[str]] = mapped_column(String(64), nullable=True, index=True)
+    stripe_subscription_id: Mapped[Optional[str]] = mapped_column(String(64), nullable=True, index=True)
+    billing_status: Mapped[Optional[str]] = mapped_column(String(24), nullable=True)
+    billing_cycle: Mapped[Optional[str]] = mapped_column(String(8), nullable=True)
+    paid_until: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime, nullable=True)
+    cancels_at: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime, nullable=True)
     # The four checks of the client's website, as the first run found them
     site_checks: Mapped[Optional[Any]] = mapped_column(JSON, nullable=True)
     # The questions that name the business, asked beside the customers' ones: [{"text", "language"}]
