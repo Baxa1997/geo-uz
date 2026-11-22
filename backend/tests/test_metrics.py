@@ -320,6 +320,10 @@ def test_the_digest_says_the_change_and_the_action() -> None:
     lines = digest.render(elsewhere["wave"], elsewhere["metrics"], "en", "https://example.test/r", before, None).splitlines()
     assert lines[1] == "In AI answers: Acme 1/1 (was 0/4, asked another way)"
     assert lines[3] == "Biggest change: can't compare, no question was asked the same way in both checks"
+    # One answer either way is no material change, however many points it moves (here 25)
+    nudged = check([asked("m1", "p1", "chatgpt", "bolt"), asked("m2", "p1", "gemini", "cora"), asked("m3", "p2", "chatgpt", "acme"), asked("m4", "p2", "gemini", "bolt")])
+    lines = digest.render(nudged["wave"], nudged["metrics"], "en", "https://example.test/r", before, None).splitlines()
+    assert lines[3] == "Biggest change: no material change on the same questions"
     quiet = digest.render(before["wave"], before["metrics"], "uz", "https://example.test/r", before, None).splitlines()
     assert len(quiet) == 6 and quiet[3].endswith("sezilarli oʻzgarish yoʻq") and quiet[4].endswith("kuzatamiz")
 
