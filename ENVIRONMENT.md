@@ -70,6 +70,8 @@ printed to the backend's log again.
 
 ## Not variables, but needed to run it
 
+- Vercel's Web Analytics (since 22 Nov 2026, `@vercel/analytics` in the root layout): switched on in the Vercel
+  project's Analytics tab; it counts only on the deployed site and needs no variable.
 - The server's address and login, the DNS record `geo-api.shopsready.com`, the Supabase project: see `CLAUDE.md`,
   "Where the project stands", and `backend/README.md`, "On the server".
 - Passwords that passed through a chat must be replaced: see `CLAUDE.md`, "Waiting on the user".

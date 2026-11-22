@@ -217,6 +217,13 @@ that is committed.
 
 ## Done (as of 18 November 2026)
 
+- **Built, waiting for the user's look: Vercel's Web Analytics (22 Nov), on the branch `vercel-analytics`; merged,
+  pushed and deployed the same day, when the user said "commit push and deploy" (frontend only).** The user: "I need to enable the vercel analytics", with Vercel's own steps. `@vercel/analytics` 2.0.1
+  (pinned) and `<Analytics />` in the root layout (`app/[locale]/layout.tsx`), so every page counts its visitors and
+  views, without cookies; it sends only from the deployed site. Looked at on this computer's dev server: the landing
+  page and the login load Vercel's debug script and log a page view, no error. Type check and linter clean. No
+  variable; Analytics is switched on in the Vercel project's dashboard.
+
 - **Built, waiting for the user's look: new prices (22 Nov), on the branch `free-check-login`; merged, pushed and deployed
   the same day (Vercel's build passed; the server's previous `app/` kept as `app.bak-before-prices`; no Stripe key on
   it yet, so its webhook answers 503 and plans are still switched on by hand).** The
