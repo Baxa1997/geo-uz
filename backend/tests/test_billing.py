@@ -126,3 +126,40 @@ def test_the_timer_reads_the_subscription_again_before_a_check(db: Any, fresh: P
     monkeypatch.setattr(stripe.Subscription, "retrieve", lambda found: subscription(fresh.id, "unpaid", key="seenova_start_month"))
     billing.refresh(db, fresh)
     assert fresh.paid is False and fresh.plan == "start" and fresh.billing_cycle == "month"
+
+
+def test_setup_takes_a_price_made_in_the_dashboard(keys: None, monkeypatch: Any) -> None:
+    """Standard's monthly price made by hand in Stripe: given our lookup key, and the rest made beside it."""
+    tagged: Dict[str, str] = {}
+    made: List[Dict[str, Any]] = []
+    hand_made = {"id": "price_hand_made", "product": "prod_hand_made", "unit_amount": 3499, "currency": "usd", "active": True, "lookup_key": None, "recurring": {"interval": "month", "interval_count": 1}}
+
+    def modify(price_id: str, **values: Any) -> Dict[str, Any]:
+        assert values["transfer_lookup_key"] is True
+        tagged[values["lookup_key"]] = price_id
+        return {}
+
+    def listed(**kwargs: Any) -> Dict[str, Any]:
+        key = kwargs["lookup_keys"][0]
+        return {"data": [hand_made] if tagged.get(key) == "price_hand_made" else []}
+
+    monkeypatch.setattr(stripe.Price, "retrieve", lambda price_id: hand_made)
+    monkeypatch.setattr(stripe.Price, "modify", modify)
+    monkeypatch.setattr(stripe.Price, "list", listed)
+    monkeypatch.setattr(stripe.Product, "create", lambda **kwargs: {"id": f"prod_{kwargs['metadata']['plan']}"})
+    monkeypatch.setattr(stripe.Price, "create", lambda **kwargs: made.append(kwargs) or {"id": f"price_{kwargs['lookup_key']}"})
+    monkeypatch.setattr(stripe.billing_portal.Configuration, "list", lambda **kwargs: {"data": [{"id": "bpc_1", "metadata": {"seenova": "1"}}]})
+    billing.setup(None, None, {("start", "month"): "price_hand_made"})
+    assert tagged == {"seenova_start_month": "price_hand_made"}
+    # Standard's year on the hand-made product; Pro's two on a product of its own; nothing made for Standard's month
+    assert [(price["lookup_key"], price["product"], price["unit_amount"]) for price in made] == [
+        ("seenova_start_year", "prod_hand_made", 34990),
+        ("seenova_business_month", "prod_business", 7999),
+        ("seenova_business_year", "prod_business", 79990),
+    ]
+    # A price that isn't what the plan sells is refused, and nothing is tagged
+    tagged.clear()
+    monkeypatch.setattr(stripe.Price, "retrieve", lambda price_id: {**hand_made, "unit_amount": 3999})
+    with pytest.raises(SystemExit):
+        billing.setup(None, None, {("start", "month"): "price_hand_made"})
+    assert tagged == {}

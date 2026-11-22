@@ -8,7 +8,8 @@ import { LocaleSwitcher } from "@/shared/components/locale-switcher";
 import { buttonVariants } from "@/shared/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/shared/helpers/utils";
-import { NAV, SECTION } from "../../constants";
+import { NAV } from "../../constants";
+import { FreeCheckLink } from "../free-check-link";
 import { SectionLink } from "../section-link";
 
 /**
@@ -81,13 +82,12 @@ export function MobileMenu() {
           <Link href="/login" onClick={close} className={cn(buttonVariants({ variant: "outline", size: "lg" }), "h-11")}>
             {t("login")}
           </Link>
-          <SectionLink
-            hash={SECTION.check}
+          <FreeCheckLink
             onClick={close}
             className={cn(buttonVariants({ variant: "brand", size: "lg" }), "h-11")}
           >
             {t("cta")}
-          </SectionLink>
+          </FreeCheckLink>
         </div>
       </dialog>
     </>

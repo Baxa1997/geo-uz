@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { buttonVariants } from "@/shared/components/ui/button";
 import { cn } from "@/shared/helpers/utils";
 import { AUDIENCE, SECTION } from "../../constants";
-import { SectionLink } from "../section-link";
+import { TargetLink } from "../free-check-link";
 import { Section, SectionHead } from "./section";
 
 const POINTS = ["b1", "b2", "b3"] as const;
@@ -35,8 +35,8 @@ export function Audience() {
                     </li>
                   ))}
                 </ul>
-                <SectionLink
-                  hash={target}
+                <TargetLink
+                  target={target}
                   className={cn(
                     buttonVariants({ variant: dark ? "outline" : "brand", size: "lg" }),
                     "mt-auto h-11 w-fit px-5 text-base",
@@ -45,7 +45,7 @@ export function Audience() {
                 >
                   {t(`items.${key}.cta`)}
                   <ArrowRight aria-hidden data-icon="inline-end" />
-                </SectionLink>
+                </TargetLink>
               </div>
             </li>
           );

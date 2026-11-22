@@ -4,9 +4,9 @@ import { getTranslations } from "next-intl/server";
 import { ProjectCard } from "../components/project-card";
 import { Page } from "@/shared/components/page";
 import { buttonVariants } from "@/shared/components/ui/button";
-import { Link } from "@/i18n/navigation";
+import { Link, redirect } from "@/i18n/navigation";
 import { setPageLocale } from "@/i18n/page-locale";
-import { api } from "@/shared/api/client";
+import { api, FIRST_RUN_LIVE } from "@/shared/api/client";
 import { orNull } from "@/shared/api/errors";
 import { isTracked } from "@/shared/helpers/prompts";
 
@@ -16,11 +16,17 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/dashboar
   return { title: t("title") };
 }
 
-export default async function DashboardPage({ params }: PageProps<"/[locale]/dashboard">) {
+export default async function DashboardPage({ params, searchParams }: PageProps<"/[locale]/dashboard">) {
   const locale = setPageLocale((await params).locale);
-  const t = await getTranslations({ locale, namespace: "Dashboard" });
+  const [t, { start }] = await Promise.all([getTranslations({ locale, namespace: "Dashboard" }), searchParams]);
 
   const projects = await api.getProjects();
+  // "Check for free" while logged in (proxy.ts): an account with no project goes on to its first check, as after
+  // login (`useFinishLogin`): the one it started and didn't save, else a new one
+  if (FIRST_RUN_LIVE && start === "check" && projects.length === 0) {
+    const [latest] = await api.getFirstRuns().catch(() => []);
+    redirect({ href: latest ? { pathname: "/onboarding/first-run", query: { run: latest.id } } : "/onboarding/first-run", locale });
+  }
   const details = await Promise.all(
     projects.map(async (project) => {
       const [report, prompts] = await Promise.all([

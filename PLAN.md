@@ -38,19 +38,21 @@ branding, a full site audit.
 | Frontend on Vercel | Deployed, its server in Frankfurt (17 Nov); behind Vercel's own login |
 | The pilot report (a one-off report made by script) | Works; run once for a first client; on hold until the platform's flow is set up |
 
-## Prices and the free first check (the user's decision, 15 Nov 2026)
+## Prices and the free first check (the user's decision, 15 Nov 2026; Standard and Pro lowered on 22 Nov 2026)
 
 | Plan | Price a month | Checked | Questions | Notes |
 | --- | --- | --- | --- | --- |
 | Free first check | $0 | once | 10 on Gemini, 5 of them on ChatGPT | every new account; costs us about $0.50 |
-| Standard (`start`) | $39.99 | weekly, Mondays | 25 | checks cost about $9 a month on two assistants |
-| Pro (`business`) | $89.99 | twice a week, Mondays and Thursdays | 50 | wrong facts included; about $35 a month |
-| Enterprise (`agency`) | by agreement | twice a week | 300, several projects | "contact us" |
+| Standard (`start`) | $34.99 (was $39.99) | weekly, Mondays | 25 | checks cost about $9 a month on two assistants |
+| Pro (`business`) | $79.99 (was $89.99) | twice a week, Mondays and Thursdays | 50 | wrong facts included; about $35 a month |
+| Enterprise (`agency`) | Custom | twice a week | 300, several projects | "contact us" |
 
 After the free check nothing more is checked until a plan is paid; we switch plans on by hand
 (`python -m app.admin`). The user proposed Pro "every 2 or 3 days"; it was built as twice a week with 50
 questions because every other day with 75 would cost $55–80 of the $89.99. The user confirmed that
 correction on 15 Nov ("yes agree with your questions count"). Managed GEO stays on the pages, priced by agreement.
+On 22 Nov 2026 the user set the prices to $34.99, $79.99 and "Custom" (Enterprise; Managed GEO reads "Custom" too);
+a year still costs 10 months ($349.90 and $799.90). Paid through Stripe since then (`backend/app/billing.py`).
 
 ## The stages, in order
 

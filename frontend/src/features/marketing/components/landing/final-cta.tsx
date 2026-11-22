@@ -4,6 +4,7 @@ import { buttonVariants } from "@/shared/components/ui/button";
 import { cn } from "@/shared/helpers/utils";
 import { SECTION } from "../../constants";
 import { MonoLabel } from "./mono-label";
+import { FreeCheckLink } from "../free-check-link";
 import { SectionLink } from "../section-link";
 
 /** Dark band: the page's last word before the dark footer. */
@@ -27,13 +28,12 @@ export function FinalCta() {
           </h2>
           <p className="max-w-xl text-lg text-pretty text-background/75">{t("text")}</p>
           <div className="mt-2 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
-            <SectionLink
-              hash={SECTION.check}
+            <FreeCheckLink
               className={cn(buttonVariants({ variant: "outline", size: "lg" }), "h-12 border-transparent bg-background px-5 text-base text-brand hover:bg-background/90 hover:text-brand")}
             >
               {t("button")}
               <ArrowRight aria-hidden data-icon="inline-end" />
-            </SectionLink>
+            </FreeCheckLink>
             <SectionLink
               hash={SECTION.demo}
               className={cn(

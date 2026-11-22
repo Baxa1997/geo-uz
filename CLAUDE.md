@@ -49,11 +49,12 @@ something on the website.
   DataReportal's) could not be found in DataReportal's report (corrected 16 Nov). StatCounter's October 2026
   figures for Uzbekistan: among AI chatbots Gemini 58%, ChatGPT 35%; in search Google 76%, Yandex 22%. The
   landing page shows them with their month.
-- **Plans (the user's decision, 15 Nov, in dollars; the soʻm plans of October are gone):** the first check
-  free, once an account · Standard $39.99 a month (weekly, 25 questions) · Pro $89.99 (twice a week, 50
-  questions, wrong facts against the owner's facts) · Enterprise by agreement (several projects) · Managed GEO
-  by agreement. No payment yet: a plan is switched on by hand (`python -m app.admin plan`). The table is in
-  `PLAN.md`.
+- **Plans (the user's decision, 15 Nov, in dollars; the soʻm plans of October are gone; the prices of 22 Nov):**
+  the first check free, once an account · Standard $34.99 a month (weekly, 25 questions; was $39.99) · Pro $79.99
+  (twice a week, 50 questions, wrong facts against the owner's facts; was $89.99) · Enterprise "Custom" (several
+  projects) · Managed GEO "Custom". A year costs 10 months. Standard and Pro are paid through Stripe once its key is
+  set (`backend/app/billing.py`); until then, and for Enterprise, a plan is switched on by hand (`python -m app.admin
+  plan`). The table is in `PLAN.md`.
 
 ## Where the project stands (21 November 2026)
 
@@ -163,7 +164,7 @@ $0.077 on OpenAI's models ($0.044 on `gpt-6.1-terra`, the default) and about $0.
 on both assistants (ten questions on Gemini, five of them on ChatGPT, the brand questions) took about five
 minutes and cost $0.84 (16 Nov); a weekly check on Standard (ten questions on both, six brand questions) took
 about seven minutes and cost $1.63. At that rate Standard's 25 questions cost about $3.50 a check, about $15 a
-month against its $39.99. Gemini Flash's price doubles on 1 Jan 2027. Answers differ between runs and between
+month against its $34.99. Gemini Flash's price doubles on 1 Jan 2027. Answers differ between runs and between
 models (about half the businesses in common); the pattern over many answers holds.
 
 **On this computer only, never in git** (the repository is public): the OpenAI key (`backend/pilot/.env`, read
@@ -215,6 +216,32 @@ that is committed.
    that no key and no client's name is in it.
 
 ## Done (as of 18 November 2026)
+
+- **Built, waiting for the user's look: new prices (22 Nov), on the branch `free-check-login`, not committed.** The
+  user: "prices change oto 34.99, 79.99 and Custom". Standard $34.99 a month ($349.90 a year), Pro $79.99 ($799.90),
+  Enterprise "Custom" (uz "Individual", ru "Индивидуально"), which Managed GEO's price reads too, as it shared the "By
+  agreement" label. One constant on the frontend (`PLAN_PRICES`: the landing page's cards, its plan table, "why us",
+  Tarif) and Stripe's amounts (`PLANS` in `backend/app/billing.py`); Stripe was never set up, so no price exists there
+  to change, and its setup now says when a price it finds differs. Docs brought to the new prices; the dated history
+  keeps the old ones. Looked at in headless Chrome: the landing page's prices and Tarif's cards. `pytest` 65 pass; type
+  check and linter clean. No new variable. Then the user made Standard's and Pro's monthly prices by hand in Stripe's
+  dashboard ("from stripe you need price id, take it yourself"; products "Seenovai standard" and "Seenovai pro"): the
+  setup takes them (`--use start:month=price_… --use business:month=price_…`), checks each against `PLANS`, gives it
+  our lookup key and makes the yearly prices on the same products; waiting for `STRIPE_SECRET_KEY` in
+  `backend/.env.server`. Nothing of Stripe goes to Vercel (`ENVIRONMENT.md`).
+
+- **Built, waiting for the user's look: "Check for free" goes to the login first (22 Nov), on the branch `free-check-login`, not
+  committed.** The user: "At the beginning check free need to immediately navigate to login first login then run the
+  check." Every "Check for free" button on the landing page (the navbar, the phone menu, how it works, the free,
+  Standard and Pro cards, the business card, the closing band) scrolled back to the hero's website field; now each
+  opens the login (`/login?start=check`), and the website field opens it too, with the website carried to the first
+  check's step 1 (it went through `/check` and two redirects). The login page says the free check starts right after
+  login (three languages); its "Start with a free check" link, which led back to the login, is gone. After the code a
+  new account starts its first check and one with projects opens its dashboard (unchanged); already logged in,
+  "Check for free" opens the first check for an account without a project, the dashboard otherwise. Looked at in
+  headless Chrome on this computer: each button clicked, logged out (Uzbek, Russian, English; desktop and 390px), and
+  logged in with a throwaway local account with no project and an account with projects (removed after). Type check
+  and linter clean. No new variable, no backend change.
 
 - **Built, waiting for the user's look: paying with Stripe (22 Nov), on the branch `stripe-billing`, not committed; no
   Stripe key yet.** The user: "I have a stripe account … every company will have 7 days free trial"; asked, they chose

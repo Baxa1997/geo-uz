@@ -52,17 +52,21 @@ function useTypedPlaceholder(input: RefObject<HTMLInputElement | null>, examples
 }
 
 /**
- * Website input that opens /check?site=…; also works as a plain GET form before JS loads.
- * With `examples`, the empty field types example addresses as its placeholder.
+ * Website input that starts the free check. With `loginFirst` (real first checks) it opens the login at once, the
+ * website carried in `next`, so the first check's step 1 has it after the code (the user, 22 Nov 2026: "first login
+ * then run the check"); without, /check?site=… (sample data). Before JS loads it is a plain GET form to /check, which
+ * sends a real check the same way. With `examples`, the empty field types example addresses as its placeholder.
  */
 export function SiteForm({
   defaultValue = "",
   initialError,
   examples,
+  loginFirst = false,
 }: {
   defaultValue?: string;
   initialError?: string;
   examples?: string[];
+  loginFirst?: boolean;
 }) {
   const t = useTranslations("Landing");
   const locale = useLocale();
@@ -86,7 +90,8 @@ export function SiteForm({
       inputRef.current?.focus();
       return;
     }
-    router.push(`/check?site=${encodeURIComponent(domain)}`);
+    if (loginFirst) router.push({ pathname: "/login", query: { next: `/onboarding/first-run?site=${encodeURIComponent(domain)}` } });
+    else router.push(`/check?site=${encodeURIComponent(domain)}`);
   }
 
   return (

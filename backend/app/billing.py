@@ -1,7 +1,7 @@
 """Paying for a plan with Stripe (22 Nov 2026; the user has a Stripe account and chose it). Standard and Pro are paid
 through Stripe's own checkout page, monthly or yearly (a year costs 10 months, the decision of 10 Oct 2026); the
 customer changes plan, card or cancels on Stripe's own billing page; Stripe tells us by its webhook, which keeps each
-project's plan, status and "paid until" date. Enterprise and Managed GEO stay "by agreement", switched on by hand
+project's plan, status and "paid until" date. Enterprise and Managed GEO stay at a custom price ("Custom"), switched on by hand
 (`python -m app.admin plan`).
 
 The trial (the user's choice): a project's first check is free and its report stays; for 7 days the dashboard says
@@ -10,11 +10,14 @@ checks until it goes through (the user's choice: "Stop until paid").
 
 Set up once, in Stripe's test mode first, on the server where the keys are:
 
-    python -m app.billing setup --webhook-url https://<api>/stripe/webhook --env-file .env
+    python -m app.billing setup --webhook-url https://<api>/stripe/webhook --env-file .env [--use start:month=price_…]
 
 It makes the products and prices (found again by their lookup keys, so it can be run twice), Stripe's billing page
 settings, and the webhook, whose signing secret it writes into the env file as STRIPE_WEBHOOK_SECRET: no secret passes
-through a chat or git. STRIPE_SECRET_KEY is put into the server's env by hand (from `backend/.env.server`).
+through a chat or git. STRIPE_SECRET_KEY is put into the server's env by hand (from `backend/.env.server`). `--use` takes
+a price made by hand in Stripe's dashboard in the place of one it would make (the user made Standard's monthly price
+there on 22 Nov 2026): checked against `PLANS` and given its lookup key, which is how the webhook knows the plan; the
+missing ones are then made, a plan's other cycle on the same product.
 """
 
 from __future__ import annotations
@@ -31,10 +34,11 @@ from sqlalchemy.orm import Session as Db
 from .config import settings
 from .db import Project, SessionLocal, User, now
 
-# The plans Stripe sells: our plan's name, its product's name, and its price a month and a year, in cents
+# The plans Stripe sells: our plan's name, its product's name, and its price a month and a year (10 months), in
+# cents. The user's prices of 22 Nov 2026 (were $39.99 and $89.99); the frontend shows `PLAN_PRICES`, kept the same
 PLANS: Dict[str, Tuple[str, int, int]] = {
-    "start": ("Seenova AI Standard", 3999, 39990),
-    "business": ("Seenova AI Pro", 8999, 89990),
+    "start": ("Seenova AI Standard", 3499, 34990),
+    "business": ("Seenova AI Pro", 7999, 79990),
 }
 CYCLES = {"month": "month", "year": "year"}
 TRIAL_DAYS = 7
@@ -288,11 +292,38 @@ def refresh(db: Db, project: Project) -> None:
 # --- setting Stripe up ----------------------------------------------------------------------------------------
 
 
-def setup(webhook_url: Optional[str], env_file: Optional[Path]) -> None:
-    """The products and prices, the billing page's settings and the webhook, each found again when it exists."""
+def adopt(client: Any, plan: str, cycle: str, price_id: str) -> None:
+    """A price made in Stripe's dashboard, taken as `plan` and `cycle` once it is what `PLANS` sells: our lookup key
+    goes onto it (moved from any price that had it), so checkout finds it and the webhook knows its plan."""
+    if plan not in PLANS or cycle not in CYCLES:
+        raise SystemExit(f"billing: --use {plan}:{cycle}: the plans are {', '.join(PLANS)}, the cycles month and year")
+    _, month, year = PLANS[plan]
+    amount = month if cycle == "month" else year
+    try:
+        price = client.Price.retrieve(price_id)
+    except stripe.InvalidRequestError:
+        # An id read off a screen: a capital I and a small l look alike. The account's prices this plan could be
+        like = [_get(each, "id") for each in _get(client.Price.list(active=True, type="recurring", limit=100), "data") or [] if _get(each, "unit_amount") == amount and _get(_get(each, "recurring") or {}, "interval") == cycle]
+        raise SystemExit(f"billing: no price {price_id} in this Stripe account ({'test' if 'test' in (settings.stripe_secret_key or '') else 'live'} key); its prices of {amount} usd a {cycle}: {', '.join(like) or 'none'}")
+    recurring = _get(price, "recurring") or {}
+    found = (_get(price, "unit_amount"), _get(price, "currency"), _get(recurring, "interval"), _get(recurring, "interval_count") or 1, _get(price, "active"))
+    if found != (amount, "usd", cycle, 1, True):
+        raise SystemExit(f"billing: {price_id} is {found[0]} {found[1]} every {found[3]} {found[2]} (active {found[4]}); {plan}:{cycle} sells {amount} usd every 1 {cycle}")
+    if _get(price, "lookup_key") == lookup_key(plan, cycle):
+        print(f"  {lookup_key(plan, cycle)}: {price_id} has it already")
+        return
+    client.Price.modify(price_id, lookup_key=lookup_key(plan, cycle), transfer_lookup_key=True)
+    print(f"  {lookup_key(plan, cycle)}: given to {price_id}, ${amount / 100:.2f} a {cycle}")
+
+
+def setup(webhook_url: Optional[str], env_file: Optional[Path], use: Optional[Dict[Tuple[str, str], str]] = None) -> None:
+    """The products and prices, the billing page's settings and the webhook, each found again when it exists.
+    `use`: prices made in Stripe's dashboard, by plan and cycle, taken in the place of new ones (`adopt`)."""
     client = _client()
     mode = "live" if (settings.stripe_secret_key or "").startswith(("sk_live", "rk_live")) else "test"
     print(f"Stripe, {mode} mode")
+    for (plan, cycle), price_id in (use or {}).items():
+        adopt(client, plan, cycle, price_id)
     price_ids = []
     for plan, (name, month, year) in PLANS.items():
         product = None
@@ -301,7 +332,10 @@ def setup(webhook_url: Optional[str], env_file: Optional[Path]) -> None:
             if found:
                 price_ids.append((plan, _get(found[0], "product"), _get(found[0], "id")))
                 product = product or _get(found[0], "product")
-                print(f"  {lookup_key(plan, cycle)}: there")
+                charged = _get(found[0], "unit_amount")
+                # A price can't be changed on Stripe once made: a new one takes its lookup key in Stripe's dashboard
+                note = "" if charged == amount else f", but ${(charged or 0) / 100:.2f}, not ${amount / 100:.2f}: change it in Stripe"
+                print(f"  {lookup_key(plan, cycle)}: there{note}")
                 continue
             if product is None:
                 product = _get(client.Product.create(name=name, metadata={"plan": plan}), "id")
@@ -348,9 +382,17 @@ def main() -> None:
     made = sub.add_parser("setup", help="products, prices, the billing page and the webhook")
     made.add_argument("--webhook-url", help="https://<api>/stripe/webhook")
     made.add_argument("--env-file", type=Path, help="where the webhook's secret is written (the server's .env)")
+    made.add_argument("--use", action="append", default=[], metavar="PLAN:CYCLE=PRICE_ID", help="a price made in Stripe's dashboard, e.g. start:month=price_…")
     chosen = parser.parse_args()
     if chosen.command == "setup":
-        setup(chosen.webhook_url, chosen.env_file)
+        use: Dict[Tuple[str, str], str] = {}
+        for given in chosen.use:
+            which, _, price_id = given.partition("=")
+            plan, _, cycle = which.partition(":")
+            if not price_id.startswith("price_"):
+                raise SystemExit(f"billing: --use {given}: write it as start:month=price_…")
+            use[(plan.strip(), cycle.strip())] = price_id.strip()
+        setup(chosen.webhook_url, chosen.env_file, use)
 
 
 if __name__ == "__main__":

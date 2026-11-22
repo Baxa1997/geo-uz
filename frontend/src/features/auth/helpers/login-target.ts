@@ -13,6 +13,13 @@ export function parseLoginTarget(params: SearchParams): LoginTarget {
   return { snapshot: single(params.snapshot), next: safeNext(single(params.next)) };
 }
 
+/**
+ * Whether the visitor came to start the free check: a "Check for free" button (`?start=check`) or the landing
+ * page's website field (`next` is the first check), so the login page says the check starts right after.
+ */
+export const startsFreeCheck = (params: SearchParams, { next }: LoginTarget) =>
+  single(params.start) === "check" || Boolean(next?.startsWith("/onboarding/first-run"));
+
 /** First login (no projects yet) goes to onboarding with the free check; later logins go back where they came from. */
 export function afterLoginPath(hasProjects: boolean, { snapshot, next }: LoginTarget) {
   if (!hasProjects) {

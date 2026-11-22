@@ -142,9 +142,9 @@ The list below is the state of October 2026; what was built since is in `../CLAU
   a rearrangeable overview.
 
 Plans (the user's decision, 15 Nov 2026, in dollars; they replace October's soʻm plans): the first check free,
-once an account (ten questions on Gemini, five of them on ChatGPT) · Standard (`start`) $39.99 a month, weekly,
-25 questions · Pro (`business`) $89.99, twice a week, 50 questions, wrong facts against the owner's facts ·
-Enterprise (`agency`) by agreement, several projects · Managed GEO by agreement. Every competitor limit is 5;
+once an account (ten questions on Gemini, five of them on ChatGPT) · Standard (`start`) $34.99 a month, weekly,
+25 questions · Pro (`business`) $79.99, twice a week, 50 questions, wrong facts against the owner's facts ·
+Enterprise (`agency`) "Custom", several projects · Managed GEO "Custom" (the prices of 22 Nov 2026). Every competitor limit is 5;
 one answer a question. The table is in `../PLAN.md`; the limits are `PLAN_LIMITS`, in shared/constants and in
 `backend/app/projects.py` alike.
 
@@ -157,9 +157,15 @@ words. In order (`SECTION` in marketing/constants, `pages/landing-page.tsx`):
    new and an arrow to the assistants' section; it says only what the product does: since 21 Nov 2026 "Savollar
    mijozingiz shahridan beriladi" (Phase 0 item 0.7), no longer "Gemini kuzatuvi qoʻshildi", and never Google's AI
    answers until they are checked), the headline, one short sentence with the
-   metrics as chips, and **the website field itself** (`SiteForm` → `/check?site=`, which goes to the real first check,
-   login by email first, when `first-run` is live), a line "free · email · 2–3 minutes · book a demo", then
-   the dashboard preview.
+   metrics as chips, and **the website field itself** (`SiteForm`: when `first-run` is live it opens the login at
+   once with the website in `next`, `/login?next=/onboarding/first-run?site=…`, so step 1 has it after the code;
+   with sample data `/check?site=`), a line "free · email · 2–3 minutes · book a demo", then the dashboard preview.
+   **Every "Check for free" button** (the navbar, the phone menu, how it works, the free, Standard and Pro cards,
+   the business card, the closing band) opens the login at once (`FreeCheckLink`, `/login?start=check`; the user,
+   22 Nov 2026: "first login then run the check"; they scrolled back to the field before). The login page then says
+   the free check starts right after; a new account goes to its first check after the code, one with projects to
+   its dashboard; a visitor already logged in goes through `/dashboard?start=check`, which opens the first check
+   for an account without a project.
 2. **Assistants** (`Engines`): ChatGPT "every check"; Gemini (paused since 21 Nov 2026), Google's AI answers and
    Yandex "soon", then why
    these, three StatCounter figures for Uzbekistan with their month (`MARKET_FIGURES`: update the numbers and

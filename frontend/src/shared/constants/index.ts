@@ -42,15 +42,16 @@ export type EngineKey = (typeof ENGINES)[number]["key"];
 export const engineOf = (name: string): EngineKey => ENGINES.find((engine) => engine.key === name)?.key ?? "chatgpt";
 
 /**
- * The plans in their order, each with its monthly price in US dollars (the user's decision, 15 Nov 2026):
- * "start" is Standard, "business" is Pro, "agency" is Enterprise, for several projects and priced by
- * agreement (null). Names in messages/Plans. Managed GEO (Pro with the fixes done by our team) is by agreement too.
+ * The plans in their order, each with its monthly price in US dollars (the user's decision, 15 Nov 2026; Standard
+ * $34.99 and Pro $79.99 since 22 Nov 2026, were $39.99 and $89.99): "start" is Standard, "business" is Pro, "agency"
+ * is Enterprise, for several projects at a custom price (null: "Custom"). Names in messages/Plans. Managed GEO (Pro
+ * with the fixes done by our team) is custom too. Stripe's prices are `PLANS` in backend/app/billing.py.
  */
 export const PLANS: Plan[] = ["start", "business", "agency"];
-export const PLAN_PRICES: Record<Plan, number | null> = { start: 39.99, business: 89.99, agency: null };
+export const PLAN_PRICES: Record<Plan, number | null> = { start: 34.99, business: 79.99, agency: null };
 /** How often a paid plan's questions are asked: Standard on Mondays, Pro and Enterprise on Mondays and Thursdays. */
 export const PLAN_CHECKS_A_WEEK: Record<Plan, number> = { start: 1, business: 2, agency: 2 };
-/** A price as shown: "$39.99"; whole dollars without cents. */
+/** A price as shown: "$34.99"; whole dollars without cents. */
 export const formatPrice = (amount: number) => `$${Number.isInteger(amount) ? amount : amount.toFixed(2)}`;
 
 /**

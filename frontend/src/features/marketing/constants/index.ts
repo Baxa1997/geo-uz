@@ -49,7 +49,7 @@ export const SECTION = {
   demo: "demo",
 } as const;
 
-type SectionId = (typeof SECTION)[keyof typeof SECTION];
+export type SectionId = (typeof SECTION)[keyof typeof SECTION];
 
 /** One link inside a navbar menu; title and text in messages/Landing.nav.items. */
 export interface NavItem {
@@ -135,7 +135,7 @@ export const LOCAL: { key: "languages" | "sources" | "answers" | "install" | "pr
   { key: "managed", icon: Wrench },
 ];
 
-/** Who it is for: the button of each card scrolls to the free check or to the contact form. */
+/** Who it is for: the button of each card opens the free check, through the login (`SECTION.check`), or scrolls to the contact form. */
 export const AUDIENCE: { key: "business" | "agency"; target: SectionId }[] = [
   { key: "business", target: SECTION.check },
   { key: "agency", target: SECTION.demo },
@@ -155,7 +155,7 @@ export const PRICING: {
   /** Shown after the price; the free check has none. */
   period?: "month";
   recommended?: boolean;
-  /** Landing section the button scrolls to. */
+  /** `SECTION.check`: the button opens the free check, through the login (`FREE_CHECK`); else the section it scrolls to. */
   target: SectionId;
 }[] = [
   { key: "free", price: 0, target: SECTION.check },
