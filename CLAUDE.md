@@ -217,7 +217,9 @@ that is committed.
 
 ## Done (as of 18 November 2026)
 
-- **Built, waiting for the user's look: new prices (22 Nov), on the branch `free-check-login`, not committed.** The
+- **Built, waiting for the user's look: new prices (22 Nov), on the branch `free-check-login`; merged, pushed and deployed
+  the same day (Vercel's build passed; the server's previous `app/` kept as `app.bak-before-prices`; no Stripe key on
+  it yet, so its webhook answers 503 and plans are still switched on by hand).** The
   user: "prices change oto 34.99, 79.99 and Custom". Standard $34.99 a month ($349.90 a year), Pro $79.99 ($799.90),
   Enterprise "Custom" (uz "Individual", ru "Индивидуально"), which Managed GEO's price reads too, as it shared the "By
   agreement" label. One constant on the frontend (`PLAN_PRICES`: the landing page's cards, its plan table, "why us",
@@ -230,8 +232,9 @@ that is committed.
   our lookup key and makes the yearly prices on the same products; waiting for `STRIPE_SECRET_KEY` in
   `backend/.env.server`. Nothing of Stripe goes to Vercel (`ENVIRONMENT.md`).
 
-- **Built, waiting for the user's look: "Check for free" goes to the login first (22 Nov), on the branch `free-check-login`, not
-  committed.** The user: "At the beginning check free need to immediately navigate to login first login then run the
+- **Built, waiting for the user's look: "Check for free" goes to the login first (22 Nov), on the branch `free-check-login`; merged,
+  pushed and deployed the same day with the new prices, when the user said "commit push and deploy" (Vercel's build
+  passed).** The user: "At the beginning check free need to immediately navigate to login first login then run the
   check." Every "Check for free" button on the landing page (the navbar, the phone menu, how it works, the free,
   Standard and Pro cards, the business card, the closing band) scrolled back to the hero's website field; now each
   opens the login (`/login?start=check`), and the website field opens it too, with the website carried to the first
