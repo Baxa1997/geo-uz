@@ -2942,7 +2942,8 @@
       "pricePlain": "{amount} a month",
       "facts": {
         "cycle": "Billing cycle",
-        "renews": "Renews"
+        "renews": "Renews",
+        "ends": "Ends"
       },
       "cycles": {
         "month": "Monthly",
@@ -2978,7 +2979,7 @@
       "engineSoon": "{engine}, coming soon",
       "features": {
         "users": "Unlimited users",
-        "reports": "Telegram and PDF reports",
+        "reports": "Email and PDF reports",
         "wrongFacts": "Wrong facts checked",
         "actions": "Recommended actions",
         "agencyName": "Agency-branded reports",
@@ -2999,7 +3000,7 @@
       "billingText": "Your payment method and invoices.",
       "payment": {
         "title": "Payment method",
-        "text": "Click, Payme or a bank transfer."
+        "text": "A Visa or Mastercard card, through Stripe."
       },
       "invoices": {
         "title": "Invoices",
@@ -3009,7 +3010,18 @@
       "priceByAgreement": "<b>By agreement</b>",
       "trial": "Free first check",
       "byAgreement": "By agreement",
-      "twiceWeekly": "Twice a week"
+      "twiceWeekly": "Twice a week",
+      "trialDays": "Free trial, {days, plural, one {# day} other {# days}} left",
+      "trialEnded": "Free trial ended",
+      "unpaid": "Payment failed: checks paused",
+      "canceled": "Subscription ended",
+      "choose": "Choose",
+      "manage": "Manage billing",
+      "checkoutDone": "Payment received. Your plan switches on within a minute; reload the page if it hasn’t.",
+      "checkoutFailed": "Stripe’s page couldn’t be opened. Try again, or write to us.",
+      "openBilling": "Open billing",
+      "afterPayment": "After your first payment",
+      "onlineText": "Your card and every invoice, on Stripe’s secure page."
     }
   },
   "Check": {
@@ -4469,9 +4481,16 @@
     }
   },
   "Trial": {
-    "title": "Your free first check is ready",
+    "title": "Free trial: {days, plural, one {# day} other {# days}} left",
     "text": "These numbers come from one check. To be checked every week, see what changes and get the report, choose a plan.",
-    "cta": "See the plans"
+    "cta": "See the plans",
+    "endedTitle": "Your free trial has ended",
+    "endedText": "Your first report stays, with its link. To be checked every week again, choose a plan.",
+    "unpaidTitle": "Your last payment didn’t go through",
+    "unpaidText": "The weekly checks are paused until it does. Your reports stay.",
+    "unpaidCta": "Update the card",
+    "canceledTitle": "Your subscription has ended",
+    "canceledText": "Your reports stay. To be checked every week again, choose a plan."
   },
   "BrandView": {
     "title": "What AI says about {brand}",

@@ -1104,4 +1104,11 @@ export const mockApi: ApiClient = {
     state.planRequests.push({ projectId, plan, cycle: cycle ?? project.billing.cycle, userId: user.id, at: new Date().toISOString() });
     return respond(undefined, 600);
   },
+  // Sample data has no Stripe (its projects say `online` false): the plan page asks for a plan instead
+  startCheckout: async () => {
+    throw new ApiError(503, "billing_unavailable");
+  },
+  openBillingPortal: async () => {
+    throw new ApiError(503, "billing_unavailable");
+  },
 };

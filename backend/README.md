@@ -327,6 +327,20 @@ for everyone emails the team once that day. The connection is `x-vercel-forwarde
 `X-Forwarded-For`, else `X-Real-IP`; the login-code route logs the three until a real login through the site has shown
 which one Vercel sends. Refused: 429 `too_many_codes`, `first_run_limit` (one connection) or `free_checks_busy` (all).
 
+**Paying with Stripe** (22 Nov 2026, `app/billing.py`; the user has a Stripe account): Standard ($39.99 a month,
+$399.90 a year) and Pro ($89.99, $899.90) through Stripe's checkout (`POST /projects/{id}/checkout` → the page's
+address) and Stripe's billing page (`POST /projects/{id}/billing-portal`: change plan, card, cancel at the period's
+end, invoices). Stripe's webhook (`POST /stripe/webhook`, its signature checked) reads the subscription again from
+Stripe on every event (they can come out of order) and keeps the project's plan, cycle, status (`billing_status`),
+`paid` and `paid_until`; a failed payment ("past_due", "unpaid") sets `paid` false, so the checks pause until it goes
+through (the user's choice). The weekly timer reads each Stripe subscription again before deciding. The trial (the
+user's choice): a project's first check is free, for 7 days the pages say how many are left, then that it ended; its
+report stays. Enterprise and Managed GEO stay by agreement (`app.admin plan`). Set up once, in test mode first:
+`python -m app.billing setup --webhook-url https://geo-api.shopsready.com/stripe/webhook --env-file .env` on the
+server makes the products and prices (lookup keys `seenova_<plan>_<cycle>`), the billing page's settings and the
+webhook, and writes its secret into `.env`. Test: `tests/test_billing.py` (stand-ins for Stripe, events signed as
+Stripe signs them).
+
 ## On the server (since 15 Nov 2026)
 
 The service runs on the Contabo server beside the user's other projects, which it must not touch: its own

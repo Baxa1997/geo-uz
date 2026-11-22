@@ -2942,7 +2942,8 @@
       "pricePlain": "{amount} / oy",
       "facts": {
         "cycle": "Toʻlov davri",
-        "renews": "Keyingi toʻlov"
+        "renews": "Keyingi toʻlov",
+        "ends": "Tugaydi"
       },
       "cycles": {
         "month": "Oylik",
@@ -2978,7 +2979,7 @@
       "engineSoon": "{engine}, tez orada",
       "features": {
         "users": "Cheksiz foydalanuvchilar",
-        "reports": "Telegram va PDF hisobotlar",
+        "reports": "Email va PDF hisobotlar",
         "wrongFacts": "Notoʻgʻri faktlar tekshiruvi",
         "actions": "Tavsiya etilgan harakatlar",
         "agencyName": "Agentlik nomidagi hisobotlar",
@@ -2999,7 +3000,7 @@
       "billingText": "Toʻlov usuli va hisob-fakturalar.",
       "payment": {
         "title": "Toʻlov usuli",
-        "text": "Click, Payme yoki bank oʻtkazmasi."
+        "text": "Visa yoki Mastercard karta, Stripe orqali."
       },
       "invoices": {
         "title": "Hisob-fakturalar",
@@ -3009,7 +3010,18 @@
       "priceByAgreement": "<b>Kelishuv asosida</b>",
       "trial": "Bepul birinchi tekshiruv",
       "byAgreement": "Kelishuv asosida",
-      "twiceWeekly": "Haftasiga 2 marta"
+      "twiceWeekly": "Haftasiga 2 marta",
+      "trialDays": "Sinov davri: {days} kun qoldi",
+      "trialEnded": "Sinov davri tugadi",
+      "unpaid": "Toʻlov oʻtmadi: tekshiruvlar toʻxtatildi",
+      "canceled": "Obuna tugadi",
+      "choose": "Tanlash",
+      "manage": "Toʻlovni boshqarish",
+      "checkoutDone": "Toʻlov qabul qilindi. Tarif bir daqiqa ichida yoqiladi; yoqilmasa, sahifani yangilang.",
+      "checkoutFailed": "Stripe sahifasini ochib boʻlmadi. Qayta urinib koʻring yoki bizga yozing.",
+      "openBilling": "Toʻlovni ochish",
+      "afterPayment": "Birinchi toʻlovdan keyin",
+      "onlineText": "Kartangiz va barcha hisob-fakturalar — Stripe’ning himoyalangan sahifasida."
     }
   },
   "Check": {
@@ -4469,9 +4481,16 @@
     }
   },
   "Trial": {
-    "title": "Bepul birinchi tekshiruvingiz tayyor",
+    "title": "Sinov davri: {days} kun qoldi",
     "text": "Bu raqamlar bitta tekshiruvdan. Har hafta qayta tekshirish, oʻzgarishni koʻrish va hisobot olish uchun tarif tanlang.",
-    "cta": "Tariflarni koʻrish"
+    "cta": "Tariflarni koʻrish",
+    "endedTitle": "Sinov davri tugadi",
+    "endedText": "Birinchi hisobot havolasi bilan saqlanib qoladi. Har hafta yana tekshirilish uchun tarif tanlang.",
+    "unpaidTitle": "Oxirgi toʻlov oʻtmadi",
+    "unpaidText": "Toʻlov oʻtmaguncha haftalik tekshiruvlar toʻxtatildi. Hisobotlar saqlanib qoladi.",
+    "unpaidCta": "Kartani yangilash",
+    "canceledTitle": "Obuna tugadi",
+    "canceledText": "Hisobotlar saqlanib qoladi. Har hafta yana tekshirilish uchun tarif tanlang."
   },
   "BrandView": {
     "title": "AI {brand} haqida nima deydi",

@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { Page } from "@/shared/components/page";
+import { isPaid } from "@/shared/helpers/billing";
 import { setPageLocale } from "@/i18n/page-locale";
 import { PlanBilling } from "../components/plan-billing";
 import { PlanCards } from "../components/plan-cards";
@@ -15,8 +16,8 @@ export const generateMetadata = ({ params }: Props) => settingsMetadata(params, 
  * the same", then "pricing, design must be the same"): the plan with how it is paid and when it renews,
  * beside the assistants it asks; the plans four in a row with Monthly / Yearly; then payment and invoices.
  */
-export default async function PlanPage({ params }: Props) {
-  const { locale: segment, id } = await params;
+export default async function PlanPage({ params, searchParams }: Props) {
+  const [{ locale: segment, id }, { checkout }] = await Promise.all([params, searchParams]);
   const locale = setPageLocale(segment);
   const [project, t] = await Promise.all([getProject(id), getTranslations({ locale, namespace: "Sidebar" })]);
 
@@ -24,8 +25,8 @@ export default async function PlanPage({ params }: Props) {
     <Page title={t("settingsNav.plan")} crumbs={[{ href: `/projects/${project.id}/settings`, label: t("settings") }]} tour="settingsPlan">
       <div className="flex flex-col gap-8">
         <PlanOverview project={project} />
-        <PlanCards projectId={project.id} current={project.billing.status === "trial" ? null : project.plan} cycle={project.billing.cycle} />
-        <PlanBilling />
+        <PlanCards projectId={project.id} current={isPaid(project.billing) ? project.plan : null} cycle={project.billing.cycle} billing={project.billing} paidJustNow={checkout === "done"} />
+        <PlanBilling projectId={project.id} billing={project.billing} />
       </div>
     </Page>
   );

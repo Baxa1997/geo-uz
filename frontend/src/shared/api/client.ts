@@ -5,6 +5,8 @@ import type {
   InviteMemberRequest,
   Member,
   PlanRequest,
+  CheckoutRequest,
+  StripePage,
   TagSummary,
   UpdateBrandRequest,
   UpdateMeRequest,
@@ -202,6 +204,10 @@ export interface ApiClient {
   removeMember(memberId: string): Promise<void>;
   /** Sozlamalar › Tarif: asks to change the project's plan; we change it by hand until billing exists. */
   requestPlan(projectId: string, body: PlanRequest): Promise<void>;
+  /** Stripe's checkout for Standard or Pro; its billing page when the project pays already. 503 without Stripe. */
+  startCheckout(projectId: string, body: CheckoutRequest): Promise<StripePage>;
+  /** Stripe's billing page for the project's customer: plan, card, cancel, invoices. 409 before a first payment. */
+  openBillingPortal(projectId: string, body: { language: CheckoutRequest["language"] }): Promise<StripePage>;
 }
 
 export class ApiError extends Error {
@@ -320,6 +326,8 @@ const httpApi: ApiClient = {
   inviteMember: (body) => send("POST", "/members", body),
   removeMember: (memberId) => send("DELETE", `/members/${id(memberId)}`),
   requestPlan: (projectId, body) => send("POST", `/projects/${id(projectId)}/plan-requests`, body),
+  startCheckout: (projectId, body) => send<StripePage>("POST", `/projects/${id(projectId)}/checkout`, body),
+  openBillingPortal: (projectId, body) => send<StripePage>("POST", `/projects/${id(projectId)}/billing-portal`, body),
 };
 
 /** What the mock bridge returns: server actions can't carry an ApiError's status across. */
@@ -412,6 +420,9 @@ const mockBridge = (): ApiClient => ({
       inviteMember: (body) => mocks().then((m) => unwrap(m.inviteMember(body))),
       removeMember: (memberId) => mocks().then((m) => unwrap(m.removeMember(memberId))),
       requestPlan: (projectId, body) => mocks().then((m) => unwrap(m.requestPlan(projectId, body))),
+      // Sample data has no Stripe: the plan page asks for a plan instead
+      startCheckout: () => Promise.reject(new ApiError(503, "billing_unavailable")),
+      openBillingPortal: () => Promise.reject(new ApiError(503, "billing_unavailable")),
 });
 
 /** The calls of the login slice: who the visitor is. */

@@ -645,8 +645,13 @@ pages call the backend themselves and forward the cookie (shared/api/client.ts).
 - `GET  /members` → Member[] (the account's people, the owner first); `POST /members` (body: phone; an SMS with a
   link; 409 when a member already, 422 for a number that isn't Uzbek) → Member; `DELETE /members/{id}` → 204 (403
   for the owner)
-- `POST /projects/{id}/plan-requests` → 204 (body: plan, "managed" or "cancel", and cycle "month"|"year"; billing
-  isn't built: it reaches us)
+- `POST /projects/{id}/plan-requests` → 204 (body: plan, "managed" or "cancel", and cycle "month"|"year": it reaches
+  us; since 22 Nov 2026 only for Enterprise, Managed GEO, and any plan while Stripe isn't set up)
+- `POST /projects/{id}/checkout` → { url } (body: plan "start"|"business", cycle, language: Stripe's checkout; its
+  billing page when the project pays already; 503 `billing_unavailable` without Stripe) and
+  `POST /projects/{id}/billing-portal` → { url } (body: language: Stripe's billing page; 409 before a first payment).
+  `Project.billing` says `status` ("trial", "trial_ended", "active", "unpaid", "canceled"), `trialEndsAt`,
+  `cancelsAt`, `online` (Stripe set up) and `portal` (a customer exists); `shared/helpers/billing.ts` reads it
 - `GET  /projects/{id}/report-settings` → ReportSettings; `PATCH` with `email`, `language`, `agencyName` (the Agency plan
   only, else 403) or `telegram: "connect" | "disconnect"` → ReportSettings.
 - `GET  /projects/{id}/report?period=week&language=uz&topic=implants` → Report over the tracked questions (language
