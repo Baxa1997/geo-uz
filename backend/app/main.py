@@ -31,6 +31,7 @@ from . import cache, delivery, firstrun, fixes, mail, projects, slots, wave
 from . import digest as telegram_digest
 from .config import settings
 from .db import Brand, DemoRequest, FirstRun, LoginCode, Project, ReadSession, Run, Session, SessionLocal, User, create_tables, now
+from . import limits
 
 SESSION_COOKIE = "geo_session"
 CODE_MINUTES = 10
@@ -100,15 +101,25 @@ def supabase(path: str, body: Dict[str, Any]) -> Dict[str, Any]:
 
 
 @app.post("/auth/code")
-def send_code(body: CodeRequest) -> Dict[str, int]:
+def send_code(body: CodeRequest, request: Request) -> Dict[str, int]:
     email = clean_email(body.email)
+    # Codes a connection may ask for, and all of them in a day: the Gmail account has a daily sending limit (`limits`)
+    ip = limits.client_ip(request)
+    print(f"login code asked from {ip}: {limits.describe(request)}")
     if settings.supabase_login:
+        with SessionLocal() as db:
+            if limits.over(db, "code", ip):
+                raise HTTPException(429, "too_many_codes")
+            limits.record(db, "code", ip)
+            db.commit()
         supabase("otp", {"email": email, "create_user": True})
         return {"resendIn": RESEND_SECONDS}
     with SessionLocal() as db:
         last = db.get(LoginCode, email)
         if last and (now() - last.sent_at).total_seconds() < RESEND_SECONDS:
             return {"resendIn": RESEND_SECONDS - int((now() - last.sent_at).total_seconds())}
+        if limits.over(db, "code", ip):
+            raise HTTPException(429, "too_many_codes")
         code = f"{secrets.randbelow(1_000_000):06d}"
         if settings.own_email:
             # Sent before it is stored: a code nobody received must not start the wait for the next one
@@ -121,6 +132,7 @@ def send_code(body: CodeRequest) -> Dict[str, int]:
             # Development only: no email is sent, the code is in the server's log
             print(f"LOGIN CODE for {email}: {code}")
         db.merge(LoginCode(email=email, code_hash=digest(code), expires_at=now() + datetime.timedelta(minutes=CODE_MINUTES), sent_at=now(), attempts=0))
+        limits.record(db, "code", ip)
         db.commit()
     return {"resendIn": RESEND_SECONDS}
 
@@ -361,7 +373,7 @@ def _free_check_used(db: Any, user: User, but: str = "") -> bool:
 
 
 @app.post("/first-runs", status_code=202)
-def start_first_run(body: FirstRunRequest, user: User = Depends(current_user)) -> Dict[str, Any]:
+def start_first_run(body: FirstRunRequest, request: Request, user: User = Depends(current_user)) -> Dict[str, Any]:
     """Starts reading a website and returns at once; the frontend then asks for its progress. Nobody is asked
     yet: the run stops at `ready`, with a draft for the owner to correct (`/draft`, then `/start`)."""
     try:
@@ -384,6 +396,12 @@ def start_first_run(body: FirstRunRequest, user: User = Depends(current_user)) -
         # Reading is cheap, not free: an account may read a few websites more than it may check
         if (db.scalar(select(func.count()).select_from(FirstRun).where(FirstRun.user_id == user.id, FirstRun.created_at > day)) or 0) >= settings.first_runs_a_day * 5:
             raise HTTPException(429, "first_run_limit")
+        # Websites read from one connection in a day, whatever the accounts (`limits`)
+        if not limits.exempt(user.email):
+            ip = limits.client_ip(request)
+            if limits.over(db, "read", ip):
+                raise HTTPException(429, "first_run_limit")
+            limits.record(db, "read", ip)
         run = FirstRun(user_id=user.id, domain=domain)
         db.add(run)
         db.commit()
@@ -441,7 +459,7 @@ class Confirmed(BaseModel):
 
 
 @app.post("/first-runs/{run_id}/start", status_code=202)
-def confirm_first_run(run_id: str, body: Confirmed, user: User = Depends(current_user)) -> Dict[str, Any]:
+def confirm_first_run(run_id: str, body: Confirmed, request: Request, user: User = Depends(current_user)) -> Dict[str, Any]:
     """The owner has corrected the draft: the check itself starts, on what they confirmed."""
     run = own_run(run_id, user)
     if run.status != "ready":
@@ -494,6 +512,13 @@ def confirm_first_run(run_id: str, body: Confirmed, user: User = Depends(current
         # Taken here, in one transaction, so two presses start one check
         if found is None or found.status != "ready":
             return run_json(found or run)
+        # Free checks from one connection in a day, and all of them (`FREE_CHECKS_A_DAY`): each costs about $0.6
+        if not limits.exempt(user.email):
+            ip = limits.client_ip(request)
+            reached = limits.over(db, "check", ip)
+            if reached:
+                raise HTTPException(429, "first_run_limit" if reached == "connection" else "free_checks_busy")
+            limits.record(db, "check", ip)
         found.status, found.answered, found.total = "asking", 0, 0
         db.commit()
         started = run_json(found)
@@ -900,17 +925,20 @@ def tell_team(request: Dict[str, str]) -> None:
 
 
 @app.post("/demo-requests", status_code=204)
-def demo_request(body: DemoBody) -> None:
+def demo_request(body: DemoBody, request: Request) -> None:
     """"Book a demo": kept, written to the log and emailed to the team. No login: the visitor has no account yet."""
     name = body.name.strip()[:120]
     phone = re.sub(r"[^\d+]", "", body.phone)
     if not name or not re.fullmatch(r"\+998\d{9}", phone) or body.sector not in DEMO_SECTORS:
         raise HTTPException(422, "bad_request")
     with SessionLocal() as db:
-        # One a phone in ten minutes: a second click, or someone filling the form in a loop
-        recent = db.scalar(select(DemoRequest).where(DemoRequest.phone == phone, DemoRequest.created_at > now() - datetime.timedelta(minutes=10)))
-        if recent:
+        # One a phone a day, and 3 a day from one connection (`limits`): past either the request is answered as sent and
+        # dropped, so a form filled in a loop learns nothing and the team's inbox stays quiet
+        recent = db.scalar(select(DemoRequest).where(DemoRequest.phone == phone, DemoRequest.created_at > now() - datetime.timedelta(days=1)))
+        ip = limits.client_ip(request)
+        if recent or limits.over(db, "form", ip):
             return
+        limits.record(db, "form", ip)
         about = (body.about or "").strip()[:200] or None
         db.add(DemoRequest(name=name, phone=phone, sector=body.sector, about=about))
         db.commit()
