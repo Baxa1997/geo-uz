@@ -21,6 +21,12 @@ from . import fixes, wave
 from .db import Project, Run
 from .engines import ENGINE_NAMES
 
+# A change the digest reports: a tracked brand's count on the same questions moved by 2 answers or more and its share by
+# 10 points or more (the user's choice, 22 Nov 2026, after the first 3-run check called "1/30, was 1/10" the biggest
+# change: one answer either way). Anything less is "no material change" (spec §4.15).
+MATERIAL_ANSWERS = 2
+MATERIAL_POINTS = 10
+
 WORDS: Dict[str, Dict[str, Any]] = {
     "en": {
         "months": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
@@ -181,12 +187,17 @@ def render(built: Dict[str, Any], computed: Dict[str, Any], language: str, link:
         if not pairs:
             lines.append(words["unmatched"])
         else:
-            # The tracked brand whose share of those answers moved most, in whole points by the one rounding rule
+            # The tracked brand whose share of those answers moved most, in whole points by the one rounding rule,
+            # of those whose move is material (MATERIAL_ANSWERS and MATERIAL_POINTS)
             then_rows = {row["id"] for row in previous["metrics"]["brands"]["rows"]}
             counts = {key: (_named_on(built, pairs, key), _named_on(then_built, pairs, key)) for key in rows if key in then_rows}
-            moves = [(abs((share(now, now_n) or 0) - (share(then, then_n) or 0)), key) for key, (now, then) in counts.items()]
+            moves = []
+            for key, (now, then) in counts.items():
+                points = abs((share(now, now_n) or 0) - (share(then, then_n) or 0))
+                if points >= MATERIAL_POINTS and abs(now - then) >= MATERIAL_ANSWERS:
+                    moves.append((points, key))
             moved = max(moves, default=(0, None))
-            if moved[0] > 0 and moved[1] is not None:
+            if moved[1] is not None:
                 key = moved[1]
                 lines.append(words["change"].format(name=rows[key]["name"], named=counts[key][0], answers=now_n, before=counts[key][1], of=then_n))
             else:

@@ -216,6 +216,26 @@ that is committed.
 
 ## Done (as of 18 November 2026)
 
+- **Tried, waiting for the user's look: the first real First Audit check, 3 runs (22 Nov), on the paid project on the
+  server; no code change.** After "what is next" the user chose "Real First Audit, ~$2": `python -m app.weekly
+  --project <id> --runs 3` asked ChatGPT alone (Gemini paused) its 10 questions 3 times: 30 of 30 answers, each run in
+  its own slot, every call told Tashkent as ChatGPT's `user_location` (0.7's first real check), all 30 with a web
+  search; 6 of 6 brand questions; $1.42 (the estimate said $2.47, at the last check's price an answer with Gemini),
+  306 seconds. On it: the client 1 of 30; a top finding where competitors are named in all 3 runs and the client in
+  none; the topics ranked (3 runs give them enough answers). Found: Gemini's writing model refused 5 calls with 429
+  (Google's rate limit on the IELTS project's Google Cloud project), the fallback read them; the AI's typing of new
+  sites timed out on Gemini and OpenAI's model answered in its place, typing 8 and leaving 5 "unclassified" with its
+  reasons (spec §8: the founder types those for a First Audit; each row names `READ_MODEL`, not the model that
+  answered); the digest's "biggest change" took one answer either way ("1/30, was 1/10") for a change, as nothing
+  said what is material (fixed on the branch `digest-material`, 22 Nov, the user's "Fix both": a change counts at 2
+  answers and 10 points; the retry the user also chose was not built, as the typing had not given up); the next 1-run check will say "asked another
+  way" against it (the settings include the runs); the report wasn't emailed (no address in Hisobotlar). The
+  founder's review, as the user chose: the 5 sites typed by hand (four competitors' sites, one reference), and the
+  competitors swapped (BandUp, IELTSbiz and IELTS-CBT, named in none of the 30 answers, out; Axiom, IELTS Ready and
+  Sinav Multilevel, 6 of 30 each, in, with their sites where the answers cited them), so the three lead tied at 6/30.
+  Left to the user: up to 3 actions (one is generated, a page on a topic), the top question's page against the
+  leaders' (no tool), the 7 statements not on the website, and the time the review takes (spec §8: 3 hours at most).
+
 - **Built, waiting for the user's look: the Phase 0 close-out (21 Nov), on the branch `phase0-closeout`; merged, pushed
   and deployed the same day, when the user chose "Commit, push, deploy" (Vercel's build passed; the switch went to
   the server first, before the paid project's Monday check, then `digest.py`; the server's previous `app/` is kept
