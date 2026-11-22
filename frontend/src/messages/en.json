@@ -2200,7 +2200,7 @@
       "titleMuted": "in AI answers",
       "subtitle": "Enter your website and find out how ChatGPT sees you: <visibility>Visibility</visibility>, <position>Position</position>, <sources>Sources</sources> and what to fix.",
       "demo": "Book a demo",
-      "micro": "Free · Sign in with your email · Results in 2–3 minutes"
+      "micro": "Free · Sign in with your email · Results in about 5 minutes"
     },
     "preview": {
       "label": "The dashboard: a sample report for the {brand} clinic",
@@ -2390,7 +2390,7 @@
         },
         "time": {
           "q": "How soon will I see results?",
-          "a": "The first check is ready in 2–3 minutes. On a plan, a check runs every week (twice a week on Pro). Changes to your site and directory listings usually show up in AI answers within a few weeks."
+          "a": "The first check is ready in 4–5 minutes. On a plan, a check runs every week (twice a week on Pro). Changes to your site and directory listings usually show up in AI answers within a few weeks."
         }
       }
     },
@@ -2423,7 +2423,7 @@
     },
     "cta": {
       "eyebrow": "No card needed",
-      "title": "Does AI recommend you? Find out in 3 minutes.",
+      "title": "Does AI recommend you? Find out in 5 minutes.",
       "text": "Enter your website: we’ll put 10 of your customers’ questions to ChatGPT and show you the result right away.",
       "button": "Check for free",
       "demo": "Book a demo"
@@ -2490,12 +2490,12 @@
       "cta": "Check for free",
       "steps": {
         "site": {
-          "when": "1 minute",
+          "when": "1–2 minutes",
           "title": "Your website and country",
           "text": "Sign in with your email, then enter your website and the country your customers are in."
         },
         "check": {
-          "when": "2–3 minutes",
+          "when": "4–5 minutes",
           "title": "The first check is free",
           "text": "We read your site, write 10 questions your customers ask and put them to ChatGPT."
         },
