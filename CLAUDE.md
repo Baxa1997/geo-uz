@@ -142,8 +142,8 @@ waits for their look. The open work, in the order the user picks (ask as a short
   weekly check, and back to a trial on 22 Nov (the user's choice: "Skip it this week", to keep the OpenAI balance of
   about $2 for visitors), so the timer leaves it. Back on: `python -m app.admin plan <id> start` (without `--trial`).
 - (22 Nov) The OpenAI balance is about $2, which the user can't top up for now; free checks are capped at 2 a day on
-  the server (`FREE_CHECKS_A_DAY=2`) until it is. Planned with the user, not built: a queue for the free checks past
-  the cap, so a post that goes viral collects websites and emails, run when the balance is topped up.
+  the server (`FREE_CHECKS_A_DAY=2`) until it is. Past the cap a check joins the queue (live since 22 Nov); once the
+  balance is topped up, the queue is run by hand on the server (`python -m app.queue --run N`).
 - New passwords, since all were pasted in chat on 15 Nov: the server's root password (an SSH key is installed,
   so it is no longer needed), the Supabase database password (the same one) and the Gmail app password; each
   goes into `backend/.env.server` (ignored by git), not into chat.
@@ -221,8 +221,10 @@ that is committed.
 
 ## Done (as of 18 November 2026)
 
-- **Built, waiting for the user's look: the free checks' queue (22 Nov), on the branch `free-check-queue`, not
-  committed.** The user: the OpenAI balance is about $2 and can't be topped up for now, Gemini's isn't usable for the
+- **Built, waiting for the user's look: the free checks' queue (22 Nov), on the branch `free-check-queue`; merged,
+  pushed and deployed the same day, when the user said "commit push and deploy" (Vercel's build passed; the server's
+  previous `app/` kept as `app.bak-before-queue`; live, `/health` answers and `python -m app.queue` says the queue is
+  empty).** The user: the OpenAI balance is about $2 and can't be topped up for now, Gemini's isn't usable for the
   answers (its terms), so a post that goes viral "won't be successful"; asked, they chose "Cap at 2 a day + queue" with
   queued checks run "by hand", and to skip the paid project's Monday check. Done on the server the same day:
   `FREE_CHECKS_A_DAY=2` in its `.env` (the backend restarted, `/health` answers) and the paid project back to a trial.
