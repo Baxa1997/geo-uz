@@ -306,6 +306,18 @@ whether at least 3 do (`ranked`, spec §6.3). A page about a topic is suggested 
 where competitors are named and the client never (`fixes.content_allowed`, the user's choice of 21 Nov 2026); an
 untouched one that no longer qualifies stops showing at once and goes at the next check.
 
+**Free Snapshots for prospects** (22 Nov 2026, for the demand test: report spec §2, §4.14, §8): `python -m
+app.prospects <websites.txt> [--account <email>] [--lang uz|ru|en] [--out <file.csv>] [--dry-run]`, on the server.
+For each website in the list (one a line, optionally `, <country code>`) it makes the free first check without its
+screens: the site read, the profile, questions and competitors as the website gives them (no founder review, as spec
+§8 sets for the snapshot; the user's choice), the assistants of `ANSWER_ENGINES` asked into the slot log, then the
+check saved as a trial project on the team's account (`--account`, else the first of `TEAM_EMAILS`) as "Save" does
+in the app, the sites typed and the cited pages read. It prints and writes to a CSV (beside the list) each site's
+snapshot link (`FRONTEND_ORIGIN/<lang>/snapshot/<first check>`), the digest's lines and the whole digest, the cost,
+the questions and the competitors. A website that has a project is skipped, so a list can be run again after a stop;
+`--dry-run` prints what the list would cost and asks nobody. About $0.6 and five minutes a site on ChatGPT alone. It
+refuses to run with `FIRST_RUN_REPLAY` on. Test: `tests/test_prospects.py` (stand-in assistants).
+
 ## On the server (since 15 Nov 2026)
 
 The service runs on the Contabo server beside the user's other projects, which it must not touch: its own
@@ -327,7 +339,7 @@ repository.
   Supabase is the database only: the login email is this service's own (`SMTP_*` in the `.env`, a Gmail
   account; `/health` says `"login": "email"`), because Supabase's emails kept the default sign-in link whatever
   its saved templates said. A code reached a real inbox on 15 Nov.
-- Its `.env` holds the OpenAI key and the Google credentials (15 Nov), so `/health` lists `chatgpt` and `gemini`.
+- Its `.env` holds the OpenAI key and the Google credentials (15 Nov); since 21 Nov `ANSWER_ENGINES=chatgpt`, so `/health` lists `chatgpt` alone (Gemini with Google Search paused for Google's terms; Gemini still reads and writes).
 - To update: copy `app/` and `requirements.txt` (rsync), `pip install -r requirements.txt` in its `.venv`,
   `systemctl restart geo-backend`.
 

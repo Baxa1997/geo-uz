@@ -216,6 +216,17 @@ that is committed.
 
 ## Done (as of 18 November 2026)
 
+- **Built, waiting for the user's look: Free Snapshots for a list of prospects (22 Nov), on the branch
+  `prospect-snapshots`, not committed.** After "what is next" the user chose "Prospect snapshot command" for the
+  demand test, and, asked, "Straight away": no review of the draft, as spec §8 sets for the snapshot. `python -m
+  app.prospects <websites.txt>` (on the server) makes for each website the free first check without its screens,
+  saves it as a trial project on the team's account, and prints and writes to a CSV each snapshot's link, the
+  digest, the cost, the questions and the competitors; a website that has a project is skipped; `--dry-run` prints
+  the cost and asks nobody (`backend/README.md`). About $0.6 and five minutes a site on ChatGPT alone. The links are
+  usable once Vercel's login is off and `FRONTEND_ORIGIN` is the site's address. Tests: `pytest` 56 pass (a list of
+  two made by stand-in assistants, then skipped on a second run), `-m page` 20 pass. No new variable, no new table,
+  no paid request.
+
 - **Tried, waiting for the user's look: the first real First Audit check, 3 runs (22 Nov), on the paid project on the
   server; no code change.** After "what is next" the user chose "Real First Audit, ~$2": `python -m app.weekly
   --project <id> --runs 3` asked ChatGPT alone (Gemini paused) its 10 questions 3 times: 30 of 30 answers, each run in
