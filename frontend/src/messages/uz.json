@@ -2200,7 +2200,7 @@
       "titleMuted": "qanday koʻrinadi?",
       "subtitle": "Saytingizni kiriting va ChatGPT sizni qanday koʻrishini bilib oling: <visibility>Tilga olinish</visibility>, <position>Oʻrni</position>, <sources>Manbalar</sources> va nimani tuzatish kerakligi.",
       "demo": "Demo soʻrash",
-      "micro": "Bepul · Email orqali kirasiz · Natija 2–3 daqiqada"
+      "micro": "Bepul · Email orqali kirasiz · Natija taxminan 5 daqiqada"
     },
     "preview": {
       "label": "Boshqaruv paneli: {brand} klinikasining namunaviy hisoboti",
@@ -2390,7 +2390,7 @@
         },
         "time": {
           "q": "Natijani qachon koʻraman?",
-          "a": "Birinchi tekshiruv 2–3 daqiqada tayyor boʻladi. Tarif bilan tekshiruv har hafta (Pro’da haftasiga 2 marta) boʻladi. Sayt va kataloglardagi oʻzgarishlar odatda bir necha hafta ichida AI javoblarida koʻrinadi."
+          "a": "Birinchi tekshiruv 4–5 daqiqada tayyor boʻladi. Tarif bilan tekshiruv har hafta (Pro’da haftasiga 2 marta) boʻladi. Sayt va kataloglardagi oʻzgarishlar odatda bir necha hafta ichida AI javoblarida koʻrinadi."
         }
       }
     },
@@ -2423,7 +2423,7 @@
     },
     "cta": {
       "eyebrow": "Karta kerak emas",
-      "title": "AI sizni tavsiya qilyaptimi? 3 daqiqada bilib oling.",
+      "title": "AI sizni tavsiya qilyaptimi? 5 daqiqada bilib oling.",
       "text": "Sayt manzilini kiriting: mijozlaringizning 10 ta savolini ChatGPT’ga beramiz va natijani darhol koʻrsatamiz.",
       "button": "Bepul tekshirish",
       "demo": "Demo soʻrash"
@@ -2490,12 +2490,12 @@
       "cta": "Bepul tekshirish",
       "steps": {
         "site": {
-          "when": "1 daqiqa",
+          "when": "1–2 daqiqa",
           "title": "Sayt va davlat",
           "text": "Email orqali kirasiz, sayt manzilini va mijozlaringiz qaysi davlatda ekanini kiritasiz."
         },
         "check": {
-          "when": "2–3 daqiqa",
+          "when": "4–5 daqiqa",
           "title": "Birinchi tekshiruv — bepul",
           "text": "Saytingizni oʻqiymiz, mijozlaringiz beradigan 10 ta savolni tuzamiz va ularni ChatGPT’ga beramiz."
         },

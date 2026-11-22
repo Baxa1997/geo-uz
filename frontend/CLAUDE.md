@@ -167,7 +167,7 @@ words. In order (`SECTION` in marketing/constants, `pages/landing-page.tsx`):
    answers until they are checked), the headline, one short sentence with the
    metrics as chips, and **the website field itself** (`SiteForm`: when `first-run` is live it opens the login at
    once with the website in `next`, `/login?next=/onboarding/first-run?site=…`, so step 1 has it after the code;
-   with sample data `/check?site=`), a line "free · email · 2–3 minutes · book a demo", then the dashboard preview.
+   with sample data `/check?site=`), a line "free · email · about 5 minutes · book a demo" (the check takes 4–5 minutes, as the first check's screens say; the landing said 2–3 until 22 Nov), then the dashboard preview.
    **Every "Check for free" button** (the navbar, the phone menu, how it works, the free, Standard and Pro cards,
    the business card, the closing band) opens the login at once (`FreeCheckLink`, `/login?start=check`; the user,
    22 Nov 2026: "first login then run the check"; they scrolled back to the field before). The login page then says

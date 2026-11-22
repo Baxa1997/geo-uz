@@ -35,7 +35,7 @@ something on the website.
 
 - **Buyers:** local businesses (the owner or their marketer) and agencies. Uzbekistan first, then the rest
   of Central Asia. Many will read their report on a phone, from Telegram.
-- **Languages:** the interface is in Uzbek (default), Russian and English. The questions are in the languages
+- **Languages:** the interface is in English (the default since 22 Nov 2026; Uzbek until then), Uzbek and Russian. The questions are in the languages
   of the business's country (16 Nov): Uzbek and Russian in Uzbekistan, Russian in Kazakhstan, Kyrgyzstan,
   Tajikistan, Turkmenistan, Russia and Belarus, English elsewhere.
 - **Reference product:** Peec AI (peec.ai). We copy its layout where it works and make ours simpler, local
@@ -220,6 +220,15 @@ that is committed.
    that no key and no client's name is in it.
 
 ## Done (as of 18 November 2026)
+
+- **Built, waiting for the user's look: English as the default language, and the landing page's timing (22 Nov), on
+  the branch `default-english`; merged, pushed and deployed the same day, when the user said "commit push and deploy"
+  (frontend only).** The user: "can you make the default language english". `defaultLocale` is `en` (it was `uz`),
+  the browser's language still not followed: `/`, `/login` and "Check for free" open in English, `/uz` and `/ru` as
+  before. Then ("fix it too"): the landing page said a check takes 2–3 minutes where the first check's own screens say
+  4–5; the line under the website field, the steps, the FAQ and the closing band now say about 5 (4–5, the reading
+  1–2), in the three languages. Looked at on this computer: `/` and `/login` redirect to `/en`, the home page in
+  English. Type check and linter clean. No new variable; a project's report language stays Uzbek by default.
 
 - **Built, waiting for the user's look: the free checks' queue (22 Nov), on the branch `free-check-queue`; merged,
   pushed and deployed the same day, when the user said "commit push and deploy" (Vercel's build passed; the server's

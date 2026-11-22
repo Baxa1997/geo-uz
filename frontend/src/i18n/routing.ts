@@ -2,8 +2,8 @@ import { defineRouting } from "next-intl/routing";
 
 export const routing = defineRouting({
   locales: ["uz", "ru", "en"],
-  defaultLocale: "uz",
-  // Always start in Uzbek instead of following the browser language;
-  // users switch explicitly and links keep the /ru or /en prefix.
+  // English first (the user, 22 Nov 2026: "make the default language english"; it was Uzbek). The browser's
+  // language isn't followed: users switch explicitly and links keep the /uz or /ru prefix.
+  defaultLocale: "en",
   localeDetection: false,
 });
