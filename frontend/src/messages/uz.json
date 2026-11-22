@@ -3073,6 +3073,7 @@
     "sendCode": "Kodni olish",
     "sending": "Yuborilmoqda…",
     "sendFailed": "Kodni yuborib boʻlmadi. Qayta urinib koʻring.",
+    "tooManyCodes": "Bu ulanishdan juda koʻp kod soʻraldi. Bir soatdan keyin qayta urinib koʻring.",
     "codeSent": "<b>{email}</b> manziliga kod yubordik. Xat kelmasa, “Spam” jildini tekshiring.",
     "code": "Kod",
     "codeInvalid": "6 xonali kodni kiriting.",

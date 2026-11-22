@@ -3073,6 +3073,7 @@
     "sendCode": "Get the code",
     "sending": "Sending…",
     "sendFailed": "Couldn’t send the code. Try again.",
+    "tooManyCodes": "Too many codes were asked for from this connection. Try again in an hour.",
     "codeSent": "We sent a code to <b>{email}</b>. If it isn’t there, check your spam folder.",
     "code": "Code",
     "codeInvalid": "Enter the 6-digit code.",

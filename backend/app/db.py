@@ -83,6 +83,17 @@ class FirstRun(Base):
     created_at: Mapped[datetime.datetime] = mapped_column(DateTime, default=now, index=True)
     finished_at: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime, nullable=True)
 
+class LimitHit(Base):
+    """One request a limit against abuse counts (`app/limits.py`, 22 Nov 2026): what it was (a login code sent, a free
+    check, a website read, a form) and the connection it came from. Kept two days."""
+
+    __tablename__ = "limit_hits"
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=new_id)
+    kind: Mapped[str] = mapped_column(String(32), index=True)
+    key: Mapped[str] = mapped_column(String(64), index=True)
+    created_at: Mapped[datetime.datetime] = mapped_column(DateTime, default=now, index=True)
+
+
 class DemoRequest(Base):
     """"Book a demo" on the landing page: who asked, how to reach them, their field. The team is told by email."""
 

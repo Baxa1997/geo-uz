@@ -318,6 +318,15 @@ the questions and the competitors. A website that has a project is skipped, so a
 `--dry-run` prints what the list would cost and asks nobody. About $0.6 and five minutes a site on ChatGPT alone. It
 refuses to run with `FIRST_RUN_REPLAY` on. Test: `tests/test_prospects.py` (stand-in assistants).
 
+**Limits against abuse** (22 Nov 2026, the user's numbers; `app/limits.py`, the table `limit_hits`, kept two days):
+a login code sent 5 an hour and 20 a day from one connection and 300 a day in all (the Gmail account's sending
+limit); a free check asked 2 a day from one connection and `FREE_CHECKS_A_DAY` (20) in all; a website read for a first
+check 6 a day from one connection; a request form (demo, First Audit) 3 a day from one connection and one a phone a
+day, past which it is answered as sent and dropped. The team's accounts and a replayed check aren't counted. A limit
+for everyone emails the team once that day. The connection is `x-vercel-forwarded-for`, else the first of
+`X-Forwarded-For`, else `X-Real-IP`; the login-code route logs the three until a real login through the site has shown
+which one Vercel sends. Refused: 429 `too_many_codes`, `first_run_limit` (one connection) or `free_checks_busy` (all).
+
 ## On the server (since 15 Nov 2026)
 
 The service runs on the Contabo server beside the user's other projects, which it must not touch: its own

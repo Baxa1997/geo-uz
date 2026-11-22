@@ -75,6 +75,9 @@ class Settings:
     first_run_chatgpt_questions: int = field(default_factory=lambda: int(os.environ.get("FIRST_RUN_CHATGPT_QUESTIONS", "5")))
     # A first run costs real money: how many one account may start in a day
     first_runs_a_day: int = field(default_factory=lambda: int(os.environ.get("FIRST_RUNS_A_DAY", "3")))
+    # Free first checks a day across every account but the team's (each about $0.6 on ChatGPT): past it a new one is
+    # refused until the next day and the team is emailed once (`app/limits.py`; the user's number, 22 Nov 2026)
+    free_checks_a_day: int = field(default_factory=lambda: int(os.environ.get("FREE_CHECKS_A_DAY", "20")))
     # Our own accounts (emails, comma-separated): not bound by "one free check an account", so the team can
     # try the product. Nobody's when left out.
     team_emails: List[str] = field(default_factory=lambda: [email.strip().lower() for email in os.environ.get("TEAM_EMAILS", "").split(",") if email.strip()])

@@ -216,6 +216,20 @@ that is committed.
 
 ## Done (as of 18 November 2026)
 
+- **Built, waiting for the user's look: limits against abuse (22 Nov), on the branch `abuse-limits`, not committed.**
+  The user asked for "limits, and stripe integration"; asked, they chose the free checks, login codes and forms, with
+  the numbers proposed: per connection 2 free checks, 6 websites read, 5 login codes an hour and 20 a day, 3 request
+  forms a day (one a phone a day); for everyone 20 free checks a day (`FREE_CHECKS_A_DAY`, new) and 300 login codes,
+  with one email to the team when one is reached. Team accounts aren't counted. The login form says when too many
+  codes were asked for (three languages); a refused check reads "No checks left for today"; a form past its limit is
+  answered as sent and dropped. Not yet known: which header carries the visitor's address through Vercel (its docs
+  don't say for an outside server); the login-code route logs them until the user's own login through the site shows
+  it, before Vercel's login is turned off. Tests: `pytest` 60 pass, `-m page` 20 pass; type check and linter clean.
+  New table `limit_hits` (locked like the others), new variable `FREE_CHECKS_A_DAY` (default 20). Decided at the same
+  time, for Stripe (the user has an account): a 7-day trial with one free report and no card; the weekly checks start
+  only with a subscription (Standard or Pro through Stripe, Enterprise by agreement); after the 7 days the report
+  stays and the tracking stops.
+
 - **Built, waiting for the user's look: Free Snapshots for a list of prospects (22 Nov), on the branch
   `prospect-snapshots`, not committed.** After "what is next" the user chose "Prospect snapshot command" for the
   demand test, and, asked, "Straight away": no review of the draft, as spec §8 sets for the snapshot. `python -m

@@ -6,7 +6,7 @@ import { useId, useRef, useState, type FormEvent } from "react";
 import { Button } from "@/shared/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";
-import { api } from "@/shared/api/client";
+import { api, ApiError } from "@/shared/api/client";
 import { AUTH_INPUT, EMAIL_PATTERN } from "../constants";
 
 /** Step 1 of login: the email address the code goes to. */
@@ -39,7 +39,8 @@ export function EmailForm({
     send.mutate();
   }
 
-  const message = error ?? (send.isError ? t("sendFailed") : undefined);
+  // 429: too many codes from this connection, or from everyone today (the backend's limits against abuse)
+  const message = error ?? (send.isError ? t(send.error instanceof ApiError && send.error.status === 429 ? "tooManyCodes" : "sendFailed") : undefined);
 
   return (
     <form onSubmit={submit} noValidate className="flex flex-col gap-5">
