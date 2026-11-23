@@ -225,7 +225,9 @@ that is committed.
 
 ## Done (as of 18 November 2026)
 
-- **Built, waiting for the user's look: Gemini back on (23 Nov), on the branch `gemini-back`.** Asked why the Gemini
+- **Built, waiting for the user's look: Gemini back on (23 Nov), on the branch `gemini-back`; merged, pushed and
+  deployed the same day (Vercel's build passed; the server's `.env` kept as `.env.bak-before-gemini`; `/health` lists
+  `chatgpt` and `gemini`).** Asked why the Gemini
   tab was greyed out, then told what Gemini with Google Search breaks, the user chose "Turn it on now", on the same
   Google Cloud account and credits as EngProgress (the letter to Google drafted, not sent: "leave it for now").
   `ANSWER_ENGINES=chatgpt,gemini` on the server: a free check asks Gemini its 10 questions and ChatGPT 5 of them (half
