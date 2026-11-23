@@ -40,10 +40,12 @@ something on the website.
   Tajikistan, Turkmenistan, Russia and Belarus, English elsewhere.
 - **Reference product:** Peec AI (peec.ai). We copy its layout where it works and make ours simpler, local
   and in plain words. We never copy its name, logo, colors, wording, customer quotes or logos.
-- **Which assistants:** ChatGPT alone since 21 Nov 2026 (`ANSWER_ENGINES=chatgpt` on the server): Gemini with
-  Google Search is paused, because Google's terms for it (Service Specific Terms 20(k)) allow its answers to be
-  shown only to the person who asked and forbid storing, analysing or reselling them, which a report for a business
-  does; Gemini still reads and writes for us, without Google Search. From 15 to 21 Nov ChatGPT and Gemini. Google's
+- **Which assistants:** ChatGPT and Gemini (`ANSWER_ENGINES=chatgpt,gemini` on the server). Gemini with Google Search
+  was paused from 21 to 23 Nov 2026, because Google's terms for it (Service Specific Terms 20(k)) allow its answers to
+  be shown only to the person who asked and forbid storing, analysing or reselling them, which a report for a
+  business does. On 23 Nov the user turned it back on ("Turn it on now"), on the same Google Cloud account and credits
+  as EngProgress, knowing that Google could act on its terms against that account until it answers the letter
+  (drafted the same day, not sent: "leave it for now"). Gemini also reads and writes for us, without Google Search. Google's
   AI answers in Search and Yandex are "tez
   orada". The first reason given for ChatGPT alone (about 95% of AI visits in Uzbekistan, said to be
   DataReportal's) could not be found in DataReportal's report (corrected 16 Nov). StatCounter's October 2026
@@ -130,10 +132,11 @@ waits for their look. The open work, in the order the user picks (ask as a short
 
 **Waiting on the user (ask once, don't block on it):**
 
-- (21 Nov) Gemini with Google Search is paused for Google's terms (Service Specific Terms 20(k)): a letter to Google
-  asking whether its answers may be stored, counted and shown in a report for a business (the terms allow what
-  Google permits in writing), or a lawyer's read; and what to do with the Gemini answers past checks already hold
-  (they stay as they are until the user decides).
+- (21 Nov, back on 23 Nov) Gemini with Google Search breaks Google's terms (Service Specific Terms 20(k)) until Google
+  permits it in writing; the user turned it back on on 23 Nov, on EngProgress's Google Cloud account. The letter to
+  Google is drafted (a Claude Doc, 23 Nov; the user filled the signature) and waits: its volume, project and contact
+  blanks, then the "Contact sales" form. A Google Cloud project of Seenova's own would keep a suspension off
+  EngProgress.
 
 - (17 Nov) The screenshots the list of 17 Nov names: the report's competitors and sources and the bug in the
   dynamics window (only Brend savollari's arrived; Savollar's came on 18 Nov and the page was rebuilt).
@@ -221,6 +224,16 @@ that is committed.
    that no key and no client's name is in it.
 
 ## Done (as of 18 November 2026)
+
+- **Built, waiting for the user's look: Gemini back on (23 Nov), on the branch `gemini-back`.** Asked why the Gemini
+  tab was greyed out, then told what Gemini with Google Search breaks, the user chose "Turn it on now", on the same
+  Google Cloud account and credits as EngProgress (the letter to Google drafted, not sent: "leave it for now").
+  `ANSWER_ENGINES=chatgpt,gemini` on the server: a free check asks Gemini its 10 questions and ChatGPT 5 of them (half
+  the OpenAI money of a check on ChatGPT alone), the competitor search goes to Gemini. The site's texts the pause had
+  changed are back to naming both, each one only where nothing had changed it since 21 Nov (14 a language: the
+  landing page's hero, steps, assistants, FAQ, plans, closing band, footer and metadata, the login panel, the
+  snapshot's call to action), the plan table's assistants and answer counts (15, 200, 800, 4800), the landing
+  preview's "ChatGPT · Gemini", the sample's Gemini answer, Gemini "live" in the switchers. No new variable.
 
 - **Built, waiting for the user's look: the research and the decision page (23 Nov), on the branch `research-layer`;
   merged, pushed and deployed the same day, when the user chose "Commit, push, deploy + research my test project"

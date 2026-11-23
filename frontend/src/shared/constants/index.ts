@@ -26,13 +26,13 @@ export const PROMPT_TEXT_MAX_LENGTH = 300;
 export const ACTION_STEP_COUNT = 3;
 
 /**
- * The assistants the plans ask: ChatGPT; Gemini is paused since 21 Nov 2026 (Google's terms for Gemini with Google
- * Search don't allow its answers in a report for a business: `ANSWER_ENGINES` on the server) and says "soon" with
- * Yandex. Names are in messages/Engines.
+ * The assistants the plans ask: ChatGPT and Gemini (Gemini paused on 21 Nov 2026 for Google's terms for Gemini with
+ * Google Search, and back on 23 Nov at the user's choice, until Google answers the letter: `ANSWER_ENGINES` on the
+ * server); Yandex says "soon". Names are in messages/Engines.
  */
 export const ENGINES = [
   { key: "chatgpt", live: true },
-  { key: "gemini", live: false },
+  { key: "gemini", live: true },
   { key: "yandex", live: false },
 ] as const;
 
