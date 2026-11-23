@@ -15,6 +15,7 @@ import { Evidence } from "./evidence";
 import { ExecutiveSummary } from "./executive-summary";
 import { Glossary, Method } from "./method";
 import { PromptTable } from "./prompt-table";
+import { Research } from "./research";
 import { Recommendations } from "./recommendations";
 import { ReportChanges } from "./report-changes";
 import { ReportLetterhead, ReportSignOff } from "./report-header";
@@ -25,7 +26,7 @@ import { Sources } from "./sources";
 import { Topics } from "./topics";
 
 /** The sections with a line under their title on what they show and how to read them. */
-const WITH_LEAD = ["scorecard", "changes", "assistants", "competitors", "topics", "sources", "accuracy", "risks", "actions", "method", "appendix", "evidence"] as const;
+const WITH_LEAD = ["scorecard", "changes", "assistants", "competitors", "research", "topics", "sources", "accuracy", "risks", "actions", "method", "appendix", "evidence"] as const;
 
 /** The part after which the report proper ends and is signed off; the reference follows. */
 const SIGNED_AFTER = "decisions";
@@ -86,7 +87,8 @@ export function ReportBody({
     scorecard: <Scorecard report={report} metrics={metrics} />,
     changes: <ReportChanges report={report} actions={actions} />,
     assistants: <Assistants report={report} metrics={metrics} />,
-    competitors: <CompetitivePosition report={report} metrics={metrics} />,
+    competitors: <CompetitivePosition report={report} metrics={metrics} wave={wave} />,
+    research: <Research report={report} />,
     topics: <Topics report={report} metrics={metrics} />,
     sources: <Sources metrics={metrics} />,
     accuracy: <Accuracy report={report} metrics={metrics} />,

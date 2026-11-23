@@ -472,6 +472,8 @@ export type Action = ActionBase &
         url: string | null;
         pageType: PageType | null;
         brief: ContentBrief | null;
+        /** What the rivals' cited pages state for its questions and the client's site doesn't (the research). */
+        missing?: (MissingFact & { rival: string; url: string | null })[];
       }
     | { kind: "technical"; check: SiteCheck }
   );
@@ -513,6 +515,39 @@ export interface Report {
   untrackedBrands: UntrackedBrand[];
   /** ISO 8601: when the project's questions are asked again (runs are weekly); null when nothing is scheduled. */
   nextRunAt: string | null;
+  /** Why AI names others and not the client, per lost question of the check shown (report spec §4.5); null until researched. */
+  research?: ResearchFinding[] | null;
+}
+
+/**
+ * One lost question researched (23 Nov 2026, `backend/app/research.py`): the business an answer named, the sentence it
+ * said about it (cut from the answer), the page it cited for it beside the client's closest page, the facts that page
+ * states and the client's doesn't, each with its quote, and a section the client could put on its page. Every quote is
+ * checked against its page; `automated` until the founder reviews it.
+ */
+export interface ResearchFinding {
+  promptId: string;
+  question: string;
+  language: PromptLanguage;
+  engine: string;
+  rival: { name: string; tracked: boolean };
+  sentence: string;
+  review: "automated" | "founder-reviewed";
+  /** compared; no_page: the answer cited no page of the business's own; unreadable: its page couldn't be read; failed. */
+  status: "compared" | "no_page" | "unreadable" | "failed";
+  page?: { url: string; title: string | null };
+  theirPassage?: string | null;
+  missing?: MissingFact[];
+  clientUrl?: string | null;
+  clientPassage?: string | null;
+  /** Paste-ready, in the question's language; a number not on the client's site is a blank "[…]". */
+  fix?: string | null;
+}
+
+/** A fact a rival's cited page states and the client's site doesn't, named in the three languages, with the page's words. */
+export interface MissingFact {
+  fact: ThreeLanguages;
+  quote: string;
 }
 
 /**

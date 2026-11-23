@@ -200,6 +200,9 @@ class Run(Base):
     facts_checked: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True)
     # What each assistant said of the business when asked by name, as `firstrun.brand_view` gives it
     brand_view: Mapped[Optional[Any]] = mapped_column(JSON, nullable=True)
+    # Why AI names others and not the client, per lost question (`research`, report spec §4.5): {at, model, cost,
+    # questions, items}. Added at start (23 Nov 2026)
+    research: Mapped[Optional[Any]] = mapped_column(JSON, nullable=True)
     collected_at: Mapped[datetime.datetime] = mapped_column(DateTime, default=now, index=True)
 
 

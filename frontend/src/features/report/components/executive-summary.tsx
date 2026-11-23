@@ -6,13 +6,17 @@ import { ACTION_AREAS, sectionNumber } from "../constants";
 import { openActions } from "../helpers/report";
 import { weekEvents } from "../helpers/weeks";
 import { HeadlineSummary } from "./headline-summary";
-import { BlockTitle, Verdict } from "./report-parts";
+import { BlockTitle, Share, Verdict } from "./report-parts";
+import { researchShown } from "./research";
+import { ShelfStatus } from "./shelf-status";
 import { TopFinding } from "./top-finding";
 import { WeekEventLine } from "./week-event";
 
 /** The summary tells this many of the week's events, and this many of the plan's first actions. */
 const HIGHLIGHTS = 4;
 const FIRST_ACTIONS = 3;
+/** The businesses named in the client's place that the decision page lists. */
+const INSTEAD = 4;
 
 /**
  * The report's answer on one page, for the reader who reads nothing else: the buyers' answers that name the
@@ -42,6 +46,13 @@ export function ExecutiveSummary({
   const seen = metrics.visibility;
   const first = openActions(actions).slice(0, FIRST_ACTIONS);
   const compared = report.history.length > 1;
+  // Who AI named in the client's place, the most named first: tracked or not (spec rule 7)
+  const { providers } = metrics;
+  const instead = providers.rows.filter((row) => !row.own && row.answers > 0).slice(0, INSTEAD);
+  // Why, from the research: the lost questions compared, and the facts the rivals' pages state that the client's don't
+  const researched = researchShown(report);
+  const comparedFindings = researched?.filter((finding) => finding.status === "compared") ?? [];
+  const why = researched && researched.length > 0 && comparedFindings.length > 0 ? { compared: comparedFindings.length, lost: researched.length, facts: comparedFindings.reduce((sum, finding) => sum + (finding.missing?.length ?? 0), 0) } : null;
   const highlights = weekEvents(report.history.length - 1, {
     project: report.project,
     history: report.history,
@@ -57,6 +68,36 @@ export function ExecutiveSummary({
       <Verdict>
         {t("headline.verdict", { brand: report.project.brand.name, named: seen.named, answers: seen.answers })} {findings.competition}
       </Verdict>
+
+      {/* The decision page (spec §4.1; 23 Nov 2026, the user's "Build research + decision page"): who holds each
+          question, who AI named in the client's place, and why, from the research */}
+      <div className="grid gap-x-8 gap-y-4 @container print:break-inside-avoid">
+        <div className="flex min-w-0 flex-col gap-2">
+          <BlockTitle>{t("summary.shelf")}</BlockTitle>
+          <ShelfStatus wave={wave} list={false} />
+        </div>
+        {instead.length > 0 && (
+          <div className="flex min-w-0 flex-col gap-2">
+            <BlockTitle>{t("summary.instead")}</BlockTitle>
+            <ul className="flex flex-wrap gap-x-5 gap-y-1.5 text-sm">
+              {instead.map((row) => (
+                <li key={row.key} className="flex items-baseline gap-1.5">
+                  <span className="font-medium">{row.name}</span>
+                  <Share k={row.answers} n={providers.answers} text={t("summary.insteadCount", { count: row.answers, total: providers.answers })} className="text-muted-foreground" />
+                </li>
+              ))}
+            </ul>
+            {why && (
+              <p className="text-sm text-pretty">
+                {t("summary.why", { compared: why.compared, lost: why.lost, facts: why.facts })}{" "}
+                <a href="#research" className="text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
+                  {t("summary.whySection", { section: sectionNumber("research") })}
+                </a>
+              </p>
+            )}
+          </div>
+        )}
+      </div>
 
       <TopFinding wave={wave} brands={[report.project.brand, ...report.project.competitors]} youId={report.project.brand.id} />
 
@@ -105,6 +146,7 @@ export function ExecutiveSummary({
                     </li>
                   ))}
                 </ol>
+                <p className="text-sm font-medium text-pretty">{t("summary.decide")}</p>
                 <p className="text-xs text-muted-foreground">
                   <a href={moreHref} className="underline-offset-4 hover:underline">
                     {t("summary.more", { section: sectionNumber("actions") })}

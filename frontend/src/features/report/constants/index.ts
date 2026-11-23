@@ -9,14 +9,15 @@ import type { ActionKind, ReportArea } from "@/shared/types/api";
 // (the user's order, 16 Nov 2026); "appendix" keeps its key from when it was the last section.
 // "assistants" opens the analysis: each assistant apart, and what each knows of the business (17 Nov 2026).
 // "evidence" closes the report: every answer in full, which the findings link to (Phase 0 item 0.5, spec §4.13)
-export const REPORT_SECTIONS = ["summary", "scorecard", "changes", "assistants", "competitors", "topics", "appendix", "sources", "accuracy", "risks", "actions", "method", "glossary", "evidence"] as const;
+// "research" follows the competitors: why AI names them and not the client, from their cited pages (spec §4.5, 23 Nov 2026)
+export const REPORT_SECTIONS = ["summary", "scorecard", "changes", "assistants", "competitors", "research", "topics", "appendix", "sources", "accuracy", "risks", "actions", "method", "glossary", "evidence"] as const;
 
 export type ReportSectionKey = (typeof REPORT_SECTIONS)[number];
 
 /** The report's four parts, each a run of sections. Titles in messages/Report.parts. */
 export const REPORT_PARTS = [
   { key: "condition", sections: ["summary", "scorecard", "changes"] },
-  { key: "analysis", sections: ["assistants", "competitors", "topics", "appendix", "sources", "accuracy"] },
+  { key: "analysis", sections: ["assistants", "competitors", "research", "topics", "appendix", "sources", "accuracy"] },
   { key: "decisions", sections: ["risks", "actions"] },
   { key: "reference", sections: ["method", "glossary", "evidence"] },
 ] as const satisfies readonly { key: string; sections: readonly ReportSectionKey[] }[];

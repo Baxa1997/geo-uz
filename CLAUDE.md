@@ -222,6 +222,30 @@ that is committed.
 
 ## Done (as of 18 November 2026)
 
+- **Built, waiting for the user's look: the research and the decision page (23 Nov), on the branch `research-layer`,
+  not committed.** The user: "why it does not do research and proper report?". Found on the server: nothing broke; a
+  free check is 10 answers on ChatGPT alone, so the spec's rules hold back most sections; the 5 confirmed competitors
+  were named once while the answers named others more often (4 and 3 of 10), and the full report listed tracked brands
+  only; and the win–loss research (spec §4.5) was Phase 1, never built. Asked, the user chose "Build research +
+  decision page", Phase 1 parts brought forward. Built: `app/research.py`: for each question whose answers name some
+  business and never the client, the page an answer cited for that business is read beside the client's site
+  (the first check's reading) and the reading model (Gemini, no Google Search) says what that page states and the
+  client's doesn't, with both pages' words, the client's closest page and a section to add; every quote is checked
+  word for word against its page, a fact with a figure is dropped, a number in the section that isn't on the client's
+  site becomes a blank "[…]", an address not read is dropped; the answer's sentence about the business is cut by code;
+  every finding `automated`. Kept on the run (`runs.research`, a new column added at start), served with the report,
+  run after a project is saved and after every weekly check, and by `python -m app.admin research <project>`. The
+  report: section 6 "Why AI names them, not you" (each question: who AI named and what it said, their cited page and
+  your closest page with their passages, what theirs states and yours doesn't, the section to add); the summary is the
+  decision brief (spec §4.1: the headline count, who holds each question, who AI named in your place, why with a link
+  to section 6, the top finding, the first three actions and the decision for the week); the competitors section
+  lists the businesses named that aren't tracked ("unverified"); a page action lists the facts its questions' rival
+  pages state and the client's site doesn't, in the panel and in its task for AI. A trial on the test project on the
+  server (nothing saved): 10 lost questions in 62 s, 8 compared, $0.11 on Gemini. Tests: `pytest` 79 pass (3 new,
+  stand-in pages and model), `-m page` 20 pass; type check and linter clean. Looked at on this computer with sample
+  findings on the local project (removed after): the decision brief and section 6 in English on desktop, section 6 in
+  Uzbek at 390px, a page action's missing facts in Russian. No new variable.
+
 - **Built, waiting for the user's look: the user's test of 23 Nov, on the branch `feedback-23-nov`; merged, pushed and
   deployed the same day, when the user chose "Commit, push, deploy + update my test project" (Vercel's build passed;
   the server's previous `app/` kept as `app.bak-before-feedback`; `app.admin audit` on the test project: 0 actions →
@@ -1516,7 +1540,7 @@ All from `frontend/`: `npm run dev` (development), `npm run build` then `npm run
 ## Seenova report: source of truth
 
 - The report is built from `seenova-report-spec.md` (at the repository's root; it names a client, so git ignores it and it stays on this computer). If code, old docs or comments conflict with it, the spec wins.
-- Current scope is **Phase 0 only** (spec §2). Do not build Phase 1 or Phase 2 features unless I ask.
+- Current scope is **Phase 0 only** (spec §2). Do not build Phase 1 or Phase 2 features unless I ask. **Asked on 23 Nov 2026** ("Build research + decision page"): the win–loss research (§4.5, `app/research.py`, automated), the decision brief (§4.1) and the newly observed providers in the report (rule 7) were brought forward from Phase 1; the rest of Phase 1 still waits.
 - Every number shown in the UI, PDF or Telegram digest must be computed in code from the single data object (spec §10). The LLM must never write a number.
 - Never default a missing score to 50. Use N/A (spec §6.3).
 - Use the baseline client's first check (spec §3.3) as the test fixture. Acceptance tests are in spec §11.1; they run in `backend/tests/` on that check's data, which stays on this computer (`backend/tests/README.md`). Never write the client's name, its competitors' names or its project's id into a committed file.

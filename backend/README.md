@@ -327,6 +327,20 @@ for everyone emails the team once that day. The connection is `x-vercel-forwarde
 `X-Forwarded-For`, else `X-Real-IP`; the login-code route logs the three until a real login through the site has shown
 which one Vercel sends. Refused: 429 `too_many_codes`, `first_run_limit` (one connection) or `free_checks_busy` (all).
 
+**Why AI names them, not you** (23 Nov 2026, report spec §4.5, brought forward from Phase 1 at the user's "Build research
++ decision page"; `app/research.py`). For each buyer question whose answers name some business and never the client
+(`lost_questions`), the page an answer cited for that business (its own site, by name or tracked domain) is read
+beside the client's site (the first check's `siteText`, else read again), and the reading model returns what that page
+states and the client's doesn't (each fact in uz, ru and en with the page's words), the client's closest page and
+passage, and a section to add. Checked in code before it is kept: a quote not word for word on its page is dropped, a
+fact with a figure or a missing language is dropped, a number in the section not on the client's site becomes "[…]",
+an address of the client's not read is dropped; the sentence about the business is cut from the answer by code. Each
+finding is `automated`, with a status (`compared`, `no_page`, `unreadable`, `failed`). Kept on the run (`runs.research`:
+at, model, cost, questions, items) and served as the report's `research`; run after a project is saved
+(`fixes.after_creation`, before the actions) and after every weekly check, or by `python -m app.admin research
+<project>`. Page actions carry their questions' facts (`fixes.missing_facts`, `details.missing`), and their briefs
+read them. Measured on a 10-question free check: 62 s, $0.11 on Gemini (no Google Search). Tests: `tests/test_research.py`.
+
 **The user's test of 23 Nov 2026.** A check that ends is saved as its account's project in the same transaction
 (`main._finish_and_save`, `projects.first_run_body`), and its `GET /first-runs/{id}` says `projectId`, so the page opens
 the dashboard; when it can't be saved (the website taken meanwhile, a plan's limit) it is only done, and "Save" on its

@@ -16,6 +16,9 @@ The website's audit and the actions (23 Nov 2026: the SEO audit's checks came af
 
     python -m app.admin audit <project id>                   the website read and checked again, the actions brought in
                                                              line and the pages to write given briefs (no assistant asked)
+    python -m app.admin research <project id>                why AI names others and not the client, on the latest check
+                                                             (report spec §4.5; the reading model, a few cents), then the
+                                                             actions brought in line and the briefs written
 
 Types: client_managed, directory, media, ugc, telegram, reference, platform_docs, competitor_site, unclassified.
 The pages keep a report two minutes (`app/cache.py`): a site typed here shows within that.
@@ -30,7 +33,7 @@ from typing import Any, Optional
 
 from sqlalchemy import select
 
-from . import cache, domains, firstrun, fixes, projects
+from . import cache, domains, firstrun, fixes, projects, research
 from .db import Brand, Project, Run, SessionLocal, User, create_tables
 from .projects import PLAN_LIMITS
 
@@ -111,6 +114,25 @@ def main(arguments: list) -> None:
             cache.touch(project.id)
             failed = [check["check"] for check in project.site_checks if not check["passed"]]
             print(f"{project.id}: {len(project.site_checks)} checks, failed: {', '.join(failed) or 'none'}; {len(fixes.listed(db, project))} actions")
+        elif arguments[:1] == ["research"] and len(arguments) == 2:
+            project = db.get(Project, arguments[1])
+            run = _latest(db, project) if project else None
+            if run is None:
+                sys.exit("No such project, or no check yet")
+            project_id, run_id = project.id, run.id
+            db.commit()
+            kept = research.research(project_id, run_id)
+            if kept is None:
+                sys.exit("The research failed: see the lines above")
+            db.expire_all()
+            project = db.get(Project, project_id)
+            fixes.sync(db, project)
+            db.commit()
+            fixes.write_briefs(db, project)
+            db.commit()
+            cache.touch(project_id)
+            statuses = ", ".join(f"{status} {sum(item['status'] == status for item in kept['items'])}" for status in ("compared", "no_page", "unreadable", "failed"))
+            print(f"{project_id}: {len(kept['items'])} questions researched ({statuses}), ${kept['cost']:.4f}")
         else:
             sys.exit(__doc__)
 
