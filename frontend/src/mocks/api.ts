@@ -950,6 +950,9 @@ export const mockApi: ApiClient = {
     return respond(undefined, 600);
   },
 
+  // The sample accounts keep no tours: the browser's own memory does (`PageTour`)
+  markTourSeen: async (tour) => respond({ seenTours: [tour] }),
+
   updateMe: async ({ name }) => {
     const user = await currentUser();
     const clean = cleanName(name);

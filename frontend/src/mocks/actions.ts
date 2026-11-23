@@ -240,6 +240,10 @@ export async function sendSupportMessage(body: SupportMessage) {
   return run((m) => m.sendSupportMessage(body));
 }
 
+export async function markTourSeen(tour: string) {
+  return run((m) => m.markTourSeen(tour));
+}
+
 export async function updateMe(body: UpdateMeRequest) {
   return run((m) => m.updateMe(body));
 }

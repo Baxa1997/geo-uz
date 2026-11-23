@@ -225,6 +225,16 @@ that is committed.
 
 ## Done (as of 18 November 2026)
 
+- **Built, waiting for the user's look: each page's tour once per account, on any device (23 Nov), on the branch
+  `tours-once`, not committed.** The user: "the Touring must be showed only once, so after user has been once in the
+  page it must not show anywhere even in different devices, maybe we need to save it somewhere as an object". It was
+  once per browser (`localStorage`). Now the account keeps the tours it has seen (`users.seen_tours`, a column added at
+  start; `GET /auth/me` returns `seenTours`; `POST /auth/me/tours`), the workspace reads them (`useTourMemory`), and a
+  tour that starts by itself is marked at once; one seen in a browser before is passed to the account; the book
+  button still opens any tour. Tried on this computer in two fresh browsers on one account: the first showed the
+  Overview's tour and saved it, the second didn't show it. `pytest` 80 pass; type check and linter clean. No new
+  variable.
+
 - **Built, waiting for the user's look: Gemini back on (23 Nov), on the branch `gemini-back`; merged, pushed and
   deployed the same day (Vercel's build passed; the server's `.env` kept as `.env.bak-before-gemini`; `/health` lists
   `chatgpt` and `gemini`).** Asked why the Gemini

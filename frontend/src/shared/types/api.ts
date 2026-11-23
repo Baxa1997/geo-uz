@@ -487,6 +487,8 @@ export interface User {
   /** E.164, e.g. "+998901234567". Login is by email now, so the backend sends null. */
   phone: string | null;
   telegramUsername: string | null;
+  /** The pages' guided tours this account has seen (`PageTour` ids): none starts by itself again, on any device. */
+  seenTours?: string[];
 }
 
 export interface Report {

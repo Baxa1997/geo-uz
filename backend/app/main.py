@@ -64,7 +64,7 @@ def digest(value: str) -> str:
 
 def user_json(user: User) -> Dict[str, Any]:
     # `phone` and `telegramUsername` stay in the shape for the pages that read them; login is by email now
-    return {"id": user.id, "name": user.name, "email": user.email, "phone": None, "telegramUsername": None}
+    return {"id": user.id, "name": user.name, "email": user.email, "phone": None, "telegramUsername": None, "seenTours": list(user.seen_tours or [])}
 
 
 # --- login ---------------------------------------------------------------------------------------------
@@ -217,6 +217,33 @@ def update_me(body: MeUpdate, user: User = Depends(current_user)) -> Dict[str, A
         db.commit()
         cache.drop_user(user.id)
         return user_json(found)
+
+
+# A page's tour id, as `PageTour` names it (messages/Tours' keys), and how many an account keeps
+TOUR_ID = re.compile(r"^[A-Za-z][A-Za-z0-9_-]{0,39}$")
+MAX_TOURS = 60
+
+
+class TourSeen(BaseModel):
+    tour: str
+
+
+@app.post("/auth/me/tours")
+def tour_seen(body: TourSeen, user: User = Depends(current_user)) -> Dict[str, Any]:
+    """A guided tour the account has seen: it doesn't start by itself again, on any device (the user, 23 Nov 2026: "the
+    Touring must be showed only once ... even in different devices"). It can still be opened by its button."""
+    tour = body.tour.strip()
+    if not TOUR_ID.match(tour):
+        raise HTTPException(422, "tour_invalid")
+    with SessionLocal() as db:
+        found = db.get(User, user.id)
+        seen = list(found.seen_tours or [])
+        if tour not in seen and len(seen) < MAX_TOURS:
+            found.seen_tours = seen + [tour]
+            db.commit()
+            # The session kept a minute holds the account as it was
+            cache.drop_user(user.id)
+        return {"seenTours": list(found.seen_tours or [])}
 
 
 @app.post("/auth/logout", status_code=204)

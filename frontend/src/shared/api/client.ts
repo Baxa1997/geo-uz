@@ -179,6 +179,8 @@ export interface ApiClient {
   sendSupportMessage(body: SupportMessage): Promise<void>;
   /** Sozlamalar: the user's own name. */
   updateMe(body: UpdateMeRequest): Promise<User>;
+  /** A guided tour this account has seen: it doesn't start by itself again, on any device. */
+  markTourSeen(tour: string): Promise<{ seenTours: string[] }>;
   /** Sozlamalar › Profil: the brand profile; 422 for an empty name or a bad website. */
   updateProject(projectId: string, body: UpdateProjectRequest): Promise<Project>;
   /** Sozlamalar › Brendlar: a competitor's name, spellings or website; 409 when the name is tracked already. */
@@ -313,6 +315,7 @@ const httpApi: ApiClient = {
   createDemoRequest: (body) => send("POST", "/demo-requests", body),
   sendSupportMessage: (body) => send("POST", "/support-messages", body),
   updateMe: (body) => send("PATCH", "/auth/me", body),
+  markTourSeen: (tour) => send("POST", "/auth/me/tours", { tour }),
   updateProject: (projectId, body) => send("PATCH", `/projects/${id(projectId)}`, body),
   updateCompetitor: (projectId, brandId, body) => send("PATCH", `/projects/${id(projectId)}/competitors/${id(brandId)}`, body),
   getFacts: (projectId) => request(`/projects/${id(projectId)}/facts`),
@@ -407,6 +410,7 @@ const mockBridge = (): ApiClient => ({
       createDemoRequest: (body) => mocks().then((m) => unwrap(m.createDemoRequest(body))),
       sendSupportMessage: (body) => mocks().then((m) => unwrap(m.sendSupportMessage(body))),
       updateMe: (body) => mocks().then((m) => unwrap(m.updateMe(body))),
+      markTourSeen: (tour) => mocks().then((m) => unwrap(m.markTourSeen(tour))),
       updateProject: (projectId, body) => mocks().then((m) => unwrap(m.updateProject(projectId, body))),
       updateCompetitor: (projectId, brandId, body) => mocks().then((m) => unwrap(m.updateCompetitor(projectId, brandId, body))),
       getFacts: (projectId) => mocks().then((m) => unwrap(m.getFacts(projectId))),
@@ -432,6 +436,7 @@ const liveAuth: Partial<ApiClient> = {
   getMe: httpApi.getMe,
   logout: httpApi.logout,
   updateMe: httpApi.updateMe,
+  markTourSeen: httpApi.markTourSeen,
 };
 
 /** The landing page's form: no login, so it is the backend's whenever the backend is (since 16 Nov 2026; it went nowhere before). */
@@ -456,6 +461,7 @@ const NOT_PROJECTS: (keyof ApiClient)[] = [
   "getMe",
   "logout",
   "updateMe",
+  "markTourSeen",
   "startFirstRun",
   "getFirstRuns",
   "getFirstRun",
