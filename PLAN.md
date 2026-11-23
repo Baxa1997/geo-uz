@@ -32,10 +32,10 @@ branding, a full site audit.
 | First check | **Real** on ChatGPT and Gemini together since 16 Nov, as "confirm, then check" (the website read, the owner confirms the business, competitors and questions, then the check): $0.84 and about five minutes on the user's own site. It also finds competitors by a web search, asks the brand questions, writes a conclusion and shows results while it runs |
 | Projects and the dashboard | **Built, deployed, waiting for the user's look**: a first check saved as a real project, every page reading and writing it |
 | Checks by plan | **Ran live once** (16 Nov, Standard, the user's own site: 20 answers of 20, $1.63, about seven minutes). The server's timer checks paid projects on their days; one is paid |
-| The report by link, as a PDF and by email | **Built, waiting for the user's look**. The PDF download (18 Nov) works on this computer; on the live site it waits for Vercel's login to go and for Chromium on the server. No report email has reached a real inbox yet |
+| The report by link, as a PDF and by email | **Built, waiting for the user's look**. The PDF download (18 Nov) works on this computer; on the live site it waits for Chromium on the server (the site is public at www.seenovai.com since 23 Nov, and `FRONTEND_ORIGIN` is that address). No report email has reached a real inbox yet |
 | Fixes and wrong facts | **Built, waiting for the user's look**. Wrong facts come from the brand answers against the website (16 Nov, no model); a page's brief ran in the live check of 16 Nov; the check against the owner's own facts (Pro) has never run |
 | Backend on the server | Running at `geo-api.shopsready.com` with Supabase's database (in Mumbai), the OpenAI key and Google credentials (since 15 Nov) |
-| Frontend on Vercel | Deployed, its server in Frankfurt (17 Nov); behind Vercel's own login |
+| Frontend on Vercel | Deployed, its server in Frankfurt (17 Nov); public at https://www.seenovai.com since 23 Nov (Vercel's own login covers only the vercel.app addresses) |
 | The pilot report (a one-off report made by script) | Works; run once for a first client; on hold until the platform's flow is set up |
 
 ## Prices and the free first check (the user's decision, 15 Nov 2026; Standard and Pro lowered on 22 Nov 2026)
@@ -107,9 +107,8 @@ After each check the client gets its status report.
 - **State (15 Nov): built, waiting for the user's look.** On this computer the report's link opens without
   login, the server prints it as a 10-page PDF, and the email (summary, link, PDF) reached a local test mail
   server. Since 18 Nov the report's PDF buttons download that file, and open the print dialog where the
-  backend can't make it. Still owed: a browser on the server (the user: not yet), the site's public address in
-  `FRONTEND_ORIGIN` (Vercel's own login is in the way: the user is to turn it off), one email to a real inbox,
-  and later a mail service on our own domain.
+  backend can't make it. Still owed: a browser on the server (the user: not yet), one email to a real inbox, and later
+  a mail service on our own domain (the site's public address is in `FRONTEND_ORIGIN` since 23 Nov).
 
 ### Stage 4. Fixes and wrong facts
 
@@ -171,8 +170,8 @@ The "what to do" half: the part that keeps a small business paying.
 | Prices against cost | Decided 15 Nov (the table above), with Pro as twice a week and 50 questions, confirmed by the user | — |
 | The Google credentials for Gemini | Set on the server on 15 Nov ("do it"): for now the IELTS project's Google Cloud project, with a copy of its credentials file. A project of GEO's own, to keep the bills apart, is still owed | Stage 5 |
 | Permission to spend, and the keys on the server | The keys are on the server since 15 Nov. The user chooses each paid request; the one paid project is checked every Monday (about $1.63) until it is switched back | — |
-| The product's name and domain | The name is Seenova AI (17 Nov) and the logo two rounds (18 Nov). The domain is still owed: the emails' sender, the site's address | Stage 5 |
-| Vercel's own login | Until it is off, the server can't print a report and a client's report link asks for a Vercel login (the user is to turn it off, 18 Nov) | Stage 3 on the live site |
+| The product's name and domain | The name is Seenova AI (17 Nov) and the logo two rounds (18 Nov). The site's address is the user's domain, https://www.seenovai.com (public since 23 Nov); a sender on it for the emails is still owed | Stage 5 |
+| Vercel's own login | Settled 23 Nov: the site is public at its own domain (www.seenovai.com), which Vercel's login doesn't cover, and the server's links use it | — |
 | Pilots or self-serve first | Whether to sell hand-made reports while the platform is built | any time |
 | Where personal data is stored | Supabase's database is in Mumbai, and stays there: the user chose a new project in Frankfurt on 17 Nov and dropped it on 23 Nov ("no need for this one"). The lawyer's answer is still owed | Stage 5 |
 
