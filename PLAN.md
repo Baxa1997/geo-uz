@@ -174,7 +174,7 @@ The "what to do" half: the part that keeps a small business paying.
 | The product's name and domain | The name is Seenova AI (17 Nov) and the logo two rounds (18 Nov). The domain is still owed: the emails' sender, the site's address | Stage 5 |
 | Vercel's own login | Until it is off, the server can't print a report and a client's report link asks for a Vercel login (the user is to turn it off, 18 Nov) | Stage 3 on the live site |
 | Pilots or self-serve first | Whether to sell hand-made reports while the platform is built | any time |
-| Where personal data is stored | Supabase's database is in Mumbai today; the user chose a new project in Frankfurt (17 Nov), theirs to create. The lawyer's answer is still owed | Stage 5 |
+| Where personal data is stored | Supabase's database is in Mumbai, and stays there: the user chose a new project in Frankfurt on 17 Nov and dropped it on 23 Nov ("no need for this one"). The lawyer's answer is still owed | Stage 5 |
 
 ## What can go wrong
 
@@ -190,4 +190,5 @@ The "what to do" half: the part that keeps a small business paying.
   questions and the conclusion (`backend/README.md`). ChatGPT and Gemini together in one first check first ran
   on 16 Nov ($0.84). Gemini runs on another project's Google credentials until GEO has its own.
 - **The database is far from the server** (Supabase in Mumbai, the server in Germany): a statement costs about
-  0.12 s. The caches of 17 Nov hide most of it; a database in Frankfurt would remove it.
+  0.12 s. The caches of 17 Nov hide most of it; a database in Frankfurt would remove it, but the user dropped the
+  move on 23 Nov ("no need for this one"), so what is left is fewer round trips and longer caching.
