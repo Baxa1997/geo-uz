@@ -55,7 +55,8 @@ export function AssistantPanel({ initialQuestion, onClose }: { initialQuestion?:
       aria-label={t("label")}
       onKeyDown={(event) => event.key === "Escape" && onClose()}
       className={cn(
-        "fixed inset-0 z-50 flex flex-col bg-sidebar lg:static lg:z-auto lg:h-svh lg:shrink-0",
+        // Slides in: up from below on a phone, where it covers the screen, and from the side beside the page
+        "fixed inset-0 z-50 flex animate-sheet-in flex-col bg-sidebar motion-reduce:animate-none lg:static lg:z-auto lg:h-svh lg:shrink-0 lg:animate-panel-in",
         expanded ? "lg:w-[40rem]" : "lg:w-[26rem]",
       )}
     >

@@ -65,24 +65,6 @@ def _progress(run_id: str) -> Any:
     return progress
 
 
-def _project_body(result: Dict[str, Any], first_run_id: str) -> Dict[str, Any]:
-    """The project "Save" makes of a finished first check in the app (`projectFromFirstRun` in the frontend)."""
-    return {
-        "name": result["brand"]["name"],
-        "aliases": result["brand"].get("aliases") or [],
-        "domain": result["domain"],
-        "category": result.get("category") or "",
-        "country": result.get("country") or projects.DEFAULT_COUNTRY,
-        "city": result.get("city") or "",
-        "description": result.get("description") or "",
-        "services": result.get("services") or [],
-        "competitors": [{key: rival.get(key) for key in ("name", "aliases", "domain", "logo")} for rival in result.get("competitors") or []],
-        "prompts": [{key: row["prompt"].get(key) for key in ("text", "language", "topic")} for row in result.get("prompts") or []],
-        "brandQuestions": [{"text": question["text"], "language": question["language"]} for question in result.get("brandQuestions") or []],
-        "firstRunId": first_run_id,
-    }
-
-
 def _row(site: str, status: str, **values: Any) -> Dict[str, Any]:
     return {"website": site, "status": status, **{column: values.get(column, "") for column in COLUMNS[2:]}}
 
@@ -123,7 +105,7 @@ def make(user_id: str, site: str, country: Optional[str], language: str, engine_
 
     with SessionLocal() as db:
         user = db.get(User, user_id)
-        project, check_id = projects.create(db, user, _project_body(result, run_id))
+        project, check_id = projects.create(db, user, projects.first_run_body(result, run_id))
         fixes.sync(db, project)
         db.commit()
         project_id = project.id

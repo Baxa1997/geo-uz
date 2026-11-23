@@ -327,6 +327,20 @@ for everyone emails the team once that day. The connection is `x-vercel-forwarde
 `X-Forwarded-For`, else `X-Real-IP`; the login-code route logs the three until a real login through the site has shown
 which one Vercel sends. Refused: 429 `too_many_codes`, `first_run_limit` (one connection) or `free_checks_busy` (all).
 
+**The user's test of 23 Nov 2026.** A check that ends is saved as its account's project in the same transaction
+(`main._finish_and_save`, `projects.first_run_body`), and its `GET /first-runs/{id}` says `projectId`, so the page opens
+the dashboard; when it can't be saved (the website taken meanwhile, a plan's limit) it is only done, and "Save" on its
+page works as before. The login code is stored and answered at once and emailed in the background; one that couldn't be
+sent is dropped, so asking again isn't held back. The website audit (`firstrun.audit`, by rule) has ten checks: the
+first four, then `no_prices`, `no_faq`, `no_sitemap`, `no_llms_txt`, `weak_meta` (the home page's title, description
+and H1) and, for Uzbekistan, `one_language`; a check that can't be judged is left out. The actions (`fixes.suggested`):
+a page about every topic whose answers name other businesses (tracked or not, `others` on each answer of the report)
+and never the client; a "get listed" action for every directory, media, UGC or Telegram site the answers cite and the
+client isn't on (`domains.placeable`: no route or competitor required, a route only from our list or a review); briefs
+are written right after a project is saved (`after_creation`), with who the answers named and the pages they cited.
+`python -m app.admin audit <project id>` reads and checks an existing project's website again and brings its actions in
+line (no assistant asked; briefs on the writing model). Tests: `tests/test_recommendations.py`, `tests/test_queue.py`.
+
 **The free checks' queue** (22 Nov 2026, the user's choice when the OpenAI balance was about $2: "Cap at 2 a day +
 queue", run "by hand"; `app/queue.py`): past `FREE_CHECKS_A_DAY` for everyone a confirmed free check isn't refused, it
 waits (`first_runs.status` `waiting`, what the owner confirmed and the page's language kept in its `draft`), 2 a day

@@ -94,20 +94,59 @@ def bots_blocked(robots: Optional[str]) -> bool:
     return False
 
 
-def site_checks(pages: List[Dict[str, str]], html: Optional[str], robots: Optional[str]) -> List[Dict[str, Any]]:
-    """The four yes-or-no checks of `backend/PLAN.md`. `passed` false is a problem to fix."""
+# Words that show a page in Uzbek in Latin script; Cyrillic Uzbek has its own letters (ў, қ, ғ, ҳ)
+UZBEK_WORDS = r"\b(va|uchun|bilan|haqida|bo[ʻ'‘`]yicha|sizning|xizmat\w*|narx\w*|biz|bizning|qanday|yoki)\b"
+FAQ_WORDS = r"\bFAQ\b|часто задаваемые|вопросы и ответы|частые вопросы|ko[ʻ'‘`]p so[ʻ'‘`]raladigan|savol[- ]javob|frequently asked"
+
+
+def site_checks(pages: List[Dict[str, str]], html: Optional[str], robots: Optional[str], sitemap: Optional[str] = None, llms: Optional[str] = None, languages: Optional[List[str]] = None) -> List[Dict[str, Any]]:
+    """The yes-or-no checks on the website, by rule, never by a model. `passed` false is a problem to fix. The first
+    four are `backend/PLAN.md`'s; the SEO audit's six came on 23 Nov 2026 (the user: "seo and geo can be taken from
+    research"): the home page's title, description and heading, a sitemap, a page of questions and answers, prices
+    in the text, both of the market's languages, llms.txt. A check that can't be judged (the home page's code not
+    read) is left out, not failed."""
     text = " ".join(page["text"] for page in pages)
-    has_price = bool(re.search(r"\d[\d\s.,]*\s*(млн|тыс|ming|mln)?\.?\s*(сум|so[ʻ'‘`]?m|uzs|usd|\$|тенге|₸)", text, re.IGNORECASE))
-    price_page = any(re.search(r"price|narx|цен|стоим|tarif|тариф", page["url"], re.IGNORECASE) for page in pages)
+    has_price = bool(re.search(r"\d[\d\s.,]*\s*(млн|тыс|ming|mln)?\.?\s*(сум|so[ʻ'‘`]?m|uzs|usd|\$|тенге|₸|руб|₽|eur|€)", text, re.IGNORECASE))
+    price_page = any(re.search(r"price|narx|цен|стоим|tarif|тариф|pricing", page["url"], re.IGNORECASE) for page in pages)
     markup = bool(html and re.search(r'application/ld\+json[^>]*>[^<]*"@type"\s*:\s*"(LocalBusiness|Organization|School|EducationalOrganization|MedicalClinic|Dentist|Restaurant|Store|Hotel)', html, re.IGNORECASE))
     contacts = bool(re.search(r"\+?\s*(998|7)[\s(-]*\d{2,3}[\s)-]*\d{3}[\s-]*\d{2}[\s-]*\d{2}", text))
-    return [
+    checks = [
         {"check": "ai_bots_blocked", "passed": not bots_blocked(robots)},
         # A page about prices with no price in its text: the prices are pictures, or not there at all
         {"check": "prices_as_images", "passed": has_price or not price_page},
         {"check": "no_business_markup", "passed": markup},
         {"check": "contacts_missing", "passed": contacts},
+        # No price anywhere in the text, and no page about prices: AI can't answer "how much"
+        {"check": "no_prices", "passed": has_price or price_page},
+        {"check": "no_faq", "passed": bool(re.search(FAQ_WORDS, text + " " + " ".join(page["url"] for page in pages), re.IGNORECASE)) or bool(html and '"FAQPage"' in html)},
+        {"check": "no_sitemap", "passed": bool(sitemap and re.search(r"<(urlset|sitemapindex)", sitemap, re.IGNORECASE)) or bool(robots and re.search(r"^\s*sitemap\s*:", robots, re.IGNORECASE | re.MULTILINE))},
+        # Some AI tools read it; a page that answers 200 with HTML for every address isn't one
+        {"check": "no_llms_txt", "passed": bool(llms and len(llms.strip()) > 20 and not llms.lstrip().startswith("<"))},
     ]
+    if html:
+        title = re.search(r"<title[^>]*>(.*?)</title>", html, re.IGNORECASE | re.DOTALL)
+        described = re.search(r"<meta[^>]+name=[\"']description[\"'][^>]*content=[\"']([^\"']*)", html, re.IGNORECASE) or re.search(r"<meta[^>]+content=[\"']([^\"']*)[\"'][^>]*name=[\"']description", html, re.IGNORECASE)
+        heading = re.search(r"<h1[\s>]", html, re.IGNORECASE)
+        named = len(" ".join((title.group(1) if title else "").split())) >= 15
+        checks.append({"check": "weak_meta", "passed": bool(named and described and len(described.group(1).strip()) >= 50 and heading)})
+    if languages and len(languages) > 1:
+        # Uzbekistan's questions come in Uzbek and Russian: the site should answer in both. A link to another language's
+        # version counts, since only one version was read
+        letters = re.findall(r"[^\W\d_]", text)
+        cyrillic = sum(1 for letter in letters if "\u0400" <= letter <= "\u04ff") / max(len(letters), 1)
+        uzbek = len(re.findall(UZBEK_WORDS, text, re.IGNORECASE)) >= 5 or len(re.findall(r"[ўқғҳЎҚҒҲ]", text)) >= 5
+        linked = bool(html and re.search(r"hreflang=[\"'](uz|ru)|href=[\"'][^\"']*/(uz|oz|ru)(/|[\"'?])|[?&](lang|language)=(uz|ru)", html, re.IGNORECASE))
+        checks.append({"check": "one_language", "passed": linked or (cyrillic > 0.15 and uzbek)})
+    return checks
+
+
+def audit(pages: List[Dict[str, str]], languages: Optional[List[str]] = None) -> List[Dict[str, Any]]:
+    """The checks on a website already read: its home page's code, robots.txt, sitemap.xml and llms.txt fetched
+    together."""
+    root = f"https://{web.domain_of(pages[0]['url'])}"
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        html, robots, sitemap, llms = pool.map(_raw, [pages[0]["url"], f"{root}/robots.txt", f"{root}/sitemap.xml", f"{root}/llms.txt"])
+    return site_checks(pages, html, robots, sitemap, llms, languages)
 
 
 # --- the profile and the questions ---------------------------------------------------------------------
@@ -429,12 +468,11 @@ def prepare(domain: str, category: Optional[str], city: Optional[str], country: 
     pages = web.read_site(domain, "en" if country and languages_for(country) == ["en"] else "ru")
     if not pages:
         raise FirstRunError("site_unreadable", domain)
-    root = f"https://{web.domain_of(pages[0]['url'])}"
-    checks = site_checks(pages, _raw(pages[0]["url"]), _raw(f"{root}/robots.txt"))
     who, usd = profile(domain, pages, category, city, settings.first_run_questions, country, name)
     # The owner's own word on the country wins over what the website suggests
     country = country or who["country"].strip().upper()[:2] or "UZ"
     languages = languages_for(country)
+    checks = audit(pages, languages)
     # The rules name the languages; a question that came in another one is left out
     who["questions"] = [question for question in who["questions"] if question["language"] in languages] or who["questions"]
     who["brandQuestions"] = [question for question in who["brandQuestions"] if question["language"] in languages]

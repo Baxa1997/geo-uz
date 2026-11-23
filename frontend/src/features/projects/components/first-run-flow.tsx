@@ -1,7 +1,9 @@
 "use client";
 
+import { CircleNotchIcon as CircleNotch } from "@phosphor-icons/react/dist/ssr/CircleNotch";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
+import { useEffect } from "react";
 import { Button } from "@/shared/components/ui/button";
 import { useRouter } from "@/i18n/navigation";
 import { api } from "@/shared/api/client";
@@ -56,8 +58,25 @@ function FirstRunStarted({ initial, ...frame }: Frame & { initial: FirstRun }) {
     refetchInterval: running ? PARTIAL_POLL_MS : false,
   });
   const again = () => router.replace("/onboarding/first-run");
+  // The check saved itself as the project when it ended (the user, 23 Nov 2026: "automatically save the project and
+  // navigate to dashboard"): its dashboard opens in the place of the short statistics
+  const saved = run.status === "done" ? run.projectId : null;
+  useEffect(() => {
+    if (saved) router.replace(`/projects/${saved}`);
+  }, [saved, router]);
 
   if (BEFORE_CHECK.includes(run.status)) return <FirstRunSetup run={run} {...frame} />;
+
+  if (saved) {
+    return (
+      <FirstRunScreen who={frame.who}>
+        <section className="my-auto flex items-center gap-3 self-center text-muted-foreground" role="status">
+          <CircleNotch aria-hidden className="size-5 animate-spin text-brand motion-reduce:animate-none" />
+          {t("opening", { site: run.domain })}
+        </section>
+      </FirstRunScreen>
+    );
+  }
 
   if (run.status === "waiting") return <FirstRunQueued run={run} who={frame.who} />;
 

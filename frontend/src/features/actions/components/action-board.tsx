@@ -33,6 +33,9 @@ import { ActionRow } from "./action-row";
 import { ActionToast, type ToastState } from "./action-toast";
 import { AddContentDialog } from "./add-content-dialog";
 
+/** How long the opened action takes to slide out (globals.css, `panel-out` and `sheet-out`). */
+const PANEL_OUT_MS = 160;
+
 /** From this width of the page (Tailwind's @4xl) an opened action sits beside the list; below it, it covers the screen. */
 const SPLIT_WIDTH = 896;
 /** Remembers in the browser that the tour was shown, so it starts by itself only once. */
@@ -228,12 +231,26 @@ export function ActionBoard({
     requestAnimationFrame(() => root.current?.closest("main")?.scrollTo({ top: 0, behavior: "smooth" }));
   }
 
+  // Closing slides the panel out first (the user, 23 Nov 2026: "opens and closes very hardly, no animation"); under
+  // reduced motion it goes at once
+  const [closing, setClosing] = useState<string>();
   function closePanel() {
     const id = selectedId;
-    setSelectedId(undefined);
-    // Back to the action's row or card
-    if (id) requestAnimationFrame(() => document.querySelector<HTMLElement>(`[data-action-row="${CSS.escape(id)}"] [data-open]`)?.focus());
+    if (!id || closing === id) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    setClosing(id);
+    window.setTimeout(
+      () => {
+        setClosing(undefined);
+        // Another action opened meanwhile stays open
+        setSelectedId((current) => (current === id ? undefined : current));
+        // Back to the action's row or card
+        requestAnimationFrame(() => document.querySelector<HTMLElement>(`[data-action-row="${CSS.escape(id)}"] [data-open]`)?.focus());
+      },
+      reduced ? 0 : PANEL_OUT_MS,
+    );
   }
+  const leaving = selected !== null && closing === selected.id;
 
   // The guided tour opens an action with a brief when there is one, to show the brief
   const tourAction =
@@ -541,7 +558,9 @@ export function ActionBoard({
         {/* The opened action beside the list, staying in view while the list scrolls */}
         {selected && wide !== false && (
           <aside aria-label={title(selected)} className="hidden w-1/2 shrink-0 border-l @4xl:block @6xl:w-[55%]" onKeyDown={(event) => event.key === "Escape" && closePanel()}>
-            <div className="sticky top-24.25 h-[calc(100svh-6rem-49px)] lg:h-[calc(100svh-4rem-2px-49px)]">{panel}</div>
+            <div key={selected.id} className={cn("sticky top-24.25 h-[calc(100svh-6rem-49px)] motion-reduce:animate-none lg:h-[calc(100svh-4rem-2px-49px)]", leaving ? "animate-panel-out" : "animate-panel-in")}>
+              {panel}
+            </div>
           </aside>
         )}
       </div>
@@ -550,7 +569,7 @@ export function ActionBoard({
       {selected &&
         wide === false &&
         createPortal(
-          <div role="dialog" aria-modal="true" aria-label={title(selected)} className="fixed inset-0 z-40 flex flex-col bg-background">
+          <div role="dialog" aria-modal="true" aria-label={title(selected)} className={cn("fixed inset-0 z-40 flex flex-col bg-background motion-reduce:animate-none", leaving ? "animate-sheet-out" : "animate-sheet-in")}>
             {panel}
           </div>,
           document.body,

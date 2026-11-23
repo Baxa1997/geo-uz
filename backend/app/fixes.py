@@ -36,6 +36,20 @@ STATUSES = ("new", "in_progress", "done", "declined")
 IMPACTS = ["high", "medium", "low"]
 PAGE_TYPES = ("home", "service", "prices", "article", "about", "other")
 PRICE_WORDS = ("price", "narx", "цен", "стоим", "tarif", "тариф", "qancha", "сколько")
+# How much a fix to the website weighs: what stops AI reading the site, or answering about prices, first; the SEO
+# audit's housekeeping last (23 Nov 2026)
+CHECK_IMPACT = {
+    "ai_bots_blocked": "high",
+    "prices_as_images": "high",
+    "no_prices": "high",
+    "one_language": "high",
+    "no_business_markup": "medium",
+    "contacts_missing": "medium",
+    "no_faq": "medium",
+    "weak_meta": "medium",
+    "no_sitemap": "low",
+    "no_llms_txt": "low",
+}
 
 
 # --- the cited pages -----------------------------------------------------------------------------------
@@ -83,11 +97,17 @@ def _cites(result: Dict[str, Any], domain: str) -> int:
     return sum(1 for answer in result["answers"] if any(citation["domain"] == domain for citation in answer["citations"]))
 
 
+def _others_named(answer: Dict[str, Any], client: str) -> bool:
+    """Whether an answer names some business other than the client: a tracked competitor or one not tracked."""
+    return any(mention["brandId"] != client for mention in answer["mentions"]) or bool(answer.get("others"))
+
+
 def content_allowed(results: List[Dict[str, Any]], client: str, rivals: List[str]) -> bool:
-    """Whether a topic's questions call for a page: at least `metrics.TOPIC_RANK_ANSWERS` answers between them,
-    a tracked competitor named in one and the client in none."""
-    answers = sum(len(result["answers"]) for result in results)
-    return answers >= metrics.TOPIC_RANK_ANSWERS and all(_named(result, client) == 0 for result in results) and any(_named(result, rival) > 0 for result in results for rival in rivals)
+    """Whether a topic's questions call for a page: the client named in none of their answers, and another business
+    in at least one. The user's choice of 23 Nov 2026 ("Build the full plan"): no minimum of answers (it was
+    `metrics.TOPIC_RANK_ANSWERS`, 3, and a tracked competitor, from 21 Nov), since a free check has one or two a
+    topic; each action says how many answers it stands on. The report's topic ranking keeps the minimum."""
+    return all(_named(result, client) == 0 for result in results) and any(_others_named(answer, client) for result in results for answer in result["answers"])
 
 
 def suggested(db: Db, project: Project, report: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -125,21 +145,21 @@ def suggested(db: Db, project: Project, report: Dict[str, Any]) -> List[Dict[str
             }
         )
 
-    # A page about a topic only where it has enough answers to judge (spec §6.3's 3, Phase 0 item 0.9; the user's
-    # choice, 21 Nov 2026): competitors named in its answers and the client in none of them
+    # A page about every topic where the answers name other businesses and never the client (`content_allowed`, the
+    # user's choice of 23 Nov 2026; until then only with 3 answers and a tracked competitor)
     for topic in dict.fromkeys(result["prompt"]["topic"] for result in results if result["prompt"]["topic"]):
         theirs = [result for result in results if result["prompt"]["topic"] == topic]
         if not content_allowed(theirs, client, rivals):
             continue
-        ids = [result["prompt"]["id"] for result in theirs if _named(result, client) == 0 and any(_named(result, rival) > 0 for rival in rivals)]
+        ids = [result["prompt"]["id"] for result in theirs if any(_others_named(answer, client) for answer in result["answers"])]
         found.append({"key": f"content:{topic.casefold()}", "kind": "content", "details": {"topic": topic, "url": None, "pageType": None, "brief": None}, "impact": "high" if len(ids) > 1 else "medium", "promptIds": ids})
 
     for check in project.site_checks or []:
         if not check.get("passed"):
             name = check["check"]
             # Prices as pictures cost the questions about prices; the other fixes help every question
-            about = [result["prompt"]["id"] for result in results if name != "prices_as_images" or any(word in f"{result['prompt']['topic']} {result['prompt']['text']}".casefold() for word in PRICE_WORDS)]
-            found.append({"key": f"technical:{name}", "kind": "technical", "details": {"check": name}, "impact": "high" if name in ("prices_as_images", "ai_bots_blocked") else "medium", "promptIds": about[:5]})
+            about = [result["prompt"]["id"] for result in results if name not in ("prices_as_images", "no_prices") or any(word in f"{result['prompt']['topic']} {result['prompt']['text']}".casefold() for word in PRICE_WORDS)]
+            found.append({"key": f"technical:{name}", "kind": "technical", "details": {"check": name}, "impact": CHECK_IMPACT.get(name, "medium"), "promptIds": about[:5]})
     return found
 
 
@@ -247,7 +267,7 @@ def _allowed_now(db: Db, project: Project, actions: List[Action], brands: List[B
     stored = domains.stored_for(db, sites.values(), project.id)
     for action_id, domain in sites.items():
         typed = domains.resolve(domain, client.domain, rivals, stored, project.id)
-        if typed["type"] not in domains.PLACEABLE or not typed["route"]:
+        if typed["type"] not in domains.PLACEABLE:
             refused.add(action_id)
     return [action for action in actions if action.id not in refused]
 
@@ -321,14 +341,17 @@ Give: summary (what the page is and whom it is for, two sentences), headlines (t
 BRIEF_SCHEMA = obj(summary=STR, headlines=arr(STR), metaTitle=STR, metaDescription=STR, argue=STR, proofPoints=arr(STR))
 
 
-def _brief(project: Project, client: Brand, topic: str, questions: List[str], page: str = "") -> Optional[Dict[str, Any]]:
-    """A model writes the brief. None when no model may be asked, or it failed."""
+def _brief(project: Project, client: Brand, topic: str, questions: List[str], page: str = "", evidence: str = "") -> Optional[Dict[str, Any]]:
+    """A model writes the brief. None when no model may be asked, or it failed. `evidence`: who the answers named and
+    the pages they cited, for the brief to answer better than those pages."""
     from .config import settings
 
     if settings.first_run_replay or not settings.can_read:
         return None
     language = (project.report_settings or {}).get("language", "uz")
     content = f"Language: {language}\nBusiness: {client.name} ({project.category}, {project.city})\nWhat it offers: {', '.join(project.services or [])}\nTopic: {topic}\nQuestions customers ask, where assistants name competitors and not this business:\n" + "\n".join(f"- {question}" for question in questions)
+    if evidence:
+        content += f"\n\nWhat the assistants answered instead (the businesses they named, and the pages they cited):\n{evidence[:4000]}"
     if page:
         content += f"\n\nThe page as it is now, to rework:\n{page[:8000]}"
     try:
@@ -372,8 +395,9 @@ def write_briefs(db: Db, project: Project, limit: int = 5) -> None:
     client = next(brand for brand in projects.brands_of(db, project.id) if brand.own)
     texts = {prompt.id: prompt.text for prompt in projects.prompts_of(db, project.id)}
     waiting = [action for action in db.scalars(select(Action).where(Action.project_id == project.id, Action.kind == "content")) if not (action.details or {}).get("brief") and action.status in ("new", "in_progress")]
+    results = {result["prompt"]["id"]: result for result in projects.report(db, project)["prompts"]} if waiting else {}
     for action in waiting[:limit]:
-        brief = _brief(project, client, action.details["topic"], [texts[prompt_id] for prompt_id in action.prompt_ids or [] if prompt_id in texts])
+        brief = _brief(project, client, action.details["topic"], [texts[prompt_id] for prompt_id in action.prompt_ids or [] if prompt_id in texts], evidence=_evidence([results[prompt_id] for prompt_id in action.prompt_ids or [] if prompt_id in results]))
         if brief:
             action.details = {**action.details, "brief": brief}
     db.flush()
@@ -429,9 +453,18 @@ def check_facts(db: Db, project: Project, run: Run, answers: List[Dict[str, Any]
     return cost
 
 
+def _evidence(results: List[Dict[str, Any]]) -> str:
+    """Who a topic's answers named and the pages they cited, as lines for a brief."""
+    named: Counter = Counter(name for result in results for answer in result["answers"] for name in answer.get("others") or [])
+    pages = list(dict.fromkeys(f"{citation.get('title') or ''} {citation['url']}".strip() for result in results for answer in result["answers"] for citation in answer["citations"]))
+    lines = ([f"Named: {', '.join(name for name, _ in named.most_common(8))}"] if named else []) + [f"- {page}" for page in pages[:12]]
+    return "\n".join(lines)
+
+
 def after_creation(project_id: str, run_id: str) -> None:
     """A new project, outside the request that made it: the sites nothing else types typed by the AI (Phase 0 item
-    0.4), the cited pages read, then the actions brought in line."""
+    0.4), the cited pages read, then the actions brought in line, and the pages to write given their briefs (23 Nov
+    2026: a new project waited for a weekly check for them, which a trial never has)."""
     try:
         with SessionLocal() as db:
             project, run = db.get(Project, project_id), db.get(Run, run_id)
@@ -443,6 +476,8 @@ def after_creation(project_id: str, run_id: str) -> None:
             project = db.get(Project, project_id)
             if project:
                 sync(db, project)
+                db.commit()
+                write_briefs(db, project)
                 db.commit()
     except Exception as error:  # a background step: it must not die silently
         print(f"fixes: project {project_id} after creation: {error!r}")

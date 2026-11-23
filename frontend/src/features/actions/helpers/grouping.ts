@@ -17,6 +17,8 @@ export function categoryOf(action: Action): Category {
     case "content":
       return action.url !== null || action.pageType !== null ? "rework" : "newPage";
     case "technical":
+      // Every fix on the website, the SEO audit's of 23 Nov 2026 too, is "markup": the page and rework categories
+      // carry wording about one topic's questions, which a site-wide fix (a FAQ, prices) doesn't have
       return action.check === "ai_bots_blocked" ? "access" : "markup";
   }
 }

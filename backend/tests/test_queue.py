@@ -14,9 +14,9 @@ import pytest
 from fastapi import HTTPException
 from sqlalchemy import delete, select
 
-from app import engines, firstrun, limits, mail, main, queue
+from app import engines, firstrun, limits, mail, main, projects, queue
 from app.config import settings
-from app.db import FirstRun, LimitHit, Slot, User
+from app.db import FirstRun, LimitHit, Project, Slot, User
 from test_limits import visitor
 from test_wave import QUESTIONS, stand_in_draft, stand_ins  # noqa: F401 (the fixture)
 
@@ -32,6 +32,10 @@ def accounts(db: Any) -> Iterator[List[User]]:
     db.commit()
     yield made
     ids = [user.id for user in made]
+    db.expire_all()
+    # A check that ends is saved as its account's project
+    for project in db.scalars(select(Project).where(Project.user_id.in_(ids))).all():
+        projects.delete(db, project)
     db.execute(delete(Slot).where(Slot.first_run_id.in_(select(FirstRun.id).where(FirstRun.user_id.in_(ids)))))
     db.execute(delete(FirstRun).where(FirstRun.user_id.in_(ids)))
     db.execute(delete(User).where(User.id.in_(ids)))
@@ -109,7 +113,7 @@ def test_a_website_read_past_the_days_checks_skips_the_search(db: Any, accounts:
     searched: List[str] = []
     monkeypatch.setattr(firstrun.web, "read_site", lambda domain, language: [{"url": f"https://{domain}/", "text": "A stand-in business."}])
     monkeypatch.setattr(firstrun, "_raw", lambda url: "")
-    monkeypatch.setattr(firstrun, "site_checks", lambda pages, home, robots: [])
+    monkeypatch.setattr(firstrun, "site_checks", lambda *args: [])
     monkeypatch.setattr(firstrun, "search_competitors", lambda *args: searched.append("asked") or ([], 0.0))
     monkeypatch.setattr(firstrun, "profile", lambda *args: ({**stand_in_draft()["who"], "competitors": [{"name": "Recalled Rival", "domain": ""}]}, 0.0))
     draft, _ = firstrun.prepare("read-queue.example", None, None, "UZ", search=False)
@@ -135,7 +139,11 @@ def test_the_queue_runs_in_order_and_emails_each_check_done(db: Any, accounts: L
     assert len(asking) == 1
     to, message = asking[0]
     assert to == accounts[0].email and "проверка first-run-queue.example готова" in message["Subject"]
-    assert f"https://seenova.example/ru/onboarding/first-run?run={first.id}" in message.get_body(("plain",)).get_content()
+    # The check saved itself as the account's project when it ended: the email opens its dashboard
+    saved = db.scalar(select(Project).where(Project.first_run_id == first.id))
+    assert saved is not None and saved.user_id == accounts[0].id
+    assert f"https://seenova.example/ru/projects/{saved.id}" in message.get_body(("plain",)).get_content()
+    assert main.first_run_progress(first.id, accounts[0])["projectId"] == saved.id
     assert "emailed" in capsys.readouterr().out
 
 
@@ -173,3 +181,51 @@ def test_a_check_the_balance_ran_out_under_goes_back_to_its_place(db: Any, accou
     assert waiting.status == "waiting" and waiting.draft["confirmed"] == asked
     with main.ReadSession() as read:
         assert queue.place(read, waiting) == 3
+
+
+def test_a_finished_check_saves_itself_and_one_that_cant_stays_done(db: Any, accounts: List[User], asking: List[Tuple[str, EmailMessage]]) -> None:
+    """The user, 23 Nov 2026: "after that report it must automatically save the project and navigate to dashboard"."""
+    runs = [ready_run(db, user, "saved-itself.example") for user in accounts[:2]]
+    for run in runs:
+        run.status = "asking"
+    db.commit()
+    for run in runs:
+        main.work_check(run.id, run.draft, firstrun.confirmed_of(run.draft), 0.0)
+    db.expire_all()
+    first, second = (main.first_run_progress(run.id, user) for run, user in zip(runs, accounts))
+    assert first["status"] == "done" and first["projectId"]
+    project = db.get(Project, first["projectId"])
+    assert project.user_id == accounts[0].id and project.first_run_id == runs[0].id
+    # The same website for another account: taken, so the check is only done, and its page saves it by hand as before
+    assert second["status"] == "done" and second["projectId"] is None
+
+
+def test_the_login_code_is_answered_before_its_email(db: Any, monkeypatch: Any) -> None:
+    """The user, 23 Nov 2026: the login was slow. The code is stored and answered at once, the email sent after; one
+    that couldn't be sent is dropped, so asking again isn't held back."""
+    from app.db import LoginCode
+
+    monkeypatch.setattr(main, "settings", dataclasses.replace(main.settings, smtp_host="smtp.example"))
+    sending = __import__("threading").Event()
+
+    def fails(to: str, code: str, minutes: int) -> None:
+        sending.wait(5)
+        raise OSError("stand-in: the mail server is away")
+
+    monkeypatch.setattr(main.mail, "send_code", fails)
+    email = "slow-mail@queue.example"
+    try:
+        assert main.send_code(main.CodeRequest(email=email), visitor("203.0.113.50")) == {"resendIn": main.RESEND_SECONDS}
+        # Answered while the email is still on its way, the code already stored
+        assert db.get(LoginCode, email) is not None
+        sending.set()
+        for _ in range(100):
+            db.expire_all()
+            if db.get(LoginCode, email) is None:
+                break
+            time.sleep(0.02)
+        assert db.get(LoginCode, email) is None
+    finally:
+        db.execute(delete(LoginCode).where(LoginCode.email == email))
+        db.execute(delete(LimitHit))
+        db.commit()

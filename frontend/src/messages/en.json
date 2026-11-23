@@ -853,7 +853,13 @@
       "prices_as_images": "Write prices as text, not images",
       "no_business_markup": "Add business markup to your site",
       "contacts_missing": "Write your address, phone and hours as text",
-      "rework": "Improve your page for “{topic}”"
+      "rework": "Improve your page for “{topic}”",
+      "no_prices": "Put your prices on your site as text",
+      "no_faq": "Add a page of questions and answers",
+      "no_sitemap": "Add a sitemap",
+      "no_llms_txt": "Add an llms.txt file",
+      "weak_meta": "Give your home page a clear title, description and heading",
+      "one_language": "Have your site in both Uzbek and Russian"
     },
     "why": {
       "listing": "AI relied on {domain} in {answers} answers. They name {competitors}, and you aren’t there.",
@@ -864,7 +870,13 @@
       "ai_bots_blocked": "Your site’s robots.txt blocks AI’s search bot (OAI-SearchBot), so it can’t read your pages.",
       "prices_as_images": "Your prices are in an image: AI can’t read them and takes prices from other sites.",
       "no_business_markup": "No business markup (schema.org) was found on your site. It helps AI read your address, hours and services exactly.",
-      "contacts_missing": "Your address, phone or opening hours weren’t found on your site as text."
+      "contacts_missing": "Your address, phone or opening hours weren’t found on your site as text.",
+      "no_prices": "No prices were found on your site. When customers ask AI “how much does it cost?”, it names the businesses whose prices it can read.",
+      "no_faq": "No questions-and-answers section was found on your site. AI answers customers from pages that answer their questions plainly, one question at a time.",
+      "no_sitemap": "Your site has no sitemap.xml: the list of pages that search engines and AI search bots use to find every page.",
+      "no_llms_txt": "Your site has no llms.txt, a short text file some AI tools read to learn what a site is about. It is new and not every assistant uses it yet, but it takes minutes.",
+      "weak_meta": "Your home page’s title, description or main heading is missing or too short. Search engines and AI read them first to understand what you do.",
+      "one_language": "Customers in Uzbekistan ask AI in Uzbek and in Russian, but your site was found in one language only. AI cites pages in the language of the question."
     },
     "steps": {
       "directory": {
@@ -921,6 +933,36 @@
         "s1": "Rewrite the page so it answers this topic’s questions directly, in Uzbek and Russian.",
         "s2": "Use one of the headlines, the meta title and the description from the brief.",
         "s3": "Add the evidence from the brief: prices, numbers, photos, reviews."
+      },
+      "no_prices": {
+        "s1": "Add a prices page, or a prices block on your services page, with your main services and their prices (or “from …”).",
+        "s2": "Write the prices as text, not as a picture or a PDF.",
+        "s3": "Link the prices page from the menu and update it when prices change."
+      },
+      "no_faq": {
+        "s1": "Collect 8–12 questions customers really ask: prices, timing, location, how it works, guarantees.",
+        "s2": "Answer each in two or three plain sentences, with the facts: numbers, names, places.",
+        "s3": "Put them on one FAQ page linked from the menu, and add the main ones to your service pages."
+      },
+      "no_sitemap": {
+        "s1": "Create sitemap.xml listing every public page (most site builders do it with one setting).",
+        "s2": "Name it in robots.txt with a line “Sitemap: https://your-site/sitemap.xml”.",
+        "s3": "Submit it in Google Search Console and Bing Webmaster Tools."
+      },
+      "no_llms_txt": {
+        "s1": "Write a short description of your business: what you do, for whom, where, and your main pages.",
+        "s2": "Save it as llms.txt at the root of your site (your-site/llms.txt).",
+        "s3": "Update it when your services or main pages change."
+      },
+      "weak_meta": {
+        "s1": "Title: your name, what you do and where, in about 50–60 characters.",
+        "s2": "Description: one or two sentences (120–155 characters) on whom you serve and why choose you.",
+        "s3": "One main heading (H1) at the top of the page saying what you do."
+      },
+      "one_language": {
+        "s1": "Add the missing language version of your main pages: home, services, prices, contacts.",
+        "s2": "Put a language switch at the top of every page.",
+        "s3": "Translate the facts exactly: names, prices and addresses must match in both."
       }
     },
     "markDone": "Mark done",
@@ -1233,6 +1275,48 @@
           "s2": "Put it in the footer of every page and on a Contacts page linked from the menu.",
           "s3": "Add the same details to the site’s JSON-LD (schema.org PostalAddress, telephone).",
           "done": "the address and the phone can be selected as text on every page."
+        },
+        "no_prices": {
+          "task": "My site has no prices AI can read, so it can’t answer customers who ask what my services cost.",
+          "s1": "Add a Prices page, linked from the main menu, listing the main services of this {category} with their prices or “from” prices, as HTML text and a table, not images.",
+          "s2": "Take the services and prices from the site; where a price is missing, don’t invent it: leave me a clear TODO for each.",
+          "s3": "Add the prices to the site’s JSON-LD (Offer with price and priceCurrency, or priceRange).",
+          "done": "the Prices page opens from the menu and shows each price as text."
+        },
+        "no_faq": {
+          "task": "My site has no questions-and-answers section, so AI has no plain answers of mine to quote.",
+          "s1": "Add an FAQ page, linked from the menu, with 8–12 questions that customers of a {category} in {place} ask, each answered in two or three sentences, {languages}.",
+          "s2": "Use only facts from the site; where one is missing, don’t invent it: leave me a clear TODO.",
+          "s3": "Mark the page up with schema.org FAQPage JSON-LD: each question with its answer.",
+          "done": "the FAQ page opens from the menu and passes https://validator.schema.org without errors."
+        },
+        "no_sitemap": {
+          "task": "My site has no sitemap, so search engines and AI search bots may miss pages.",
+          "s1": "Generate https://{domain}/sitemap.xml listing every public page with its lastmod date, and keep it updated by itself when pages change.",
+          "s2": "Add the line “Sitemap: https://{domain}/sitemap.xml” to https://{domain}/robots.txt.",
+          "s3": "Leave out private pages (admin, cart, account) and pages marked noindex.",
+          "done": "https://{domain}/sitemap.xml opens and lists the public pages."
+        },
+        "no_llms_txt": {
+          "task": "My site has no llms.txt, the short summary some AI tools read.",
+          "s1": "Create https://{domain}/llms.txt in Markdown: a # title with the business’s name, a one-paragraph summary (what this {category} does, for whom, in {place}), then a list of the main pages (services, prices, contacts, FAQ) with one line on each.",
+          "s2": "Use only facts from the site; where one is missing, leave me a clear TODO.",
+          "s3": "Serve it as plain text (text/plain or text/markdown), not as an HTML page.",
+          "done": "https://{domain}/llms.txt opens as plain text."
+        },
+        "weak_meta": {
+          "task": "My home page’s title, meta description or H1 is missing or too short.",
+          "s1": "Set the home page’s <title> to the business’s name, what it does and where ({category}, {place}), in 50–60 characters.",
+          "s2": "Add a meta description of 120–155 characters (whom it serves, the main services, why choose it), and og:title and og:description with the same text.",
+          "s3": "Make sure the page has exactly one <h1> stating what the business does; keep the other headings as h2 and h3.",
+          "done": "the home page has a title, a meta description and one h1."
+        },
+        "one_language": {
+          "task": "Customers ask AI about my business in two languages, but my site has only one language version.",
+          "s1": "Add the missing language version of the main pages (home, services, prices, contacts, FAQ) so that the site answers {languages}, each under its own path (/uz/ and /ru/), with a language switch on every page.",
+          "s2": "Add hreflang links between the versions and set the html lang attribute on each.",
+          "s3": "Translate the site’s own facts exactly; add no claim the original doesn’t make, and leave me a TODO where a phrase needs my wording.",
+          "done": "each main page opens in both languages and links to its other version."
         }
       },
       "page": {
@@ -1641,7 +1725,10 @@
       "detailLeader": "{leader} leads with {value}.",
       "detailYouLead": "You lead here."
     },
-    "brandQuestionsLink": "Edit the questions"
+    "brandQuestionsLink": "Edit the questions",
+    "rivalsNotice": "AI named these businesses more often than any competitor you track: {names}.",
+    "rivalsName": "{name} ({count, plural, one {# answer} other {# answers}})",
+    "rivalsAction": "Choose your competitors"
   },
   "Competitors": {
     "aheadTitle": "Where competitors are ahead",
@@ -3075,6 +3162,36 @@
         "ok": "Address, phone and opening hours are written as text",
         "bad": "Address, phone or opening hours are missing from the text",
         "fix": "Write them as text at the bottom of every page."
+      },
+      "no_prices": {
+        "ok": "Prices are written on your site as text",
+        "bad": "No prices found on your site",
+        "fix": "Add a prices page with your main services and their prices as text."
+      },
+      "no_faq": {
+        "ok": "There is a questions-and-answers section",
+        "bad": "No questions-and-answers (FAQ) section",
+        "fix": "Add an FAQ page with the questions customers ask and short answers."
+      },
+      "no_sitemap": {
+        "ok": "The site has a sitemap",
+        "bad": "No sitemap (sitemap.xml)",
+        "fix": "Create sitemap.xml and name it in robots.txt."
+      },
+      "no_llms_txt": {
+        "ok": "The site has an llms.txt",
+        "bad": "No llms.txt",
+        "fix": "Add a short llms.txt describing your business and main pages."
+      },
+      "weak_meta": {
+        "ok": "The home page has a clear title, description and heading",
+        "bad": "The home page’s title, description or heading is missing or weak",
+        "fix": "Write a title, a description and one main heading saying what you do and where."
+      },
+      "one_language": {
+        "ok": "The site answers in both Uzbek and Russian",
+        "bad": "The site is in one language; customers ask in Uzbek and Russian",
+        "fix": "Add the missing language version of your main pages."
       }
     },
     "directory": {
@@ -4496,7 +4613,8 @@
       "place": "Your place in the queue",
       "next": "You can close this page. The email has a link to your results, and logging in again brings you back here.",
       "home": "Back to the home page"
-    }
+    },
+    "opening": "Your check of {site} is done and saved as your project. Opening your dashboard…"
   },
   "Trial": {
     "title": "Free trial: {days, plural, one {# day} other {# days}} left",

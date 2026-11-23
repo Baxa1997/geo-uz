@@ -20,12 +20,12 @@ import time
 import urllib.error
 import urllib.request
 from email.message import EmailMessage
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 from fastapi import Body, Cookie, Depends, FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from sqlalchemy import func, select
+from sqlalchemy import delete, func, select
 
 from . import cache, delivery, firstrun, fixes, mail, projects, slots, wave
 from . import digest as telegram_digest
@@ -123,20 +123,27 @@ def send_code(body: CodeRequest, request: Request) -> Dict[str, int]:
         if limits.over(db, "code", ip):
             raise HTTPException(429, "too_many_codes")
         code = f"{secrets.randbelow(1_000_000):06d}"
-        if settings.own_email:
-            # Sent before it is stored: a code nobody received must not start the wait for the next one
-            try:
-                mail.send_code(email, code, CODE_MINUTES)
-            except (OSError, smtplib.SMTPException) as error:
-                print(f"login email failed: {error!r}")
-                raise HTTPException(503, "email_unavailable") from error
-        else:
-            # Development only: no email is sent, the code is in the server's log
-            print(f"LOGIN CODE for {email}: {code}")
         db.merge(LoginCode(email=email, code_hash=digest(code), expires_at=now() + datetime.timedelta(minutes=CODE_MINUTES), sent_at=now(), attempts=0))
         limits.record(db, "code", ip)
         db.commit()
+    if settings.own_email:
+        # Sent after the answer (the user, 23 Nov 2026: the login was slow): Gmail takes a second or three, and the
+        # form moves on to the code meanwhile. A code that couldn't be sent is dropped, so asking again isn't held back
+        threading.Thread(target=_send_code, args=(email, code), daemon=True).start()
+    else:
+        # Development only: no email is sent, the code is in the server's log
+        print(f"LOGIN CODE for {email}: {code}")
     return {"resendIn": RESEND_SECONDS}
+
+
+def _send_code(email: str, code: str) -> None:
+    try:
+        mail.send_code(email, code, CODE_MINUTES)
+    except (OSError, smtplib.SMTPException) as error:
+        print(f"login email failed: {error!r}")
+        with SessionLocal() as db:
+            db.execute(delete(LoginCode).where(LoginCode.email == email, LoginCode.code_hash == digest(code)))
+            db.commit()
 
 
 @app.post("/auth/code/verify")
@@ -247,6 +254,10 @@ def run_out(run: FirstRun, user: User) -> Dict[str, Any]:
     if run.status == queue.WAITING:
         with ReadSession() as db:
             out.update(place=queue.place(db, run), email=user.email)
+    elif run.status == "done":
+        # Saved by the check itself when it ended: the page opens the project's dashboard
+        with ReadSession() as db:
+            out["projectId"] = db.scalar(select(Project.id).where(Project.first_run_id == run.id, Project.user_id == user.id))
     return out
 
 
@@ -364,7 +375,38 @@ def work_check(run_id: str, draft: Dict[str, Any], confirmed: Dict[str, Any], sp
     if not settings.first_run_replay and queue.ran_dry(run_id):
         queue.put_back(run_id, confirmed)
         return
-    _finish(run_id, outcome)
+    if outcome["status"] == "done":
+        _finish_and_save(run_id, outcome)
+    else:
+        _finish(run_id, outcome)
+
+
+def _finish_and_save(run_id: str, outcome: Dict[str, Any]) -> None:
+    """A finished check becomes the account's project in the same transaction (the user, 23 Nov 2026: "after that
+    report it must automatically save the project and navigate to dashboard"), so the page sees it done and saved at
+    once and opens the project. When it can't be saved (the website taken meanwhile, a plan's limit) it is only done,
+    and its page saves it by hand as before."""
+    saved: Optional[Tuple[str, Optional[str]]] = None
+    try:
+        with SessionLocal() as db:
+            run = db.get(FirstRun, run_id)
+            if run is None:
+                return
+            for key, value in outcome.items():
+                setattr(run, key, value)
+            run.finished_at = now()
+            user = db.get(User, run.user_id)
+            project, check_id = projects.create(db, user, projects.first_run_body(outcome["result"], run_id))
+            fixes.sync(db, project)
+            db.commit()
+            saved = (project.id, check_id)
+    except Exception as error:  # a ProjectError, or anything else: the check itself must still end as done
+        print(f"first run {run_id}: not saved as a project: {getattr(error, 'code', None) or repr(error)}")
+        _finish(run_id, outcome)
+        return
+    if saved[1]:
+        # The cited pages read, the sites typed, the actions written: as after "Save"
+        _after_creation(saved[0], saved[1])
 
 
 # A check that asked the assistants, or waits in the queue to: the account's free one, and what the daily limit

@@ -853,7 +853,13 @@
       "prices_as_images": "Narxlarni rasm emas, matn qilib yozing",
       "no_business_markup": "Saytga biznes maʼlumotlari belgisini qoʻshing",
       "contacts_missing": "Manzil, telefon va ish vaqtini matn qilib yozing",
-      "rework": "“{topic}” uchun sahifangizni yaxshilang"
+      "rework": "“{topic}” uchun sahifangizni yaxshilang",
+      "no_prices": "Narxlarni saytga matn sifatida yozing",
+      "no_faq": "Savol-javoblar sahifasini qoʻshing",
+      "no_sitemap": "Sayt xaritasini qoʻshing",
+      "no_llms_txt": "llms.txt faylini qoʻshing",
+      "weak_meta": "Bosh sahifaga aniq sarlavha, tavsif va asosiy sarlavha bering",
+      "one_language": "Saytni oʻzbek va rus tillarida qiling"
     },
     "why": {
       "listing": "AI {answers} ta javobda {domain} saytiga tayangan. Bu javoblarda {competitors} tilga olingan, siz esa u yerda yoʻqsiz.",
@@ -864,7 +870,13 @@
       "ai_bots_blocked": "Saytingizning robots.txt fayli AI qidiruv botini (OAI-SearchBot) toʻsib qoʻygan, shuning uchun u sahifalaringizni oʻqiy olmaydi.",
       "prices_as_images": "Narxlaringiz rasmda — AI ularni oʻqiy olmaydi va narxni boshqa saytlardan oladi.",
       "no_business_markup": "Saytingizda biznes belgisi (schema.org) topilmadi. U AI’ga manzil, ish vaqti va xizmatlaringizni aniq oʻqishga yordam beradi.",
-      "contacts_missing": "Saytingizda manzil, telefon yoki ish vaqti matn sifatida topilmadi."
+      "contacts_missing": "Saytingizda manzil, telefon yoki ish vaqti matn sifatida topilmadi.",
+      "no_prices": "Saytingizda narxlar topilmadi. Mijozlar AI’dan «qancha turadi?» deb soʻraganda, u narxlarini oʻqiy oladigan bizneslarni aytadi.",
+      "no_faq": "Saytingizda savol-javoblar boʻlimi topilmadi. AI mijozlarga savollariga oddiy, bittadan javob beradigan sahifalar asosida javob beradi.",
+      "no_sitemap": "Saytingizda sitemap.xml yoʻq — qidiruv tizimlari va AI qidiruv botlari har bir sahifani topish uchun foydalanadigan sahifalar roʻyxati.",
+      "no_llms_txt": "Saytingizda llms.txt yoʻq — baʼzi AI vositalari sayt nima haqida ekanini bilish uchun oʻqiydigan qisqa matn fayli. Bu yangilik va hali hamma yordamchilar uni oʻqimaydi, lekin u bir necha daqiqada qilinadi.",
+      "weak_meta": "Bosh sahifangizda sarlavha (title), tavsif yoki asosiy sarlavha (H1) yoʻq yoki juda qisqa. Qidiruv tizimlari va AI nima bilan shugʻullanishingizni tushunish uchun avval shularni oʻqiydi.",
+      "one_language": "Oʻzbekistondagi mijozlar AI’dan oʻzbek va rus tillarida soʻraydi, saytingiz esa faqat bitta tilda topildi. AI savol berilgan tildagi sahifalardan iqtibos keltiradi."
     },
     "steps": {
       "directory": {
@@ -921,6 +933,36 @@
         "s1": "Sahifani shu mavzudagi savollarga toʻgʻridan-toʻgʻri javob beradigan qilib qayta yozing — oʻzbek va rus tillarida.",
         "s2": "Topshiriqdagi sarlavhalardan birini, meta sarlavha va tavsifni qoʻllang.",
         "s3": "Topshiriqdagi dalillarni qoʻshing: narxlar, raqamlar, rasmlar, sharhlar."
+      },
+      "no_prices": {
+        "s1": "Narxlar sahifasini yoki xizmatlar sahifasida narxlar blokini qoʻshing: asosiy xizmatlar va ularning narxi (yoki «… dan»).",
+        "s2": "Narxlarni rasm yoki PDF emas, matn qilib yozing.",
+        "s3": "Menyuda narxlar sahifasiga havola qoʻying va narxlar oʻzgarganda yangilang."
+      },
+      "no_faq": {
+        "s1": "Mijozlar haqiqatan beradigan 8–12 ta savolni yigʻing: narx, muddat, manzil, qanday ishlaydi, kafolat.",
+        "s2": "Har biriga ikki-uch oddiy gap bilan, faktlar bilan javob bering: raqamlar, nomlar, joylar.",
+        "s3": "Ularni menyudan havola qilingan bitta FAQ sahifasiga, asosiylarini esa xizmatlar sahifalariga ham joylang."
+      },
+      "no_sitemap": {
+        "s1": "Barcha ochiq sahifalar roʻyxati bilan sitemap.xml yarating (koʻp sayt konstruktorlarida bu bitta sozlama).",
+        "s2": "Uni robots.txt’da «Sitemap: https://saytingiz/sitemap.xml» qatori bilan koʻrsating.",
+        "s3": "Uni Google Search Console va Bing Webmaster Tools’ga yuboring."
+      },
+      "no_llms_txt": {
+        "s1": "Biznesingizning qisqa tavsifini yozing: nima qilasiz, kim uchun, qayerda va asosiy sahifalaringiz.",
+        "s2": "Uni saytning ildiziga llms.txt nomi bilan saqlang (saytingiz/llms.txt).",
+        "s3": "Xizmatlar yoki asosiy sahifalar oʻzgarganda uni yangilang."
+      },
+      "weak_meta": {
+        "s1": "Title: nomingiz, nima qilishingiz va qayerda — taxminan 50–60 belgi.",
+        "s2": "Tavsif: kimga xizmat qilishingiz va nega sizni tanlashlari haqida bir-ikki gap (120–155 belgi).",
+        "s3": "Sahifa yuqorisida nima qilishingizni aytadigan bitta asosiy sarlavha (H1)."
+      },
+      "one_language": {
+        "s1": "Asosiy sahifalarning yetishmayotgan til versiyasini qoʻshing: bosh sahifa, xizmatlar, narxlar, kontaktlar.",
+        "s2": "Har bir sahifa yuqorisiga til almashtirgich qoʻying.",
+        "s3": "Faktlarni aniq tarjima qiling: nomlar, narxlar va manzillar ikkala versiyada bir xil boʻlsin."
       }
     },
     "markDone": "Bajarildi",
@@ -1233,6 +1275,48 @@
           "s2": "Uni har bir sahifaning pastki qismiga (footer) va menyudan ochiladigan «Aloqa» sahifasiga qoʻying.",
           "s3": "Xuddi shu maʼlumotlarni saytning JSON-LD qismiga ham qoʻshing (schema.org PostalAddress, telephone).",
           "done": "manzil va telefonni har bir sahifada matn sifatida belgilab boʻladi."
+        },
+        "no_prices": {
+          "task": "Saytimda AI oʻqiy oladigan narxlar yoʻq, shuning uchun u xizmatlarim narxini soʻragan mijozlarga javob bera olmaydi.",
+          "s1": "Asosiy menyudan havola qilingan «Narxlar» sahifasini qoʻshing: bu biznesning ({category}) asosiy xizmatlari narxi yoki «… dan» narxi bilan, rasm emas, HTML matn va jadval koʻrinishida.",
+          "s2": "Xizmatlar va narxlarni saytning oʻzidan oling; biror narx yoʻq boʻlsa, oʻylab topmang — har biri uchun menga aniq TODO qoldiring.",
+          "s3": "Narxlarni saytning JSON-LD’siga qoʻshing (price va priceCurrency bilan Offer yoki priceRange).",
+          "done": "«Narxlar» sahifasi menyudan ochiladi va har bir narxni matn bilan koʻrsatadi."
+        },
+        "no_faq": {
+          "task": "Saytimda savol-javoblar boʻlimi yoʻq, shuning uchun AI’da mening javoblarimdan iqtibos keltiradigan narsa yoʻq.",
+          "s1": "Menyudan havola qilingan FAQ sahifasini qoʻshing: biznes ({category}, {place}) mijozlari beradigan 8–12 ta savol, har biriga ikki-uch gaplik javob bilan, {languages}.",
+          "s2": "Faqat saytdagi faktlardan foydalaning; biror fakt yoʻq boʻlsa, oʻylab topmang — menga aniq TODO qoldiring.",
+          "s3": "Sahifaga schema.org FAQPage JSON-LD belgisini qoʻshing: har bir savol javobi bilan.",
+          "done": "FAQ sahifasi menyudan ochiladi va https://validator.schema.org tekshiruvidan xatosiz oʻtadi."
+        },
+        "no_sitemap": {
+          "task": "Saytimda sayt xaritasi yoʻq, shuning uchun qidiruv tizimlari va AI qidiruv botlari sahifalarni oʻtkazib yuborishi mumkin.",
+          "s1": "Barcha ochiq sahifalar va ularning lastmod sanasi bilan https://{domain}/sitemap.xml yarating va sahifalar oʻzgarganda oʻzi yangilanadigan qiling.",
+          "s2": "https://{domain}/robots.txt’ga «Sitemap: https://{domain}/sitemap.xml» qatorini qoʻshing.",
+          "s3": "Yopiq sahifalarni (admin, savat, kabinet) va noindex belgili sahifalarni kiritmang.",
+          "done": "https://{domain}/sitemap.xml ochiladi va ochiq sahifalarni sanaydi."
+        },
+        "no_llms_txt": {
+          "task": "Saytimda llms.txt yoʻq — baʼzi AI vositalari oʻqiydigan qisqa tavsif.",
+          "s1": "Markdown’da https://{domain}/llms.txt yarating: biznes nomi bilan # sarlavha, u haqida bitta xatboshi (bu biznes — {category} — nima qiladi, kim uchun, {place}), soʻng asosiy sahifalar roʻyxati (xizmatlar, narxlar, kontaktlar, FAQ), har biri haqida bitta qator.",
+          "s2": "Faqat saytdagi faktlardan foydalaning; biror fakt yoʻq boʻlsa, menga aniq TODO qoldiring.",
+          "s3": "Uni HTML sahifa emas, oddiy matn (text/plain yoki text/markdown) sifatida bering.",
+          "done": "https://{domain}/llms.txt oddiy matn boʻlib ochiladi."
+        },
+        "weak_meta": {
+          "task": "Saytim bosh sahifasida title, meta description yoki H1 yoʻq yoki juda qisqa.",
+          "s1": "Bosh sahifaning <title>’ini biznes nomi, nima qilishi va qayerdaligi ({category}, {place}) bilan 50–60 belgida yozing.",
+          "s2": "120–155 belgili meta description qoʻshing (kimga xizmat qiladi, asosiy xizmatlar, nega aynan u), shuningdek xuddi shu matn bilan og:title va og:description.",
+          "s3": "Sahifada biznes nima qilishini aytadigan aynan bitta <h1> boʻlsin; qolgan sarlavhalar h2 va h3 boʻlsin.",
+          "done": "bosh sahifada title, meta description va bitta h1 bor."
+        },
+        "one_language": {
+          "task": "Mijozlar AI’dan biznesim haqida ikki tilda soʻraydi, saytimda esa faqat bitta til versiyasi bor.",
+          "s1": "Sayt {languages} javob berishi uchun asosiy sahifalarning (bosh sahifa, xizmatlar, narxlar, kontaktlar, FAQ) yetishmayotgan til versiyasini qoʻshing, har birini oʻz yoʻlida (/uz/ va /ru/), har bir sahifada til almashtirgich bilan.",
+          "s2": "Versiyalar orasiga hreflang havolalarini va har birida html’ning lang atributini qoʻshing.",
+          "s3": "Saytdagi faktlarni aniq tarjima qiling; asl matnda yoʻq daʼvo qoʻshmang va ifoda meniki boʻlishi kerak boʻlgan joyda TODO qoldiring.",
+          "done": "har bir asosiy sahifa ikkala tilda ochiladi va boshqa versiyasiga havola beradi."
         }
       },
       "page": {
@@ -1641,7 +1725,10 @@
       "detailLeader": "Yetakchi — {leader}: {value}.",
       "detailYouLead": "Bu yerda yetakchi — siz."
     },
-    "brandQuestionsLink": "Savollarni tahrirlash"
+    "brandQuestionsLink": "Savollarni tahrirlash",
+    "rivalsNotice": "AI bu bizneslarni siz kuzatayotgan har qanday raqobatchidan koʻproq tilga oldi: {names}.",
+    "rivalsName": "{name} ({count} ta javob)",
+    "rivalsAction": "Raqobatchilarni tanlash"
   },
   "Competitors": {
     "aheadTitle": "Raqobatchilar qayerda oldinda",
@@ -3075,6 +3162,36 @@
         "ok": "Manzil, telefon va ish vaqti matn qilib yozilgan",
         "bad": "Manzil, telefon yoki ish vaqti matnda yoʻq",
         "fix": "Ularni har sahifaning pastki qismiga matn qilib yozing."
+      },
+      "no_prices": {
+        "ok": "Narxlar saytda matn bilan yozilgan",
+        "bad": "Saytda narxlar topilmadi",
+        "fix": "Asosiy xizmatlar va ularning narxi matn bilan yozilgan sahifa qoʻshing."
+      },
+      "no_faq": {
+        "ok": "Savol-javoblar boʻlimi bor",
+        "bad": "Savol-javoblar (FAQ) boʻlimi yoʻq",
+        "fix": "Mijozlar savollari va qisqa javoblari bilan FAQ sahifasini qoʻshing."
+      },
+      "no_sitemap": {
+        "ok": "Sayt xaritasi bor",
+        "bad": "Sayt xaritasi (sitemap.xml) yoʻq",
+        "fix": "sitemap.xml yarating va uni robots.txt’da koʻrsating."
+      },
+      "no_llms_txt": {
+        "ok": "Saytda llms.txt bor",
+        "bad": "llms.txt yoʻq",
+        "fix": "Biznesingiz va asosiy sahifalaringiz tavsifi bilan qisqa llms.txt qoʻshing."
+      },
+      "weak_meta": {
+        "ok": "Bosh sahifada aniq sarlavha, tavsif va H1 bor",
+        "bad": "Bosh sahifada sarlavha, tavsif yoki H1 yoʻq yoki kuchsiz",
+        "fix": "Nima qilishingiz va qayerdaligingizni aytadigan sarlavha, tavsif va bitta asosiy sarlavha yozing."
+      },
+      "one_language": {
+        "ok": "Sayt oʻzbek va rus tillarida javob beradi",
+        "bad": "Sayt bitta tilda, mijozlar esa oʻzbek va rus tillarida soʻraydi",
+        "fix": "Asosiy sahifalarning yetishmayotgan til versiyasini qoʻshing."
       }
     },
     "directory": {
@@ -4496,7 +4613,8 @@
       "place": "Navbatdagi oʻrningiz",
       "next": "Bu sahifani yopishingiz mumkin. Xatda natijalarga havola boʻladi, keyingi safar kirganingizda esa shu yerga qaytasiz.",
       "home": "Bosh sahifaga"
-    }
+    },
+    "opening": "{site} tekshiruvi tayyor va loyihangiz sifatida saqlandi. Boshqaruv paneli ochilmoqda…"
   },
   "Trial": {
     "title": "Sinov davri: {days} kun qoldi",

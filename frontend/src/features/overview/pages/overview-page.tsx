@@ -27,6 +27,7 @@ import { NextRun } from "../components/next-run";
 import { RecentAnswers } from "../components/recent-answers";
 import { ShareMenu } from "../components/share-menu";
 import { Verdict } from "../components/verdict";
+import { RivalsNotice } from "../components/rivals-notice";
 import { TrialNotice } from "../components/trial-notice";
 import { WrongFactsAlert } from "../components/wrong-facts-alert";
 
@@ -114,6 +115,7 @@ export default async function OverviewPage({ params, searchParams }: Props) {
       {/* The alert goes over the sentence, so the numbers and charts follow the sentence directly */}
       <TrialNotice href={`${base}/settings/plan`} billing={report.project.billing} />
       {report.wrongFacts.length > 0 && <WrongFactsAlert count={report.wrongFacts.length} href={to("/wrong-facts")} />}
+      <RivalsNotice report={report} href={`${to("/competitors")}#untracked`} />
       <div data-tour="verdict">
         <Verdict report={report} engine={filters.engine} />
       </div>

@@ -221,6 +221,34 @@ that is committed.
 
 ## Done (as of 18 November 2026)
 
+- **Built, waiting for the user's look: the user's test of 23 Nov, on the branch `feedback-23-nov`, not committed.**
+  The user tried a new project on the live site: (1) the login and the pages are slow; (2) the results after the
+  check are thin, and the project should save itself and open the dashboard; (3) the result isn't what it was, the
+  actions must come from research, SEO and GEO; (4) the project's pages, its menu, the opened panels and the cards
+  open and close with no transition. Measured on the server: the check was real (10 ChatGPT answers, $0.62); every
+  backend call takes 0.6–2 s, since the database is in Mumbai; the project had 0 actions (4 site checks, all passed;
+  7 topics over 10 questions, none with the 3 answers the 21 Nov rule needs; the cited sites competitors' own), and
+  its 5 confirmed competitors were named once in 10 answers while the answers named 27 others. Asked, the user chose
+  the Frankfurt database (theirs to create: `NEW_DATABASE_URL` in `backend/.env.server`), "Save and open dashboard",
+  "Build the full plan" and all four parts of (4). Built: the login code is answered at once and emailed after (one
+  that couldn't be sent is dropped); a check that ends is saved as the account's project in the same transaction
+  and its page opens the dashboard (when it can't be, it is only done, and its page saves it as before; the queue's
+  email links to the dashboard); the website audit has six more checks by rule (prices in the text, a FAQ, a
+  sitemap, llms.txt, the home page's title, description and H1, both of Uzbekistan's languages), each an action
+  with its texts in the three languages; a page about every topic where the answers name other businesses and
+  never the client (no minimum of answers; each says how many it stands on); a "get listed" action for any
+  directory, media, UGC or Telegram site the answers cite and the client isn't on, a route shown only when our list
+  or a review has one; briefs written right after a project is saved, with who the answers named and the pages
+  they cited; the Overview names the businesses AI names more than any tracked competitor and opens the
+  competitors' suggestions; every project page has a loading screen, so a click shows the next page's outline at
+  once, and the page fades in; the opened action slides in and out, the assistant panel slides in, the menus open
+  softer, the project cards lift. `python -m app.admin audit <project>` checks an existing project's website again
+  and brings its actions in line (no assistant asked). Tests: `pytest` 76 pass (the auto-save, the login code, the
+  audit's checks; the 0.4 and 0.9 tests changed to the new rules). Looked at on this computer: the redirect from a
+  finished check to its project, Harakatlar on the user's own local project after the audit (4 actions → 9: 7
+  pages, no prices, no FAQ) in English on desktop and Uzbek at 390px, the action panel opened and closed, a
+  sidebar click showing the skeleton within 0.4 s. No new variable; `NEW_DATABASE_URL` waits on the user.
+
 - **Built, waiting for the user's look: English as the default language, and the landing page's timing (22 Nov), on
   the branch `default-english`; merged, pushed and deployed the same day, when the user said "commit push and deploy"
   (frontend only).** The user: "can you make the default language english". `defaultLocale` is `en` (it was `uz`),
@@ -1489,7 +1517,7 @@ All from `frontend/`: `npm run dev` (development), `npm run build` then `npm run
 - Use the baseline client's first check (spec §3.3) as the test fixture. Acceptance tests are in spec §11.1; they run in `backend/tests/` on that check's data, which stays on this computer (`backend/tests/README.md`). Never write the client's name, its competitors' names or its project's id into a committed file.
 - Work on one Phase 0 item at a time. Show me a plan before writing code.
 - Decided with the user on 21 Nov 2026, while planning Phase 0: the baseline's scope card shows 20 slots, 15 completed and 5 excluded, with the reason that the free check asks ChatGPT 5 of the 10 questions (nothing failed: only 15 were planned); a Gemini answer that ran no web search counts as completed and says so ("Gemini searched in k of n"); the report surfaces (the report, its Hisobotlar copy, the PDF, the snapshot, the digest, the email) read the single data object in Phase 0, and the 0–100 score goes from everywhere (Hisobotlar's register, the dashboard's project cards, the landing page's sample report, the email too), while the other pages move to the object later.
-- Decided with the user on 21 Nov 2026, for item 0.9: a page about a topic is suggested only for a topic with at least 3 answers where competitors are named and the client never (the same 3 answers as spec §6.3's topic ranking).
+- Decided with the user on 21 Nov 2026, for item 0.9: a page about a topic is suggested only for a topic with at least 3 answers where competitors are named and the client never (the same 3 answers as spec §6.3's topic ranking). **Changed on 23 Nov 2026** (the user's "Build the full plan", after a free check gave 0 actions): a page is suggested for every topic where the answers name other businesses (tracked or not) and never the client, whatever its number of answers, each action saying how many it stands on; the topic ranking keeps the 3. The 0.4 rule changed the same day: a "get listed" action needs neither a checked route nor a tracked competitor beside the site; a route is still only ever ours or a review's, never the AI's.
 - Decided with the user on 21 Nov 2026, after the Phase 0 review (spec §9.3 question 2, the Google Search grounding terms): Google Cloud's Service Specific Terms 20(k) say Grounded Results are shown "only … to the End User who submitted the prompt" and may not be cached, syndicated, resold or analysed (the Gemini API's own terms say the same), so Gemini is paused as an assistant that answers in new checks (`ANSWER_ENGINES=chatgpt` on the server; the free check then asks ChatGPT all 10 questions); past checks stay as they are; the landing page and the plans say Gemini is coming. Spec §9.3 question 1: Vertex takes the city's coordinates (`latLng`), but its effect was never measured. Also for the close-out: each evidence card says its channel and its place (spec rule 3, §4.13, in the scope card's words, never the word "API"), and the digest's biggest change is counted over the questions asked on the same assistant in both checks, its visibility line saying when the check before was asked another way (spec §4.15, §9.2).
 - Decided with the user on 21 Nov 2026, for item 0.8: the Free Snapshot reports today's free check as it is asked (10 questions, Gemini 10 and ChatGPT 5); its call to action is a request button with no price (the price and contacts when the user gives them); the digest is copied by hand from Hisobotlar and the snapshot, and opens the report's email.
 - Decided with the user on 21 Nov 2026, for item 0.7: a project without a city is asked from its market's main city (Uzbekistan Tashkent, Kazakhstan Almaty, Kyrgyzstan Bishkek); a project's own city wins; other countries are told the country alone. Gemini on Vertex gets the city's coordinates as its grounding's location (one test call approved and made).

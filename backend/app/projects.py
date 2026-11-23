@@ -190,6 +190,25 @@ def _logo(value: Any) -> Optional[str]:
     return value if isinstance(value, str) and value.startswith("https://") and len(value) <= 500 else None
 
 
+def first_run_body(result: Dict[str, Any], first_run_id: str) -> Dict[str, Any]:
+    """The project a finished first check is saved as (`projectFromFirstRun` in the frontend): by the check itself
+    when it ends (`main.work_check`), by "Save" on its page when that failed, and by the prospects' command."""
+    return {
+        "name": result["brand"]["name"],
+        "aliases": result["brand"].get("aliases") or [],
+        "domain": result["domain"],
+        "category": result.get("category") or "",
+        "country": result.get("country") or DEFAULT_COUNTRY,
+        "city": result.get("city") or "",
+        "description": result.get("description") or "",
+        "services": result.get("services") or [],
+        "competitors": [{key: rival.get(key) for key in ("name", "aliases", "domain", "logo")} for rival in result.get("competitors") or []],
+        "prompts": [{key: row["prompt"].get(key) for key in ("text", "language", "topic")} for row in result.get("prompts") or []],
+        "brandQuestions": [{"text": question["text"], "language": question["language"]} for question in result.get("brandQuestions") or []],
+        "firstRunId": first_run_id,
+    }
+
+
 def create(db: Db, user: User, body: Dict[str, Any]) -> Tuple[Project, Optional[str]]:
     """A new project. With `firstRunId`, the first run's answers come with it as the project's first check."""
     name = _clean(body.get("name"))
@@ -437,6 +456,8 @@ class _Check:
                             for mention in sorted(self.mentions[answer.id], key=lambda mention: mention.position)
                             if mention.brand_id in ids
                         ],
+                        # The businesses it names that aren't tracked, in its order: what a page action's evidence names
+                        "others": [mention.name for mention in sorted(self.mentions[answer.id], key=lambda mention: mention.position) if mention.brand_id not in ids],
                         "citations": [{"url": citation.url, "domain": citation.domain, "title": citation.title} for citation in self.citations[answer.id]],
                         "searches": answer.searches or [],
                     }

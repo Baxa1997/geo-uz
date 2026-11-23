@@ -67,10 +67,10 @@ def test_only_section_7_sites_are_placement_targets() -> None:
     route = {"how": "form", "url": "https://example.org/add"}
     assert domains.placeable("directory", route, False, ["bolt"])
     assert domains.placeable("media", route, False, ["bolt"]) and domains.placeable("telegram", route, False, ["bolt"])
-    # No route, the client already there, no competitor beside it: no action
-    assert not domains.placeable("directory", None, False, ["bolt"])
+    # Since 23 Nov 2026 (the user's "Build the full plan") a site needs neither a checked route nor a tracked
+    # competitor beside it: the steps say how to find the way on. The client already there: no action
+    assert domains.placeable("directory", None, False, []) and domains.placeable("ugc", None, False, ["bolt"])
     assert not domains.placeable("directory", route, True, ["bolt"])
-    assert not domains.placeable("directory", route, False, [])
     for kind in ("platform_docs", "competitor_site", "reference", "unclassified", "client_owned"):
         assert not domains.placeable(kind, route, False, ["bolt"])
 
@@ -126,8 +126,9 @@ def test_the_ai_types_each_unknown_site_once_without_a_route(db: Any, project: A
         assert all(row.review == "automated" and row.route is None for row in rows)
         after = metrics.sources(wave.build(db, project, run_id))
         assert "unclassified" not in after["types"] and after["sites"] == sum(after["types"].values())
-        # An AI-typed directory has no route, so it is never a placement target
-        assert after["targets"] == []
+        # An AI-typed directory is a placement target since 23 Nov 2026, but never with a route of the AI's
+        typed_directories = {row["domain"] for row in after["rows"] if row["type"] == "directory"}
+        assert set(after["targets"]) == typed_directories and all(row["route"] is None for row in after["rows"] if row["target"])
         assert all(row["review"] == "automated" for row in after["rows"] if row["type"] == "directory")
         # Asked once: a second check of the same sites asks nothing
         assert domains.classify(db, project, run) == 0.0 and len(asked) == 1
