@@ -248,6 +248,13 @@ paper", the pilot report's look). The tokens are in `globals.css`:
   colors, never Peec's shape. `app/icon.svg`, `app/favicon.ico` (16, 32, 48px) and `app/apple-icon.png` (180px,
   full-bleed) are the rounds in white on the brand's navy tile. The login panel and the first check's panel
   are the brand's navy gradient, the login panel with the two rounds drawn huge and faint. Emails write the name in `mail.BRAND` and `mail.WORDMARK_HTML`.
+- **A shared link's picture** (23 Nov 2026, when the site went public at https://www.seenovai.com, `SITE_URL`): every
+  page's card (Telegram, WhatsApp, Facebook, X) shows `public/og/<locale>.jpg`, 1200×630: the login panel's navy
+  gradient, the mark and the name, the assistants asked, the hero's headline with its serif last words, the free
+  check's button and the address (`shared/helpers/share.ts`, from the `[locale]` layout, which sets `metadataBase`).
+  Each page's own title and description go on its card. The pictures are drawn by Chrome from the messages:
+  `node scripts/share-images.mjs` after changing the headline, `Landing.submit`, `Landing.cta.eyebrow` or the
+  assistants (`ENGINES` in the script).
 - **Buttons** (18 Nov, the user: "inside of Dashboard the buttons must be background colored … cancel buttons
   must be appropriately colored background"; asked, they chose black, in the dashboard only). `ui/button` takes
   its colors from tokens in globals.css (`--button*`): the main button (`default`) and the soft one (`outline`).

@@ -5,6 +5,8 @@ import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { pickMessages } from "@/i18n/pick-messages";
 import { routing } from "@/i18n/routing";
+import { SITE_URL } from "@/shared/constants";
+import { shareMetadata } from "@/shared/helpers/share";
 import { fontVariables } from "../fonts";
 import "../globals.css";
 
@@ -18,7 +20,8 @@ export async function generateMetadata({
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
   const t = await getTranslations({ locale, namespace: "Metadata" });
-  return { title: t("title"), description: t("description") };
+  // Every page shares with the picture in its language; the addresses in its card are the public site's
+  return { metadataBase: new URL(SITE_URL), title: t("title"), description: t("description"), ...shareMetadata(locale, t("title")) };
 }
 
 export default async function LocaleLayout({

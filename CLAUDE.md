@@ -68,7 +68,8 @@ under "Done" hold the detail, newest first.
 1. **`frontend/`: a Next.js 16 app, every page built, in three languages.** With
    `NEXT_PUBLIC_LIVE=auth,first-run,projects` (this computer) a real account's pages read and write the backend;
    sample data (Tashkent dental clinics) stays for the landing page's preview and wherever a slice is off
-   (`frontend/CLAUDE.md`). Deployed on Vercel, which still puts its own login in front of the site.
+   (`frontend/CLAUDE.md`). Deployed on Vercel and public at https://www.seenovai.com, the user's own domain (since
+   23 Nov the server's links point there too); Vercel's own login covers only its vercel.app addresses.
 2. **`backend/app/`: the API** (`backend/README.md`): login by a code the backend emails itself; the first check
    (the website read, the owner confirms the business, competitors and questions, then ChatGPT and Gemini are
    asked, with the results filling in as they come); real projects behind every page; checks by plan, started
@@ -114,13 +115,13 @@ waits for their look. The open work, in the order the user picks (ask as a short
    until then the First Audits are made with these tools plus the founder's review. The Phase 0 review (21 Nov)
    found three gaps before the demand test; the close-out (branch `phase0-closeout`, merged and deployed 21 Nov) handles them:
    Gemini paused for Google's terms, each evidence card's channel and place, the
-   digest's change over the same questions; the links wait for Vercel's login to go.
+   digest's change over the same questions; the links open at www.seenovai.com since 23 Nov.
 1. The rest of the user's list of 17 Nov: the report's competitors and sources (3–4), the bug in the dynamics
    window. Each waits for its screenshots. (Savollar, point 5, was made simple on 18 Nov from the user's own
    screenshot of it.)
-2. The live site: the user turns off Vercel's login; then `FRONTEND_ORIGIN` on the server becomes the site's
-   public address; then Chromium on the server, when the user says (the PDF on the live site, the emailed
-   report's attachment).
+2. The live site: public at https://www.seenovai.com, and `FRONTEND_ORIGIN` on the server is that address (23 Nov).
+   A shared link shows a picture in its language since 23 Nov. Left: Chromium on the server, when the user says
+   (the PDF on the live site, the emailed report's attachment); `robots.txt` and a sitemap; contacts on the public pages.
 3. The database stays in Mumbai for now (the user, 23 Nov 2026, of the Frankfurt project: "no need for this one",
    then, told it would be free, "for now just use it"). A backend call costs 0.6–2 s from Germany; what code can
    still do is fewer round trips and longer caching, when the user asks for it. If the move comes back: a free
@@ -140,8 +141,8 @@ waits for their look. The open work, in the order the user picks (ask as a short
 
 - (17 Nov) The screenshots the list of 17 Nov names: the report's competitors and sources and the bug in the
   dynamics window (only Brend savollari's arrived; Savollar's came on 18 Nov and the page was rebuilt).
-- (18 Nov) Vercel's login turned off (theirs, in Vercel): until then neither the server nor a client given a
-  report's link can open the site. Chromium on the server: not yet (the user's choice).
+- Chromium on the server: not yet (the user's choice, 18 Nov); until it is installed the PDF buttons open the print
+  dialog and the emailed report has no PDF. (Vercel's login: settled on 23 Nov, the site is public at its own domain.)
 - The paid project on the server: the user's own site, switched to Standard by hand on 16 Nov for the first
   weekly check, and back to a trial on 22 Nov (the user's choice: "Skip it this week", to keep the OpenAI balance of
   about $2 for visitors), so the timer leaves it. Back on: `python -m app.admin plan <id> start` (without `--trial`).
@@ -154,8 +155,8 @@ waits for their look. The open work, in the order the user picks (ask as a short
 - Google: Gemini runs through Vertex with the IELTS project's Google Cloud project and a copy of its
   credentials, for now; a Google Cloud project of our own is owed. A Gemini API key (the other path in
   `backend/app/engines.py`) has never run.
-- The product's own domain (the emails' sender, the site's address) and a mail service on it: Gmail's account
-  is for login codes and testing.
+- A mail service on the product's domain for the emails' sender: Gmail's account is for login codes and testing.
+  (The site's address is the user's domain, www.seenovai.com, since 23 Nov.)
 - Real contacts for the public pages (an email, a Telegram): the footer's placeholders were removed on 16 Nov.
   Contacts for the pilot report's last page.
 - Three answers pasted from the ChatGPT app, to compare the app with the API.
@@ -224,6 +225,31 @@ that is committed.
    that no key and no client's name is in it.
 
 ## Done (as of 18 November 2026)
+
+- **Built, waiting for the user's look: the picture a shared link shows (23 Nov), on the branch `share-preview`;
+  merged, pushed and deployed the same day, when the user said "push, deploy everything".** Until then a link to the
+  site in Telegram showed its title and description and no picture. Every page now names a 1200×630 picture in its
+  language (`frontend/public/og/uz.jpg`, `ru.jpg`, `en.jpg`, about 115 KB each): the login panel's navy gradient
+  with the two rounds faint, the mark and Seenova AI, ChatGPT and Gemini, the hero's headline with its last words in
+  the serif italic, the free check's button with "No card needed", and seenovai.com. `frontend/scripts/share-images.mjs`
+  draws them with Chrome from the landing page's own texts: run it again after changing the headline, the button or
+  the assistants asked. The layout sets `metadataBase` to the public site (`SITE_URL`) and the Open Graph and X
+  cards (`shared/helpers/share.ts`); each page keeps its own title and description on its card (the landing page's
+  question, a report's or a snapshot's name). Looked at: the three pictures, and the tags on this computer's dev
+  server (the home page in English and Uzbek, the login in Russian). Type check and linter clean. No new variable.
+
+- **Done on the server, waiting for the user's look: the site public at its own domain (23 Nov), no code change.**
+  Asked whether everything was ready, then "yes make it public now". Found: the user's own domain already served
+  the site on Vercel to everyone (https://www.seenovai.com; seenovai.com sends to it), since Vercel's own login
+  covers only the vercel.app addresses, and it reaches the backend through `/api/backend`. Done on the server:
+  `FRONTEND_ORIGIN=https://www.seenovai.com` (its `.env` kept as `.env.bak-before-public`; no check was running;
+  restarted, `/health` answers), so the queue's emails, the report's link and email, the snapshots' links and
+  Stripe's return pages use it, and the backend's CORS allows it. Opened without a login: the home page in the three
+  languages, the login, the first check (it sends to the login), both live projects' report and snapshot links.
+  Confirmed from the three logins of 23 Nov through the site: Vercel passes the visitor's own address as
+  `x-vercel-forwarded-for`, so the limits count each visitor apart (`app/limits.py`). Left: Chromium on the server
+  (the PDF), a share picture (`og:image`; a link in Telegram shows the title and description), `robots.txt` and a
+  sitemap, contacts. `FRONTEND_ORIGIN` changed on the server (`ENVIRONMENT.md`); no new variable.
 
 - **Built, waiting for the user's look: each page's tour once per account, on any device (23 Nov), on the branch
   `tours-once`; merged, pushed and deployed the same day, when the user chose "Commit, push, deploy" (Vercel's build
@@ -1501,7 +1527,7 @@ that is committed.
    16 Nov: login → the website → the business, competitors and questions confirmed → the check on ChatGPT and
    Gemini → the statistics → the project, then checks by plan, the report and the fixes (stages 1–4 of
    `PLAN.md`: built, waiting for the user's look). What is left of the MVP: stage 5 of `PLAN.md`, and on the
-   live site the report's PDF and links (Vercel's login, `FRONTEND_ORIGIN`, Chromium on the server).
+   live site the report's PDF (Chromium on the server; the links open at www.seenovai.com since 23 Nov).
 
 1. **Pilots (the user's decision of 14 Nov, put after the platform's flow the same day).** The first real run
    is done, and the prices were set against the measured cost on 15 Nov. Before the first client's report is
