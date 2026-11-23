@@ -327,6 +327,10 @@ for everyone emails the team once that day. The connection is `x-vercel-forwarde
 `X-Forwarded-For`, else `X-Real-IP`; the login-code route logs the three until a real login through the site has shown
 which one Vercel sends. Refused: 429 `too_many_codes`, `first_run_limit` (one connection) or `free_checks_busy` (all).
 
+**Guided tours seen** (23 Nov 2026): `users.seen_tours` (a list, added at start) holds the pages' tours an account has
+seen; `GET /auth/me` returns it as `seenTours`, and `POST /auth/me/tours` `{"tour": "<id>"}` adds one (an id of
+letters, digits, `-` or `_`, at most 60 kept), so a tour starts by itself once per account, on any device.
+
 **Why AI names them, not you** (23 Nov 2026, report spec §4.5, brought forward from Phase 1 at the user's "Build research
 + decision page"; `app/research.py`). For each buyer question whose answers name some business and never the client
 (`lost_questions`), the page an answer cited for that business (its own site, by name or tracked domain) is read

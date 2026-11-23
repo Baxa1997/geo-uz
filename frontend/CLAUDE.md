@@ -1096,8 +1096,11 @@ beside it, its pointer on the section, says what the section shows and what to d
 Back, Next). The bubble goes under the section, else over it, else beside it, and follows it when the page
 scrolls. Hint bubbles stay hidden while a tour is open.
 
-- The tour starts by itself on the first visit to a page, once per browser (`localStorage` `geo-tour:<page>`),
-  unless a window is open then; the book button at the end of the page's top bar shows it again.
+- The tour starts by itself on the first visit to a page, once per account on any device (since 23 Nov 2026, the
+  user: "must not show anywhere even in different devices"): the account keeps the tours it has seen
+  (`User.seenTours`, `POST /auth/me/tours`, `useTourMemory` in the workspace), marked the moment one starts by
+  itself; the browser's `localStorage` `geo-tour:<page>` stays as a second memory, and one seen there before is
+  passed to the account. Not while a window is open; the book button at the end of the page's top bar shows it again.
 - A page names its tour with `Page`'s `tour` prop. The steps are the page's entries in `messages/Tours`, in
   their order (keep it the page's order, top to bottom); each points at the element marked with
   `data-tour="<key>"`. Frame whole sections, as Peec does: a card, a strip of numbers, a table's tools or its

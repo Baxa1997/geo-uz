@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { NavigationProgress } from "@/shared/components/navigation-progress";
 import { AssistantProvider } from "@/shared/hooks/use-assistant";
+import { TourMemoryProvider } from "@/shared/hooks/use-tour-memory";
 import type { Project, User } from "@/shared/types/api";
 import { SIDEBAR_COOKIE } from "../constants";
 import { useProjects } from "../hooks/use-projects";
@@ -59,28 +60,31 @@ export function WorkspaceShell({
   const sidebarProps = { projects, user, onHelp: () => setSupportOpen(true) };
 
   return (
-    <AssistantProvider value={controls}>
-      {/* Clips anything positioned inside, so only the panels scroll, never the page (see globals.css) */}
-      <div data-workspace className="relative flex h-svh overflow-hidden bg-sidebar">
-        <DesktopSidebar {...sidebarProps} collapsed={collapsed} onToggle={toggleSidebar} />
-        <div className="flex min-w-0 flex-1 flex-col lg:py-2 lg:pr-2">
-          <MobileTopBar {...sidebarProps} />
-          <main ref={main} className="relative flex min-h-0 flex-1 flex-col overflow-y-auto bg-background lg:rounded-xl lg:border lg:shadow-xs">
-            <Suspense fallback={null}>
-              <NavigationProgress />
-            </Suspense>
-            {children}
-          </main>
+    // The tours this account has seen, on any device: each page's tour starts by itself once (23 Nov 2026)
+    <TourMemoryProvider initial={user.seenTours ?? []}>
+      <AssistantProvider value={controls}>
+        {/* Clips anything positioned inside, so only the panels scroll, never the page (see globals.css) */}
+        <div data-workspace className="relative flex h-svh overflow-hidden bg-sidebar">
+          <DesktopSidebar {...sidebarProps} collapsed={collapsed} onToggle={toggleSidebar} />
+          <div className="flex min-w-0 flex-1 flex-col lg:py-2 lg:pr-2">
+            <MobileTopBar {...sidebarProps} />
+            <main ref={main} className="relative flex min-h-0 flex-1 flex-col overflow-y-auto bg-background lg:rounded-xl lg:border lg:shadow-xs">
+              <Suspense fallback={null}>
+                <NavigationProgress />
+              </Suspense>
+              {children}
+            </main>
+          </div>
+          {assistant.open && (
+            <AssistantPanel
+              key={assistant.session}
+              initialQuestion={assistant.question}
+              onClose={() => setAssistant((current) => ({ ...current, open: false }))}
+            />
+          )}
+          <SupportSheet open={supportOpen} onOpenChange={setSupportOpen} />
         </div>
-        {assistant.open && (
-          <AssistantPanel
-            key={assistant.session}
-            initialQuestion={assistant.question}
-            onClose={() => setAssistant((current) => ({ ...current, open: false }))}
-          />
-        )}
-        <SupportSheet open={supportOpen} onOpenChange={setSupportOpen} />
-      </div>
-    </AssistantProvider>
+      </AssistantProvider>
+    </TourMemoryProvider>
   );
 }

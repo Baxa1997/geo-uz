@@ -229,3 +229,26 @@ def test_the_login_code_is_answered_before_its_email(db: Any, monkeypatch: Any) 
         db.execute(delete(LoginCode).where(LoginCode.email == email))
         db.execute(delete(LimitHit))
         db.commit()
+
+
+def test_a_tour_is_seen_once_for_the_account_on_any_device(db: Any) -> None:
+    """The user, 23 Nov 2026: "the Touring must be showed only once ... even in different devices": the tours an
+    account has seen are kept on it, once each, and come with the account wherever it logs in."""
+    user = User(email="tours@queue.example")
+    db.add(user)
+    db.commit()
+    try:
+        assert main.me(user)["seenTours"] == []
+        assert main.tour_seen(main.TourSeen(tour="overview"), user) == {"seenTours": ["overview"]}
+        # Again, from another device: kept once
+        assert main.tour_seen(main.TourSeen(tour="overview"), user) == {"seenTours": ["overview"]}
+        assert main.tour_seen(main.TourSeen(tour="prompts"), user)["seenTours"] == ["overview", "prompts"]
+        db.expire_all()
+        assert main.user_json(db.get(User, user.id))["seenTours"] == ["overview", "prompts"]
+        # Only a tour's id: anything else is refused
+        with pytest.raises(HTTPException) as refused:
+            main.tour_seen(main.TourSeen(tour="../etc"), user)
+        assert refused.value.status_code == 422
+    finally:
+        db.execute(delete(User).where(User.id == user.id))
+        db.commit()

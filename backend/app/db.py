@@ -37,6 +37,9 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(320), unique=True, index=True)
     name: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)
     created_at: Mapped[datetime.datetime] = mapped_column(DateTime, default=now)
+    # The pages' guided tours the account has seen (their ids, `PageTour`): each starts by itself once, on any device
+    # (23 Nov 2026). Added at start
+    seen_tours: Mapped[Optional[Any]] = mapped_column(JSON, nullable=True)
 
 
 class Session(Base):
