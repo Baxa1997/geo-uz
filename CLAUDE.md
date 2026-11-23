@@ -119,8 +119,12 @@ waits for their look. The open work, in the order the user picks (ask as a short
 2. The live site: the user turns off Vercel's login; then `FRONTEND_ORIGIN` on the server becomes the site's
    public address; then Chromium on the server, when the user says (the PDF on the live site, the emailed
    report's attachment).
-3. The database to a Supabase project in Frankfurt, once its connection string is in `backend/.env.server`
-   (`NEW_DATABASE_URL=…`): the data copied across and the server switched.
+3. The database stays in Mumbai for now (the user, 23 Nov 2026, of the Frankfurt project: "no need for this one",
+   then, told it would be free, "for now just use it"). A backend call costs 0.6–2 s from Germany; what code can
+   still do is fewer round trips and longer caching, when the user asks for it. If the move comes back: a free
+   Supabase project in Central EU (Frankfurt) (the free plan has 2 active projects; the database is 13 MB of its
+   500), its Session pooler string as `NEW_DATABASE_URL` in `backend/.env.server`; the server has no `pg_dump`, so
+   the copy runs in a `postgres:17` Docker container there (the database is Postgres 17).
 4. Stage 5 of `PLAN.md`, ready for a paying client: the domain, terms, limits against abuse, backups, an alert
    when a check fails, new passwords.
 
@@ -133,9 +137,6 @@ waits for their look. The open work, in the order the user picks (ask as a short
 
 - (17 Nov) The screenshots the list of 17 Nov names: the report's competitors and sources and the bug in the
   dynamics window (only Brend savollari's arrived; Savollar's came on 18 Nov and the page was rebuilt).
-- (17 Nov) A Supabase project in the Frankfurt region (the user's choice), its connection string in
-  `backend/.env.server` as one line `NEW_DATABASE_URL=…`, never in chat; then the data is copied across and the
-  server switched.
 - (18 Nov) Vercel's login turned off (theirs, in Vercel): until then neither the server nor a client given a
   report's link can open the site. Chromium on the server: not yet (the user's choice).
 - The paid project on the server: the user's own site, switched to Standard by hand on 16 Nov for the first
@@ -250,7 +251,8 @@ that is committed.
   audit's checks; the 0.4 and 0.9 tests changed to the new rules). Looked at on this computer: the redirect from a
   finished check to its project, Harakatlar on the user's own local project after the audit (4 actions → 9: 7
   pages, no prices, no FAQ) in English on desktop and Uzbek at 390px, the action panel opened and closed, a
-  sidebar click showing the skeleton within 0.4 s. No new variable; `NEW_DATABASE_URL` waits on the user.
+  sidebar click showing the skeleton within 0.4 s. No new variable. The Frankfurt database: the user declined it the
+  same day ("no need for this one"), so the database stays in Mumbai.
 
 - **Built, waiting for the user's look: English as the default language, and the landing page's timing (22 Nov), on
   the branch `default-english`; merged, pushed and deployed the same day, when the user said "commit push and deploy"
