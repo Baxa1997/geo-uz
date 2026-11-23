@@ -221,7 +221,10 @@ that is committed.
 
 ## Done (as of 18 November 2026)
 
-- **Built, waiting for the user's look: the user's test of 23 Nov, on the branch `feedback-23-nov`, not committed.**
+- **Built, waiting for the user's look: the user's test of 23 Nov, on the branch `feedback-23-nov`; merged, pushed and
+  deployed the same day, when the user chose "Commit, push, deploy + update my test project" (Vercel's build passed;
+  the server's previous `app/` kept as `app.bak-before-feedback`; `app.admin audit` on the test project: 0 actions →
+  10, seven pages with five briefs, two sites to get onto, one fix, the site in one language).**
   The user tried a new project on the live site: (1) the login and the pages are slow; (2) the results after the
   check are thin, and the project should save itself and open the dashboard; (3) the result isn't what it was, the
   actions must come from research, SEO and GEO; (4) the project's pages, its menu, the opened panels and the cards
