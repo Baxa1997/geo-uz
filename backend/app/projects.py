@@ -586,6 +586,8 @@ def report(db: Db, project: Project, language: Optional[str] = None, topic: Opti
         ],
         "untrackedBrands": latest.untracked(brands, project.dismissed or []) if latest else [],
         "nextRunAt": next_check(project.plan) if settings.weekly_runs and project.paid and prompts and run_id is None else None,
+        # Why AI names others and not the client, per lost question of the check shown (`research`); null until researched
+        "research": (latest.run.research or {}).get("items") if latest and latest.run.research else None,
     }
 
 

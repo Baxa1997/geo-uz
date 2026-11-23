@@ -159,6 +159,31 @@ export function ActionPanel({
           <ActionWhy action={action} competitors={competitors} prominent />
         </Section>
 
+        {/* What the rivals' cited pages state and the client's site doesn't: the research's facts, each with its words */}
+        {action.kind === "content" && action.missing && action.missing.length > 0 && (
+          <Section label={t("sections.missing")}>
+            <ul className="flex flex-col gap-2.5">
+              {action.missing.map((fact) => (
+                <li key={fact.quote} className="flex flex-col gap-0.5 border-l-2 border-[var(--rival-strong)] pl-3">
+                  <span className="text-[0.9375rem] font-medium text-pretty">{fact.fact[(["uz", "ru", "en"] as const).find((language) => language === locale) ?? "en"]}</span>
+                  <span className="text-sm text-pretty text-muted-foreground italic">“{fact.quote}”</span>
+                  <span className="text-xs text-muted-foreground">
+                    {fact.url ? (
+                      <a href={fact.url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 underline-offset-4 hover:underline">
+                        {fact.rival} · {shortUrl(fact.url)}
+                        <ExternalLink aria-hidden className="size-3" />
+                      </a>
+                    ) : (
+                      fact.rival
+                    )}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-2 text-xs text-pretty text-muted-foreground">{t("missingNote")}</p>
+          </Section>
+        )}
+
         <Section label={t("aiPrompt.title")} tour="prompt">
           <PromptBox key={action.id} target={aiPrompt.target} text={aiPrompt.text} domain={action.kind === "listing" ? action.domain : brand.domain} copied={copied} onCopy={() => void copyPrompt()} />
         </Section>

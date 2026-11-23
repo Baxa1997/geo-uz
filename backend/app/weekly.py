@@ -34,7 +34,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from sqlalchemy import select
 
-from . import billing, delivery, domains, engines, firstrun, fixes, places, slots
+from . import billing, delivery, domains, engines, firstrun, fixes, places, research, slots
 from .config import settings
 from .db import Answer, Brand, Citation, Mention, Project, Prompt, Run, SessionLocal, create_tables, now
 from .engines import web
@@ -151,6 +151,9 @@ def check(project_id: str, runs: Optional[int] = None) -> Optional[str]:
                 run.cost_usd = round((run.cost_usd or 0.0) + domains.classify(db, project, run), 4)
                 db.commit()
                 fixes.read_pages(project_id, run_id)
+                # Why AI names others and not the client, before the actions, which take their missing facts from it
+                if not settings.first_run_replay:
+                    research.research(project_id, run_id)
                 db.expire_all()
                 project = db.get(Project, project_id)
                 fixes.sync(db, project)

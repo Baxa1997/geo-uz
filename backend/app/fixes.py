@@ -24,7 +24,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from sqlalchemy import select
 from sqlalchemy.orm import Session as Db
 
-from . import domains, engines, metrics, projects
+from . import domains, engines, metrics, projects, research
 from .db import Action, Answer, Brand, Mention, Project, Prompt, Run, SessionLocal, WrongFact, now
 from .engines import web
 from .firstrun import STR, arr, obj
@@ -97,6 +97,19 @@ def _cites(result: Dict[str, Any], domain: str) -> int:
     return sum(1 for answer in result["answers"] if any(citation["domain"] == domain for citation in answer["citations"]))
 
 
+def missing_facts(report: Dict[str, Any], prompt_ids: List[str], most: int = 6) -> List[Dict[str, Any]]:
+    """What the research found the rivals' cited pages state and the client's site doesn't, for these questions: each
+    fact once, with its quote, the business and the page (`research`, 23 Nov 2026)."""
+    found: List[Dict[str, Any]] = []
+    for item in report.get("research") or []:
+        if item.get("status") != "compared" or item["promptId"] not in prompt_ids:
+            continue
+        for fact in item.get("missing") or []:
+            if all(fact["fact"]["en"].casefold() != kept["fact"]["en"].casefold() for kept in found):
+                found.append({**fact, "rival": item["rival"]["name"], "url": (item.get("page") or {}).get("url")})
+    return found[:most]
+
+
 def _others_named(answer: Dict[str, Any], client: str) -> bool:
     """Whether an answer names some business other than the client: a tracked competitor or one not tracked."""
     return any(mention["brandId"] != client for mention in answer["mentions"]) or bool(answer.get("others"))
@@ -152,7 +165,7 @@ def suggested(db: Db, project: Project, report: Dict[str, Any]) -> List[Dict[str
         if not content_allowed(theirs, client, rivals):
             continue
         ids = [result["prompt"]["id"] for result in theirs if any(_others_named(answer, client) for answer in result["answers"])]
-        found.append({"key": f"content:{topic.casefold()}", "kind": "content", "details": {"topic": topic, "url": None, "pageType": None, "brief": None}, "impact": "high" if len(ids) > 1 else "medium", "promptIds": ids})
+        found.append({"key": f"content:{topic.casefold()}", "kind": "content", "details": {"topic": topic, "url": None, "pageType": None, "brief": None, "missing": missing_facts(report, ids)}, "impact": "high" if len(ids) > 1 else "medium", "promptIds": ids})
 
     for check in project.site_checks or []:
         if not check.get("passed"):
@@ -395,9 +408,11 @@ def write_briefs(db: Db, project: Project, limit: int = 5) -> None:
     client = next(brand for brand in projects.brands_of(db, project.id) if brand.own)
     texts = {prompt.id: prompt.text for prompt in projects.prompts_of(db, project.id)}
     waiting = [action for action in db.scalars(select(Action).where(Action.project_id == project.id, Action.kind == "content")) if not (action.details or {}).get("brief") and action.status in ("new", "in_progress")]
-    results = {result["prompt"]["id"]: result for result in projects.report(db, project)["prompts"]} if waiting else {}
+    report = projects.report(db, project) if waiting else {"prompts": []}
+    results = {result["prompt"]["id"]: result for result in report["prompts"]}
     for action in waiting[:limit]:
-        brief = _brief(project, client, action.details["topic"], [texts[prompt_id] for prompt_id in action.prompt_ids or [] if prompt_id in texts], evidence=_evidence([results[prompt_id] for prompt_id in action.prompt_ids or [] if prompt_id in results]))
+        ids = action.prompt_ids or []
+        brief = _brief(project, client, action.details["topic"], [texts[prompt_id] for prompt_id in ids if prompt_id in texts], evidence=_evidence([results[prompt_id] for prompt_id in ids if prompt_id in results], missing_facts(report, ids)))
         if brief:
             action.details = {**action.details, "brief": brief}
     db.flush()
@@ -453,11 +468,14 @@ def check_facts(db: Db, project: Project, run: Run, answers: List[Dict[str, Any]
     return cost
 
 
-def _evidence(results: List[Dict[str, Any]]) -> str:
-    """Who a topic's answers named and the pages they cited, as lines for a brief."""
+def _evidence(results: List[Dict[str, Any]], missing: Optional[List[Dict[str, Any]]] = None) -> str:
+    """Who a topic's answers named, the pages they cited and what those pages state that the client's site doesn't
+    (the research), as lines for a brief."""
     named: Counter = Counter(name for result in results for answer in result["answers"] for name in answer.get("others") or [])
     pages = list(dict.fromkeys(f"{citation.get('title') or ''} {citation['url']}".strip() for result in results for answer in result["answers"] for citation in answer["citations"]))
     lines = ([f"Named: {', '.join(name for name, _ in named.most_common(8))}"] if named else []) + [f"- {page}" for page in pages[:12]]
+    if missing:
+        lines += ["What their pages state and the client's site doesn't:"] + [f"- {fact['fact']['en']} ({fact['rival']}: \"{fact['quote']}\")" for fact in missing]
     return "\n".join(lines)
 
 
@@ -472,6 +490,11 @@ def after_creation(project_id: str, run_id: str) -> None:
                 run.cost_usd = round((run.cost_usd or 0.0) + domains.classify(db, project, run), 4)
                 db.commit()
         read_pages(project_id, run_id)
+        # Why AI names others and not the client: before the actions, which take their missing facts from it
+        from .config import settings
+
+        if not settings.first_run_replay:
+            research.research(project_id, run_id)
         with SessionLocal() as db:
             project = db.get(Project, project_id)
             if project:

@@ -134,7 +134,7 @@
       "rebuilt": "Bu tekshiruv har bir rejalangan javob yozib borilishidan (2026-yil 21-noyabr) oldin qilingan: uning rejasi saqlangan javoblardan tiklandi."
     },
     "sections": {
-      "summary": "Rahbar uchun xulosa",
+      "summary": "Qaror uchun xulosa",
       "scorecard": "Asosiy koʻrsatkichlar",
       "changes": "Oldingi hisobotdan beri nima oʻzgardi",
       "assistants": "Har bir AI yordamchi",
@@ -147,7 +147,8 @@
       "method": "Usul va qamrov",
       "glossary": "Atamalar",
       "appendix": "Barcha savollar va javoblar",
-      "evidence": "Dalillar: barcha javoblar toʻliq"
+      "evidence": "Dalillar: barcha javoblar toʻliq",
+      "research": "Nega AI sizni emas, ularni tilga oladi"
     },
     "summary": {
       "highlights": "Hafta yangiliklari",
@@ -155,7 +156,13 @@
       "highlightsFirst": "Bu birinchi hisobot. Keyingisidan boshlab hafta oʻzgarishlari shu yerda koʻrinadi.",
       "decisions": "Qaror talab qiladi",
       "more": "Toʻliq reja — {section}-boʻlimda.",
-      "noActions": "Kutilayotgan ish yoʻq: hozirgacha berilgan barcha tavsiyalar bajarilgan yoki rad etilgan."
+      "noActions": "Kutilayotgan ish yoʻq: hozirgacha berilgan barcha tavsiyalar bajarilgan yoki rad etilgan.",
+      "shelf": "Har bir savol kimda",
+      "instead": "AI sizning oʻrningizga tilga olganlar",
+      "insteadCount": "{total} tadan {count}",
+      "why": "Nega: boy berilgan {lost} ta savoldan {compared} tasida AI havola qilgan sahifalarda sizda yoʻq {facts} ta fakt bor.",
+      "whySection": "{section}-boʻlimga qarang.",
+      "decide": "Shu haftaning qarori: ulardan qaysi birini boshlash va jamoangizda har birini kim bajarishi."
     },
     "scorecard": {
       "lead": "Shu tekshiruv raqamlari, har biri nimadan hisoblangani bilan: sizniki va eng kuchli raqobatchiniki yonma-yon. Teng brendlar birga koʻrsatiladi.",
@@ -194,7 +201,8 @@
       "tone": "Baho",
       "position": "Javobdagi oʻrni",
       "shareOfVoice": "Ovoz ulushi",
-      "noShareOfVoice": "Ovoz ulushi hali yoʻq: kuzatilayotgan brendlar jami {mentions} marta tilga olingan, kamida {minimum} marta kerak."
+      "noShareOfVoice": "Ovoz ulushi hali yoʻq: kuzatilayotgan brendlar jami {mentions} marta tilga olingan, kamida {minimum} marta kerak.",
+      "othersTitle": "AI yana tilga olganlar — kuzatilmaydi (tekshirilmagan)"
     },
     "topics": {
       "lead": "AI mijozlaringizning qaysi ehtiyojlari haqida gapirganda sizni tilga oladi, qaysilarida esa faqat raqobatchilarni.",
@@ -679,11 +687,33 @@
       "digestTitle": "Telegram uchun",
       "digestHint": "Ushbu sahifa havolasi bilan yuborish uchun olti qator.",
       "paperEvidence": "Toʻliq javoblar manba sahifalari bilan ushbu sahifa havolasida ochiladi.",
-      "ctaPaper": "Har bir savol 3 marta beriladi, natijalarni inson tekshiradi, birinchi harakatlar bilan. Ushbu sahifa havolasi orqali soʻrang."
+      "ctaPaper": "Har bir savol 3 marta beriladi, natijalarni inson tekshiradi, birinchi harakatlar bilan. Ushbu sahifa havolasi orqali soʻrang.",
+      "noOthers": "Kuzatilmayotgan biznes javoblarda tilga olinmadi."
     },
     "digest": {
       "copy": "Nusxalash",
       "copied": "Nusxalandi"
+    },
+    "research": {
+      "lead": "AI sizni emas, boshqa bizneslarni tilga olgan har bir savol uchun u ularga havola qilgan sahifani saytingiz bilan yonma-yon oʻqidik: ular nima deydi-yu, siz demaysiz — ularning oʻz soʻzlari bilan.",
+      "notYet": "Hali tadqiq qilinmagan: bu har bir tekshiruvdan keyin bir necha daqiqada bajariladi.",
+      "none": "AI sizni emas, boshqa bizneslarni tilga olgan savol yoʻq.",
+      "summary": "AI sizni emas, boshqalarni tilga olgan {lost} ta savoldan {compared} tasi solishtirildi. Ularning sahifalarida bor, sizda yoʻq {facts} ta fakt topildi.",
+      "automated": "Avtomatik topildi (automated): har bir iqtibos oʻz sahifasi bilan soʻzma-soʻz solishtirilgan, lekin faktlarni hali odam tekshirmagan. Harakat qilishdan oldin ularni tekshiring.",
+      "named": "AI tilga olgan: {rival}",
+      "noSentence": "Javob uni alohida gapsiz tilga oldi.",
+      "theirPage": "AI havola qilgan sahifa ({rival})",
+      "yourPage": "Eng yaqin sahifangiz",
+      "noYourPage": "Saytingizda bu savolga javob beradigan sahifa yoʻq.",
+      "has": "{rival} sahifasida bor, sizda yoʻq narsalar",
+      "noGap": "Ularda bor, sizda yoʻq fakt topilmadi: bu savolni kuzatib boring.",
+      "fix": "Sahifangiz uchun boʻlim",
+      "fixNote": "Saytingizning oʻzidan yozilgan. Eʼlon qilishdan oldin har bir boʻsh joyni […] haqiqiy raqamingiz bilan toʻldiring.",
+      "status": {
+        "no_page": "Javobda {rival} sahifasiga havola yoʻq, solishtiradigan narsa yoʻq: bu savolni kuzatib boring.",
+        "unreadable": "{rival} sahifasini bu safar oʻqib boʻlmadi.",
+        "failed": "Bu safar solishtirilmadi; keyingi tekshiruvda solishtiriladi."
+      }
     }
   },
   "Headline": {
@@ -1073,7 +1103,8 @@
       "page": "Sahifa",
       "sitePages": "AI oʻqigan sahifalar",
       "questions": "Taʼsir qiladigan savollar",
-      "outcome": "Kutilayotgan natija"
+      "outcome": "Kutilayotgan natija",
+      "missing": "Ularning sahifalarida bor, sizda yoʻq narsalar"
     },
     "overview": {
       "fact": "AI javoblarida siz haqingizda notoʻgʻri maʼlumot bor. Toʻgʻrisini saytingizga va AI tayanadigan saytlarga yozing.",
@@ -1332,7 +1363,8 @@
         "r1": "Uni {languages} yozing — har bir til uchun toʻliq variant.",
         "r2": "2–3 gapdagi toʻgʻridan-toʻgʻri javob bilan boshlang, keyin aniq sarlavhali boʻlimlar; narxlar, manzil va ish vaqtini rasm emas, matn qilib bering.",
         "r3": "Oxirida yuqoridagi har bir savolga 2–3 gapda javob beradigan FAQ boʻlsin.",
-        "r5": "Har bir til uchun meta sarlavha (60 belgigacha) va meta tavsif (155 belgigacha) bering, FAQ’ni esa FAQPage JSON-LD koʻrinishida."
+        "r5": "Har bir til uchun meta sarlavha (60 belgigacha) va meta tavsif (155 belgigacha) bering, FAQ’ni esa FAQPage JSON-LD koʻrinishida.",
+        "missing": "AI raqobatchilar uchun havola qiladigan sahifalarda bor, mening saytimda yoʻq narsalar (har birini faqat biznesim uchun toʻgʻri boʻlsa, oʻz soʻzlaring bilan qoʻsh):"
       },
       "fact": {
         "said": "AI yordamchilar mijozlarga {brand} ({domain}) haqida shunday deydi: «{claim}». Bu notoʻgʻri; toʻgʻrisi: «{correct}».",
@@ -1361,7 +1393,8 @@
           "write": "Matnni yuqoridagi savollarga javob boʻladigan qilib {languages} yozing va uni {domain} da yuborish qadamlarini ayting."
         }
       }
-    }
+    },
+    "missingNote": "AI ularga havola qilgan sahifalardan soʻzma-soʻz avtomatik topildi; bu faktlarni sahifangizga oʻz soʻzlaringiz bilan qoʻshing — faqat siz uchun toʻgʻri boʻlgan joyda."
   },
   "WrongFacts": {
     "title": "Siz haqingizdagi notoʻgʻri maʼlumotlar",

@@ -920,6 +920,16 @@ It runs in four parts, every section numbered (`REPORT_PARTS`, `REPORT_SECTIONS`
   questions, share of voice, tone, place and "used as a source", the client's beside the strongest competitor's,
   tied competitors named together (comparing checks comes with the change log, spec §4.12, Phase 1). 3 What
   changed since the last report: the events behind the numbers.
+- **The decision brief and "Why AI names them, not you"** (23 Nov 2026, spec §4.1 and §4.5 brought forward from Phase
+  1, the user's "Build research + decision page"). Section 1 is the decision brief: the headline count and the five
+  areas, the conclusion, who holds each question (`ShelfStatus`, shared with the Free Snapshot), who AI named in the
+  client's place (the data object's providers, tracked or not) and why, from the research, with a link to section 6;
+  then the top finding, the week's highlights, the first three actions and the decision for the week. Section 6
+  (`Research`) shows each lost question: who AI named and its sentence, the page it cited for them beside the client's
+  closest page with both passages, what theirs states and the client's doesn't (each fact in the page's language of
+  the interface, with the rival page's words), the section to add with its blanks, and that it is `automated`; "not
+  researched yet" or "no such question" when there is nothing. The competitors section adds the businesses named that
+  aren't tracked (`WhoAppeared`, "unverified"). A page action lists its rival pages' facts in the panel and its AI task.
 - **II. Analysis** opens (since 17 Nov) with "Each AI assistant" (`Assistants`): each assistant's share over its
   own answers beside whom it names most (ties together, from `metrics.assistants`), a line that Google's AI
   Overview isn't checked yet, and what each

@@ -91,6 +91,8 @@ export function useAiPrompt({
                   `- ${t("page.proof")}: ${brief.proofPoints.join("; ")}`,
                 ]
               : []),
+            // What the rivals' cited pages state and this site doesn't (the research): only the facts true for the business
+            ...(action.missing && action.missing.length > 0 ? ["", t("page.missing"), ...list(action.missing.map((fact) => `${fact.fact[(["uz", "ru", "en"] as const).find((language) => language === locale) ?? "en"]} (${fact.rival}: “${fact.quote}”)`))] : []),
             "",
             t("page.rules"),
             ...list([t("page.r1", { languages: inLanguages }), t("page.r2"), t("page.r3"), noInventing, t("page.r5")]),

@@ -1,10 +1,11 @@
 import { useTranslations } from "next-intl";
 import { seriesBrands } from "@/shared/helpers/scores";
 import { cn } from "@/shared/helpers/utils";
-import type { Report, WaveMetrics } from "@/shared/types/api";
+import type { Report, WaveMetrics, WaveResponse } from "@/shared/types/api";
 import { useCountWords } from "@/shared/hooks/use-count-words";
 import { BlockTitle, PercentBar, ReportCard, ReportTable, Share } from "./report-parts";
 import { ReportTrend } from "./report-trend";
+import { WhoAppeared } from "./shelf-status";
 
 /**
  * Where the client stands among the tracked brands (report spec §4.4, Phase 0 item 0.2): every one of them,
@@ -13,7 +14,7 @@ import { ReportTrend } from "./report-trend";
  * a numbered list, and its share of voice once the brands are mentioned often enough. Their visibility over
  * the checks follows as lines from the second check.
  */
-export function CompetitivePosition({ report, metrics }: { report: Report; metrics: WaveMetrics }) {
+export function CompetitivePosition({ report, metrics, wave }: { report: Report; metrics: WaveMetrics; /** The check's data object: the businesses named that aren't tracked (spec rule 7). */ wave?: WaveResponse }) {
   const t = useTranslations("Report.competitors");
   const words = useCountWords();
   const brands = seriesBrands(report.project);
@@ -86,6 +87,15 @@ export function CompetitivePosition({ report, metrics }: { report: Report; metri
         </ReportTable>
       </ReportCard>
       {!share.shown && <p className="text-xs text-pretty text-muted-foreground">{t("noShareOfVoice", { mentions: share.mentions, minimum: share.minimum })}</p>}
+
+      {/* The businesses the answers named that aren't tracked: the competitors confirmed at the start are often not the
+          ones AI names (the user's test of 23 Nov 2026: 5 tracked, named once; 27 others) */}
+      {wave && (
+        <div className="flex flex-col gap-2 print:break-inside-avoid">
+          <BlockTitle>{t("othersTitle")}</BlockTitle>
+          <WhoAppeared wave={wave} othersOnly />
+        </div>
+      )}
 
       {compared && (
         <div className="flex flex-col gap-2 print:break-inside-avoid">

@@ -134,7 +134,7 @@
       "rebuilt": "This check was made before each planned answer was logged (21 Nov 2026): its plan is rebuilt from the answers it saved."
     },
     "sections": {
-      "summary": "Executive summary",
+      "summary": "Decision brief",
       "scorecard": "Key figures",
       "changes": "What changed since the last report",
       "assistants": "Each AI assistant",
@@ -147,7 +147,8 @@
       "method": "Method and scope",
       "glossary": "Definitions",
       "appendix": "All questions and answers",
-      "evidence": "Evidence: every answer in full"
+      "evidence": "Evidence: every answer in full",
+      "research": "Why AI names them, not you"
     },
     "summary": {
       "highlights": "This week’s highlights",
@@ -155,7 +156,13 @@
       "highlightsFirst": "This is the first report. From the next one on, the week’s changes show here.",
       "decisions": "Decisions needed",
       "more": "The whole plan is in section {section}.",
-      "noActions": "Nothing is waiting to be done: every recommendation so far is done or declined."
+      "noActions": "Nothing is waiting to be done: every recommendation so far is done or declined.",
+      "shelf": "Who holds each question",
+      "instead": "Named by AI in your place",
+      "insteadCount": "{count} of {total}",
+      "why": "Why: in {compared} of the {lost} questions you lost, the pages AI cited for them state {facts, plural, one {# fact} other {# facts}} yours don't.",
+      "whySection": "See section {section}.",
+      "decide": "Decision for this week: which of these to start, and who on your team does each."
     },
     "scorecard": {
       "lead": "This check’s numbers, each with what it is counted over: yours beside the strongest competitor’s. Brands that tie are named together.",
@@ -194,7 +201,8 @@
       "tone": "Tone",
       "position": "Place in answer",
       "shareOfVoice": "Share of voice",
-      "noShareOfVoice": "No share of voice yet: the tracked brands are mentioned {mentions, plural, one {# time} other {# times}} in all, and it takes {minimum}."
+      "noShareOfVoice": "No share of voice yet: the tracked brands are mentioned {mentions, plural, one {# time} other {# times}} in all, and it takes {minimum}.",
+      "othersTitle": "Also named by AI, not tracked (unverified)"
     },
     "topics": {
       "lead": "Which of your customers' needs AI talks about with your name in the answer, and which with competitors only.",
@@ -679,11 +687,33 @@
       "digestTitle": "For Telegram",
       "digestHint": "Six lines to send with this page's link.",
       "paperEvidence": "The whole answers, with their cited pages, open at this page’s link.",
-      "ctaPaper": "Every question asked 3 times, checked by a person, with the actions to take first. Ask for it at this page’s link."
+      "ctaPaper": "Every question asked 3 times, checked by a person, with the actions to take first. Ask for it at this page’s link.",
+      "noOthers": "No business that isn't tracked was named."
     },
     "digest": {
       "copy": "Copy",
       "copied": "Copied"
+    },
+    "research": {
+      "lead": "For each question where AI named other businesses and not you, we read the page it cited for them beside your website: what they say that you don't, in their own words.",
+      "notYet": "Not researched yet: it runs after each check, in a few minutes.",
+      "none": "No question where AI named other businesses and not you.",
+      "summary": "Compared {compared} of the {lost} questions where AI named others and not you. Found {facts, plural, one {# fact} other {# facts}} their pages state and yours doesn't.",
+      "automated": "Found automatically (automated): every quote is checked word for word against its page, but no person has reviewed the facts yet. Check them before you act.",
+      "named": "AI named {rival}",
+      "noSentence": "The answer named it without a sentence of its own.",
+      "theirPage": "The page AI cited for {rival}",
+      "yourPage": "Your closest page",
+      "noYourPage": "No page on your site answers this question.",
+      "has": "What {rival}'s page states and yours doesn't",
+      "noGap": "No fact their page states and yours lacks was found: watch this question.",
+      "fix": "A section for your page",
+      "fixNote": "Written from your own website. Fill each blank […] with your real figure before publishing.",
+      "status": {
+        "no_page": "The answer cited no page of {rival}'s own, so there is nothing to compare: watch this question.",
+        "unreadable": "{rival}'s page could not be read this time.",
+        "failed": "Not compared this time; it will be at the next check."
+      }
     }
   },
   "Headline": {
@@ -1073,7 +1103,8 @@
       "page": "The page",
       "sitePages": "Pages AI reads",
       "questions": "Questions it should move",
-      "outcome": "Expected effect"
+      "outcome": "Expected effect",
+      "missing": "What their pages say that yours doesn't"
     },
     "overview": {
       "fact": "AI’s answers say something wrong about you. Write the correct details on your site and on the sites it relies on.",
@@ -1332,7 +1363,8 @@
         "r1": "Write it {languages}, a full version for each language.",
         "r2": "Open with a direct answer in 2–3 sentences, then sections with clear headings; give prices, the address and opening hours as text, not images.",
         "r3": "End with an FAQ that answers each question above in 2–3 sentences.",
-        "r5": "Give a meta title (up to 60 characters) and a meta description (up to 155) for each language, and the FAQ as FAQPage JSON-LD."
+        "r5": "Give a meta title (up to 60 characters) and a meta description (up to 155) for each language, and the FAQ as FAQPage JSON-LD.",
+        "missing": "What the pages AI cites for competitors state and my site doesn't (add each only where it is true for my business, in my own words):"
       },
       "fact": {
         "said": "AI assistants tell customers this about {brand} ({domain}): “{claim}”. It is wrong; the truth is: “{correct}”.",
@@ -1361,7 +1393,8 @@
           "write": "Write the text {languages} so that it answers the questions above, and tell me the steps to submit it on {domain}."
         }
       }
-    }
+    },
+    "missingNote": "Found automatically from the pages AI cited for them, word for word; put these facts on your page in your own words, only where they are true for you."
   },
   "WrongFacts": {
     "title": "Wrong facts about you",
