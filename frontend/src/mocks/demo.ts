@@ -16,8 +16,8 @@ export const DEMO_ACTIONS = buildActions(DEMO_REPORT);
 export const DEMO_SITE_CHECKS = siteChecks(PROJECT.brand.domain);
 
 /**
- * What ChatGPT says when asked about the sample clinic by name, in Russian and in Uzbek (Gemini with Google Search
- * is paused since 21 Nov 2026), each statement against its website
+ * What two assistants say when asked about the sample clinic by name (Gemini back with ChatGPT since 23 Nov 2026,
+ * after its pause of 21 Nov), each statement against its website
  * (mocks/data: open every day 9:00–21:00, implants from $450, Yunusobod, the first exam free).
  */
 export const DEMO_BRAND_VIEW: BrandView[] = [
@@ -68,8 +68,8 @@ export const DEMO_BRAND_VIEW: BrandView[] = [
     ],
   },
   {
-    engine: "chatgpt",
-    name: "ChatGPT",
+    engine: "gemini",
+    name: "Gemini",
     language: "uz",
     question: "Oq Tabassum (Tashkent) haqida nima bilasiz?",
     known: "knows",

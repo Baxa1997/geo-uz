@@ -1,7 +1,7 @@
 {
   "Metadata": {
     "title": "Seenova AI — your brand’s visibility in AI answers",
-    "description": "Measure how often ChatGPT names your brand when it answers your customers’ questions."
+    "description": "Measure how often ChatGPT and Gemini name your brand when they answer your customers’ questions."
   },
   "Common": {
     "loading": "Loading…",
@@ -674,7 +674,7 @@
         "actions": "Up to 3 actions, each with its evidence, its owner and how to check it worked"
       },
       "ctaTitle": "Get the First Audit",
-      "ctaText": "Every question asked 3 times on ChatGPT, checked by a person, with the actions to take first. Leave your name and phone: we call you back.",
+      "ctaText": "Every question asked 3 times on ChatGPT and Gemini, checked by a person, with the actions to take first. Leave your name and phone: we call you back.",
       "request": {
         "name": "Your name",
         "phone": "Phone",
@@ -2264,7 +2264,7 @@
   },
   "Landing": {
     "metaTitle": "Who does AI recommend to your customers? — Seenova AI",
-    "metaDescription": "We check the questions your customers ask ChatGPT, compare you with your competitors and show you what to fix. The first check is free.",
+    "metaDescription": "We check the questions your customers ask ChatGPT and Gemini, compare you with your competitors and show you what to fix. The first check is free.",
     "siteLabel": "Website address",
     "sitePlaceholder": "yoursite.uz",
     "submit": "Check for free",
@@ -2315,10 +2315,10 @@
     },
     "hero": {
       "badge": "New",
-      "news": "Questions asked from your customer’s city",
+      "news": "Gemini tracking added",
       "title": "How your brand shows up",
       "titleMuted": "in AI answers",
-      "subtitle": "Enter your website and find out how ChatGPT sees you: <visibility>Visibility</visibility>, <position>Position</position>, <sources>Sources</sources> and what to fix.",
+      "subtitle": "Enter your website and find out how ChatGPT and Gemini see you: <visibility>Visibility</visibility>, <position>Position</position>, <sources>Sources</sources> and what to fix.",
       "demo": "Book a demo",
       "micro": "Free · Sign in with your email · Results in about 5 minutes"
     },
@@ -2386,7 +2386,7 @@
           "for": "To see where you stand",
           "cta": "Check for free",
           "f1": "10 questions, once",
-          "f2": "ChatGPT with web search",
+          "f2": "ChatGPT and Gemini",
           "f3": "You and up to 5 competitors",
           "f4": "Sign in with your email, no card"
         },
@@ -2395,7 +2395,7 @@
           "for": "For small businesses",
           "cta": "Get started",
           "f1": "25 questions every week",
-          "f2": "ChatGPT with web search",
+          "f2": "ChatGPT and Gemini",
           "f3": "5 competitors",
           "f4": "A report by email after every check"
         },
@@ -2460,7 +2460,7 @@
           "whiteLabel": "Your agency’s name on reports"
         },
         "values": {
-          "assistants": "ChatGPT",
+          "assistants": "ChatGPT, Gemini",
           "once": "Once",
           "weekly": "Weekly",
           "twiceWeekly": "Twice a week",
@@ -2486,7 +2486,7 @@
         },
         "engines": {
           "q": "Which AI assistants do you check?",
-          "a": "ChatGPT (OpenAI, with web search on), asked from your customer’s country: the closest we can get to the answer a customer sees. Gemini, Google’s AI answers in Search and Yandex are coming soon."
+          "a": "ChatGPT (OpenAI, with web search on) and Gemini (with Google Search), asked from your customer’s country: the closest we can get to the answer a customer sees. Google’s AI answers in Search and Yandex are coming soon."
         },
         "accuracy": {
           "q": "How accurate are the results?",
@@ -2544,14 +2544,14 @@
     "cta": {
       "eyebrow": "No card needed",
       "title": "Does AI recommend you? Find out in 5 minutes.",
-      "text": "Enter your website: we’ll put 10 of your customers’ questions to ChatGPT and show you the result right away.",
+      "text": "Enter your website: we’ll put 10 of your customers’ questions to ChatGPT and Gemini and show you the result right away.",
       "button": "Check for free",
       "demo": "Book a demo"
     },
     "footer": {
       "tagline": "How your brand shows up",
       "taglineMuted": "in AI answers",
-      "description": "We measure how visible your brand is in ChatGPT’s answers, and show you what to fix.",
+      "description": "We measure how visible your brand is in ChatGPT’s and Gemini’s answers, and show you what to fix.",
       "soon": "soon",
       "madeIn": "Made in Tashkent",
       "rights": "© 2026 Seenova AI",
@@ -2580,7 +2580,7 @@
     "engines": {
       "kicker": "AI assistants",
       "title": "The AI assistants your customers ask",
-      "text": "We put every question to ChatGPT, from your customer’s country and in their language, the way a customer would ask. Gemini, Google’s AI answers in Search and Yandex come next.",
+      "text": "We put every question to ChatGPT and Gemini, from your customer’s country and in their language, the way a customer would ask. Google’s AI answers in Search and Yandex come next.",
       "live": "Every check",
       "soon": "Soon",
       "names": {
@@ -2617,7 +2617,7 @@
         "check": {
           "when": "4–5 minutes",
           "title": "The first check is free",
-          "text": "We read your site, write 10 questions your customers ask and put them to ChatGPT."
+          "text": "We read your site, write 10 questions your customers ask and put them to ChatGPT and Gemini."
         },
         "results": {
           "when": "Every week",
@@ -2654,7 +2654,7 @@
       "kicker": "AI about you",
       "title": "What AI says about your business, and whether it’s true",
       "text": "We ask each assistant about your business by name and check every statement against your website. Whatever contradicts it, an old price or the wrong opening hours, goes on the wrong-facts list, and fixing it goes on your list of actions.",
-      "cardText": "Sample: ChatGPT’s answers in Russian and Uzbek, every statement checked against the clinic’s website.",
+      "cardText": "Sample: two assistants’ answers, every statement checked against the clinic’s website.",
       "frame": {
         "title": "What AI says",
         "text": "every statement checked against your website"
@@ -3262,7 +3262,7 @@
       "title": "Does AI recommend you? See it after every check.",
       "items": {
         "real": {
-          "title": "Real answers from ChatGPT",
+          "title": "Real answers from ChatGPT and Gemini",
           "text": "In your customers’ languages, with the sites they rely on."
         },
         "competitors": {
