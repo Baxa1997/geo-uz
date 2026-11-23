@@ -23,7 +23,7 @@ from sqlalchemy import delete, select
 
 from . import mail
 from .config import settings
-from .db import FirstRun, SessionLocal, Slot, User, create_tables, now
+from .db import FirstRun, Project, SessionLocal, Slot, User, create_tables, now
 
 WAITING = "waiting"
 # What a check costs when no finished one says so: ten questions and the brand questions on ChatGPT
@@ -108,15 +108,18 @@ WORDS = {
 }
 
 
-def link(run: FirstRun) -> str:
-    language = (run.draft or {}).get("language") or "uz"
-    return f"{settings.frontend_origin.rstrip('/')}/{language}/onboarding/first-run?run={run.id}"
+def link(db: Any, run: FirstRun) -> str:
+    """The project's dashboard when the check saved it (it does when it ends), else the check's own page."""
+    language = (run.draft or {}).get("language") or "en"
+    project_id = db.scalar(select(Project.id).where(Project.first_run_id == run.id))
+    path = f"projects/{project_id}" if project_id else f"onboarding/first-run?run={run.id}"
+    return f"{settings.frontend_origin.rstrip('/')}/{language}/{path}"
 
 
-def ready_email(run: FirstRun) -> EmailMessage:
-    language = (run.draft or {}).get("language") or "uz"
-    words = WORDS[language if language in WORDS else "uz"]
-    site, url = run.domain, link(run)
+def ready_email(db: Any, run: FirstRun) -> EmailMessage:
+    language = (run.draft or {}).get("language") or "en"
+    words = WORDS[language if language in WORDS else "en"]
+    site, url = run.domain, link(db, run)
     message = EmailMessage()
     message["Subject"] = words["subject"].format(brand=mail.BRAND, site=site)
     message.set_content(f"{mail.BRAND}\n\n{words['text'].format(site=site)}\n\n{url}\n\n{words['login']}\n")
@@ -157,7 +160,7 @@ def tell(run_id: str) -> bool:
         user = db.get(User, run.user_id) if run else None
         if run is None or user is None:
             return False
-        message = ready_email(run)
+        message = ready_email(db, run)
     try:
         mail.send(user.email, message)
         return True

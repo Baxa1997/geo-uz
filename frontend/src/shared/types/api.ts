@@ -383,8 +383,18 @@ export type ActionStatus = "new" | "in_progress" | "done" | "declined";
 /** Expected effect on visibility, compared with the project's other actions. */
 export type ActionImpact = "high" | "medium" | "low";
 
-/** Checks the backend runs on the brand's website. */
-export type SiteCheck = "ai_bots_blocked" | "prices_as_images" | "no_business_markup" | "contacts_missing";
+/** Checks the backend runs on the brand's website; the last six are the SEO audit of 23 Nov 2026. */
+export type SiteCheck =
+  | "ai_bots_blocked"
+  | "prices_as_images"
+  | "no_business_markup"
+  | "contacts_missing"
+  | "no_prices"
+  | "no_faq"
+  | "no_sitemap"
+  | "no_llms_txt"
+  | "weak_meta"
+  | "one_language";
 
 /** One check on the brand's website; `passed` false means the problem was found. */
 export interface SiteCheckResult {
@@ -1137,6 +1147,8 @@ export interface FirstRun {
   /** A `waiting` check only: its place in the queue, from 1, and the address its report is emailed to. */
   place?: number;
   email?: string;
+  /** A `done` check: the project it saved itself as when it ended (null when it couldn't, and its page saves it). */
+  projectId?: string | null;
 }
 
 type ThreeLanguages = Record<"uz" | "ru" | "en", string>;

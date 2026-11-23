@@ -242,10 +242,12 @@ def kind(kind_of_site: str) -> str:
 
 
 def placeable(kind_of_site: str, route: Optional[Dict[str, Any]], listed: bool, rivals: Sequence[str]) -> bool:
-    """Spec §7, third-party placement: a directory, listing, media, UGC or Telegram site with a known route onto
-    it, citing competitors and not the client. Platform docs, competitor sites, search engines, reference and
-    `unclassified` sites are never a target."""
-    return kind_of_site in PLACEABLE and bool(route and route.get("url")) and not listed and len(rivals) > 0
+    """Spec §7, third-party placement: a directory, listing, media, UGC or Telegram site the answers cite and the
+    client isn't on. Platform docs, competitor sites, search engines, reference and `unclassified` sites are never a
+    target. Since 23 Nov 2026 (the user's "Build the full plan") neither a checked route nor a tracked competitor
+    beside it is required: the route shows when our list or a review has one (never the AI's), else the steps say how
+    to find the way on; and the competitors confirmed are often not the ones the answers name."""
+    return kind_of_site in PLACEABLE and not listed
 
 
 # --- the AI's reading ------------------------------------------------------------------------------------

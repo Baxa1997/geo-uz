@@ -35,7 +35,7 @@ export function ProjectCard({
   const latest = you ? report?.history.at(-1) : undefined;
 
   return (
-    <Card className="relative transition-colors hover:bg-muted/30">
+    <Card className="relative transition-[background-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:bg-muted/30 hover:shadow-md active:translate-y-0 motion-reduce:transition-colors motion-reduce:hover:translate-y-0">
       <CardHeader>
         <div className="flex items-start justify-between gap-2">
           <CardTitle className="min-w-0">

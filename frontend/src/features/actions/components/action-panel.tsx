@@ -148,9 +148,12 @@ export function ActionPanel({
           <p className={cn(BODY, "text-pretty")}>{t(`overview.${category}`, { domain: action.kind === "listing" ? action.domain : brand.domain })}</p>
         </Section>
 
-        <Section label={t("sections.topic")}>
-          <p className={BODY}>{topic ? labelFor(messages.Topics, topic) : t("noTopic")}</p>
-        </Section>
+        {/* A fix on the website serves every question: the first question's topic would mislead (23 Nov 2026) */}
+        {action.kind !== "technical" && (
+          <Section label={t("sections.topic")}>
+            <p className={BODY}>{topic ? labelFor(messages.Topics, topic) : t("noTopic")}</p>
+          </Section>
+        )}
 
         <Section label={t("sections.why")} tour="why">
           <ActionWhy action={action} competitors={competitors} prominent />

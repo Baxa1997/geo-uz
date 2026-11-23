@@ -320,6 +320,12 @@ better, with animations".
   `FilterMenu`'s chips use it. A choice from a list is `ui/select` (Base UI's Select drawn in that style, its
   list in the menus' look with a check): never the browser's `<select>` (`NativeSelect` and `FormSelect` are
   gone). A choice's value can't be "": use a word of your own for "none" (`WHOLE_COUNTRY`).
+- **Moving between pages (23 Nov 2026; the user: "opens and closes very hardly, no animation or smooth switching")**:
+  every project page has its `loading.tsx` (the `PageSkeleton`), so a click shows the next page's outline at once
+  instead of holding the old page for the server's second or two; `Page`'s content fades in (`animate-page-in`,
+  opacity only, so sticky and fixed parts hold). The opened action slides in from its side and back out
+  (`animate-panel-in`/`-out`, on a phone `animate-sheet-in`/`-out`, closing waits `PANEL_OUT_MS`), the assistant
+  panel slides in, the menus open in 150 ms, the project cards lift on hover. None of it under reduced motion.
 - **Loading**: `PageSkeleton` is shaped like a data page and appears after 150 ms; its blocks are the
   `skeleton` utility (a light passing over). `NavigationProgress` runs a bar across the panel's top from a
   click on a link until the page (not its skeleton, `data-skeleton`) is there. The check's navy screen

@@ -122,7 +122,7 @@ export default async function CompetitorsPage({ params, searchParams }: Props) {
         />
       </div>
       {report.untrackedBrands.length > 0 && (
-        <div data-tour="untracked">
+        <div id="untracked" data-tour="untracked" className="scroll-mt-4">
           <UntrackedBrands
             projectId={report.project.id}
             brands={report.untrackedBrands}

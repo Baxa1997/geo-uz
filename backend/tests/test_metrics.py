@@ -336,9 +336,14 @@ def test_the_baseline_topics_are_too_small_to_rank_or_judge(db: Any, project: An
 
     found = wave.payload(db, project, run_id)["metrics"]["topic_ranking"]
     assert not found["ranked"] and found["eligible"] == [] and found["largest"] < metrics.TOPIC_RANK_ANSWERS
-    # No page suggested about a topic of fewer than 3 answers, and the one stored with the check no longer shows
-    assert not any(action["kind"] == "content" for action in fixes.suggested(db, project, report))
-    assert not any(action["kind"] == "content" for action in fixes.listed(db, project))
+    # The ranking keeps its minimum; a page is suggested since 23 Nov 2026 (the user's "Build the full plan") for every
+    # topic where the answers name other businesses and the client never, whatever its number of answers
+    pages = [action for action in fixes.suggested(db, project, report) if action["kind"] == "content"]
+    assert pages and all(action["promptIds"] for action in pages)
+    client = report["project"]["brand"]["id"]
+    for action in pages:
+        theirs = [result for result in report["prompts"] if result["prompt"]["topic"] == action["details"]["topic"]]
+        assert fixes.content_allowed(theirs, client, [])
 
 
 def test_topics_are_ranked_from_three_topics_of_three_answers() -> None:

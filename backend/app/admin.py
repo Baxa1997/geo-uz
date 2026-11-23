@@ -12,6 +12,11 @@ The cited sites' types (report spec §4.6, §8: the founder classifies what noth
         [--route <listing_page|form|editor_contact> <url>]   ... with the way onto it, which a "get listed" action needs
     python -m app.admin classify <project id>                the AI types the latest check's unknown sites (a paid call, under a cent)
 
+The website's audit and the actions (23 Nov 2026: the SEO audit's checks came after most projects were made):
+
+    python -m app.admin audit <project id>                   the website read and checked again, the actions brought in
+                                                             line and the pages to write given briefs (no assistant asked)
+
 Types: client_managed, directory, media, ugc, telegram, reference, platform_docs, competitor_site, unclassified.
 The pages keep a report two minutes (`app/cache.py`): a site typed here shows within that.
 
@@ -25,7 +30,7 @@ from typing import Any, Optional
 
 from sqlalchemy import select
 
-from . import domains, projects
+from . import cache, domains, firstrun, fixes, projects
 from .db import Brand, Project, Run, SessionLocal, User, create_tables
 from .projects import PLAN_LIMITS
 
@@ -89,6 +94,23 @@ def main(arguments: list) -> None:
             run.cost_usd = round((run.cost_usd or 0.0) + usd, 4)
             db.commit()
             print(f"{project.id}: the latest check's unknown sites typed, ${usd:.4f}")
+        elif arguments[:1] == ["audit"] and len(arguments) == 2:
+            project = db.get(Project, arguments[1])
+            if project is None:
+                sys.exit("No such project")
+            own = db.scalar(select(Brand).where(Brand.project_id == project.id, Brand.own.is_(True)))
+            languages = firstrun.languages_for(project.country or "UZ")
+            pages = firstrun.web.read_site(own.domain, "en" if languages == ["en"] else "ru")
+            if not pages:
+                sys.exit(f"{own.domain} could not be read")
+            project.site_checks = firstrun.audit(pages, languages)
+            fixes.sync(db, project)
+            db.commit()
+            fixes.write_briefs(db, project)
+            db.commit()
+            cache.touch(project.id)
+            failed = [check["check"] for check in project.site_checks if not check["passed"]]
+            print(f"{project.id}: {len(project.site_checks)} checks, failed: {', '.join(failed) or 'none'}; {len(fixes.listed(db, project))} actions")
         else:
             sys.exit(__doc__)
 

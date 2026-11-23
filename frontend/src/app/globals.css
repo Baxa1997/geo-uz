@@ -441,7 +441,49 @@
    leaves nothing applied). An animation that runs forever, however small, makes the browser redraw the
    page 60 times a second for as long as it is on screen; one that stays applied keeps its element a
    separate layer. So a live dot rings a few times and rests, and nothing drifts or pulses in the background. */
+/* Moving between pages and opening panels (the user, 23 Nov 2026: "opens and closes very hardly, no animation or
+   smooth switching"): a page fades in, a panel slides in from its side and back out. Each ends in a fifth of a
+   second and fills only backwards (the way out, forwards, until its element goes). Only opacity and transform. */
+@keyframes page-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateX(1rem);
+  }
+}
+
+@keyframes panel-out {
+  to {
+    opacity: 0;
+    transform: translateX(1rem);
+  }
+}
+
+@keyframes sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+}
+
+@keyframes sheet-out {
+  to {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+}
+
 @theme inline {
+  --animate-page-in: page-in 0.2s ease-out backwards;
+  --animate-panel-in: panel-in 0.22s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  --animate-panel-out: panel-out 0.16s ease-in forwards;
+  --animate-sheet-in: sheet-in 0.24s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  --animate-sheet-out: sheet-out 0.16s ease-in forwards;
   --animate-chart-draw: chart-draw 1.1s cubic-bezier(0.22, 1, 0.36, 1) backwards;
   --animate-bar-grow: bar-grow 0.7s cubic-bezier(0.22, 1, 0.36, 1) backwards;
   --animate-rise: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) backwards;
