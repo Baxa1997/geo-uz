@@ -222,8 +222,10 @@ that is committed.
 
 ## Done (as of 18 November 2026)
 
-- **Built, waiting for the user's look: the research and the decision page (23 Nov), on the branch `research-layer`,
-  not committed.** The user: "why it does not do research and proper report?". Found on the server: nothing broke; a
+- **Built, waiting for the user's look: the research and the decision page (23 Nov), on the branch `research-layer`;
+  merged, pushed and deployed the same day, when the user chose "Commit, push, deploy + research my test project"
+  (Vercel's build passed; the server's previous `app/` kept as `app.bak-before-research`; `app.admin research` on the
+  test project: 10 questions, 8 compared, 21 facts, $0.11; 6 of its 7 page actions carry facts).** The user: "why it does not do research and proper report?". Found on the server: nothing broke; a
   free check is 10 answers on ChatGPT alone, so the spec's rules hold back most sections; the 5 confirmed competitors
   were named once while the answers named others more often (4 and 3 of 10), and the full report listed tracked brands
   only; and the win–loss research (spec §4.5) was Phase 1, never built. Asked, the user chose "Build research +
