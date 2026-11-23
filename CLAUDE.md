@@ -120,8 +120,8 @@ waits for their look. The open work, in the order the user picks (ask as a short
    window. Each waits for its screenshots. (Savollar, point 5, was made simple on 18 Nov from the user's own
    screenshot of it.)
 2. The live site: public at https://www.seenovai.com, and `FRONTEND_ORIGIN` on the server is that address (23 Nov).
-   Left: Chromium on the server, when the user says (the PDF on the live site, the emailed report's attachment);
-   a share picture (`og:image`), `robots.txt` and a sitemap; contacts on the public pages.
+   A shared link shows a picture in its language since 23 Nov. Left: Chromium on the server, when the user says
+   (the PDF on the live site, the emailed report's attachment); `robots.txt` and a sitemap; contacts on the public pages.
 3. The database stays in Mumbai for now (the user, 23 Nov 2026, of the Frankfurt project: "no need for this one",
    then, told it would be free, "for now just use it"). A backend call costs 0.6–2 s from Germany; what code can
    still do is fewer round trips and longer caching, when the user asks for it. If the move comes back: a free
@@ -225,6 +225,18 @@ that is committed.
    that no key and no client's name is in it.
 
 ## Done (as of 18 November 2026)
+
+- **Built, waiting for the user's look: the picture a shared link shows (23 Nov), on the branch `share-preview`;
+  merged, pushed and deployed the same day, when the user said "push, deploy everything".** Until then a link to the
+  site in Telegram showed its title and description and no picture. Every page now names a 1200×630 picture in its
+  language (`frontend/public/og/uz.jpg`, `ru.jpg`, `en.jpg`, about 115 KB each): the login panel's navy gradient
+  with the two rounds faint, the mark and Seenova AI, ChatGPT and Gemini, the hero's headline with its last words in
+  the serif italic, the free check's button with "No card needed", and seenovai.com. `frontend/scripts/share-images.mjs`
+  draws them with Chrome from the landing page's own texts: run it again after changing the headline, the button or
+  the assistants asked. The layout sets `metadataBase` to the public site (`SITE_URL`) and the Open Graph and X
+  cards (`shared/helpers/share.ts`); each page keeps its own title and description on its card (the landing page's
+  question, a report's or a snapshot's name). Looked at: the three pictures, and the tags on this computer's dev
+  server (the home page in English and Uzbek, the login in Russian). Type check and linter clean. No new variable.
 
 - **Done on the server, waiting for the user's look: the site public at its own domain (23 Nov), no code change.**
   Asked whether everything was ready, then "yes make it public now". Found: the user's own domain already served
