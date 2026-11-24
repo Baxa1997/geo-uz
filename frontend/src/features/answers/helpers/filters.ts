@@ -1,10 +1,17 @@
+import { PROMPT_LANGUAGES } from "@/shared/constants";
 import type { Report } from "@/shared/types/api";
 import type { AnswerRow } from "@/shared/types/scores";
 import type { AnswersFilter } from "../types";
 
-/** Every answer of the report, question by question, in sample order. */
+/**
+ * Every answer of the report, question by question, in sample order, the questions of one language together
+ * (Uzbek, Russian, English; in the report's order within each): the user, 24 Nov 2026, found the Uzbek and
+ * Russian questions "mixed up".
+ */
 export const answerRows = (report: Report): AnswerRow[] =>
-  report.prompts.flatMap((result) => result.answers.map((answer) => ({ result, answer })));
+  [...report.prompts]
+    .sort((a, b) => PROMPT_LANGUAGES.indexOf(a.prompt.language) - PROMPT_LANGUAGES.indexOf(b.prompt.language))
+    .flatMap((result) => result.answers.map((answer) => ({ result, answer })));
 
 export const rowKey = ({ result, answer }: AnswerRow) => `${result.prompt.id}:${answer.sample}`;
 

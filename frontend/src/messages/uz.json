@@ -19,6 +19,7 @@
     "removeChip": "Olib tashlash: {value}"
   },
   "Filters": {
+    "loading": "Filtr qoʻllanmoqda…",
     "label": "Filtrlar",
     "language": "Savol tili",
     "allLanguages": "Barcha tillar",
@@ -3432,6 +3433,8 @@
     "loadFailed": "Holatni yangilab boʻlmadi, qayta urinyapmiz…"
   },
   "Engines": {
+    "loadingAll": "Barcha assistentlar javoblari yuklanmoqda…",
+    "loadingOne": "{engine} javoblari yuklanmoqda…",
     "label": "AI tizimi",
     "all": "Barchasi",
     "soon": "tez orada",
@@ -3498,6 +3501,7 @@
       "searchedHint": "AI javob yozishdan oldin internetdan qidirgan javoblar. Qidirgan boʻlsa, javob saytlarga tayanadi."
     },
     "table": {
+      "languageGroup": "{language} · {count} ta savol",
       "title": "Barcha javoblar",
       "hint": "Har bir javob — alohida qator. Javobni chat koʻrinishida ochish uchun ustiga bosing.",
       "brandFilter": "Brend",

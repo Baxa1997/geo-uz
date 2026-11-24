@@ -19,6 +19,7 @@
     "removeChip": "Remove {value}"
   },
   "Filters": {
+    "loading": "Applying the filter…",
     "label": "Filters",
     "language": "Question language",
     "allLanguages": "All languages",
@@ -3432,6 +3433,8 @@
     "loadFailed": "Couldn’t refresh the status, retrying…"
   },
   "Engines": {
+    "loadingAll": "Loading the answers of every assistant…",
+    "loadingOne": "Loading {engine}’s answers…",
     "label": "AI engine",
     "all": "All",
     "soon": "soon",
@@ -3498,6 +3501,7 @@
       "searchedHint": "Answers AI searched the web for before writing. When it searches, the answer leans on websites."
     },
     "table": {
+      "languageGroup": "{language} · {count, plural, one {# question} other {# questions}}",
       "title": "All answers",
       "hint": "Every answer is a row. Click one to open it as a chat.",
       "brandFilter": "Brand",

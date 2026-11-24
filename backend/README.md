@@ -343,7 +343,9 @@ finding is `automated`, with a status (`compared`, `no_page`, `unreadable`, `fai
 at, model, cost, questions, items) and served as the report's `research`; run after a project is saved
 (`fixes.after_creation`, before the actions) and after every weekly check, or by `python -m app.admin research
 <project>`. Page actions carry their questions' facts (`fixes.missing_facts`, `details.missing`), and their briefs
-read them. Measured on a 10-question free check: 62 s, $0.11 on Gemini (no Google Search). Tests: `tests/test_research.py`.
+read them. A new project gets a brief for every page to write (`write_briefs(limit=None)` in `fixes.after_creation`,
+24 Nov 2026: the user's live test had 5 of 7, and a free project has no next check); a weekly check writes five;
+`python -m app.admin briefs <project>` writes the missing ones. Measured on a 10-question free check: 62 s, $0.11 on Gemini (no Google Search). Tests: `tests/test_research.py`.
 
 **The user's test of 23 Nov 2026.** A check that ends is saved as its account's project in the same transaction
 (`main._finish_and_save`, `projects.first_run_body`), and its `GET /first-runs/{id}` says `projectId`, so the page opens

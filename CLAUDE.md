@@ -226,6 +226,25 @@ that is committed.
 
 ## Done (as of 18 November 2026)
 
+- **Built, waiting for the user's look: the Answers page by language, a loader while a choice loads, every page brief
+  for a new project (24 Nov), on the branch `answers-tabs`; merged, pushed and deployed the same day, when the user
+  chose "Both: tabs + all briefs".** The user: "in Answers the Russian prompts and Uzbek prompts are mixed up, maybe
+  just make it tab version" and "when switching from All to any ChatGPT or Gemini there must be a modal loader at least
+  at the center of the page". The Answers page has the questions' languages as tabs (All languages, Oʻzbekcha,
+  Русский; `?lang=`, in the place of the language chip), and under All languages each language's questions come under
+  its name and count. While the page loads again for a new choice (the assistant switcher, the language and topic
+  chips, any page's tabs) a loader stands in the middle of the screen saying what loads (`PendingOverlay`). Before it,
+  the user's live test on the server (24 Nov, a new project from the dashboard after deleting their site's old one on
+  purpose): the check asked and read 15 answers (Gemini 10, ChatGPT 5) in 4½ minutes, saved itself as the project the
+  moment it ended, the research followed 1½ minutes later (10 questions, 7 compared, $0.09), 9 actions (7 pages, 2
+  site fixes), 6 pages with the rivals' facts, and briefs for 5 of the 7 pages (a check writes five); Gemini's writing
+  model answered "too many requests" (429) 9 times and its reading model timed out 5 times, each retried or read by
+  the stand-in, nothing lost. So a new project now gets a brief for every page (`fixes.after_creation`), and
+  `python -m app.admin briefs <project>` writes a project's missing ones. Tests: `pytest` 81 pass (one new); type
+  check and linter clean. Looked at on this computer with a local project's answers marked as two assistants for the
+  look (put back after): the tabs, the language headings and the loader in English on desktop and Uzbek at 390px. No
+  new variable.
+
 - **Built, waiting for the user's look: the picture a shared link shows (23 Nov), on the branch `share-preview`;
   merged, pushed and deployed the same day, when the user said "push, deploy everything".** Until then a link to the
   site in Telegram showed its title and description and no picture. Every page now names a 1200×630 picture in its

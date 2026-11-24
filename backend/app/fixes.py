@@ -403,8 +403,8 @@ def add_content(db: Db, project: Project, body: Dict[str, Any]) -> Dict[str, Any
     return action_json(db, project, action)
 
 
-def write_briefs(db: Db, project: Project, limit: int = 5) -> None:
-    """Inside a live check: briefs for the content actions that have none."""
+def write_briefs(db: Db, project: Project, limit: Optional[int] = 5) -> None:
+    """Inside a live check: briefs for the content actions that have none, at most `limit` of them (None: all)."""
     client = next(brand for brand in projects.brands_of(db, project.id) if brand.own)
     texts = {prompt.id: prompt.text for prompt in projects.prompts_of(db, project.id)}
     waiting = [action for action in db.scalars(select(Action).where(Action.project_id == project.id, Action.kind == "content")) if not (action.details or {}).get("brief") and action.status in ("new", "in_progress")]
@@ -482,7 +482,8 @@ def _evidence(results: List[Dict[str, Any]], missing: Optional[List[Dict[str, An
 def after_creation(project_id: str, run_id: str) -> None:
     """A new project, outside the request that made it: the sites nothing else types typed by the AI (Phase 0 item
     0.4), the cited pages read, then the actions brought in line, and the pages to write given their briefs (23 Nov
-    2026: a new project waited for a weekly check for them, which a trial never has)."""
+    2026: a new project waited for a weekly check for them, which a trial never has). Every page gets its brief here,
+    not five as in a weekly check (24 Nov 2026, the user's live test: 5 of 7, and a free project has no next check)."""
     try:
         with SessionLocal() as db:
             project, run = db.get(Project, project_id), db.get(Run, run_id)
@@ -500,7 +501,7 @@ def after_creation(project_id: str, run_id: str) -> None:
             if project:
                 sync(db, project)
                 db.commit()
-                write_briefs(db, project)
+                write_briefs(db, project, limit=None)
                 db.commit()
     except Exception as error:  # a background step: it must not die silently
         print(f"fixes: project {project_id} after creation: {error!r}")

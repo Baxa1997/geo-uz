@@ -191,6 +191,8 @@ export function AnswersTable({
           method={report.method}
           questionHref={questionHref}
           initialPromptId={initialPromptId}
+          // Under "All languages" each language's questions come under its name; a language tab needs none
+          languageHeadings={!filters.language && new Set(rows.map((row) => row.result.prompt.language)).size > 1}
         />
       )}
     </Panel>
