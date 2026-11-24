@@ -31,7 +31,7 @@ from . import cache, delivery, firstrun, fixes, mail, projects, slots, wave
 from . import digest as telegram_digest
 from .config import settings
 from .db import Brand, DemoRequest, FirstRun, LoginCode, Project, ReadSession, Run, Session, SessionLocal, User, create_tables, now
-from . import billing, limits, queue
+from . import alerts, billing, limits, queue
 import stripe
 from starlette.concurrency import run_in_threadpool
 
@@ -374,9 +374,11 @@ def work_prepare(run_id: str, domain: str, category: Optional[str], city: Option
         _finish(run_id, {"status": "ready", "draft": draft, "cost_usd": cost}, over=False)
     except firstrun.FirstRunError as error:
         _finish(run_id, {"status": "failed", "error": error.code})
+        alerts.check_failed(run_id, "reading")
     except Exception as error:  # a run must never stay "reading" for ever
         print(f"first run {run_id} failed while reading the site: {error!r}")
         _finish(run_id, {"status": "failed", "error": "internal"})
+        alerts.check_failed(run_id, "reading")
 
 
 def work_check(run_id: str, draft: Dict[str, Any], confirmed: Dict[str, Any], spent: float) -> None:
@@ -401,11 +403,13 @@ def work_check(run_id: str, draft: Dict[str, Any], confirmed: Dict[str, Any], sp
     # The OpenAI balance ran out under it: back to the queue, whole, rather than a failure or a check with holes
     if not settings.first_run_replay and queue.ran_dry(run_id):
         queue.put_back(run_id, confirmed)
+        alerts.openai_empty()
         return
     if outcome["status"] == "done":
         _finish_and_save(run_id, outcome)
     else:
         _finish(run_id, outcome)
+        alerts.check_failed(run_id, "asking")
 
 
 def _finish_and_save(run_id: str, outcome: Dict[str, Any]) -> None:

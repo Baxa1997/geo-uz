@@ -415,6 +415,25 @@ repository.
 - Its `.env` holds the OpenAI key and the Google credentials (15 Nov); since 21 Nov `ANSWER_ENGINES=chatgpt`, so `/health` lists `chatgpt` alone (Gemini with Google Search paused for Google's terms; Gemini still reads and writes).
 - To update: copy `app/` and `requirements.txt` (rsync), `pip install -r requirements.txt` in its `.venv`,
   `systemctl restart geo-backend`.
+- **Backups** (since 24 Nov 2026, the user's "Backups + failure alerts"; the free Supabase plan keeps no copy that can be
+  restored): the timer `geo-backup` (`deploy/geo-backup.timer`, every night at 02:30 UTC, after `geo-weekly`) runs
+  `deploy/geo-backup.sh` as root: `pg_dump` 17 from Docker (`postgres:17`; the server has no client, and the database's
+  address answers over IPv6 alone, so on the host's network), the `public` schema in Postgres's custom format, into
+  `/opt/geo-backend/backups/geo-<date>.dump` (readable by root alone), the last 7 kept. The password goes to Docker
+  through a file, never the command line. A failure emails the team. Installed from `deploy/`: the script to
+  `/opt/geo-backend/deploy/`, the two units to `/etc/systemd/system/`, `systemctl enable --now geo-backup.timer`. Run it
+  now: `systemctl start geo-backup.service`; see it: `journalctl -u geo-backup`. The first copy (24 Nov, 460 KB in 15 s)
+  was restored into a throwaway Postgres 17: all 17 tables and 513 rows as in the live database.
+- **To restore a copy** (it replaces the tables' contents): stop the service (`systemctl stop geo-backend`), write the
+  database's address (`DATABASE_URL` with `postgresql://` in the place of `postgresql+psycopg://`) as `PGURL=…` into a
+  file only root reads, then `docker run --rm -i --network host --env-file <that file> postgres:17 sh -c 'pg_restore
+  --clean --if-exists --no-owner --no-privileges --dbname "$PGURL"' < /opt/geo-backend/backups/geo-<date>.dump`, remove
+  the file and start the service (`create_tables` locks the tables again at start).
+- **Alerts** (`app/alerts.py`, since 24 Nov 2026): an email to the team's accounts (`TEAM_EMAILS`, else the sender's
+  address) when a visitor's free check fails (at most one an hour), a project's check by its plan fails, the OpenAI
+  balance is found empty (a check then goes back to the queue), or the night's copy fails (each at most once a day).
+  Recorded beside the limits' hits (`limit_hits`, kind `alert:<kind>`); printed in the log either way; never emailed
+  from this computer (replay). `python -m app.alerts test` sends one to see them arrive (sent on 24 Nov).
 
 ## Not built yet
 

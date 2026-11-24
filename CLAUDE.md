@@ -128,8 +128,8 @@ waits for their look. The open work, in the order the user picks (ask as a short
    Supabase project in Central EU (Frankfurt) (the free plan has 2 active projects; the database is 13 MB of its
    500), its Session pooler string as `NEW_DATABASE_URL` in `backend/.env.server`; the server has no `pg_dump`, so
    the copy runs in a `postgres:17` Docker container there (the database is Postgres 17).
-4. Stage 5 of `PLAN.md`, ready for a paying client: the domain, terms, limits against abuse, backups, an alert
-   when a check fails, new passwords.
+4. Stage 5 of `PLAN.md`, ready for a paying client: terms and privacy, new passwords (the domain, the limits against
+   abuse, the nightly backups and the alerts are built: 22–24 Nov).
 
 **Waiting on the user (ask once, don't block on it):**
 
@@ -225,6 +225,21 @@ that is committed.
    that no key and no client's name is in it.
 
 ## Done (as of 18 November 2026)
+
+- **Built, waiting for the user's look: nightly backups and failure alerts (24 Nov), on the branch `backups-alerts`;
+  deployed on the server the same day, when the user chose "Backups + failure alerts" (the server's previous `app/`
+  kept as `app.bak-before-alerts`).** Before a post to many people, the two risks were losing the data (the free
+  Supabase plan keeps no copy that can be restored, and a project deleted is gone, as the user's own was that morning,
+  on purpose) and not knowing when something breaks for a visitor. Backups: the timer `geo-backup` copies the
+  database every night at 02:30 UTC with Postgres 17's `pg_dump` from Docker into `/opt/geo-backend/backups`, the last
+  7 kept, readable by root alone (`backend/deploy/`, `backend/README.md`, "Backups", with how to restore). The first
+  copy (460 KB) was restored into a throwaway Postgres on the server: 17 tables, 513 rows, the same as the live
+  database. Alerts (`app/alerts.py`): an email to the team's address when a visitor's free check fails (at most one an
+  hour), a project's check by its plan fails, the OpenAI balance runs out (the check goes back to the queue, and the
+  email says how to run it), or the night's copy fails (each at most once a day); a test alert was sent. Tests: `pytest`
+  84 pass (3 new: a failed check emails once in the hour, an empty balance emails and the check waits, an alert never
+  breaks the check). No new variable (`TEAM_EMAILS` is now also where the alerts go). Not covered: a copy kept off the
+  server (it guards against Supabase, not against losing this server).
 
 - **Built, waiting for the user's look: the Answers page by language, a loader while a choice loads, every page brief
   for a new project (24 Nov), on the branch `answers-tabs`; merged, pushed and deployed the same day, when the user

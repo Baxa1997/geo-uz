@@ -1,0 +1,11 @@
+[Unit]
+Description=Seenova AI: the database copied every night, after the paid projects' checks (geo-weekly, 01:00 UTC)
+
+[Timer]
+OnCalendar=*-*-* 02:30:00 UTC
+RandomizedDelaySec=5min
+# A night the server was off is copied when it is back
+Persistent=true
+
+[Install]
+WantedBy=timers.target
