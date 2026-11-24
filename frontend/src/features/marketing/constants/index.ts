@@ -106,6 +106,14 @@ export const MARKET_FIGURES = { gemini: 58, chatgpt: 35, google: 76, yandex: 22 
 /** The three steps of "How it works"; texts in messages/Landing.how.steps. */
 export const HOW_STEPS = ["site", "check", "results"] as const;
 
+/**
+ * The Terms of use and the Privacy policy, section by section in their order (24 Nov 2026, the user's "Terms, privacy,
+ * contacts"); texts in messages/Legal.terms.sections and Legal.privacy.sections. Each says only what the product does:
+ * change it with the product (what is kept and where, the plans, the limits) and the date in Legal.updated.
+ */
+export const TERMS_SECTIONS = ["service", "account", "free", "plans", "answers", "use", "links", "ownership", "liability", "ending", "law"] as const;
+export const PRIVACY_SECTIONS = ["who", "collect", "use", "ai", "where", "keep", "cookies", "share", "rights", "children", "changes"] as const;
+
 /** The three numbers we report per brand; texts in messages/Landing.metrics.tabs. */
 export const METRICS: { key: "visibility" | "position" | "tone"; icon: AppIcon }[] = [
   { key: "visibility", icon: IconMentions },

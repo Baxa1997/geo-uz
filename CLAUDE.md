@@ -128,8 +128,9 @@ waits for their look. The open work, in the order the user picks (ask as a short
    Supabase project in Central EU (Frankfurt) (the free plan has 2 active projects; the database is 13 MB of its
    500), its Session pooler string as `NEW_DATABASE_URL` in `backend/.env.server`; the server has no `pg_dump`, so
    the copy runs in a `postgres:17` Docker container there (the database is Postgres 17).
-4. Stage 5 of `PLAN.md`, ready for a paying client: terms and privacy, new passwords (the domain, the limits against
-   abuse, the nightly backups and the alerts are built: 22–24 Nov).
+4. Stage 5 of `PLAN.md`, ready for a paying client: new passwords, and a lawyer's answer on where personal data may
+   be stored (the domain, the limits against abuse, the nightly backups, the alerts, the Terms and the Privacy policy
+   are built: 22–24 Nov).
 
 **Waiting on the user (ask once, don't block on it):**
 
@@ -225,6 +226,22 @@ that is committed.
    that no key and no client's name is in it.
 
 ## Done (as of 18 November 2026)
+
+- **Built, waiting for the user's look: the Terms of use, the Privacy policy and a contact (24 Nov), on the branch
+  `legal-pages`.** After "what is next" the user chose "Terms, privacy, contacts"; asked, they chose their Seenova
+  login's Gmail as the public contact (`CONTACT_EMAIL`), "Seenova AI, Tashkent" with no person's or company's name, and
+  email only. `/[locale]/terms` and `/[locale]/privacy` (`features/marketing/pages`, `LegalDocument`), plain words in the
+  three languages (`Legal` in messages), each section saying what the product does today: the free check and the
+  queue, the plans through Stripe, what the numbers mean, the report's link; what is collected, what goes to the AI
+  services (never the account's email), where it is kept (Supabase in Mumbai, the server and the backups at Contabo in
+  Germany, Vercel in Frankfurt, Google for email, Stripe), for how long (codes 10 minutes, sessions 30 days, addresses for
+  limits 2 days, backups 7 days), the cookies. The footer's "soon" became the two pages and "Contact us" with the
+  address; the login's first step says continuing accepts both (links open beside the form). Found on the way and
+  fixed: the footer's logo was navy on the navy footer, invisible. Looked at on this computer: the Terms in English and
+  the Privacy policy in Russian on desktop, both in Uzbek at 390px, the footer, the login in Russian and Uzbek; nothing
+  wider than the screen, no console error. Type check and linter clean. Drafts in plain words, not read by a lawyer;
+  open: Uzbekistan's law on personal data asks for its citizens' data to be kept in Uzbekistan, and ours is in India
+  and Germany (`PLAN.md`, stage 5). No new variable.
 
 - **Built, waiting for the user's look: nightly backups and failure alerts (24 Nov), on the branch `backups-alerts`;
   deployed on the server the same day, when the user chose "Backups + failure alerts" (the server's previous `app/`

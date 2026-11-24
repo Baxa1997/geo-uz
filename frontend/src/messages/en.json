@@ -2557,6 +2557,7 @@
       "madeIn": "Made in Tashkent",
       "rights": "© 2026 Seenova AI",
       "links": {
+        "contact": "Contact us",
         "demo": "Book a demo",
         "login": "Log in",
         "privacy": "Privacy policy",
@@ -3235,6 +3236,7 @@
     }
   },
   "Login": {
+    "agree": "By continuing, you agree to the <terms>Terms of use</terms> and the <privacy>Privacy policy</privacy>.",
     "title": "Log in",
     "descriptionCheck": "Log in: we’ll save your free check and use it to set up your project.",
     "email": "Email",
@@ -4725,6 +4727,116 @@
       "seed": "our list",
       "automated": "automated",
       "founder-reviewed": "reviewed"
+    }
+  },
+  "Legal": {
+    "label": "Legal",
+    "updated": "Last updated: 24 November 2026",
+    "contents": "On this page",
+    "questions": "Questions about this page? Write to {email}.",
+    "terms": {
+      "metaTitle": "Terms of use — Seenova AI",
+      "metaDescription": "The terms Seenova AI works on: your account, the free check, paid plans and payment, and what the numbers in a report mean.",
+      "title": "Terms of use",
+      "intro": "These terms apply when you use Seenova AI at seenovai.com: the website, your account, the checks, the reports and the emails we send. By creating an account or starting a check, you accept them. If anything here is unclear, write to us at {email}.",
+      "sections": {
+        "service": {
+          "title": "What Seenova AI is",
+          "body": "Seenova AI shows a business how AI assistants talk about it. We put the questions customers ask to AI assistants (today ChatGPT and Gemini, with web search on), read the answers, and show how often your business is named compared with your competitors, which sites the assistants rely on, what they say about you that is wrong, and what you could fix.\n\nSeenova AI is run from Tashkent, Uzbekistan. In these terms, “we” and “us” mean Seenova AI, and “you” means the person or business using it."
+        },
+        "account": {
+          "title": "Your account",
+          "body": "You sign in with your email address and a code we send to it. Keep access to that email safe: anyone who can read it can sign in as you.\n\nGive correct information about your business, and check only websites you run or public websites you may study, such as your competitors’ public pages. You are responsible for what is done in your account."
+        },
+        "free": {
+          "title": "The free check",
+          "body": "Each account gets one free check of one website: up to 10 questions, in about five minutes. When many people start checks on the same day, a check may wait in a queue, and we email you when its results are ready. After it, your project keeps its report; checks every week (or twice a week) start with a paid plan.\n\nWe may limit how many checks, sign-in codes and requests come from one connection, to keep the service available to everyone."
+        },
+        "plans": {
+          "title": "Paid plans and payment",
+          "body": "Paid plans (Standard and Pro) are paid monthly or yearly through Stripe, our payment provider; a year costs ten months. Prices are shown on our website before you pay. Enterprise and Managed GEO are agreed with us directly.\n\nA plan renews automatically until you cancel it. You can cancel at any time on the billing page; the plan stays active until the end of the period already paid for. If a payment fails, checks pause until it is paid. If we change a price, we tell you before it applies to you."
+        },
+        "answers": {
+          "title": "What the numbers mean",
+          "body": "AI assistants change their answers from day to day and from one question to the next. Our numbers describe the answers we collected, on the date and in the way the report states. We don’t control the assistants and can’t promise that following our recommendations will change what they say.\n\nSome parts of a report are written or read by AI models; where it matters, we say so. Check any important decision against your own knowledge of your business."
+        },
+        "use": {
+          "title": "Fair use",
+          "body": "Don’t use Seenova AI to break the law, to harm others or to get around its limits: for example by creating many accounts, by sending automated requests, by overloading it, or by copying the service to resell it. Don’t enter other people’s personal information that we don’t need.\n\nWe may suspend an account that breaks these rules."
+        },
+        "links": {
+          "title": "Reports shared by link",
+          "body": "Anyone who has a report’s link can open it without signing in. Share the link only with the people you want to see the report."
+        },
+        "ownership": {
+          "title": "What is yours and what is ours",
+          "body": "You may use your business information and your reports for your business. The service itself, its software, design, texts and name, is ours.\n\nThe answers in a report are written by third-party AI assistants and quote public websites; they are shown as evidence and remain their authors’ work."
+        },
+        "liability": {
+          "title": "The limits of our liability",
+          "body": "We provide Seenova AI as it is and as available. We work to keep it accurate and running, but we don’t promise that it will be free of errors or interruptions.\n\nAs far as the law allows, we are not liable for indirect losses, such as lost profits, and our total liability for any claim is limited to what you paid us in the three months before it arose."
+        },
+        "ending": {
+          "title": "Ending",
+          "body": "You can stop using Seenova AI at any time, delete your projects in your dashboard, and ask us to delete your account by writing to {email}. We may stop offering the service or a part of it; where we can, we tell you in advance."
+        },
+        "law": {
+          "title": "Law and changes",
+          "body": "These terms are governed by the laws of the Republic of Uzbekistan, and disputes go to the courts of Tashkent. If we change these terms, we update this page and its date, and we tell you about important changes by email too. Using Seenova AI after a change means you accept it."
+        }
+      }
+    },
+    "privacy": {
+      "metaTitle": "Privacy policy — Seenova AI",
+      "metaDescription": "What information Seenova AI collects, why, where it is kept, and how to have it deleted.",
+      "title": "Privacy policy",
+      "intro": "This page explains what information Seenova AI collects, why, where it is kept, and the choices you have. We collect only what the service needs, and we don’t sell it.",
+      "sections": {
+        "who": {
+          "title": "Who we are",
+          "body": "Seenova AI is run from Tashkent, Uzbekistan, and is responsible for the information described here. To ask about it, or to have it corrected or deleted, write to {email}."
+        },
+        "collect": {
+          "title": "What we collect",
+          "body": "Your account: your email address, and your name if you add it.\n\nYour checks and projects: the websites you enter; the business details you confirm or edit (name, description, services, city, competitors, questions); the public text of those websites, which we read for a check; and the answers the AI assistants give.\n\nForms: when you ask for a demo or an audit, your name, phone number and what you asked about. If you give an address for reports, that email address.\n\nTechnical: the address of your connection (IP address), used against abuse, and the server’s logs. If you pay, Stripe handles your card: we keep only what Stripe tells us about your plan and payments, never your card number."
+        },
+        "use": {
+          "title": "What we use it for",
+          "body": "To sign you in, run your checks, build your reports and recommendations, email you your codes, your reports and the results of a check that waited in the queue, answer your requests, take payments, protect the service from abuse, and improve it. We don’t use your information for advertising."
+        },
+        "ai": {
+          "title": "What goes to AI services",
+          "body": "To run a check, we send AI services the questions about your kind of business, your business’s name and website, and the public text of your website. Your email address and account details are not sent to them. We use OpenAI (ChatGPT) and Google (Gemini, through Google Cloud)."
+        },
+        "where": {
+          "title": "Where it is kept, and who handles it",
+          "body": "Our database is hosted by Supabase in Mumbai, India. Our server, which runs the checks and keeps backup copies, is at Contabo in Germany. The website is served by Vercel from Frankfurt, Germany. Emails are sent through Google, and payments are handled by Stripe. Each of these companies handles the information only to provide its part of the service to us."
+        },
+        "keep": {
+          "title": "How long we keep it",
+          "body": "Your account and projects: until you delete them or ask us to. A deleted project is removed with its checks at once; copies of the database are kept for seven days. A sign-in code expires after 10 minutes, and a session after 30 days. Connection addresses used for limits are deleted after two days; the server’s logs are kept for a limited time."
+        },
+        "cookies": {
+          "title": "Cookies and your browser",
+          "body": "We use one cookie that keeps you signed in, and a small one that remembers whether the sidebar is open. Your browser also remembers a few of your choices, such as which guided tours you have seen. We count page visits with Vercel Web Analytics, which uses no cookies. We don’t use advertising or tracking cookies."
+        },
+        "share": {
+          "title": "Who sees it",
+          "body": "We don’t sell or rent your information. The companies above handle it so the service can run, and we may disclose it when the law requires. Anyone with a report’s link can open it, so share links with care."
+        },
+        "rights": {
+          "title": "Your choices",
+          "body": "You can see and edit your business details in your dashboard, and delete your projects there. To get a copy of your information, correct it or delete your account, write to {email}; we answer within 30 days."
+        },
+        "children": {
+          "title": "Children",
+          "body": "Seenova AI is a service for businesses and is not meant for children."
+        },
+        "changes": {
+          "title": "Changes to this page",
+          "body": "When this page changes, we update its date, and we tell you about important changes by email too."
+        }
+      }
     }
   }
 }

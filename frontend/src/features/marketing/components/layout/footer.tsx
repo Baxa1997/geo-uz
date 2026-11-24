@@ -1,11 +1,13 @@
 import { useTranslations } from "next-intl";
 import { Logo } from "@/shared/components/logo";
 import { Link } from "@/i18n/navigation";
+import { CONTACT_EMAIL } from "@/shared/constants";
 import { SECTION } from "../../constants";
 
 type FooterLink =
   | { label: string; href: string | { pathname: "/"; hash: string } }
-  | { label: string; soon: true };
+  // An address outside the site (writing to us)
+  | { label: string; external: string };
 
 /** Dark footer: the brand line, then groups of links to the page's sections. */
 export function Footer() {
@@ -37,9 +39,11 @@ export function Footer() {
     },
     {
       key: "legal",
+      // Real pages since 24 Nov 2026 (the user's "Terms, privacy, contacts"), and the address to write to
       links: [
-        { label: t("links.privacy"), soon: true },
-        { label: t("links.terms"), soon: true },
+        { label: t("links.privacy"), href: "/privacy" },
+        { label: t("links.terms"), href: "/terms" },
+        { label: t("links.contact"), external: `mailto:${CONTACT_EMAIL}` },
       ],
     },
   ];
@@ -48,7 +52,8 @@ export function Footer() {
     <footer className="bg-foreground text-background">
       <div className="mx-auto grid max-w-7xl gap-12 px-4 py-16 sm:px-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,2.2fr)]">
         <div className="flex flex-col items-start gap-5">
-          <Logo className="self-start" />
+          {/* White on the navy footer: the ink version was drawn navy on navy, so it didn't show */}
+          <Logo className="self-start" tone="dark" />
           <p className="text-xl/snug font-semibold tracking-tight text-balance">
             {t("tagline")} <span className="block text-background/60">{t("taglineMuted")}</span>
           </p>
@@ -68,9 +73,10 @@ export function Footer() {
                         {link.label}
                       </Link>
                     ) : (
-                      <>
-                        {link.label} <span className="block text-xs text-background/60">({t("soon")})</span>
-                      </>
+                      <a href={link.external} className="transition-colors hover:text-background">
+                        {link.label}
+                        <span className="block text-xs text-background/50">{CONTACT_EMAIL}</span>
+                      </a>
                     )}
                   </li>
                 ))}

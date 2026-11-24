@@ -2557,6 +2557,7 @@
       "madeIn": "Toshkentda yaratilgan",
       "rights": "© 2026 Seenova AI",
       "links": {
+        "contact": "Biz bilan bogʻlanish",
         "demo": "Demo soʻrash",
         "login": "Kirish",
         "privacy": "Maxfiylik siyosati",
@@ -3235,6 +3236,7 @@
     }
   },
   "Login": {
+    "agree": "Davom etib, siz <terms>Foydalanish shartlari</terms> va <privacy>Maxfiylik siyosati</privacy>ga rozilik bildirasiz.",
     "title": "Kirish",
     "descriptionCheck": "Kiring: bepul tekshiruv natijasi saqlanadi va undan loyihangizni sozlaymiz.",
     "email": "Email",
@@ -4725,6 +4727,116 @@
       "seed": "bizning roʻyxat",
       "automated": "avtomatik",
       "founder-reviewed": "tekshirilgan"
+    }
+  },
+  "Legal": {
+    "label": "Huquqiy maʼlumot",
+    "updated": "Oxirgi yangilanish: 2026-yil 24-noyabr",
+    "contents": "Bu sahifada",
+    "questions": "Bu sahifa boʻyicha savollaringiz boʻlsa, {email} manziliga yozing.",
+    "terms": {
+      "metaTitle": "Foydalanish shartlari — Seenova AI",
+      "metaDescription": "Seenova AI qanday shartlarda ishlaydi: hisobingiz, bepul tekshiruv, pullik tariflar va toʻlov, hisobotdagi raqamlar nimani anglatadi.",
+      "title": "Foydalanish shartlari",
+      "intro": "Bu shartlar seenovai.com dagi Seenova AI’dan foydalanganingizda amal qiladi: sayt, hisobingiz, tekshiruvlar, hisobotlar va biz yuboradigan xatlar. Hisob ochib yoki tekshiruvni boshlab, siz ularni qabul qilasiz. Biror narsa tushunarsiz boʻlsa, bizga yozing: {email}.",
+      "sections": {
+        "service": {
+          "title": "Seenova AI nima",
+          "body": "Seenova AI bizneslarga AI assistentlar ular haqida nima deyishini koʻrsatadi. Biz mijozlar beradigan savollarni AI assistentlarga (hozir ChatGPT va Gemini, internetda qidiruv yoqilgan holda) beramiz, javoblarni oʻqiymiz va biznesingiz raqobatchilarga nisbatan qanchalik koʻp tilga olinishini, assistentlar qaysi saytlarga tayanishini, siz haqingizda nimani notoʻgʻri aytishini va nimani tuzatish mumkinligini koʻrsatamiz.\n\nSeenova AI Toshkentdan, Oʻzbekistondan boshqariladi. Bu shartlarda “biz” — Seenova AI, “siz” esa undan foydalanayotgan shaxs yoki biznes."
+        },
+        "account": {
+          "title": "Hisobingiz",
+          "body": "Siz email manzilingiz va unga yuboriladigan kod orqali kirasiz. Bu emailga kirishni ehtiyot qiling: uni oʻqiy oladigan har kim sizning nomingizdan kira oladi.\n\nBiznesingiz haqida toʻgʻri maʼlumot bering va faqat oʻz saytlaringizni yoki oʻrganish mumkin boʻlgan ochiq saytlarni, masalan, raqobatchilaringizning ochiq sahifalarini tekshiring. Hisobingizda qilinadigan ishlar uchun siz javobgarsiz."
+        },
+        "free": {
+          "title": "Bepul tekshiruv",
+          "body": "Har bir hisobga bitta saytni bir marta bepul tekshirish beriladi: 10 tagacha savol, taxminan besh daqiqada. Bir kunda koʻp kishi tekshiruv boshlasa, tekshiruv navbatda kutishi mumkin, natijalar tayyor boʻlganda sizga xat yuboramiz. Undan keyin loyihangizda hisobot qoladi; har hafta (yoki haftada ikki marta) tekshirish pullik tarif bilan boshlanadi.\n\nXizmat hamma uchun ishlashi uchun bitta ulanishdan keladigan tekshiruvlar, kirish kodlari va soʻrovlar sonini cheklashimiz mumkin."
+        },
+        "plans": {
+          "title": "Pullik tariflar va toʻlov",
+          "body": "Pullik tariflar (Standard va Pro) toʻlov hamkorimiz Stripe orqali oylik yoki yillik toʻlanadi; bir yil oʻn oy narxida. Narxlar toʻlovdan oldin saytimizda koʻrsatiladi. Enterprise va Managed GEO biz bilan alohida kelishiladi.\n\nTarif siz bekor qilmaguningizcha avtomatik uzaytiriladi. Uni istalgan vaqtda toʻlov sahifasida bekor qilishingiz mumkin; tarif allaqachon toʻlangan davr oxirigacha amal qiladi. Toʻlov oʻtmasa, tekshiruvlar toʻlov qilinguncha toʻxtab turadi. Narxni oʻzgartirsak, u sizga qoʻllanishidan oldin xabar beramiz."
+        },
+        "answers": {
+          "title": "Raqamlar nimani anglatadi",
+          "body": "AI assistentlar javoblarini kundan kunga va savoldan savolga oʻzgartiradi. Raqamlarimiz biz yiqqan javoblarni hisobotda koʻrsatilgan sana va usulda tasvirlaydi. Biz assistentlarni boshqarmaymiz va tavsiyalarimizga amal qilish ularning javoblarini oʻzgartirishini vaʼda qila olmaymiz.\n\nHisobotning ayrim qismlarini AI modellari yozadi yoki oʻqiydi; muhim joylarda buni aytamiz. Muhim qarorlarni biznesingiz haqida oʻzingiz bilganlaringiz bilan solishtiring."
+        },
+        "use": {
+          "title": "Halol foydalanish",
+          "body": "Seenova AI’dan qonunni buzish, boshqalarga zarar yetkazish yoki cheklovlarni chetlab oʻtish uchun foydalanmang: masalan, koʻp hisob ochib, avtomatik soʻrovlar yuborib, xizmatni haddan tashqari yuklab yoki uni qayta sotish uchun nusxalab. Bizga kerak boʻlmagan boshqa odamlarning shaxsiy maʼlumotlarini kiritmang.\n\nBu qoidalarni buzgan hisobni toʻxtatib qoʻyishimiz mumkin."
+        },
+        "links": {
+          "title": "Havola orqali hisobotlar",
+          "body": "Hisobotni uning havolasi bor har kim tizimga kirmasdan ochishi mumkin. Havolani faqat hisobotni koʻrishini istagan odamlaringiz bilan ulashing."
+        },
+        "ownership": {
+          "title": "Nima sizniki va nima bizniki",
+          "body": "Biznesingiz haqidagi maʼlumotlar va hisobotlaringizdan biznesingiz uchun foydalanishingiz mumkin. Xizmatning oʻzi, uning dasturlari, dizayni, matnlari va nomi bizga tegishli.\n\nHisobotdagi javoblarni uchinchi tomon AI assistentlari yozgan va ular ochiq saytlardan iqtibos keltiradi; ular dalil sifatida koʻrsatiladi va mualliflarining ishi boʻlib qoladi."
+        },
+        "liability": {
+          "title": "Javobgarligimiz chegaralari",
+          "body": "Biz Seenova AI’ni “boricha” va “mavjud boʻlganicha” taqdim etamiz. Xizmat aniq va uzluksiz ishlashi uchun harakat qilamiz, lekin unda xato va uzilishlar boʻlmasligini vaʼda qilmaymiz.\n\nQonun ruxsat bergan darajada biz bilvosita zararlar, masalan, boy berilgan foyda uchun javob bermaymiz, har qanday talab boʻyicha umumiy javobgarligimiz esa u paydo boʻlishidan oldingi uch oyda bizga toʻlagan summangiz bilan cheklanadi."
+        },
+        "ending": {
+          "title": "Foydalanishni toʻxtatish",
+          "body": "Seenova AI’dan istalgan vaqtda foydalanishni toʻxtatishingiz, loyihalaringizni kabinetingizda oʻchirishingiz va {email} manziliga yozib, hisobingizni oʻchirishni soʻrashingiz mumkin. Biz xizmatni yoki uning bir qismini toʻxtatishimiz mumkin; imkon boʻlsa, oldindan xabar beramiz."
+        },
+        "law": {
+          "title": "Qonun va oʻzgarishlar",
+          "body": "Bu shartlarga Oʻzbekiston Respublikasi qonunlari qoʻllaniladi, nizolar Toshkent sudlarida koʻriladi. Shartlarni oʻzgartirsak, bu sahifani va uning sanasini yangilaymiz, muhim oʻzgarishlar haqida email orqali ham xabar beramiz. Oʻzgarishdan keyin Seenova AI’dan foydalanishni davom ettirsangiz, uni qabul qilgan boʻlasiz."
+        }
+      }
+    },
+    "privacy": {
+      "metaTitle": "Maxfiylik siyosati — Seenova AI",
+      "metaDescription": "Seenova AI qanday maʼlumotlarni yigʻadi, nima uchun, ular qayerda saqlanadi va ularni qanday oʻchirish mumkin.",
+      "title": "Maxfiylik siyosati",
+      "intro": "Bu sahifada Seenova AI qanday maʼlumotlarni yigʻishi, nima uchun, ular qayerda saqlanishi va siz ular bilan nima qila olishingiz aytilgan. Biz faqat xizmatga kerakli maʼlumotlarni yigʻamiz va ularni sotmaymiz.",
+      "sections": {
+        "who": {
+          "title": "Biz kimmiz",
+          "body": "Seenova AI Toshkentdan, Oʻzbekistondan boshqariladi va bu yerda tasvirlangan maʼlumotlar uchun javobgar. Ular haqida soʻrash, ularni tuzatish yoki oʻchirish uchun {email} manziliga yozing."
+        },
+        "collect": {
+          "title": "Nimalarni yigʻamiz",
+          "body": "Hisobingiz: email manzilingiz va agar kiritsangiz, ismingiz.\n\nTekshiruvlar va loyihalar: siz kiritgan saytlar; siz tasdiqlagan yoki tahrirlagan biznes maʼlumotlari (nomi, tavsifi, xizmatlari, shahri, raqobatchilari, savollar); tekshiruv uchun oʻqiladigan bu saytlarning ochiq matni; AI assistentlar bergan javoblar.\n\nShakllar: demo yoki audit soʻrasangiz, ismingiz, telefon raqamingiz va nima haqida soʻraganingiz. Hisobotlar uchun manzil kiritsangiz, shu email manzil.\n\nTexnik maʼlumotlar: suiisteʼmolga qarshi ishlatiladigan ulanishingiz manzili (IP-manzil) va server jurnallari. Toʻlov qilsangiz, kartangiz bilan Stripe ishlaydi: bizda faqat Stripe tarif va toʻlovlar haqida bergan maʼlumotlar saqlanadi, karta raqamingiz hech qachon saqlanmaydi."
+        },
+        "use": {
+          "title": "Nima uchun",
+          "body": "Tizimga kirishingiz, tekshiruvlarni oʻtkazish, hisobot va tavsiyalar tuzish, sizga kodlar, hisobotlar va navbatda kutgan tekshiruv natijalarini yuborish, soʻrovlaringizga javob berish, toʻlovlarni qabul qilish, xizmatni suiisteʼmoldan himoya qilish va uni yaxshilash uchun. Maʼlumotlaringizdan reklama uchun foydalanmaymiz."
+        },
+        "ai": {
+          "title": "AI xizmatlariga nima yuboriladi",
+          "body": "Tekshiruv uchun AI xizmatlariga biznesingiz turi haqidagi savollarni, biznesingiz nomi va saytini hamda saytingizning ochiq matnini yuboramiz. Email manzilingiz va hisob maʼlumotlaringiz ularga yuborilmaydi. Biz OpenAI (ChatGPT) va Google (Google Cloud orqali Gemini) xizmatlaridan foydalanamiz."
+        },
+        "where": {
+          "title": "Maʼlumotlar qayerda saqlanadi va ular bilan kim ishlaydi",
+          "body": "Maʼlumotlar bazamiz Supabase’da, Hindistonning Mumbay shahrida joylashgan. Tekshiruvlarni oʻtkazadigan va zaxira nusxalarni saqlaydigan serverimiz Germaniyadagi Contabo’da. Sayt Vercel orqali Germaniyaning Frankfurt shahridan ishlaydi. Xatlar Google orqali yuboriladi, toʻlovlarni Stripe amalga oshiradi. Bu kompaniyalarning har biri maʼlumotlar bilan faqat bizga oʻz xizmatini koʻrsatish uchun ishlaydi."
+        },
+        "keep": {
+          "title": "Qancha vaqt saqlaymiz",
+          "body": "Hisob va loyihalar siz ularni oʻchirmaguningizcha yoki bizdan soʻramaguningizcha saqlanadi. Oʻchirilgan loyiha tekshiruvlari bilan birga darhol oʻchiriladi; bazaning nusxalari yetti kun saqlanadi. Kirish kodi 10 daqiqa, seans 30 kun amal qiladi. Cheklovlar uchun IP-manzillar ikki kundan keyin oʻchiriladi; server jurnallari cheklangan muddat saqlanadi."
+        },
+        "cookies": {
+          "title": "Cookie va brauzeringiz",
+          "body": "Biz tizimda qolishingiz uchun bitta cookie va yon panel ochiq yoki yopiqligini eslab qolish uchun yana bitta kichik cookie ishlatamiz. Brauzeringiz ham ayrim tanlovlaringizni, masalan, qaysi tanishtiruvlarni koʻrganingizni eslab qoladi. Sahifalarga tashriflarni cookie’siz ishlaydigan Vercel Web Analytics bilan hisoblaymiz. Reklama va kuzatuv cookie’laridan foydalanmaymiz."
+        },
+        "share": {
+          "title": "Maʼlumotlarni kim koʻradi",
+          "body": "Maʼlumotlaringizni sotmaymiz va ijaraga bermaymiz. Yuqorida sanalgan kompaniyalar ular bilan xizmat ishlashi uchun ishlaydi; qonun talab qilganda ularni oshkor qilishimiz mumkin. Hisobotni havolasi bor har kim ochishi mumkin, shuning uchun havolalarni ehtiyot boʻlib ulashing."
+        },
+        "rights": {
+          "title": "Sizning imkoniyatlaringiz",
+          "body": "Biznes maʼlumotlaringizni kabinetingizda koʻrishingiz va tahrirlashingiz, loyihalaringizni u yerda oʻchirishingiz mumkin. Maʼlumotlaringiz nusxasini olish, ularni tuzatish yoki hisobingizni oʻchirish uchun {email} manziliga yozing; 30 kun ichida javob beramiz."
+        },
+        "children": {
+          "title": "Bolalar",
+          "body": "Seenova AI bizneslar uchun xizmat boʻlib, bolalar uchun moʻljallanmagan."
+        },
+        "changes": {
+          "title": "Bu sahifadagi oʻzgarishlar",
+          "body": "Bu sahifa oʻzgarganda uning sanasini yangilaymiz, muhim oʻzgarishlar haqida email orqali ham xabar beramiz."
+        }
+      }
     }
   }
 }
