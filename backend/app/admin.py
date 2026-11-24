@@ -19,6 +19,8 @@ The website's audit and the actions (23 Nov 2026: the SEO audit's checks came af
     python -m app.admin research <project id>                why AI names others and not the client, on the latest check
                                                              (report spec §4.5; the reading model, a few cents), then the
                                                              actions brought in line and the briefs written
+    python -m app.admin briefs <project id>                  every page to write given its brief, not five as a check
+                                                             does (24 Nov 2026; the writing model, about a cent a page)
 
 Types: client_managed, directory, media, ugc, telegram, reference, platform_docs, competitor_site, unclassified.
 The pages keep a report two minutes (`app/cache.py`): a site typed here shows within that.
@@ -34,7 +36,7 @@ from typing import Any, Optional
 from sqlalchemy import select
 
 from . import cache, domains, firstrun, fixes, projects, research
-from .db import Brand, Project, Run, SessionLocal, User, create_tables
+from .db import Action, Brand, Project, Run, SessionLocal, User, create_tables
 from .projects import PLAN_LIMITS
 
 
@@ -133,6 +135,15 @@ def main(arguments: list) -> None:
             cache.touch(project_id)
             statuses = ", ".join(f"{status} {sum(item['status'] == status for item in kept['items'])}" for status in ("compared", "no_page", "unreadable", "failed"))
             print(f"{project_id}: {len(kept['items'])} questions researched ({statuses}), ${kept['cost']:.4f}")
+        elif arguments[:1] == ["briefs"] and len(arguments) == 2:
+            project = db.get(Project, arguments[1])
+            if project is None:
+                sys.exit("No such project")
+            fixes.write_briefs(db, project, limit=None)
+            db.commit()
+            cache.touch(project.id)
+            pages = [action for action in db.scalars(select(Action).where(Action.project_id == project.id, Action.kind == "content")) if action.status in ("new", "in_progress")]
+            print(f"{project.id}: {sum(bool((action.details or {}).get('brief')) for action in pages)} of {len(pages)} pages to write have a brief")
         else:
             sys.exit(__doc__)
 

@@ -6,7 +6,10 @@ from __future__ import annotations
 
 from typing import Any, Dict, List
 
-from app import firstrun
+from sqlalchemy import delete, select
+
+from app import firstrun, fixes, projects
+from app.db import Action, Brand, Project, User
 
 GOOD_HOME = """<html><head><title>Acme Dental — clinic in Tashkent</title>
 <meta name="description" content="Acme Dental treats adults and children in Tashkent: implants, braces, cleaning. Prices from 200 000 so'm.">
@@ -53,3 +56,33 @@ def test_both_languages_count_from_the_text_or_a_link() -> None:
     assert checks(russian_only, '<html><a href="/uz/">Oʻzbekcha</a></html>')["one_language"] is True
     both = [{"url": "https://acme.example/", "text": "Стоматология в Ташкенте. " * 10 + "Biz bilan bogʻlaning va narxlar haqida soʻrang, xizmatlar uchun yoki qanday." * 2}]
     assert checks(both, "<html></html>")["one_language"] is True
+
+
+def test_a_new_project_gets_a_brief_for_every_page(db: Any, monkeypatch: Any) -> None:
+    """The user's live test of 24 Nov 2026: a new project had briefs for 5 of its 7 pages to write, and a free project
+    has no next check to write the rest. A weekly check still writes five; a new project's background step, all."""
+    owner = User(email="briefs@example.test")
+    db.add(owner)
+    db.flush()
+    project = Project(user_id=owner.id, category="tests", city="", country="UZ")
+    db.add(project)
+    db.flush()
+    db.add(Brand(project_id=project.id, name="Brief Co", domain="brief.example", aliases=[], own=True))
+    db.add_all([Action(project_id=project.id, key=f"content:topic {number}", kind="content", details={"topic": f"topic {number}"}, prompt_ids=[]) for number in range(7)])
+    db.commit()
+    written: List[str] = []
+    monkeypatch.setattr(fixes, "_brief", lambda project, client, topic, questions, page="", evidence="": written.append(topic) or {"summary": topic})
+    monkeypatch.setattr(projects, "report", lambda db, project, **kwargs: {"prompts": []})
+    try:
+        fixes.write_briefs(db, project)
+        assert len(written) == 5
+        fixes.write_briefs(db, project, limit=None)
+        assert len(written) == 7
+        assert all((action.details or {}).get("brief") for action in db.scalars(select(Action).where(Action.project_id == project.id)))
+    finally:
+        db.rollback()
+        for table in (Action, Brand):
+            db.execute(delete(table).where(table.project_id == project.id))
+        db.execute(delete(Project).where(Project.id == project.id))
+        db.execute(delete(User).where(User.id == owner.id))
+        db.commit()

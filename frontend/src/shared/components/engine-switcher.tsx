@@ -2,13 +2,16 @@
 
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { EngineIcon } from "@/shared/components/engine-icon";
+import { PendingOverlay } from "@/shared/components/pending-overlay";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { ENGINES } from "@/shared/constants";
 import { FILTER_PARAMS } from "@/shared/helpers/report-filters";
 import { cn } from "@/shared/helpers/utils";
 import type { ReportEngine } from "@/shared/types/api";
+
+type EngineKey = (typeof ENGINES)[number]["key"];
 
 const OPTION =
   "flex h-7 shrink-0 items-center gap-1 rounded-md px-[5px] text-[0.8125rem] whitespace-nowrap sm:gap-1.5 sm:px-2.5 sm:text-sm has-checked:bg-background has-checked:font-medium has-checked:shadow-xs has-disabled:text-foreground/50 has-focus-visible:ring-3 has-focus-visible:ring-ring/50";
@@ -25,12 +28,15 @@ export function EngineSwitcher({ available }: { available?: ReportEngine[] }) {
   const pathname = usePathname();
   const params = useSearchParams();
   const [pending, startTransition] = useTransition();
+  // The assistant being loaded, named in the loader ("" for all of them)
+  const [target, setTarget] = useState<EngineKey | "">("");
   const answered = new Set((available ?? []).map((item) => item.engine));
   // One assistant alone is what the page shows anyway: "all" is offered from two
   const choose = answered.size > 1;
   const chosen = choose ? (answered.has(params.get(FILTER_PARAMS.engine) ?? "") ? params.get(FILTER_PARAMS.engine)! : "") : ([...answered][0] ?? "chatgpt");
 
-  function pick(engine: string) {
+  function pick(engine: EngineKey | "") {
+    setTarget(engine);
     const query: Record<string, string> = { ...Object.fromEntries(params), [FILTER_PARAMS.engine]: engine };
     if (!engine) delete query[FILTER_PARAMS.engine];
     startTransition(() => router.replace({ pathname, query }, { scroll: false }));
@@ -57,6 +63,7 @@ export function EngineSwitcher({ available }: { available?: ReportEngine[] }) {
           </label>
         );
       })}
+      {pending && <PendingOverlay label={target ? t("loadingOne", { engine: t(target) }) : t("loadingAll")} />}
     </div>
   );
 }

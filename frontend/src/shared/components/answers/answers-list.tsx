@@ -24,7 +24,8 @@ const SOURCES_SHOWN = 3;
  * through the rows given. The date of the check is the same for every row, so it is not a column.
  * Headings and marks explain themselves on hover. Used by the Answers page (every answer, under its
  * filters) and by a cited site's page (the answers that cite it). `initialPromptId` opens that question's
- * first answer.
+ * first answer. `languageHeadings` heads each language's questions with its name and count, for rows given
+ * language by language (the Answers page under "All languages").
  */
 export function AnswersList({
   rows,
@@ -33,6 +34,7 @@ export function AnswersList({
   method,
   questionHref,
   initialPromptId,
+  languageHeadings = false,
 }: {
   rows: AnswerRow[];
   brands: SeriesBrand[];
@@ -40,9 +42,14 @@ export function AnswersList({
   method: Pick<ReportMethod, "engine" | "collectedAt">;
   questionHref: (prompt: Prompt) => string;
   initialPromptId?: string;
+  languageHeadings?: boolean;
 }) {
   const t = useTranslations("AnswersPage.table");
+  const languageNames = useTranslations("Locales");
   const locale = useLocale();
+  // Each language's questions among the rows given, counted in its heading
+  const questionsIn = new Map<string, Set<string>>();
+  for (const { result } of rows) questionsIn.set(result.prompt.language, (questionsIn.get(result.prompt.language) ?? new Set()).add(result.prompt.id));
   const youId = project.brand.id;
   const first = rows.findIndex((row) => row.result.prompt.id === initialPromptId);
   // The answer a link opens may lie past the first rows: then the list reaches it
@@ -77,13 +84,26 @@ export function AnswersList({
         <tbody className="divide-y">
           {shown.map((row, index) => {
             const { result, answer } = row;
-            // The question is written once, over its answers
+            // The question is written once, over its answers; a language's name over its first question
             const heads = shown[index - 1]?.result.prompt.id !== result.prompt.id;
+            const language = result.prompt.language;
+            const opensLanguage = languageHeadings && shown[index - 1]?.result.prompt.language !== language;
             const own = answer.mentions.find((mention) => mention.brandId === youId);
             const named = [...answer.mentions].sort((a, b) => a.position - b.position).flatMap((mention) => byId.get(mention.brandId) ?? []);
             const domains = [...new Set(answer.citations.map((citation) => citation.domain))];
             return (
               <Fragment key={`${result.prompt.id}:${answer.sample}`}>
+                {opensLanguage && (
+                  // Spans the columns every width shows, as the question does, with an empty cell for each other
+                  <tr>
+                    <th scope="colgroup" colSpan={2} className="px-4 pt-4 pb-2 text-left text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                      {t("languageGroup", { language: languageNames(language), count: questionsIn.get(language)?.size ?? 0 })}
+                    </th>
+                    <td className="hidden @lg:table-cell" />
+                    <td className="hidden @2xl:table-cell" />
+                    <td className="hidden @3xl:table-cell" />
+                  </tr>
+                )}
                 {heads && (
                   <LinkRow href={questionHref(result.prompt)} className="bg-muted/40 transition-colors hover:bg-muted/70">
                     {/*

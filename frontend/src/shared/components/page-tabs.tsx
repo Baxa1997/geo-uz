@@ -1,7 +1,9 @@
 "use client";
 
-import { Fragment } from "react";
+import { useTranslations } from "next-intl";
+import { Fragment, useState } from "react";
 import { Hint } from "@/shared/components/hint";
+import { LinkStatus, PendingOverlay } from "@/shared/components/pending-overlay";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/shared/helpers/utils";
 
@@ -16,9 +18,12 @@ export interface PageTab {
 
 /**
  * A page's views as tabs, in the strip under its filters (`Page`'s `tabs`), as on Peec: the open one on
- * a light pill with a line under it that sits on the strip's border. The tabs are links.
+ * a light pill with a line under it that sits on the strip's border. The tabs are links; while the server
+ * renders the view picked, the loader stands in the middle of the screen (`PendingOverlay`).
  */
 export function PageTabs({ label, tabs, current }: { label: string; tabs: PageTab[]; current: string }) {
+  const t = useTranslations("Common");
+  const [pending, setPending] = useState(false);
   return (
     // Over the strip's border by a pixel, so the open tab's line covers it
     <nav aria-label={label} className="-mb-px flex gap-1 overflow-x-auto">
@@ -41,6 +46,7 @@ export function PageTabs({ label, tabs, current }: { label: string; tabs: PageTa
               {tab.label}
             </span>
             {active && <span aria-hidden className="absolute inset-x-0 bottom-0 h-0.5 rounded-full bg-foreground" />}
+            <LinkStatus onChange={setPending} />
           </Link>
         );
         return tab.hint ? (
@@ -51,6 +57,7 @@ export function PageTabs({ label, tabs, current }: { label: string; tabs: PageTa
           <Fragment key={tab.key}>{link()}</Fragment>
         );
       })}
+      {pending && <PendingOverlay label={t("loading")} />}
     </nav>
   );
 }

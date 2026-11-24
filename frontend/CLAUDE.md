@@ -338,6 +338,12 @@ better, with animations".
   click on a link until the page (not its skeleton, `data-skeleton`) is there. The check's navy screen
   moves while the assistants are asked. These are the one exception to "every animation ends" below: they
   repeat while something loads and go with the screen that shows them; they stand still under reduced motion.
+- **A choice that reloads the page** (24 Nov 2026, the user: "when switching from All to any ChatGPT or Gemini there
+  must be a modal loader at least at the center of the page"): a choice kept in the address shows no `loading.tsx`,
+  so while the server renders the page again `PendingOverlay` stands in the middle of the screen over a light veil,
+  saying what loads ("Loading ChatGPT’s answers…"), from 150 ms. The assistant switcher, the language and topic
+  chips (`ReportFilterBar`) and every page's tabs (`PageTabs`, through Next's `useLinkStatus`: `LinkStatus` tells the
+  tabs, which draw the loader outside the link, so a click on it doesn't reach the link) show it.
 
 ## Page layout
 Every workspace page's top follows Peec's (the user's correction, Oct 8: "page top breadcrumb must also be the
@@ -414,7 +420,12 @@ frontend/src/
                           #   one question grouped under the question written once (search; filters by brand
                           #   named, by site cited and by status); the rows shown export as CSV with their full
                           #   text; a row opens a chat window (question, answer, details, Previous/Next); ?prompt=
-                          #   opens a question's first answer, ?source= starts with the answers citing a site
+                          #   opens a question's first answer, ?source= starts with the answers citing a site.
+                          #   Since 24 Nov 2026 (the user: "the Russian prompts and Uzbek prompts are mixed up, maybe
+                          #   just make it tab version") the questions' languages are the page's tabs (All languages,
+                          #   Oʻzbekcha, Русский: ?lang=, so the numbers follow) in the place of the language chip, and
+                          #   under All languages each language's questions come under its name and count
+                          #   (`answerRows` orders them Uzbek, Russian, English; `AnswersList`'s `languageHeadings`)
     competitors/          # Competitors: four numbers on where the client stands (place, gap to the leader, topics
                           #   led, questions without it), the brands table, who leads each
                           #   topic (helpers/topics.ts; a topic opens its questions), the brands ChatGPT names that

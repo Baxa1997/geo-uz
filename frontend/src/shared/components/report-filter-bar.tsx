@@ -7,6 +7,7 @@ import { useSearchParams } from "next/navigation";
 import { useMessages, useTranslations } from "next-intl";
 import { useTransition } from "react";
 import { FilterMenu } from "@/shared/components/filter-menu";
+import { PendingOverlay } from "@/shared/components/pending-overlay";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { PROMPT_LANGUAGES } from "@/shared/constants";
 import { labelFor } from "@/shared/helpers/labels";
@@ -21,11 +22,14 @@ import { cn } from "@/shared/helpers/utils";
 export function ReportFilterBar({
   topics,
   topicFilter = true,
+  languageFilter = true,
   className,
 }: {
   topics: string[];
   /** Off where the page picks topics itself (the Questions page's topics column). */
   topicFilter?: boolean;
+  /** Off where the page has the languages as its tabs (Javoblar). */
+  languageFilter?: boolean;
   className?: string;
 }) {
   const t = useTranslations("Filters");
@@ -51,13 +55,15 @@ export function ReportFilterBar({
       aria-busy={pending}
       className={cn("flex flex-wrap items-center gap-2 transition-opacity", pending && "opacity-60", className)}
     >
-      <FilterMenu
-        icon={Languages}
-        label={t("language")}
-        value={language}
-        options={[{ value: "", label: t("allLanguages") }, ...PROMPT_LANGUAGES.map((code) => ({ value: code, label: languages(code) }))]}
-        onChange={(value) => apply({ [FILTER_PARAMS.language]: value })}
-      />
+      {languageFilter && (
+        <FilterMenu
+          icon={Languages}
+          label={t("language")}
+          value={language}
+          options={[{ value: "", label: t("allLanguages") }, ...PROMPT_LANGUAGES.map((code) => ({ value: code, label: languages(code) }))]}
+          onChange={(value) => apply({ [FILTER_PARAMS.language]: value })}
+        />
+      )}
       {topicFilter && (
       <FilterMenu
         icon={Tag}
@@ -68,16 +74,18 @@ export function ReportFilterBar({
       />
       )}
 
-      {(language || (topicFilter && topic)) && (
+      {((languageFilter && language) || (topicFilter && topic)) && (
         <button
           type="button"
-          onClick={() => apply({ [FILTER_PARAMS.language]: "", [FILTER_PARAMS.topic]: "" })}
+          // Only the filters this bar shows: a language picked by the page's tabs stays
+          onClick={() => apply({ ...(languageFilter ? { [FILTER_PARAMS.language]: "" } : {}), ...(topicFilter ? { [FILTER_PARAMS.topic]: "" } : {}) })}
           className="inline-flex h-8 items-center gap-1 rounded-lg px-2 text-sm text-foreground/70 transition-colors hover:bg-muted hover:text-foreground"
         >
           <X aria-hidden className="size-3.5" />
           {t("reset")}
         </button>
       )}
+      {pending && <PendingOverlay label={t("loading")} />}
     </div>
   );
 }

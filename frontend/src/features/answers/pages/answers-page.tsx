@@ -4,6 +4,7 @@ import { cache } from "react";
 import { FilteredEmpty } from "@/shared/components/filtered-empty";
 import { NoData } from "@/shared/components/no-data";
 import { Page } from "@/shared/components/page";
+import { PageTabs } from "@/shared/components/page-tabs";
 import { ReportFilterBar } from "@/shared/components/report-filter-bar";
 import { KpiStrip } from "@/shared/components/scores/kpi-strip";
 import { MethodLabel } from "@/shared/components/scores/method-label";
@@ -11,8 +12,9 @@ import { setPageLocale } from "@/i18n/page-locale";
 import { api } from "@/shared/api/client";
 import { orNotFound } from "@/shared/api/errors";
 import { loadReport } from "@/shared/api/load-report";
+import { PROMPT_LANGUAGES } from "@/shared/constants";
 import { formatPercent } from "@/shared/helpers/numbers";
-import { hasFilters } from "@/shared/helpers/report-filters";
+import { hasFilters, withFilters } from "@/shared/helpers/report-filters";
 import { seriesBrands } from "@/shared/helpers/scores";
 import { AnswersTable } from "../components/answers-table";
 
@@ -37,18 +39,39 @@ export default async function AnswersPage({ params, searchParams }: Props) {
   const { locale: segment, id } = await params;
   const locale = setPageLocale(segment);
   const query = await searchParams;
-  const [{ report, prompts, filters, topics }, t, tAnswers] = await Promise.all([
+  const [{ report, prompts, filters, topics }, t, tAnswers, tFilters, tLanguages] = await Promise.all([
     loadReport(id, query),
     getTranslations({ locale, namespace: "Sidebar" }),
     getTranslations({ locale, namespace: "AnswersPage" }),
+    getTranslations({ locale, namespace: "Filters" }),
+    getTranslations({ locale, namespace: "Locales" }),
   ]);
   const promptId = typeof query.prompt === "string" ? query.prompt : undefined;
   const source = typeof query.source === "string" ? query.source : undefined;
   const base = `/projects/${report.project.id}`;
 
+  // The questions' languages as the page's tabs, when there are two or more (the user, 24 Nov 2026: "the Russian
+  // prompts and Uzbek prompts are mixed up, maybe just make it tab version"); the language chip then steps aside
+  const languages = PROMPT_LANGUAGES.filter((code) => prompts.some((prompt) => prompt.language === code));
+  const languageTabs = languages.length > 1 && (
+    <PageTabs
+      label={tFilters("language")}
+      current={filters.language ?? "all"}
+      tabs={[
+        { key: "all", label: tFilters("allLanguages"), href: withFilters(`${base}/answers`, { ...filters, language: undefined }) },
+        ...languages.map((code) => ({ key: code, label: tLanguages(code), href: withFilters(`${base}/answers`, { ...filters, language: code }) })),
+      ]}
+    />
+  );
+
   if (report.prompts.length === 0) {
     return (
-      <Page title={t("answers")} engines={report.engines ?? true} toolbar={hasFilters(filters) && <ReportFilterBar topics={topics} />}>
+      <Page
+        title={t("answers")}
+        engines={report.engines ?? true}
+        tabs={languageTabs || undefined}
+        toolbar={hasFilters(filters) && <ReportFilterBar topics={topics} languageFilter={!languageTabs} />}
+      >
         {hasFilters(filters) ? <FilteredEmpty resetHref={`${base}/answers`} /> : <NoData projectId={report.project.id} promptCount={prompts.length} />}
       </Page>
     );
@@ -65,7 +88,13 @@ export default async function AnswersPage({ params, searchParams }: Props) {
   const searched = answers.filter((answer) => answer.searches.length > 0).length;
 
   return (
-    <Page title={t("answers")} engines={report.engines ?? true} tour="answers" toolbar={<ReportFilterBar topics={topics} />}>
+    <Page
+      title={t("answers")}
+      engines={report.engines ?? true}
+      tour="answers"
+      tabs={languageTabs || undefined}
+      toolbar={<ReportFilterBar topics={topics} languageFilter={!languageTabs} />}
+    >
       <KpiStrip
         items={[
           {
