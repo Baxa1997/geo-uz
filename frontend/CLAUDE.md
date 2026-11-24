@@ -192,6 +192,14 @@ words. In order (`SECTION` in marketing/constants, `pages/landing-page.tsx`):
 11. **Pricing** (the cards, Managed GEO, the comparison `PLAN_TABLE`), 12. **FAQ**, 13. **Demo form** (since
    16 Nov it reaches the backend, `POST /demo-requests`), the navy closing band, the footer.
 
+**The Terms of use and the Privacy policy** (24 Nov 2026): `/[locale]/terms` and `/[locale]/privacy`, under the public
+pages' navbar and footer (`pages/terms-page.tsx`, `privacy-page.tsx`, `components/legal/legal-document.tsx`): a label,
+the title, the date (`Legal.updated`), the opening, the sections as links, each section numbered, how to write to us.
+The sections are `TERMS_SECTIONS` and `PRIVACY_SECTIONS` (marketing/constants), their texts `Legal.terms` and
+`Legal.privacy`, paragraphs split at a blank line; `{email}` is `CONTACT_EMAIL` (shared/constants), drawn as a mailto
+link. They state what the product does and keeps: change them with it, and the date. The footer's Legal column links
+them and writes to us; the login's email step says continuing accepts both (`Login.agree`).
+
 Every claim says what the product does on that date, and a planned part says "tez orada" wherever it appears
 (Telegram, Google's AI answers, Yandex, the full site audit, the agency's name on reports). Never add customer
 quotes, logos, ratings or contacts we haven't got: the footer's placeholder contacts were removed. A market

@@ -12,6 +12,9 @@ export const SESSION_COOKIE = "geo_session";
  */
 export const SITE_URL = "https://www.seenovai.com";
 
+/** Where people write to us: the footer, the Terms and the Privacy policy (the user's choice, 24 Nov 2026). */
+export const CONTACT_EMAIL = "bahridnurullav@gmail.com";
+
 /** Phone login: Uzbek numbers for now, +998 and 9 digits. */
 export const PHONE_PREFIX = "+998";
 export const PHONE_LOCAL_DIGITS = 9;

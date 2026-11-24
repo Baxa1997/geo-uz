@@ -130,7 +130,8 @@ The "what to do" half: the part that keeps a small business paying.
 - Prices and plans final, shown on the landing page; the plan's limits enforced.
 - Payment by hand at first: the client asks for a plan, we invoice, we switch the plan on.
 - The landing page's claims match the product (the Telegram report, "no sign-up needed").
-- The product's own domain; the frontend and the emails on it; privacy policy and terms.
+- The product's own domain (seenovai.com, the site on it since 23 Nov; the emails not yet); privacy policy and terms
+  (built 24 Nov: `/terms`, `/privacy`, waiting for the user's look and a lawyer's read).
 - Limits against abuse on the first check (built 22 Nov); backups of the database (every night since 24 Nov, 7 kept,
   `backend/README.md`, "Backups"); an alert when a run fails (since 24 Nov, `app/alerts.py`). Built, waiting for the user's look.
 - Every password and key that passed through a chat replaced.
