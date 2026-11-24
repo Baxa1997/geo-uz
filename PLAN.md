@@ -131,7 +131,8 @@ The "what to do" half: the part that keeps a small business paying.
 - Payment by hand at first: the client asks for a plan, we invoice, we switch the plan on.
 - The landing page's claims match the product (the Telegram report, "no sign-up needed").
 - The product's own domain; the frontend and the emails on it; privacy policy and terms.
-- Limits against abuse on the first check; backups of the database; an alert when a run fails.
+- Limits against abuse on the first check (built 22 Nov); backups of the database (every night since 24 Nov, 7 kept,
+  `backend/README.md`, "Backups"); an alert when a run fails (since 24 Nov, `app/alerts.py`). Built, waiting for the user's look.
 - Every password and key that passed through a chat replaced.
 - The lawyer's answer on where personal data may be stored.
 

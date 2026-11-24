@@ -34,7 +34,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from sqlalchemy import select
 
-from . import billing, delivery, domains, engines, firstrun, fixes, places, research, slots
+from . import alerts, billing, delivery, domains, engines, firstrun, fixes, places, research, slots
 from .config import settings
 from .db import Answer, Brand, Citation, Mention, Project, Prompt, Run, SessionLocal, create_tables, now
 from .engines import web
@@ -144,6 +144,9 @@ def check(project_id: str, runs: Optional[int] = None) -> Optional[str]:
             run = db.get(Run, run_id)
             run.status, run.error = "failed", "internal"
         db.commit()
+        if run.status == "failed":
+            # The client gets no report this time: the team is told (24 Nov 2026)
+            alerts.weekly_failed(project_id, run.error)
         if run.status == "done":
             # The sites nothing else types typed by the AI (a live check only), the cited pages read, the actions
             # brought in line, and in a live check the briefs written

@@ -1,0 +1,8 @@
+[Unit]
+Description=Seenova AI: the night's copy of the database (backend/deploy/geo-backup.sh)
+Wants=network-online.target
+After=network-online.target docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/geo-backend/deploy/geo-backup.sh
