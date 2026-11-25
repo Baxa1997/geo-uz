@@ -256,7 +256,10 @@ that is committed.
   we couldn't read had their audit and research run again on the server ($0, no model call): 6 site checks each with
   `js_only` failed in the place of the checks on the words, their false fixes gone (25 → 22 and 18 → 15 actions), and
   their research saying nothing about what their sites lack (8 of 10 and 2 of 3 questions `site_unreadable`, the rest
-  with no page cited). Their market stays Uzbekistan until a new check.
+  with no page cited). Their market stays Uzbekistan until a new check. On 26 Nov their two owners were emailed that
+  their report was updated, each in the language they used (English, Uzbek), with a button to the report; the text was
+  shown to the user first ("Send both as written"), and one email asks the owner to reply if their customers are in
+  another country (a new check for that market would be the user's call, about $0.6).
 
 - **Built, waiting for the user's look: the team's admin page (25 Nov), on the branch `admin-page`; merged, pushed and
   deployed the same day, when the user chose "Commit, push, deploy" (the server's previous `app/` kept as
