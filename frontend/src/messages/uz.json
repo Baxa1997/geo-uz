@@ -4838,5 +4838,140 @@
         }
       }
     }
+  },
+  "Admin": {
+    "menu": {
+      "label": "Admin menyusi",
+      "title": "Seenova AI · Admin",
+      "open": "Menyuni ochish",
+      "badge": "Admin",
+      "overview": "Umumiy koʻrinish",
+      "waiting": "Navbat",
+      "projects": "Loyihalar",
+      "users": "Foydalanuvchilar",
+      "site": "Saytni ochish",
+      "logout": "Chiqish"
+    },
+    "login": {
+      "title": "Admin uchun kirish",
+      "text": "Seenova AI jamoasi uchun. Bu yerda hammasi faqat koʻrish uchun, navbatdagi tekshiruvni boshlashdan tashqari.",
+      "username": "Foydalanuvchi nomi",
+      "password": "Parol",
+      "submit": "Kirish",
+      "submitting": "Kirilmoqda…",
+      "wrong": "Foydalanuvchi nomi yoki parol notoʻgʻri.",
+      "locked": "Notoʻgʻri urinishlar juda koʻp: kirish bir soatga yopildi.",
+      "off": "Serverda admin uchun kirish sozlanmagan.",
+      "failed": "Kirib boʻlmadi. Qaytadan urinib koʻring."
+    },
+    "overview": {
+      "title": "Umumiy koʻrinish",
+      "users": "Foydalanuvchilar",
+      "projects": "Loyihalar",
+      "checksToday": "Bugungi bepul tekshiruvlar",
+      "waiting": "Navbatda",
+      "newThisWeek": "7 kunda {count} ta yangi",
+      "ofLimit": "{count} / {limit}",
+      "checksTodayNote": "Soʻnggi 24 soatda, kunlik limitdan",
+      "runningNow": "Hozir {count} tasi bajarilmoqda",
+      "checksTitle": "Barcha bepul tekshiruvlar",
+      "statuses": {
+        "done": "Tayyor",
+        "failed": "Xato bilan",
+        "waiting": "Navbatda",
+        "running": "Bajarilmoqda",
+        "preparing": "Hali tasdiqlanmagan"
+      },
+      "costTitle": "AI xarajatlari",
+      "costFree": "Bepul tekshiruvlar",
+      "costWeek": "Bepul, 7 kunda",
+      "costPlans": "Pullik tariflar tekshiruvlari",
+      "costNote": "Har bir tekshiruv yozib qoʻygan ChatGPT va Gemini xarajati.",
+      "latestProjects": "Yangi loyihalar",
+      "latestUsers": "Yangi foydalanuvchilar",
+      "seeAll": "Hammasi"
+    },
+    "waiting": {
+      "title": "Navbat",
+      "intro": "Kunlik limitdan oshgan bepul tekshiruvlar shu yerda kutadi. Kunlik limitda joy boʻlsa, server ularni har 15 daqiqada oʻzi boshlaydi. «Boshlash» tekshiruvni darhol, limitdan oshsa ham boshlaydi, u tayyor boʻlgach egasiga xat boradi.",
+      "today": "Bugun: {limit} ta bepul tekshiruvdan {count} tasi ishlatildi · bir tekshiruv taxminan {usd}",
+      "empty": "Navbatda hech kim yoʻq.",
+      "place": "№",
+      "website": "Sayt",
+      "account": "Akkaunt",
+      "since": "Navbatga qoʻshilgan",
+      "questions": "Savollar",
+      "approve": "Boshlash",
+      "confirm": "Hozir boshlash · {usd}",
+      "cancel": "Bekor qilish",
+      "starting": "Boshlanmoqda…",
+      "started": "Boshlandi",
+      "taken": "Tekshiruv endi navbatda emas: u allaqachon boshlangan.",
+      "approveFailed": "Boshlab boʻlmadi. Qaytadan urinib koʻring.",
+      "team": "Jamoa",
+      "emailIn": "Xat tili: {language}",
+      "languages": {
+        "uz": "oʻzbekcha",
+        "ru": "ruscha",
+        "en": "inglizcha"
+      },
+      "runningTitle": "Hozir bajarilmoqda",
+      "runningEmpty": "Hozir tekshiruv yoʻq.",
+      "startedAt": "boshlangan: {date}",
+      "status": {
+        "asking": "Assistentlardan soʻralmoqda",
+        "reading_answers": "Javoblar oʻqilmoqda"
+      },
+      "progress": "{total} ta javobdan {answered} tasi"
+    },
+    "projects": {
+      "title": "Loyihalar",
+      "intro": "{count} ta roʻyxatdan oʻtgan brend, yangilari tepada. Tilga olinish: soʻnggi tekshiruvda biznes nomi aytilgan xaridor javoblari, barcha javoblar ichidan. Hisobotlar va bepul tahlillar havola orqali, faqat koʻrish uchun ochiladi.",
+      "empty": "Hali loyihalar yoʻq.",
+      "brand": "Brend",
+      "owner": "Egasi",
+      "created": "Yaratilgan",
+      "plan": "Tarif",
+      "checks": "Tekshiruvlar",
+      "named": "Tilga olinish",
+      "namedValue": "{named} / {answers}",
+      "latest": "soʻnggisi: {date}",
+      "noCheck": "Hali tekshiruv yoʻq",
+      "links": "Ochish",
+      "report": "Hisobot",
+      "snapshot": "Bepul tahlil",
+      "trial": "sinov",
+      "paid": "toʻlangan",
+      "team": "Jamoa",
+      "plans": {
+        "start": "Standard",
+        "business": "Pro",
+        "agency": "Enterprise"
+      }
+    },
+    "users": {
+      "title": "Foydalanuvchilar",
+      "intro": "{count} ta akkaunt, yangilari tepada. Loyiha oʻz hisobotini ochadi.",
+      "empty": "Hali foydalanuvchilar yoʻq.",
+      "email": "Email",
+      "joined": "Roʻyxatdan oʻtgan",
+      "lastLogin": "Soʻnggi kirish",
+      "projects": "Loyihalar",
+      "freeCheck": "Bepul tekshiruv",
+      "unknown": "Faol sessiya yoʻq",
+      "noCheck": "Hali yoʻq",
+      "team": "Jamoa",
+      "checksCount": "{count} ta tekshiruv",
+      "statuses": {
+        "queued": "Boshlanmoqda",
+        "reading_site": "Sayt oʻqilmoqda",
+        "ready": "Egasining tasdigʻini kutmoqda",
+        "waiting": "Navbatda",
+        "asking": "Assistentlardan soʻralmoqda",
+        "reading_answers": "Javoblar oʻqilmoqda",
+        "done": "Tayyor",
+        "failed": "Xato bilan"
+      }
+    }
   }
 }

@@ -33,6 +33,9 @@ ISOLATED: Dict[str, str] = {
     "SUPABASE_URL": "",
     "SUPABASE_ANON_KEY": "",
     "TEAM_EMAILS": "",
+    # The admin page is off unless a test sets its own name and hash
+    "ADMIN_USERNAME": "",
+    "ADMIN_PASSWORD_HASH": "",
     "FIRST_RUN_REPLAY": "false",
     "WEEKLY_RUNS": "false",
 }

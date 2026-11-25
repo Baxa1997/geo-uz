@@ -122,7 +122,7 @@ waits for their look. The open work, in the order the user picks (ask as a short
    screenshot of it.)
 2. The live site: public at https://www.seenovai.com, and `FRONTEND_ORIGIN` on the server is that address (23 Nov).
    A shared link shows a picture in its language since 23 Nov. Left: Chromium on the server, when the user says
-   (the PDF on the live site, the emailed report's attachment); `robots.txt` and a sitemap; contacts on the public pages.
+   (the PDF on the live site, the emailed report's attachment); `robots.txt` and a sitemap (the contacts on the public pages came on 24 Nov).
 3. The database stays in Mumbai for now (the user, 23 Nov 2026, of the Frankfurt project: "no need for this one",
    then, told it would be free, "for now just use it"). A backend call costs 0.6–2 s from Germany; what code can
    still do is fewer round trips and longer caching, when the user asks for it. If the move comes back: a free
@@ -161,8 +161,8 @@ waits for their look. The open work, in the order the user picks (ask as a short
   `backend/app/engines.py`) has never run.
 - A mail service on the product's domain for the emails' sender: Gmail's account is for login codes and testing.
   (The site's address is the user's domain, www.seenovai.com, since 23 Nov.)
-- Real contacts for the public pages (an email, a Telegram): the footer's placeholders were removed on 16 Nov.
-  Contacts for the pilot report's last page.
+- Contacts for the pilot report's last page. (The public pages' contact is settled: since 24 Nov the footer, the Terms
+  and the Privacy policy give the email the user chose, and no Telegram, the user's "Email only".)
 - Three answers pasted from the ChatGPT app, to compare the app with the API.
 - (Settled by the landing page's rebuild, 16 Nov, waiting for the user's look.) The weekly Telegram report is
   marked "tez orada" and "no sign-up needed" is gone: the free check is "sign in with your email, no card".
@@ -229,6 +229,31 @@ that is committed.
    that no key and no client's name is in it.
 
 ## Done (as of 18 November 2026)
+
+- **Built, waiting for the user's look: the team's admin page (25 Nov), on the branch `admin-page`; merged, pushed and
+  deployed the same day, when the user chose "Commit, push, deploy" (the server's previous `app/` kept as
+  `app.bak-before-admin`, its `.env` as `.env.bak-before-admin`; the admin login answers there).**
+  After the check that every report works, the user asked for a super-admin login with a name and password of their
+  own, and a dashboard of the users, the brands registered and the waiting list, approving a waiting check there and
+  reading their reports. Asked, they kept their own short password (told that guessing tools try such patterns early
+  and that the page shows every user's email), chose Approve as "Run now, rest automatic", and "different menu page
+  for each". The name and the password are kept out of the repository, which is public: the server's `.env` holds the
+  name and only the password's hash. `/[locale]/admin` (`features/admin`, `app/superadmin.py`): its own login (5 wrong
+  an hour from a connection, then 20 from everyone, shut it for the hour and email the team; `python -m app.admin
+  unlock`), a 12-hour signed cookie (`geo_admin`), and a menu of four pages: Overview (accounts and projects with the
+  last 7 days', the day's free checks, the free checks by state, what checks cost, the newest five of each), Waiting
+  list (the queue in order with Approve, which starts a check at once past the day's limit, counted among the day's
+  checks and emailed when done; the checks being asked, asked again every 10 s), Projects (owner, plan, checks, the
+  latest check's buyer answers naming it of all of them, the report and snapshot by their links) and Users (joined,
+  last login, projects, the free check's state). Read-only but Approve. The queue now takes a waiting check in one
+  statement (`queue.claim`), so the timer and Approve never both ask it. Tests: `pytest` 94 pass (7 new: the hash, the
+  cookie, the lock, the counts against the report's own headline, a check taken once, Approve once with its email).
+  Looked at on this computer with a local backend of its own (a test password, email off) and two stand-in checks in
+  the queue (removed after): the login refusing a wrong password, the four pages in English on desktop, Approve moving
+  a check to "Running now" (replayed, done in 20 s, its email not sent), the overview in Uzbek, the waiting list in
+  Russian and the projects in Uzbek at 390px (the tables scroll inside their cards), Log out; no console error. Type
+  check and linter clean. New variables `ADMIN_USERNAME`, `ADMIN_PASSWORD_HASH` (`ENVIRONMENT.md`): set in the
+  server's `.env` on 25 Nov.
 
 - **Built, waiting for the user's look: the queue's page moves on by itself (25 Nov), on the branch `queue-page-poll`;
   merged, pushed and deployed the same day, when the user chose "Yes, update by itself".** The user sent the queue's

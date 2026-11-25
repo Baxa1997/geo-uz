@@ -22,9 +22,9 @@ import argparse
 import smtplib
 import time
 from email.message import EmailMessage
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
-from sqlalchemy import delete, select
+from sqlalchemy import delete, select, update
 
 from . import alerts, limits, mail
 from .config import settings
@@ -38,18 +38,19 @@ EMPTY = ("insufficient_quota", "exceeded your current quota")
 LANGUAGES = ("uz", "ru", "en")
 
 
-def _since(run: FirstRun) -> str:
+def since(run: FirstRun) -> str:
+    """When the check joined the queue (its first time, when it was put back since)."""
     return str((run.draft or {}).get("queuedAt") or run.created_at.isoformat())
 
 
 def waiting(db: Any) -> List[FirstRun]:
     """The queue, first in first: by when each joined it."""
-    return sorted(db.scalars(select(FirstRun).where(FirstRun.status == WAITING)), key=_since)
+    return sorted(db.scalars(select(FirstRun).where(FirstRun.status == WAITING)), key=since)
 
 
 def place(db: Any, run: FirstRun) -> int:
     """A waiting check's place in the queue, from 1."""
-    ahead = [other for other in waiting(db) if other.id != run.id and _since(other) < _since(run)]
+    ahead = [other for other in waiting(db) if other.id != run.id and since(other) < since(run)]
     return len(ahead) + 1
 
 
@@ -140,22 +141,37 @@ def ready_email(db: Any, run: FirstRun) -> EmailMessage:
     return message
 
 
+def claim(run_id: str) -> Optional[Tuple[Dict[str, Any], Dict[str, Any], float]]:
+    """Takes a waiting check out of the queue for one asker: waiting becomes asking in a single statement, so the timer
+    and the admin page's Approve (25 Nov 2026) can never both ask it. What `work_check` takes (the draft, what the owner
+    confirmed, what was spent so far), or None when the check isn't waiting any more."""
+    with SessionLocal() as db:
+        taken = db.execute(update(FirstRun).where(FirstRun.id == run_id, FirstRun.status == WAITING).values(status="asking")).rowcount
+        if not taken:
+            db.rollback()
+            return None
+        run = db.get(FirstRun, run_id)
+        draft = dict(run.draft or {})
+        spent = run.cost_usd or 0.0
+        db.commit()
+    return draft, draft.get("confirmed") or {}, spent
+
+
+def status_of(run_id: str) -> str:
+    with SessionLocal() as db:
+        run = db.get(FirstRun, run_id)
+        return run.status if run else "missing"
+
+
 def run_one(run_id: str) -> str:
     """Asks one waiting check, as the site would have: "done", "waiting" (the balance ran out) or "failed"."""
     from .main import work_check  # the check as the site asks it; imported here, since main imports this module
 
-    with SessionLocal() as db:
-        run = db.get(FirstRun, run_id)
-        if run is None or run.status != WAITING:
-            return run.status if run else "missing"
-        draft = dict(run.draft or {})
-        confirmed, spent = draft.get("confirmed") or {}, run.cost_usd or 0.0
-        run.status = "asking"
-        db.commit()
-    work_check(run_id, draft, confirmed, spent)
-    with SessionLocal() as db:
-        run = db.get(FirstRun, run_id)
-        return run.status if run else "missing"
+    claimed = claim(run_id)
+    if claimed is None:
+        return status_of(run_id)
+    work_check(run_id, *claimed)
+    return status_of(run_id)
 
 
 def tell(run_id: str) -> bool:
@@ -234,10 +250,10 @@ def main(argv: Optional[List[str]] = None) -> None:
         queue = waiting(db)
         usd = check_usd(db)
         accounts = {user.id: user.email for user in db.scalars(select(User).where(User.id.in_([run.user_id for run in queue])))} if queue else {}
-        rows = [(run.id, run.domain, accounts.get(run.user_id, "?"), _since(run)[:16].replace("T", " "), len(((run.draft or {}).get("confirmed") or {}).get("prompts") or [])) for run in queue]
+        rows = [(run.id, run.domain, accounts.get(run.user_id, "?"), since(run)[:16].replace("T", " "), len(((run.draft or {}).get("confirmed") or {}).get("prompts") or [])) for run in queue]
     if not chosen.run:
-        for number, (_, domain, email, since, questions) in enumerate(rows, start=1):
-            print(f"{number:3}. {domain:32} {email:32} since {since}  {questions} questions")
+        for number, (_, domain, email, joined, questions) in enumerate(rows, start=1):
+            print(f"{number:3}. {domain:32} {email:32} since {joined}  {questions} questions")
         print(f"{len(rows)} waiting, about ${usd:.2f} each, ${usd * len(rows):.2f} in all" if rows else "The queue is empty.")
         return
     if chosen.run < 1:

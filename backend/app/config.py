@@ -85,6 +85,10 @@ class Settings:
     # Our own accounts (emails, comma-separated): not bound by "one free check an account", so the team can
     # try the product. Nobody's when left out.
     team_emails: List[str] = field(default_factory=lambda: [email.strip().lower() for email in os.environ.get("TEAM_EMAILS", "").split(",") if email.strip()])
+    # The team's admin page (`app/superadmin.py`, 25 Nov 2026): its login name and the password's hash, which
+    # `python -m app.admin password` makes; the password itself is kept nowhere. Without both the admin page is off.
+    admin_username: str = field(default_factory=lambda: os.environ.get("ADMIN_USERNAME", "").strip())
+    admin_password_hash: str = field(default_factory=lambda: os.environ.get("ADMIN_PASSWORD_HASH", "").strip())
     # Development: a first run replays the latest saved one in the place of asking the assistants, so the
     # pages can be built and tried without a paid request. Never set on the server.
     first_run_replay: bool = field(default_factory=lambda: os.environ.get("FIRST_RUN_REPLAY", "false") == "true")

@@ -31,7 +31,7 @@ from . import cache, delivery, firstrun, fixes, mail, projects, slots, wave
 from . import digest as telegram_digest
 from .config import settings
 from .db import Brand, DemoRequest, FirstRun, LoginCode, Project, ReadSession, Run, Session, SessionLocal, User, create_tables, now
-from . import alerts, billing, limits, queue
+from . import alerts, billing, limits, queue, superadmin
 import stripe
 from starlette.concurrency import run_in_threadpool
 
@@ -43,6 +43,8 @@ MAX_ATTEMPTS = 5
 app = FastAPI(title="Seenova AI backend")
 app.add_middleware(CORSMiddleware, allow_origins=[settings.frontend_origin], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 create_tables()
+# The team's admin page (`app/superadmin.py`, 25 Nov 2026): off without ADMIN_USERNAME and ADMIN_PASSWORD_HASH
+app.include_router(superadmin.router)
 
 _PROJECT_PATH = re.compile(r"^/projects/([^/]+)")
 

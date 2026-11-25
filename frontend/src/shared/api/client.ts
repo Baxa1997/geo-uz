@@ -1,4 +1,4 @@
-import { SESSION_COOKIE } from "@/shared/constants";
+import { ADMIN_COOKIE, SESSION_COOKIE } from "@/shared/constants";
 import type {
   CreateTagsRequest,
   FactsRequest,
@@ -61,6 +61,11 @@ import type {
   User,
   VerifyCodeRequest,
   WaveResponse,
+  AdminMe,
+  AdminOverview,
+  AdminProject,
+  AdminQueue,
+  AdminUser,
 } from "@/shared/types/api";
 
 export const USE_MOCKS = process.env.NEXT_PUBLIC_USE_MOCKS === "true";
@@ -222,12 +227,16 @@ export class ApiError extends Error {
   }
 }
 
-/** The browser sends the session cookie itself; calls made on the Next.js server pass it on. */
+/** The browser sends the session cookies itself; calls made on the Next.js server pass them on (the admin page's too). */
 async function sessionHeaders(): Promise<Record<string, string>> {
   if (typeof window !== "undefined") return {};
   const { cookies } = await import("next/headers");
-  const session = (await cookies()).get(SESSION_COOKIE);
-  return session ? { Cookie: `${SESSION_COOKIE}=${session.value}` } : {};
+  const store = await cookies();
+  const sent = [SESSION_COOKIE, ADMIN_COOKIE].flatMap((name) => {
+    const cookie = store.get(name);
+    return cookie ? [`${name}=${cookie.value}`] : [];
+  });
+  return sent.length ? { Cookie: sent.join("; ") } : {};
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
@@ -331,6 +340,22 @@ const httpApi: ApiClient = {
   requestPlan: (projectId, body) => send("POST", `/projects/${id(projectId)}/plan-requests`, body),
   startCheckout: (projectId, body) => send<StripePage>("POST", `/projects/${id(projectId)}/checkout`, body),
   openBillingPortal: (projectId, body) => send<StripePage>("POST", `/projects/${id(projectId)}/billing-portal`, body),
+};
+
+/**
+ * The team's admin page (25 Nov 2026, `backend/app/superadmin.py`): always the backend, never sample data, behind its own
+ * login. 401 without it, 404 when the backend has no admin login set, 429 while wrong logins have shut it.
+ */
+export const adminApi = {
+  login: (body: { username: string; password: string }) => send<{ username: string }>("POST", "/admin/login", body),
+  logout: () => send<void>("POST", "/admin/logout"),
+  me: () => request<AdminMe>("/admin/me"),
+  overview: () => request<AdminOverview>("/admin/overview"),
+  waiting: () => request<AdminQueue>("/admin/waiting"),
+  projects: () => request<AdminProject[]>("/admin/projects"),
+  users: () => request<AdminUser[]>("/admin/users"),
+  /** Starts a waiting check now, past the day's limit; 409 when it isn't waiting any more. */
+  approve: (runId: string) => send<{ id: string; status: string }>("POST", `/admin/waiting/${id(runId)}/approve`),
 };
 
 /** What the mock bridge returns: server actions can't carry an ApiError's status across. */

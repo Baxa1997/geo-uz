@@ -22,6 +22,12 @@ The website's audit and the actions (23 Nov 2026: the SEO audit's checks came af
     python -m app.admin briefs <project id>                  every page to write given its brief, not five as a check
                                                              does (24 Nov 2026; the writing model, about a cent a page)
 
+The admin page (25 Nov 2026, `app/superadmin.py`):
+
+    python -m app.admin password                             asks for its password twice (not shown) and prints the
+                                                             ADMIN_PASSWORD_HASH line for the server's .env
+    python -m app.admin unlock                               opens its login again after too many wrong ones
+
 Types: client_managed, directory, media, ugc, telegram, reference, platform_docs, competitor_site, unclassified.
 The pages keep a report two minutes (`app/cache.py`): a site typed here shows within that.
 
@@ -33,10 +39,10 @@ from __future__ import annotations
 import sys
 from typing import Any, Optional
 
-from sqlalchemy import select
+from sqlalchemy import delete, select
 
-from . import cache, domains, firstrun, fixes, projects, research
-from .db import Action, Brand, Project, Run, SessionLocal, User, create_tables
+from . import cache, domains, firstrun, fixes, projects, research, superadmin
+from .db import Action, Brand, LimitHit, Project, Run, SessionLocal, User, create_tables
 from .projects import PLAN_LIMITS
 
 
@@ -55,7 +61,22 @@ def _latest(db: Any, project: Project) -> Optional[Run]:
     return db.scalar(select(Run).where(Run.project_id == project.id, Run.status == "done").order_by(Run.collected_at.desc()).limit(1))
 
 
+def _password_line() -> str:
+    """The admin page's password, typed twice and never shown, as the line the server's `.env` keeps: its hash only."""
+    import getpass
+
+    first = getpass.getpass("The admin page's password: ")
+    if len(first) < 8:
+        sys.exit("At least 8 characters")
+    if getpass.getpass("Again: ") != first:
+        sys.exit("The two differ")
+    return f"ADMIN_PASSWORD_HASH={superadmin.hash_password(first)}"
+
+
 def main(arguments: list) -> None:
+    if arguments == ["password"]:
+        print(_password_line())
+        return
     create_tables()
     with SessionLocal() as db:
         if arguments[:1] == ["list"]:
@@ -144,6 +165,10 @@ def main(arguments: list) -> None:
             cache.touch(project.id)
             pages = [action for action in db.scalars(select(Action).where(Action.project_id == project.id, Action.kind == "content")) if action.status in ("new", "in_progress")]
             print(f"{project.id}: {sum(bool((action.details or {}).get('brief')) for action in pages)} of {len(pages)} pages to write have a brief")
+        elif arguments == ["unlock"]:
+            gone = db.execute(delete(LimitHit).where(LimitHit.kind == superadmin.FAIL)).rowcount
+            db.commit()
+            print(f"The admin login is open again ({gone} wrong logins forgotten)")
         else:
             sys.exit(__doc__)
 
