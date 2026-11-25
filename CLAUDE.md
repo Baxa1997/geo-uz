@@ -230,6 +230,14 @@ that is committed.
 
 ## Done (as of 18 November 2026)
 
+- **Built, waiting for the user's look: the queue's page moves on by itself (25 Nov), on the branch `queue-page-poll`;
+  merged, pushed and deployed the same day, when the user chose "Yes, update by itself".** The user sent the queue's
+  page of a visitor's check, still "in the queue, place 1" after the check was done (the page wasn't asked again).
+  Now a check in the queue is looked up every 30 seconds while its page is open (`QUEUE_POLL_MS`), so the page moves
+  on to the check's progress and then the project; its note says so in the three languages. Looked at on this
+  computer with a stand-in check in the queue whose status was changed underneath (removed after): the page moved on
+  without a reload, no console error. Type check and linter clean. No new variable.
+
 - **Built, waiting for the user's look: 10 free checks a day, and the queue asked by the server itself (25 Nov), on the
   branch `queue-auto`; deployed on the server the same day (the previous `app/` kept as `app.bak-before-autoqueue`, the
   previous `.env` as `.env.bak-before-cap10`).** The user: "need to make daily check 10 not 2", then "some projects are

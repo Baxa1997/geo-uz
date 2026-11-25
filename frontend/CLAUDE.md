@@ -74,7 +74,9 @@ slices change in the contract below:
   and the report is emailed, and its button reads "Join the queue"; a website read past the limit had no competitor
   search (`competitorsSearched: false`), so step 3 says they were suggested from the website. Confirming sends the
   page's language (`language`, the email's). A check in the queue (`waiting`) shows `FirstRunQueued`: its place, the
-  address the report goes to, and "Back to the home page" in the bar; the page isn't polled. The team runs the queue
+  address the report goes to, and "Back to the home page" in the bar; since 25 Nov 2026 (the server asks the queue every 15
+  minutes) the page asks for its check every 30 seconds (`QUEUE_POLL_MS`), so an open tab moves on by itself to the
+  check's progress and then the project, and its note says so. The team runs the queue
   by hand (`backend/README.md`). The empty dashboard says the check is in the queue, its place and where the report
   goes, with a link to it, in the place of "No projects yet" (the user's choice: "Queue on the dashboard").
 - **Every screen of the first check and the login is the window's height (18 Nov; the user: "full page not
