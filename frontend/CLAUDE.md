@@ -69,6 +69,17 @@ slices change in the contract below:
   asked for every three seconds (`getFirstRunPartial`); the finished check's page takes its place. The live
   counts come from the answers' own words, so a competitor the answers spell another way is counted only at
   the end, and the page says the final numbers come when the check ends.
+- **The market and websites we can't read (25 Nov 2026; the user: "if it was in Uzbekistan even in USA it must
+  measure").** Step 1's country starts on "Detect from my website" (`AUTO_COUNTRY`, never sent): the backend reads the
+  market from the website's own text; picking a country is the owner's word, which wins. Step 2 opens on `MarketField`:
+  "Customers in United States · questions in English", "Read from your website" when it was, a warning with "Check
+  {country} instead" when the owner's pick and the website disagree (`siteCountry`), and "please check it" when the
+  website said too little. Another market there writes the draft again (`changeFirstRunMarket`, `POST
+  /first-runs/{id}/market`): the run goes back to reading, about a minute; the country left the folded details. A
+  website read as almost no words (`thin`, `siteWords`: its text only with JavaScript) gets a note that the description
+  and services were guessed from its name. In reports: the site check `js_only` ("the site's text appears only with
+  JavaScript", a high-impact technical fix with its AI task) takes the place of the checks on the words, and the
+  research's findings read `site_unreadable`, with a line before them saying why nothing was compared.
 - **The free checks' queue (22 Nov; the user: "Cap at 2 a day + queue").** Past the day's free checks for everyone
   (`FREE_CHECKS_A_DAY`) the draft comes with `queue: true`: step 4 opens with a note that the check joins the queue
   and the report is emailed, and its button reads "Join the queue"; a website read past the limit had no competitor

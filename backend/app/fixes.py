@@ -40,6 +40,8 @@ PRICE_WORDS = ("price", "narx", "цен", "стоим", "tarif", "тариф", "
 # audit's housekeeping last (23 Nov 2026)
 CHECK_IMPACT = {
     "ai_bots_blocked": "high",
+    # The pages' words only with JavaScript: most AI crawlers read an empty page (25 Nov 2026)
+    "js_only": "high",
     "prices_as_images": "high",
     "no_prices": "high",
     "one_language": "high",

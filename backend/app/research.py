@@ -23,7 +23,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from . import engines, projects
 from .db import FirstRun, Project, Run, SessionLocal, now
 from .engines import web
-from .firstrun import STR, arr, obj
+from .firstrun import STR, THIN_WORDS, arr, obj, words_of
 
 # At most this many questions are researched a check, and this many pages read for them: a free check has ten questions
 QUESTIONS = 10
@@ -125,8 +125,9 @@ def client_text(db: Any, project: Project, domain: str) -> str:
     return "\n\n".join(f"[{page['url']}]\n{page['text']}" for page in pages)[:40_000]
 
 
-def compare(question: Dict[str, Any], page: Optional[Tuple[str, str, str]], site: str, language: str) -> Tuple[Dict[str, Any], float]:
-    """One question's finding: the model's comparison, checked against both pages."""
+def compare(question: Dict[str, Any], page: Optional[Tuple[str, str, str]], site: str, language: str, unread: bool = False) -> Tuple[Dict[str, Any], float]:
+    """One question's finding: the model's comparison, checked against both pages. `unread`: the client's own website
+    gave almost no words, so nothing is said about what it lacks (25 Nov 2026) and the model isn't asked."""
     answer = question["answer"]
     finding: Dict[str, Any] = {
         "promptId": question["prompt"]["id"],
@@ -142,6 +143,10 @@ def compare(question: Dict[str, Any], page: Optional[Tuple[str, str, str]], site
         return {**finding, "status": "no_page"}, 0.0
     url, title, text = page
     finding["page"] = {"url": url, "title": title or None}
+    if unread:
+        # The client's website showed almost no words (its text only with JavaScript): "your site doesn't say X" would
+        # be about a page we couldn't read. Who AI named, what it said and the page it cited still stand
+        return {**finding, "status": "site_unreadable"}, 0.0
     if not text:
         return {**finding, "status": "unreadable"}, 0.0
     content = (
@@ -192,14 +197,16 @@ def research(project_id: str, run_id: str) -> Optional[Dict[str, Any]]:
             report = projects.report(db, project, run_id=run_id)
             language = (project.report_settings or {}).get("language") or "en"
             site = client_text(db, project, own.domain)
+        unread = words_of(site) < THIN_WORDS
         lost = lost_questions(report, rivals)
-        # Each question's page: the business's own page the answer cited, read once however many questions cite it
+        # Each question's page: the business's own page the answer cited, read once however many questions cite it;
+        # not read when the client's own website couldn't be, since nothing is compared then
         wanted = {question["pages"][0]["url"]: question["pages"][0] for question in lost if question["pages"]}
         with ThreadPoolExecutor(max_workers=5) as pool:
-            texts = dict(zip(wanted, pool.map(lambda url: (web.fetch(url) or ("",))[0], wanted)))
+            texts = {} if unread else dict(zip(wanted, pool.map(lambda url: (web.fetch(url) or ("",))[0], wanted)))
         pages = [(question["pages"][0]["url"], question["pages"][0].get("title") or "", texts.get(question["pages"][0]["url"], "")) if question["pages"] else None for question in lost]
         with ThreadPoolExecutor(max_workers=4) as pool:
-            done = list(pool.map(lambda pair: compare(pair[0], pair[1], site, language), zip(lost, pages)))
+            done = list(pool.map(lambda pair: compare(pair[0], pair[1], site, language, unread), zip(lost, pages)))
         findings = [finding for finding, _ in done]
         cost = round(sum(usd for _, usd in done), 4)
         kept = {"at": now().isoformat(), "model": engines.settings.read_model, "cost": cost, "questions": len(report["prompts"]), "items": findings}

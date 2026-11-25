@@ -176,6 +176,9 @@ export interface ApiClient {
   getFirstRunDraft(id: string): Promise<FirstRunDraft>;
   /** Starts the check on what the owner confirmed. 422 without a name or a question, or with too many; 429 at the day's limit. */
   confirmFirstRun(id: string, body: FirstRunConfirm): Promise<FirstRun>;
+  /** Writes the draft again for customers in another country (its questions' languages, its competitors): the website
+   * is read again, so the run goes back to `reading_site`. 409 unless `ready`, 429 past the day's websites read. */
+  changeFirstRunMarket(id: string, country: string): Promise<FirstRun>;
   /** What a running check has so far; null before its first answer. */
   getFirstRunPartial(id: string): Promise<FirstRunPartial | null>;
   /** The first statistics; 409 until the run is done. */
@@ -320,6 +323,7 @@ const httpApi: ApiClient = {
   getFirstRunDraft: (runId) => request(`/first-runs/${id(runId)}/draft`),
   getFirstRunPartial: (runId) => request(`/first-runs/${id(runId)}/partial`),
   confirmFirstRun: (runId, body) => send("POST", `/first-runs/${id(runId)}/start`, body),
+  changeFirstRunMarket: (runId, country) => send("POST", `/first-runs/${id(runId)}/market`, { country }),
   getFirstRunResult: (runId) => request(`/first-runs/${id(runId)}/result`),
   createDemoRequest: (body) => send("POST", "/demo-requests", body),
   sendSupportMessage: (body) => send("POST", "/support-messages", body),
@@ -431,6 +435,8 @@ const mockBridge = (): ApiClient => ({
       // The mocks' check is a timer with nothing to show before its end
       getFirstRunPartial: async () => null,
       confirmFirstRun: (runId, body) => mocks().then((m) => unwrap(m.confirmFirstRun(runId, body))),
+      // Sample data reads no website: there is no other market to write it for
+      changeFirstRunMarket: () => Promise.reject(new ApiError(501, "not_in_sample_data")),
       getFirstRunResult: (runId) => mocks().then((m) => unwrap(m.getFirstRunResult(runId))),
       createDemoRequest: (body) => mocks().then((m) => unwrap(m.createDemoRequest(body))),
       sendSupportMessage: (body) => mocks().then((m) => unwrap(m.sendSupportMessage(body))),
@@ -475,6 +481,7 @@ const liveFirstRun: Partial<ApiClient> = {
   getFirstRunDraft: httpApi.getFirstRunDraft,
   getFirstRunPartial: httpApi.getFirstRunPartial,
   confirmFirstRun: httpApi.confirmFirstRun,
+  changeFirstRunMarket: httpApi.changeFirstRunMarket,
   getFirstRunResult: httpApi.getFirstRunResult,
 };
 
@@ -493,6 +500,7 @@ const NOT_PROJECTS: (keyof ApiClient)[] = [
   "getFirstRunDraft",
   "getFirstRunPartial",
   "confirmFirstRun",
+  "changeFirstRunMarket",
   "getFirstRunResult",
   "createSnapshot",
   "getSnapshot",

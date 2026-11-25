@@ -5,6 +5,7 @@ import { ArrowRightIcon as ArrowRight } from "@phosphor-icons/react/dist/ssr/Arr
 import { CheckIcon as Check } from "@phosphor-icons/react/dist/ssr/Check";
 import { CircleNotchIcon as LoaderCircle } from "@phosphor-icons/react/dist/ssr/CircleNotch";
 import { InfoIcon as Info } from "@phosphor-icons/react/dist/ssr/Info";
+import { WarningIcon as Warning } from "@phosphor-icons/react/dist/ssr/Warning";
 import { useLocale, useMessages, useTranslations } from "next-intl";
 import { useId, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { ChipInput } from "@/shared/components/chip-input";
@@ -21,15 +22,17 @@ import { useRouter } from "@/i18n/navigation";
 import { api, ApiError } from "@/shared/api/client";
 import { queryKeys } from "@/shared/api/query-keys";
 import { MAX_BRAND_QUESTIONS } from "@/shared/constants";
-import { DEFAULT_COUNTRY } from "@/shared/constants/countries";
+import { AUTO_COUNTRY, DEFAULT_COUNTRY } from "@/shared/constants/countries";
 import { normalizeDomain } from "@/shared/helpers/domain";
 import { cn } from "@/shared/helpers/utils";
 import type { FirstRun, FirstRunConfirm, FirstRunDraft } from "@/shared/types/api";
 import { useAnswerEngines } from "../hooks/use-answer-engines";
 import { FIRST_CHECK_STEPS, INPUT_CLASS, MAX_ALIASES, MAX_COMPETITORS, MAX_DESCRIPTION_LENGTH, MAX_SERVICES, OWN_QUESTION_TOPIC } from "../constants";
+import { questionLanguages } from "../helpers/market";
 import { onboardingRequest, questionDrafts, topicDrafts, validateChoice, validateFirstQuestions, validateSite, validateWebsite } from "../helpers/onboarding";
 import type { BrandDraft, CompetitorChoice, OnboardingErrors, QuestionDraft, SiteDraft } from "../types";
 import { CompetitorRows } from "./competitor-rows";
+import { MarketField } from "./market-field";
 import { QuestionList, type ListedQuestion } from "./question-list";
 import { SuggestInput } from "./suggest-input";
 import { WebsiteField } from "./website-field";
@@ -38,10 +41,6 @@ type Step = (typeof FIRST_CHECK_STEPS)[number];
 type Frame = { who: string | null; year: number };
 
 const READING = ["profile", "competitors", "questions"] as const;
-/** The countries whose customers type in Russian (`firstrun.RUSSIAN_SPEAKING` in the backend). */
-const RUSSIAN_SPEAKING = ["KZ", "KG", "TJ", "TM", "RU", "BY"];
-/** The languages the questions are written in, by country, as the backend decides it (`firstrun.languages_for`). */
-const questionLanguages = (country: string) => (country === "UZ" ? (["uz", "ru"] as const) : RUSSIAN_SPEAKING.includes(country) ? (["ru"] as const) : (["en"] as const));
 
 /**
  * The first check's four steps, before anybody is asked (the user's correction, 16 Nov 2026: "I don't
@@ -132,10 +131,11 @@ function WebsiteStep({ site, ...frame }: Frame & { site: string }) {
   const id = useId();
   const [name, setName] = useState("");
   const [website, setWebsite] = useState(site);
-  const [country, setCountry] = useState(DEFAULT_COUNTRY);
+  // Left to the website unless the owner picks (25 Nov 2026: the list started on Uzbekistan for everybody)
+  const [country, setCountry] = useState<string>(AUTO_COUNTRY);
   const [errors, setErrors] = useState<OnboardingErrors>({});
   const start = useMutation({
-    mutationFn: (domain: string) => api.startFirstRun({ domain, country, ...(name.trim() ? { name: name.trim() } : {}) }),
+    mutationFn: (domain: string) => api.startFirstRun({ domain, ...(country === AUTO_COUNTRY ? {} : { country }), ...(name.trim() ? { name: name.trim() } : {}) }),
     onSuccess: (run) => router.replace({ pathname: "/onboarding/first-run", query: { run: run.id } }),
   });
   const busy = start.isPending || start.isSuccess;
@@ -170,12 +170,12 @@ function WebsiteStep({ site, ...frame }: Frame & { site: string }) {
       <div className="grid gap-5 sm:grid-cols-2">
         <Field>
           <FieldLabel htmlFor={`${id}-country`}>{t("setup.country")}</FieldLabel>
-          <CountrySelect id={`${id}-country`} value={country} onChange={setCountry} />
+          <CountrySelect id={`${id}-country`} value={country} onChange={setCountry} auto={t("setup.countryAuto")} />
         </Field>
         <Field>
           <FieldLabel>{t("setup.language")}</FieldLabel>
           {/* Not a choice: the questions are written in the country's languages */}
-          <p className="flex h-10 items-center rounded-lg border bg-muted/50 px-3 text-sm">{questionLanguages(country).map((language) => t(`setup.languages.${language}`)).join(" + ")}</p>
+          <p className="flex h-10 items-center rounded-lg border bg-muted/50 px-3 text-sm">{country === AUTO_COUNTRY ? t("setup.languagesAuto") : questionLanguages(country).map((language) => t(`setup.languages.${language}`)).join(" + ")}</p>
         </Field>
       </div>
       <p className="-mt-2 text-sm text-pretty text-muted-foreground">{t("setup.countryHint")}</p>
@@ -288,6 +288,14 @@ function DraftSteps({ run, draft, onAnother, ...frame }: Frame & { run: FirstRun
       )}
       {step === "profile" && (
         <>
+          {/* Almost no words read: what follows was written from the name (25 Nov 2026) */}
+          {draft.thin && (
+            <p role="note" className="flex items-start gap-2 rounded-lg border border-progress/40 bg-progress/10 px-3 py-2.5 text-sm text-pretty">
+              <Warning aria-hidden className="mt-0.5 size-4 shrink-0 text-progress" />
+              {t("thin", { words: draft.siteWords ?? 0, site: draft.domain })}
+            </p>
+          )}
+          <MarketField run={run} draft={draft} />
           <Field data-invalid={Boolean(errors.name)}>
             <FieldLabel htmlFor={`${id}-name`}>{t("company")}</FieldLabel>
             <Input id={`${id}-name`} value={site.name} onChange={(event) => patch({ name: event.target.value })} autoComplete="organization" className={INPUT_CLASS} aria-invalid={Boolean(errors.name)} />
@@ -324,18 +332,13 @@ function DraftSteps({ run, draft, onAnother, ...frame }: Frame & { run: FirstRun
                   {o(errors.services)}
                 </p>
               )}
-              <div className="grid gap-5 sm:grid-cols-2">
-                <Field>
-                  <FieldLabel htmlFor={`${id}-country`}>{o("country")}</FieldLabel>
-                  <CountrySelect id={`${id}-country`} value={site.country} onChange={(country) => patch({ country })} />
-                </Field>
-                <Field>
-                  <FieldLabel htmlFor={`${id}-city`}>
-                    {o("city")} <span className="font-normal text-muted-foreground">({o("optional")})</span>
-                  </FieldLabel>
-                  <SuggestInput id={`${id}-city`} options={site.country === DEFAULT_COUNTRY ? messages.Cities : {}} value={site.city} onChange={(city) => patch({ city })} placeholder={o("cityPlaceholder")} />
-                </Field>
-              </div>
+              {/* The country is the market at the top of the step, changed there: it rewrites the questions too */}
+              <Field>
+                <FieldLabel htmlFor={`${id}-city`}>
+                  {o("city")} <span className="font-normal text-muted-foreground">({o("optional")})</span>
+                </FieldLabel>
+                <SuggestInput id={`${id}-city`} options={site.country === DEFAULT_COUNTRY ? messages.Cities : {}} value={site.city} onChange={(city) => patch({ city })} placeholder={o("cityPlaceholder")} />
+              </Field>
               <ChipInput id={`${id}-aliases`} label={o("aliases")} hint={o("aliasesHint")} values={site.aliases} max={MAX_ALIASES} onChange={(aliases) => patch({ aliases })} />
             </div>
           </details>

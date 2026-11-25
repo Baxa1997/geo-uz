@@ -30,9 +30,17 @@ export function Research({ report }: { report: Report }) {
   const compared = findings.filter((finding) => finding.status === "compared");
   const facts = compared.reduce((sum, finding) => sum + (finding.missing?.length ?? 0), 0);
 
+  // The client's own website showed almost no words (its text only with JavaScript): nothing was compared, and the
+  // section says why before the questions (25 Nov 2026)
+  const unread = findings.some((finding) => finding.status === "site_unreadable");
+
   return (
     <div className="flex flex-col gap-4">
-      <p className="text-sm text-pretty">{t("summary", { compared: compared.length, lost: findings.length, facts })}</p>
+      {unread ? (
+        <p className="text-sm text-pretty">{t("siteUnreadable")}</p>
+      ) : (
+        <p className="text-sm text-pretty">{t("summary", { compared: compared.length, lost: findings.length, facts })}</p>
+      )}
       <ol className="flex flex-col gap-3">
         {researchOrder(findings).map((finding, index) => (
           <li key={finding.promptId} className="print:break-inside-avoid">

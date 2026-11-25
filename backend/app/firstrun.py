@@ -99,17 +99,33 @@ UZBEK_WORDS = r"\b(va|uchun|bilan|haqida|bo[ʻ'‘`]yicha|sizning|xizmat\w*|narx
 FAQ_WORDS = r"\bFAQ\b|часто задаваемые|вопросы и ответы|частые вопросы|ko[ʻ'‘`]p so[ʻ'‘`]raladigan|savol[- ]javob|frequently asked"
 
 
+# Fewer words than this on the pages read (25 Nov 2026): the website shows its text only with JavaScript, or has almost
+# none, so what it says can't be judged. Two of the first five visitors' websites gave 7 and 96 words; readable ones 1,800+
+THIN_WORDS = 150
+# The checks that judge the pages' words: left out when there are almost none, since they would only repeat that
+TEXT_CHECKS = ("prices_as_images", "contacts_missing", "no_prices", "no_faq", "one_language")
+
+
+def words_of(reading: str) -> int:
+    """The words of a website's reading as kept (`siteText`), without the addresses that head its pages."""
+    return len(re.sub(r"^\[https?://[^\]\s]+\]$", " ", reading or "", flags=re.MULTILINE).split())
+
+
 def site_checks(pages: List[Dict[str, str]], html: Optional[str], robots: Optional[str], sitemap: Optional[str] = None, llms: Optional[str] = None, languages: Optional[List[str]] = None) -> List[Dict[str, Any]]:
     """The yes-or-no checks on the website, by rule, never by a model. `passed` false is a problem to fix. The first
     four are `backend/PLAN.md`'s; the SEO audit's six came on 23 Nov 2026 (the user: "seo and geo can be taken from
     research"): the home page's title, description and heading, a sitemap, a page of questions and answers, prices
     in the text, both of the market's languages, llms.txt. A check that can't be judged (the home page's code not
-    read) is left out, not failed."""
+    read) is left out, not failed; with almost no words read, the checks on the words are left out and `js_only`
+    says why (25 Nov 2026)."""
     text = " ".join(page["text"] for page in pages)
-    has_price = bool(re.search(r"\d[\d\s.,]*\s*(млн|тыс|ming|mln)?\.?\s*(сум|so[ʻ'‘`]?m|uzs|usd|\$|тенге|₸|руб|₽|eur|€)", text, re.IGNORECASE))
+    # A price after its number ("120 000 so'm", "50 $"), or with its currency first, as the US writes it ("$49")
+    has_price = bool(re.search(r"\d[\d\s.,]*\s*(млн|тыс|ming|mln)?\.?\s*(сум|so[ʻ'‘`]?m|uzs|usd|\$|тенге|₸|руб|₽|eur|€)", text, re.IGNORECASE) or re.search(r"(\$|€|£|\busd|\beur|\buzs)\s?\d", text, re.IGNORECASE))
     price_page = any(re.search(r"price|narx|цен|стоим|tarif|тариф|pricing", page["url"], re.IGNORECASE) for page in pages)
     markup = bool(html and re.search(r'application/ld\+json[^>]*>[^<]*"@type"\s*:\s*"(LocalBusiness|Organization|School|EducationalOrganization|MedicalClinic|Dentist|Restaurant|Store|Hotel)', html, re.IGNORECASE))
-    contacts = bool(re.search(r"\+?\s*(998|7)[\s(-]*\d{2,3}[\s)-]*\d{3}[\s-]*\d{2}[\s-]*\d{2}", text))
+    # A phone number: Uzbekistan's or Russia's, any written with its country code ("+1 415 555 0134"), or the US way,
+    # "(415) 555-0134" (25 Nov 2026: a website for customers in the US read as having no contacts)
+    contacts = bool(re.search(r"\+?\s*(998|7)[\s(-]*\d{2,3}[\s)-]*\d{3}[\s-]*\d{2}[\s-]*\d{2}|\+\d{1,3}[\s.(-]*\d{1,4}[\s.)-]*\d{2,4}[\s.-]*\d{2,4}|\(\d{3}\)\s?\d{3}[\s.-]\d{4}|\b\d{3}[.-]\d{3}[.-]\d{4}\b", text))
     checks = [
         {"check": "ai_bots_blocked", "passed": not bots_blocked(robots)},
         # A page about prices with no price in its text: the prices are pictures, or not there at all
@@ -137,6 +153,11 @@ def site_checks(pages: List[Dict[str, str]], html: Optional[str], robots: Option
         uzbek = len(re.findall(UZBEK_WORDS, text, re.IGNORECASE)) >= 5 or len(re.findall(r"[ўқғҳЎҚҒҲ]", text)) >= 5
         linked = bool(html and re.search(r"hreflang=[\"'](uz|ru)|href=[\"'][^\"']*/(uz|oz|ru)(/|[\"'?])|[?&](lang|language)=(uz|ru)", html, re.IGNORECASE))
         checks.append({"check": "one_language", "passed": linked or (cyrillic > 0.15 and uzbek)})
+    # Almost no words read: the pages show their text only with JavaScript (or have none). The checks on the words
+    # can't be judged and would only repeat it; the one problem said is that most AI crawlers, which don't run
+    # JavaScript, read the same empty page (25 Nov 2026). The checks on the code and the files still stand
+    if len(text.split()) < THIN_WORDS:
+        checks = checks[:1] + [{"check": "js_only", "passed": False}] + [check for check in checks[1:] if check["check"] not in TEXT_CHECKS]
     return checks
 
 
@@ -178,6 +199,7 @@ PROFILE_RULES = """You read a business's website and prepare a first check of ho
 From the text, give:
 - name: the business's name as customers write it. aliases: its other spellings on the site and in common use (Latin and Cyrillic, short forms); never a generic word, and never an abbreviation of three letters or fewer.
 - country: the two-letter code of the country it mainly serves.
+- siteCountry: the two-letter code of the country the website's own text shows its customers are in (its language, addresses, phone codes, currency, the laws and services it names), whatever the owner says; empty when the text doesn't show it.
 - category: what kind of business it is, two to four words (\"частная школа\", \"чат-боты для бизнеса\", \"furniture store\").
 - city: the city it mainly serves, and cityEn, the same in English; both empty when it serves a whole country or several, or works online.
 - description: one sentence on what it offers.
@@ -201,9 +223,12 @@ QUESTION RULES (every question, customers' and brand ones):
 COMPETITOR_LIMIT = 5
 
 
-def profile(domain: str, pages: List[Dict[str, str]], category: Optional[str], city: Optional[str], count: int, country: Optional[str] = None, name: Optional[str] = None) -> Tuple[Dict[str, Any], float]:
+def profile(domain: str, pages: List[Dict[str, str]], category: Optional[str], city: Optional[str], count: int, country: Optional[str] = None, name: Optional[str] = None, thin: Optional[int] = None) -> Tuple[Dict[str, Any], float]:
+    """`thin`: the words read when almost none were, so what is written stays with what the name and they show."""
     text = "\n\n".join(f"[{page['url']}]\n{page['text']}" for page in pages)[:40_000]
     given = "".join(f"\nThe owner says the {name} is: {value}. Use it." for name, value in (("business's name, as customers write it,", name), ("category", category), ("city", city), ("country it serves (two-letter code)", country)) if value)
+    if thin is not None:
+        given += f"\nThe website gave almost no text ({thin} words): its pages show their words only with JavaScript. Keep the description and services to what its name and these words show, and leave siteCountry empty unless they show it."
     schema = obj(
         name=STR,
         aliases=arr(STR),
@@ -211,6 +236,7 @@ def profile(domain: str, pages: List[Dict[str, str]], category: Optional[str], c
         city=STR,
         cityEn=STR,
         country=STR,
+        siteCountry=STR,
         description=STR,
         services=arr(STR),
         questions=arr(obj(text=STR, language={"type": "string", "enum": list(QUESTION_LANGUAGES)}, topic=STR)),
@@ -468,9 +494,18 @@ def prepare(domain: str, category: Optional[str], city: Optional[str], country: 
     pages = web.read_site(domain, "en" if country and languages_for(country) == ["en"] else "ru")
     if not pages:
         raise FirstRunError("site_unreadable", domain)
-    who, usd = profile(domain, pages, category, city, settings.first_run_questions, country, name)
-    # The owner's own word on the country wins over what the website suggests
-    country = country or who["country"].strip().upper()[:2] or "UZ"
+    words = sum(len(page["text"].split()) for page in pages)
+    thin = words < THIN_WORDS
+    who, usd = profile(domain, pages, category, city, settings.first_run_questions, country, name, words if thin else None)
+    # The market (25 Nov 2026): the owner's own word wins; without it, the country the website shows (step 1 no longer
+    # picks Uzbekistan for everybody, which had a website for US truckers checked as Uzbek); else Uzbekistan, said so
+    owner = (country or "").strip().upper()[:2]
+    read = str(who.get("country") or "").strip().upper()
+    read = read if re.fullmatch(r"[A-Z]{2}", read) else ""
+    seen = str(who.get("siteCountry") or "").strip().upper()
+    seen = seen if re.fullmatch(r"[A-Z]{2}", seen) else ""
+    country = owner or read or "UZ"
+    country_from = "owner" if owner else "site" if read else "default"
     languages = languages_for(country)
     checks = audit(pages, languages)
     # The rules name the languages; a question that came in another one is left out
@@ -487,6 +522,12 @@ def prepare(domain: str, category: Optional[str], city: Optional[str], country: 
     return {
         "who": who,
         "country": country,
+        # Where the market came from (the owner, the website, or Uzbekistan for want of either), the country the website
+        # itself shows, and how many words were read: step 2 says each, and asks when the website said too little
+        "countryFrom": country_from,
+        "siteCountry": seen or (read if country_from == "site" else ""),
+        "siteWords": words,
+        "thin": thin,
         "own": web.domain_of(pages[0]["url"]),
         "checks": checks,
         "siteText": "\n\n".join(f"[{page['url']}]\n{page['text']}" for page in pages)[:40_000],

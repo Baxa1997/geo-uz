@@ -371,6 +371,9 @@ def work_prepare(run_id: str, domain: str, category: Optional[str], city: Option
     try:
         if settings.first_run_replay:
             draft, cost = replay_draft(run_id), 0.0
+            # This computer: the market asked for shows on the saved check's draft, so the steps can be tried
+            if country:
+                draft.update(country=country, countryFrom="owner")
         else:
             draft, cost = firstrun.prepare(domain, category, city, country, name, search=search)
         _finish(run_id, {"status": "ready", "draft": draft, "cost_usd": cost}, over=False)
@@ -534,7 +537,47 @@ def draft_json(run: FirstRun) -> Dict[str, Any]:
         # False: the competitors are the profile's own, not a search's (the day's free checks were taken)
         "competitorsSearched": bool(who.get("competitorsSearched", True)),
         "replayed": bool(draft.get("replayed")),
+        # The market's source (owner, site, default), the country the website itself shows, and how much of it was read
+        # (25 Nov 2026). A draft from before: the country came from step 1's list, which started on Uzbekistan
+        "countryFrom": draft.get("countryFrom") or "owner",
+        "siteCountry": draft.get("siteCountry") or "",
+        "siteWords": draft.get("siteWords"),
+        "thin": bool(draft.get("thin")),
     }
+
+
+class MarketChange(BaseModel):
+    country: str
+
+
+@app.post("/first-runs/{run_id}/market", status_code=202)
+def change_market(run_id: str, body: MarketChange, request: Request, user: User = Depends(current_user)) -> Dict[str, Any]:
+    """Another market for a draft (25 Nov 2026, the user: "if it was in Uzbekistan even in USA it must measure"): the
+    website is read again for customers in that country, with its questions in that country's languages and its
+    competitors searched there. A website read, counted as one; the draft is gone until the new one is ready."""
+    country = projects._country(body.country)
+    if not country:
+        raise HTTPException(422, "country_invalid")
+    with SessionLocal() as db:
+        run = db.get(FirstRun, run_id)
+        if run is None or run.user_id != user.id:
+            raise HTTPException(404, "not_found")
+        if run.status != "ready" or not run.draft:
+            raise HTTPException(409, run.status)
+        if not limits.exempt(user.email):
+            ip = limits.client_ip(request)
+            if limits.over(db, "read", ip):
+                raise HTTPException(429, "first_run_limit")
+            limits.record(db, "read", ip)
+        search = limits.exempt(user.email) or not limits.checks_full(db)
+        name = _words(((run.draft or {}).get("who") or {}).get("name"), 120) or None
+        domain = run.domain
+        # The old draft would show for a moment while the new one is written
+        run.draft, run.status = None, "reading_site"
+        db.commit()
+        out = run_json(run)
+    threading.Thread(target=work_prepare, args=(run_id, domain, None, None, country, name, search), daemon=True).start()
+    return out
 
 
 @app.get("/first-runs/{run_id}/draft")

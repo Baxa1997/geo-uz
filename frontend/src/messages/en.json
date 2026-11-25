@@ -713,8 +713,10 @@
       "status": {
         "no_page": "The answer cited no page of {rival}'s own, so there is nothing to compare: watch this question.",
         "unreadable": "{rival}'s page could not be read this time.",
-        "failed": "Not compared this time; it will be at the next check."
-      }
+        "failed": "Not compared this time; it will be at the next check.",
+        "site_unreadable": "We couldn’t read your own website (its text appears only with JavaScript), so this page wasn’t compared with it."
+      },
+      "siteUnreadable": "We could read almost nothing on your website: its text appears only with JavaScript, which most AI crawlers don’t run either. So below are who AI named for each question and the page it cited, without a comparison. The fix for it is in the action plan."
     }
   },
   "Headline": {
@@ -890,7 +892,8 @@
       "no_sitemap": "Add a sitemap",
       "no_llms_txt": "Add an llms.txt file",
       "weak_meta": "Give your home page a clear title, description and heading",
-      "one_language": "Have your site in both Uzbek and Russian"
+      "one_language": "Have your site in both Uzbek and Russian",
+      "js_only": "Make your site’s text readable without JavaScript"
     },
     "why": {
       "listing": "AI relied on {domain} in {answers} answers. They name {competitors}, and you aren’t there.",
@@ -907,7 +910,8 @@
       "no_sitemap": "Your site has no sitemap.xml: the list of pages that search engines and AI search bots use to find every page.",
       "no_llms_txt": "Your site has no llms.txt, a short text file some AI tools read to learn what a site is about. It is new and not every assistant uses it yet, but it takes minutes.",
       "weak_meta": "Your home page’s title, description or main heading is missing or too short. Search engines and AI read them first to understand what you do.",
-      "one_language": "Customers in Uzbekistan ask AI in Uzbek and in Russian, but your site was found in one language only. AI cites pages in the language of the question."
+      "one_language": "Customers in Uzbekistan ask AI in Uzbek and in Russian, but your site was found in one language only. AI cites pages in the language of the question.",
+      "js_only": "Your pages show their text only after JavaScript runs. Most AI crawlers, ChatGPT’s among them, don’t run JavaScript, so they read an empty page and can’t learn from your site what you offer. Google’s crawler, which Gemini relies on, does run it."
     },
     "steps": {
       "directory": {
@@ -994,6 +998,11 @@
         "s1": "Add the missing language version of your main pages: home, services, prices, contacts.",
         "s2": "Put a language switch at the top of every page.",
         "s3": "Translate the facts exactly: names, prices and addresses must match in both."
+      },
+      "js_only": {
+        "s1": "Ask your developer to send the pages from the server with their text (server-side rendering or static pages), keeping the design.",
+        "s2": "Make sure your main facts are in that HTML: what you do, your services, prices, contacts and city.",
+        "s3": "Check it: open your page’s source (Ctrl+U) and find your text there."
       }
     },
     "markDone": "Mark done",
@@ -1349,6 +1358,13 @@
           "s2": "Add hreflang links between the versions and set the html lang attribute on each.",
           "s3": "Translate the site’s own facts exactly; add no claim the original doesn’t make, and leave me a TODO where a phrase needs my wording.",
           "done": "each main page opens in both languages and links to its other version."
+        },
+        "js_only": {
+          "task": "My site shows its text only after JavaScript runs, so AI crawlers read an empty page.",
+          "s1": "Find out how the site is built (React, Vue, a site builder) and make its pages render on the server or be prerendered as HTML, keeping the design.",
+          "s2": "Make sure the text of the home page and the main pages (services, prices, contacts) is in the HTML the server sends.",
+          "s3": "Keep each page’s title, meta description and one H1 in that HTML.",
+          "done": "Opening https://{domain}/ with JavaScript turned off shows the page’s text."
         }
       },
       "page": {
@@ -3227,6 +3243,11 @@
         "ok": "The site answers in both Uzbek and Russian",
         "bad": "The site is in one language; customers ask in Uzbek and Russian",
         "fix": "Add the missing language version of your main pages."
+      },
+      "js_only": {
+        "ok": "The site’s text is in its pages’ code",
+        "bad": "The site’s text appears only with JavaScript",
+        "fix": "Have the pages sent with their text from the server, so AI crawlers can read it."
       }
     },
     "directory": {
@@ -4547,7 +4568,7 @@
         "text": "Enter your website. We read it and prepare your business profile, your competitors and your customers' questions. You check and correct all of it before the check starts."
       },
       "country": "Where are your customers?",
-      "countryHint": "We ask the assistants as a customer in this country, and write the questions in its language.",
+      "countryHint": "Leave it to us and we read it from your website. We ask the assistants as a customer in this country, in its language.",
       "time": "the check takes 4–5 minutes",
       "next": "Next",
       "readingSite": "Reading the site…",
@@ -4609,7 +4630,24 @@
         "tagline": "See what AI assistants tell your customers about you"
       },
       "queueNote": "Today's free checks are taken, so your check joins the queue. We'll ask exactly these questions and email you the report when it's ready.",
-      "joinQueue": "Join the queue"
+      "joinQueue": "Join the queue",
+      "countryAuto": "Detect from my website",
+      "languagesAuto": "By your customers’ country",
+      "thin": "We could read only {words, plural, one {# word} other {# words}} on {site}: its text appears only with JavaScript. The description and services below are a guess from its name, so please correct them.",
+      "market": {
+        "title": "Where your customers are",
+        "line": "Customers in {country} · questions in {languages}.",
+        "fromSite": "Read from your website.",
+        "unsure": "We couldn’t tell this from your website: please check it.",
+        "elsewhere": "Your website looks aimed at customers in {site}, but the check is set to {country}.",
+        "useSite": "Check {site} instead",
+        "confirm": "The questions and competitors will be written again for {country}. It takes about a minute.",
+        "rewrite": "Rewrite for {country}",
+        "starting": "Starting…",
+        "cancel": "Cancel",
+        "failed": "Couldn’t change it. Try again.",
+        "limit": "Too many websites read from here today. Try again tomorrow."
+      }
     },
     "saving": "Saving…",
     "saveFailed": "Couldn't save the project. Try again.",

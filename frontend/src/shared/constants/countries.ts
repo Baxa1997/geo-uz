@@ -11,3 +11,8 @@ export const COUNTRY_CODES = (
 
 /** A project made before countries existed, and a new one until the owner picks another. */
 export const DEFAULT_COUNTRY = "UZ";
+/**
+ * The first check's step 1 leaves the country to the website unless the owner picks one (25 Nov 2026: the list started
+ * on Uzbekistan, and a website for US truckers was checked as Uzbek). Never sent: no country means "read it".
+ */
+export const AUTO_COUNTRY = "auto";
