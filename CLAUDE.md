@@ -151,8 +151,8 @@ waits for their look. The open work, in the order the user picks (ask as a short
 - (22 Nov) The OpenAI balance is about $2, which the user can't top up for now; free checks were capped at 2 a day on
   the server, 10 a day since 25 Nov (the user: "need to make daily check 10 not 2"; `FREE_CHECKS_A_DAY=10`, the
   previous `.env` kept as `.env.bak-before-cap10`). Past the cap a check joins the queue (live since 22 Nov), and when
-  the balance is empty a check goes back to it and the team gets an alert; the queue is run by hand on the server
-  (`python -m app.queue --run N`).
+  the balance is empty a check goes back to it and the team gets an alert; since 25 Nov the server asks the queue by
+  itself every 15 minutes within the day's limit (`geo-queue.timer`), and by hand: `python -m app.queue --run N`.
 - New passwords, since all were pasted in chat on 15 Nov: the server's root password (an SSH key is installed,
   so it is no longer needed), the Supabase database password (the same one) and the Gmail app password; each
   goes into `backend/.env.server` (ignored by git), not into chat.
@@ -229,6 +229,16 @@ that is committed.
    that no key and no client's name is in it.
 
 ## Done (as of 18 November 2026)
+
+- **Built, waiting for the user's look: 10 free checks a day, and the queue asked by the server itself (25 Nov), on the
+  branch `queue-auto`; deployed on the server the same day (the previous `app/` kept as `app.bak-before-autoqueue`, the
+  previous `.env` as `.env.bak-before-cap10`).** The user: "need to make daily check 10 not 2", then "some projects are
+  in the waiting list". `FREE_CHECKS_A_DAY=10` on the server. Found: two visitors' checks of 24 Nov had filled the old
+  limit, so a third waited from 07:29 UTC; asked, the user chose to run it (done in 578 s with its research and briefs,
+  emailed) and then "Run it by itself": `python -m app.queue --auto` every 15 minutes (`deploy/geo-queue.timer`) asks
+  the waiting checks the day's limit has room for, each counted among the day's checks and emailed when done, after
+  a request of a few tokens shows OpenAI takes requests; while the balance is empty nothing is asked and the alert
+  goes out. Tests: `pytest` 87 pass (3 new). No new variable (`FREE_CHECKS_A_DAY` is 10 on the server).
 
 - **Built, waiting for the user's look: the Terms of use, the Privacy policy and a contact (24 Nov), on the branch
   `legal-pages`.** After "what is next" the user chose "Terms, privacy, contacts"; asked, they chose their Seenova

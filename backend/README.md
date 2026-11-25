@@ -367,10 +367,14 @@ waits (`first_runs.status` `waiting`, what the owner confirmed and the page's la
 from one connection; it is the account's one free check, so another website shows it. The draft says so before the
 press (`queue: true`: step 4 reads "Join the queue"), and a website read past the limit skips the competitors' search
 on ChatGPT, the profile's own list taking its place (`competitorsSearched: false`: step 3 says so). A waiting run's
-`GET /first-runs/{id}` carries its `place` and the `email` its report goes to. The server can't see the OpenAI balance,
-so the queue runs only by hand, on the server: `python -m app.queue` lists it in order with what it would cost, and
-`python -m app.queue --run N` asks the first N one after another as the site would and emails each one done a link to
-its results in its language (it refuses while `FRONTEND_ORIGIN` is localhost). A check whose call found the balance
+`GET /first-runs/{id}` carries its `place` and the `email` its report goes to. Since 25 Nov 2026 (the user's "Run it by
+itself") the server asks the queue every 15 minutes (`deploy/geo-queue.timer` and `.service`, `python -m app.queue
+--auto`): the waiting checks in order, as many as the day's free checks have room for, each counted among them (a
+`limit_hits` row `check`/`queue`) before it is asked and emailed when done; the server can't read the OpenAI balance, so
+a request of a few tokens first tells whether OpenAI takes requests (`openai_ready`), and while it says the balance is
+empty nothing is asked and the team gets the alert. By hand: `python -m app.queue` lists it in order with what it
+would cost, and `python -m app.queue --run N` asks the first N one after another, whatever the day's limit, as the site
+would, and emails each one done a link to its results in its language (it refuses while `FRONTEND_ORIGIN` is localhost). A check whose call found the balance
 empty (OpenAI's `insufficient_quota`) goes back to its place, its slots dropped, whether from the queue (the run stops
 there) or from the site (the visitor sees the queue, not a failure). Test: `tests/test_queue.py` (stand-in assistants,
 emails kept in a list).

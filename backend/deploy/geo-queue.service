@@ -1,0 +1,14 @@
+[Unit]
+Description=Seenova AI: the free checks' queue, asked by the server (python -m app.queue --auto)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=geo
+Group=geo
+WorkingDirectory=/opt/geo-backend
+EnvironmentFile=/opt/geo-backend/.env
+ExecStart=/opt/geo-backend/.venv/bin/python -m app.queue --auto
+# Up to the day's limit of checks, one after another, each about ten minutes with its research and briefs
+TimeoutStartSec=6h
