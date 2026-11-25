@@ -22,12 +22,13 @@ import hmac
 import secrets
 import threading
 import time
-from collections import Counter, defaultdict
-from typing import Any, Dict, List, Optional, Set, Tuple
+from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor
+from typing import Any, Dict, List, Optional, Tuple
 
 from fastapi import APIRouter, Cookie, Depends, HTTPException, Request, Response
 from pydantic import BaseModel
-from sqlalchemy import func, select
+from sqlalchemy import case, func, select
 
 from . import alerts, limits, queue
 from .config import settings
@@ -50,6 +51,8 @@ PREPARING = ("queued", "reading_site", "ready")
 RUNNING = ("asking", "reading_answers")
 # Long enough for any name or password typed by hand
 LONGEST = 200
+# How many of the newest projects and accounts the overview lists
+LATEST = 5
 
 router = APIRouter(prefix="/admin")
 
@@ -161,54 +164,52 @@ def me(admin: str = Depends(current_admin)) -> Dict[str, Any]:
     return {"username": admin, "waiting": waiting}
 
 
-def _team(db: Any) -> Set[str]:
-    """The team's accounts (`TEAM_EMAILS`): marked on the page, since their checks aren't counted in the day's limit."""
-    if not settings.team_emails:
-        return set()
-    return set(db.scalars(select(User.id).where(func.lower(User.email).in_(settings.team_emails))))
+def _is_team(email: Optional[str]) -> bool:
+    """One of the team's accounts (`TEAM_EMAILS`): marked on the page, since their checks aren't counted in the day's limit."""
+    return (email or "").lower() in settings.team_emails
 
 
 def project_rows(db: Any, limit: Optional[int] = None) -> List[Dict[str, Any]]:
     """The projects, newest first: whose, what plan, its checks, and in its latest check how many buyer answers named it
-    of all of them (the report's headline, counted here from the stored mentions)."""
-    query = select(Project).order_by(Project.created_at.desc())
-    found = db.scalars(query.limit(limit) if limit else query).all()
+    of all of them (the report's headline, counted here from the stored mentions). Four statements whatever the number
+    of projects: each is a round trip to the database, which is far from the server (a fifth of a second)."""
+    query = select(Project, Brand).outerjoin(Brand, (Brand.project_id == Project.id) & Brand.own.is_(True)).order_by(Project.created_at.desc())
+    found = db.execute(query.limit(limit) if limit else query).all()
     if not found:
         return []
-    ids = [project.id for project in found]
-    owners = {user.id: user for user in db.scalars(select(User).where(User.id.in_({project.user_id for project in found})))}
-    own = {brand.project_id: brand for brand in db.scalars(select(Brand).where(Brand.project_id.in_(ids), Brand.own.is_(True)))}
-    done: Dict[str, List[Run]] = defaultdict(list)
-    for run in db.scalars(select(Run).where(Run.project_id.in_(ids), Run.status == "done").order_by(Run.collected_at)):
-        done[run.project_id].append(run)
+    owners = {user.id: user for user in db.scalars(select(User).where(User.id.in_({project.user_id for project, _ in found})))}
+    # The checks' ids and dates only: a check's row also holds its sources and research, large and not needed here
+    done: Dict[str, List[Tuple[str, datetime.datetime]]] = defaultdict(list)
+    for run_id, project_id, collected in db.execute(select(Run.id, Run.project_id, Run.collected_at).where(Run.project_id.in_([project.id for project, _ in found]), Run.status == "done").order_by(Run.collected_at)):
+        done[project_id].append((run_id, collected))
     latest = {project_id: runs[-1] for project_id, runs in done.items()}
-    latest_ids = [run.id for run in latest.values()]
-    answers = dict(db.execute(select(Answer.run_id, func.count()).where(Answer.run_id.in_(latest_ids)).group_by(Answer.run_id)).all()) if latest_ids else {}
-    named: Dict[str, Set[str]] = defaultdict(set)
-    own_ids = {brand.id: project_id for project_id, brand in own.items()}
-    if latest_ids and own_ids:
-        for run_id, answer_id, brand_id in db.execute(select(Answer.run_id, Answer.id, Mention.brand_id).join(Mention, Mention.answer_id == Answer.id).where(Answer.run_id.in_(latest_ids), Mention.brand_id.in_(list(own_ids)))):
-            if latest.get(own_ids[brand_id]) is not None and latest[own_ids[brand_id]].id == run_id:
-                named[run_id].add(answer_id)
-    team = _team(db)
+    counted: Dict[str, Tuple[int, int]] = {}
+    if latest:
+        # Each latest check's answers, and those naming its client: a brand belongs to one project, so a mention of any
+        # project's own brand among a check's answers is a mention of that check's client
+        own_ids = [brand.id for _, brand in found if brand is not None]
+        naming = func.count(func.distinct(case((Mention.brand_id.in_(own_ids), Answer.id))))
+        query = select(Answer.run_id, func.count(func.distinct(Answer.id)), naming).outerjoin(Mention, Mention.answer_id == Answer.id).where(Answer.run_id.in_([run_id for run_id, _ in latest.values()])).group_by(Answer.run_id)
+        counted = {run_id: (answers, named) for run_id, answers, named in db.execute(query)}
     rows = []
-    for project in found:
-        brand, owner, last = own.get(project.id), owners.get(project.user_id), latest.get(project.id)
+    for project, brand in found:
+        owner, last = owners.get(project.user_id), latest.get(project.id)
+        answers, named = counted.get(last[0], (0, 0)) if last else (0, 0)
         rows.append({
             "id": project.id,
             "name": brand.name if brand else "",
             "domain": brand.domain if brand else "",
             "owner": owner.email if owner else None,
-            "team": project.user_id in team,
+            "team": _is_team(owner.email if owner else None),
             "createdAt": iso(project.created_at),
             "plan": project.plan,
             "paid": bool(project.paid),
             "billingStatus": project.billing_status,
             "country": project.country or "UZ",
             "checks": len(done.get(project.id, [])),
-            "latestCheckAt": iso(last.collected_at) if last else None,
-            "answers": answers.get(last.id, 0) if last else 0,
-            "named": len(named.get(last.id, set())) if last else 0,
+            "latestCheckAt": iso(last[1]) if last else None,
+            "answers": answers,
+            "named": named,
             "firstRunId": project.first_run_id,
         })
     return rows
@@ -216,7 +217,7 @@ def project_rows(db: Any, limit: Optional[int] = None) -> List[Dict[str, Any]]:
 
 def user_rows(db: Any, limit: Optional[int] = None) -> List[Dict[str, Any]]:
     """The accounts, newest first: their projects, their free check's state, and when they last logged in (a session lasts
-    `session_days` from its login; unknown once they logged out)."""
+    `session_days` from its login; unknown once they logged out). Four statements whatever the number of accounts."""
     query = select(User).order_by(User.created_at.desc())
     found = db.scalars(query.limit(limit) if limit else query).all()
     if not found:
@@ -225,11 +226,11 @@ def user_rows(db: Any, limit: Optional[int] = None) -> List[Dict[str, Any]]:
     owned: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
     for project_id, user_id, domain in db.execute(select(Project.id, Project.user_id, Brand.domain).join(Brand, (Brand.project_id == Project.id) & Brand.own.is_(True)).where(Project.user_id.in_(ids)).order_by(Project.created_at)):
         owned[user_id].append({"id": project_id, "domain": domain})
-    checks: Dict[str, List[FirstRun]] = defaultdict(list)
-    for run in db.scalars(select(FirstRun).where(FirstRun.user_id.in_(ids)).order_by(FirstRun.created_at)):
+    # The free checks' few columns: a row also holds the raw answers, large and not needed here
+    checks: Dict[str, List[Any]] = defaultdict(list)
+    for run in db.execute(select(FirstRun.id, FirstRun.user_id, FirstRun.domain, FirstRun.status, FirstRun.created_at).where(FirstRun.user_id.in_(ids)).order_by(FirstRun.created_at)):
         checks[run.user_id].append(run)
     logins = dict(db.execute(select(Session.user_id, func.max(Session.expires_at)).where(Session.user_id.in_(ids)).group_by(Session.user_id)).all())
-    team = _team(db)
     rows = []
     for user in found:
         last = checks[user.id][-1] if checks.get(user.id) else None
@@ -238,7 +239,7 @@ def user_rows(db: Any, limit: Optional[int] = None) -> List[Dict[str, Any]]:
             "id": user.id,
             "email": user.email,
             "name": user.name,
-            "team": user.id in team,
+            "team": _is_team(user.email),
             "createdAt": iso(user.created_at),
             "lastLoginAt": iso(expires - datetime.timedelta(days=settings.session_days)) if expires else None,
             "projects": owned.get(user.id, []),
@@ -248,30 +249,55 @@ def user_rows(db: Any, limit: Optional[int] = None) -> List[Dict[str, Any]]:
     return rows
 
 
-@router.get("/overview")
-def overview(admin: str = Depends(current_admin)) -> Dict[str, Any]:
+def _read(rows: Any, limit: Optional[int] = None) -> List[Dict[str, Any]]:
+    with ReadSession() as db:
+        return rows(db, limit)
+
+
+def _numbers() -> Dict[str, Any]:
+    """The overview's counts and sums, in three statements."""
     with ReadSession() as db:
         week_ago = now() - WEEK
-        count = lambda model, *where: db.scalar(select(func.count()).select_from(model).where(*where)) or 0  # noqa: E731
-        statuses = Counter(db.scalars(select(FirstRun.status)))
-        spent = lambda *where: round(float(db.scalar(select(func.coalesce(func.sum(FirstRun.cost_usd), 0.0)).where(*where)) or 0.0), 2)  # noqa: E731
-        plan_checks = round(float(db.scalar(select(func.coalesce(func.sum(Run.cost_usd), 0.0)).where(Run.kind == "weekly")) or 0.0), 2)
-        return {
-            "users": {"total": count(User), "week": count(User, User.created_at > week_ago)},
-            "projects": {"total": count(Project), "week": count(Project, Project.created_at > week_ago)},
-            "checksToday": limits.checks_today(db),
-            "checksADay": settings.free_checks_a_day,
-            "firstChecks": {
-                "done": statuses.get("done", 0),
-                "failed": statuses.get("failed", 0),
-                "waiting": statuses.get(queue.WAITING, 0),
-                "running": sum(statuses.get(status, 0) for status in RUNNING),
-                "preparing": sum(statuses.get(status, 0) for status in PREPARING),
-            },
-            "cost": {"freeChecks": spent(), "freeChecksWeek": spent(FirstRun.created_at > week_ago), "planChecks": plan_checks},
-            "latestProjects": project_rows(db, 5),
-            "latestUsers": user_rows(db, 5),
-        }
+        count = lambda model, *where: select(func.count()).select_from(model).where(*where).scalar_subquery()  # noqa: E731
+        spent = lambda model, *where: select(func.coalesce(func.sum(model.cost_usd), 0.0)).where(*where).scalar_subquery()  # noqa: E731
+        users, users_week, projects, projects_week, free, free_week, plans = db.execute(
+            select(
+                count(User),
+                count(User, User.created_at > week_ago),
+                count(Project),
+                count(Project, Project.created_at > week_ago),
+                spent(FirstRun),
+                spent(FirstRun, FirstRun.created_at > week_ago),
+                spent(Run, Run.kind == "weekly"),
+            )
+        ).one()
+        statuses = dict(db.execute(select(FirstRun.status, func.count()).group_by(FirstRun.status)).all())
+        today = limits.checks_today(db)
+    return {
+        "users": {"total": users or 0, "week": users_week or 0},
+        "projects": {"total": projects or 0, "week": projects_week or 0},
+        "checksToday": today,
+        "checksADay": settings.free_checks_a_day,
+        "firstChecks": {
+            "done": statuses.get("done", 0),
+            "failed": statuses.get("failed", 0),
+            "waiting": statuses.get(queue.WAITING, 0),
+            "running": sum(statuses.get(status, 0) for status in RUNNING),
+            "preparing": sum(statuses.get(status, 0) for status in PREPARING),
+        },
+        "cost": {"freeChecks": round(float(free or 0.0), 2), "freeChecksWeek": round(float(free_week or 0.0), 2), "planChecks": round(float(plans or 0.0), 2)},
+    }
+
+
+@router.get("/overview")
+def overview(admin: str = Depends(current_admin)) -> Dict[str, Any]:
+    # Three groups of statements at once, each on a connection of its own: the database is far from the server, and
+    # one after another they took 3.8 s (25 Nov 2026)
+    with ThreadPoolExecutor(max_workers=3) as pool:
+        numbers = pool.submit(_numbers)
+        latest_projects = pool.submit(_read, project_rows, LATEST)
+        latest_users = pool.submit(_read, user_rows, LATEST)
+        return {**numbers.result(), "latestProjects": latest_projects.result(), "latestUsers": latest_users.result()}
 
 
 @router.get("/projects")
@@ -291,9 +317,8 @@ def waiting_list(admin: str = Depends(current_admin)) -> Dict[str, Any]:
     """The queue in order, the checks being asked now, what a check costs and the day's count."""
     with ReadSession() as db:
         waiting = queue.waiting(db)
-        running = db.scalars(select(FirstRun).where(FirstRun.status.in_(RUNNING)).order_by(FirstRun.created_at)).all()
+        running = db.execute(select(FirstRun.id, FirstRun.user_id, FirstRun.domain, FirstRun.status, FirstRun.answered, FirstRun.total, FirstRun.created_at).where(FirstRun.status.in_(RUNNING)).order_by(FirstRun.created_at)).all()
         accounts = {user.id: user.email for user in db.scalars(select(User).where(User.id.in_({run.user_id for run in [*waiting, *running]})))} if waiting or running else {}
-        team = _team(db)
         return {
             "waiting": [
                 {
@@ -301,7 +326,7 @@ def waiting_list(admin: str = Depends(current_admin)) -> Dict[str, Any]:
                     "place": place,
                     "domain": run.domain,
                     "email": accounts.get(run.user_id),
-                    "team": run.user_id in team,
+                    "team": _is_team(accounts.get(run.user_id)),
                     "since": iso(datetime.datetime.fromisoformat(queue.since(run))),
                     "language": (run.draft or {}).get("language") or "uz",
                     "name": ((run.draft or {}).get("confirmed") or {}).get("name") or "",

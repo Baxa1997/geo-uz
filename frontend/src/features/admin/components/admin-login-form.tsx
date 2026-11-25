@@ -18,10 +18,9 @@ export function AdminLoginForm() {
   const [password, setPassword] = useState("");
   const login = useMutation({
     mutationFn: () => adminApi.login({ username: username.trim(), password }),
-    onSuccess: () => {
-      router.replace("/admin");
-      router.refresh();
-    },
+    // Only the move, as the accounts' login does: a refresh beside it kept the page on "Logging in…" (25 Nov 2026, the
+    // live site). /admin is another page, so it is asked for afresh with the cookie just set
+    onSuccess: () => router.replace("/admin"),
   });
 
   function submit(event: FormEvent) {

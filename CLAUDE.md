@@ -232,7 +232,12 @@ that is committed.
 
 - **Built, waiting for the user's look: the team's admin page (25 Nov), on the branch `admin-page`; merged, pushed and
   deployed the same day, when the user chose "Commit, push, deploy" (the server's previous `app/` kept as
-  `app.bak-before-admin`, its `.env` as `.env.bak-before-admin`; the admin login answers there).**
+  `app.bak-before-admin`, its `.env` as `.env.bak-before-admin`; the admin login answers there). Found on the live site
+  the same hour and fixed: after a right password the page stayed on "Logging in…" (a refresh beside the move to the
+  overview; now only the move, as the accounts' login does), and the admin calls took 2 to 4 s (each statement a round
+  trip to Mumbai, and whole rows with their raw answers read for a status); now fewer statements, the overview's three
+  groups at once, only the columns needed: overview 3.8 s → 1.0 s, projects, users and the waiting list about 1 s (the
+  server's previous `app/` kept as `app.bak-before-admin-speed`).**
   After the check that every report works, the user asked for a super-admin login with a name and password of their
   own, and a dashboard of the users, the brands registered and the waiting list, approving a waiting check there and
   reading their reports. Asked, they kept their own short password (told that guessing tools try such patterns early

@@ -88,7 +88,8 @@ def put_back(run_id: str, confirmed: Dict[str, Any]) -> None:
 
 def check_usd(db: Any) -> float:
     """What a free check costs, from the latest ones done."""
-    costs = [run.cost_usd for run in db.scalars(select(FirstRun).where(FirstRun.status == "done", FirstRun.cost_usd > 0).order_by(FirstRun.created_at.desc()).limit(10))]
+    # The cost alone: a finished check's row also holds its raw answers
+    costs = list(db.scalars(select(FirstRun.cost_usd).where(FirstRun.status == "done", FirstRun.cost_usd > 0).order_by(FirstRun.created_at.desc()).limit(10)))
     return round(sum(costs) / len(costs), 2) if costs else CHECK_USD
 
 
