@@ -1,0 +1,9 @@
+[Unit]
+Description=Seenova AI: the free checks' queue asked every 15 minutes (25 Nov 2026, the user's "Run it by itself")
+
+[Timer]
+OnCalendar=*:0/15
+RandomizedDelaySec=60
+
+[Install]
+WantedBy=timers.target

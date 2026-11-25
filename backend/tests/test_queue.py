@@ -252,3 +252,49 @@ def test_a_tour_is_seen_once_for_the_account_on_any_device(db: Any) -> None:
     finally:
         db.execute(delete(User).where(User.id == user.id))
         db.commit()
+
+
+def test_the_server_asks_the_queue_by_itself_within_the_days_room(db: Any, accounts: List[User], asking: List[Tuple[str, EmailMessage]], monkeypatch: Any) -> None:
+    """The user, 25 Nov 2026: "Run it by itself". The timer's `--auto` asks the waiting checks the day's free checks have
+    room for, in order, each counted among them, and emails each one done."""
+    first = queued(db, accounts[0], "first-auto.example")
+    second = queued(db, accounts[1], "second-auto.example")
+    monkeypatch.setattr(queue, "openai_ready", lambda: True)
+    # The day's free checks are taken (the fixture): nobody is asked
+    queue.main(["--auto"])
+    db.expire_all()
+    assert [db.get(FirstRun, run.id).status for run in (first, second)] == [queue.WAITING, queue.WAITING] and not asking
+    # A place frees up: the first in the queue is asked, takes the place, and is emailed; the second waits
+    db.delete(db.scalars(select(LimitHit).where(LimitHit.kind == "check")).first())
+    db.commit()
+    queue.main(["--auto"])
+    db.expire_all()
+    assert db.get(FirstRun, first.id).status == "done" and db.get(FirstRun, second.id).status == queue.WAITING
+    assert [to for to, _ in asking] == [accounts[0].email]
+    assert limits.checks_today(db) == settings.free_checks_a_day
+
+
+def test_the_queue_waits_while_the_openai_balance_is_empty(db: Any, accounts: List[User], asking: List[Tuple[str, EmailMessage]], monkeypatch: Any) -> None:
+    run = queued(db, accounts[0], "dry-auto.example")
+    db.execute(delete(LimitHit))
+    db.commit()
+    monkeypatch.setattr(queue, "openai_ready", lambda: False)
+    queue.main(["--auto"])
+    db.expire_all()
+    # Nothing asked, nothing counted: the check keeps its place until OpenAI takes requests again
+    assert db.get(FirstRun, run.id).status == queue.WAITING and limits.checks_today(db) == 0 and not asking
+
+
+def test_the_balance_is_read_from_openais_answer(monkeypatch: Any) -> None:
+    def refused(body: Dict[str, Any], attempts: int = 4) -> Any:
+        raise engines.llm.LlmError(EMPTY_BALANCE)
+
+    def busy(body: Dict[str, Any], attempts: int = 4) -> Any:
+        raise engines.llm.LlmError("OpenAI answered 503: overloaded")
+
+    monkeypatch.setattr(queue, "settings", dataclasses.replace(settings, openai_key="stand-in", answer_engines=["chatgpt"]))
+    monkeypatch.setattr(engines.llm, "respond", refused)
+    assert queue.openai_ready() is False
+    # Anything but an empty balance is left to the check itself
+    monkeypatch.setattr(engines.llm, "respond", busy)
+    assert queue.openai_ready() is True

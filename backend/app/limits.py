@@ -87,10 +87,15 @@ def over(db: Db, kind: str, ip: str) -> Optional[str]:
     return None
 
 
+def checks_today(db: Db) -> int:
+    """The free checks for everyone in the last 24 hours, those the queue asked among them."""
+    return _count(db, "check", now() - DAY)
+
+
 def checks_full(db: Db) -> bool:
     """Whether the day's free checks for everyone are taken: a check confirmed now joins the queue, and a website read
     now skips the competitors' search on ChatGPT, since its check won't be asked today."""
-    return _count(db, "check", now() - DAY) >= settings.free_checks_a_day
+    return checks_today(db) >= settings.free_checks_a_day
 
 
 def record(db: Db, kind: str, ip: str) -> None:

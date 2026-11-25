@@ -1,11 +1,16 @@
 """The free checks' queue (22 Nov 2026, the user's choice: "Cap at 2 a day + queue", run "by hand"). Past the day's free
 checks for everyone (`FREE_CHECKS_A_DAY`), a check the owner confirms is not refused: it waits, with what they
 confirmed, and they are told it will be emailed. A check that the OpenAI balance ran out under goes back here too,
-in its old place, so nobody is shown a failure for it. The server can't see the balance, so the queue never runs by
-itself: once it is topped up, on the server:
+in its old place, so nobody is shown a failure for it.
+
+Since 25 Nov 2026 (the user's "Run it by itself") the server asks it every 15 minutes (`deploy/geo-queue.timer`, `--auto`):
+the waiting checks in order, as many as the day's free checks have room for, each counted among them and emailed its
+results. Before it asks one, a request of a few tokens tells whether OpenAI takes requests (the server can't read the
+balance): when it is empty, nothing is asked and the team gets the alert. By hand, on the server:
 
     python -m app.queue              the queue, in order: place, website, account, waiting since, likely cost
-    python -m app.queue --run 5      the first 5, one after another; each one done is emailed to its account
+    python -m app.queue --run 5      the first 5, one after another, whatever the day's limit; each one done is emailed
+    python -m app.queue --auto       what the timer runs
 
 A run stops at the first check the balance runs out under (it goes back to its place). A check that fails for another
 reason is said so; its account may start another, since a failed check doesn't use up the free one.
@@ -21,9 +26,9 @@ from typing import Any, Dict, List, Optional
 
 from sqlalchemy import delete, select
 
-from . import mail
+from . import alerts, limits, mail
 from .config import settings
-from .db import FirstRun, Project, SessionLocal, Slot, User, create_tables, now
+from .db import FirstRun, LimitHit, Project, SessionLocal, Slot, User, create_tables, now
 
 WAITING = "waiting"
 # What a check costs when no finished one says so: ten questions and the brand questions on ChatGPT
@@ -169,11 +174,62 @@ def tell(run_id: str) -> bool:
         return False
 
 
+def openai_ready() -> bool:
+    """Whether OpenAI takes requests: one of a few tokens, about a hundredth of a cent. False only when it answers that
+    the balance is empty; anything else (OpenAI down, a rate limit) is left to the check, which handles it."""
+    if "chatgpt" not in settings.engines:
+        return True
+    from .engines import llm  # the pilot's OpenAI client, on the path `engines` gives it
+
+    try:
+        llm.respond({"model": settings.chatgpt_model, "input": "Reply with OK.", "max_output_tokens": 16}, attempts=1)
+    except llm.LlmError as error:
+        return not any(marker in str(error) for marker in EMPTY)
+    return True
+
+
+def auto() -> None:
+    """What the server's timer runs every 15 minutes (25 Nov 2026): the waiting checks in order, as many as the day's free
+    checks for everyone have room for, each counted among them before it is asked and emailed when done. Nothing is
+    asked while OpenAI says its balance is empty: the team is told (at most once a day) and the queue waits."""
+    with SessionLocal() as db:
+        ids = [run.id for run in waiting(db)]
+        room = settings.free_checks_a_day - limits.checks_today(db) if ids else 0
+    if not ids:
+        return
+    if room <= 0:
+        print(f"queue: {len(ids)} waiting; the day's {settings.free_checks_a_day} free checks are taken")
+        return
+    if not settings.engines or "localhost" in settings.frontend_origin or "127.0.0.1" in settings.frontend_origin:
+        print(f"queue: {len(ids)} waiting; not asked here (no assistant, or FRONTEND_ORIGIN is {settings.frontend_origin})")
+        return
+    if not openai_ready():
+        print(f"queue: {len(ids)} waiting; the OpenAI balance is empty")
+        alerts.openai_empty()
+        return
+    for run_id in ids[:room]:
+        # Counted among the day's free checks before it is asked, as a check started from the site is
+        with SessionLocal() as db:
+            db.add(LimitHit(kind="check", key="queue"))
+            db.commit()
+        started = time.time()
+        outcome = run_one(run_id)
+        emailed = outcome == "done" and tell(run_id)
+        print(f"queue: {run_id} {outcome} in {time.time() - started:.0f}s{', emailed' if emailed else ''}")
+        if outcome == WAITING:
+            # The balance ran out under it: it is back in its place, and the team was told
+            break
+
+
 def main(argv: Optional[List[str]] = None) -> None:
     parser = argparse.ArgumentParser(prog="python -m app.queue", description="The free checks' queue.")
     parser.add_argument("--run", type=int, metavar="N", help="ask the first N checks of the queue, and email each one done")
+    parser.add_argument("--auto", action="store_true", help="what the timer runs: the waiting checks the day's free checks have room for")
     chosen = parser.parse_args(argv)
     create_tables()
+    if chosen.auto:
+        auto()
+        return
     with SessionLocal() as db:
         queue = waiting(db)
         usd = check_usd(db)
