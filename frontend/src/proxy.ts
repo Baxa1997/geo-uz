@@ -2,7 +2,7 @@ import { hasLocale } from "next-intl";
 import createMiddleware from "next-intl/middleware";
 import { NextResponse, type NextRequest } from "next/server";
 import { routing } from "./i18n/routing";
-import { SESSION_COOKIE } from "./shared/constants";
+import { ADMIN_COOKIE, SESSION_COOKIE } from "./shared/constants";
 
 const intl = createMiddleware(routing);
 
@@ -10,10 +10,18 @@ const intl = createMiddleware(routing);
 const isPrivate = (path: string) =>
   /^\/(dashboard|onboarding|projects|settings)(\/|$)/.test(path) && !/^\/projects\/[^/]+\/report\/?$/.test(path);
 
+/** The team's admin page (25 Nov 2026): its own login, apart from the accounts'. */
+const isAdmin = (path: string) => /^\/admin(\/|$)/.test(path) && !/^\/admin\/login\/?$/.test(path);
+
 export default function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
   const [, locale, ...rest] = pathname.split("/");
   const path = `/${rest.join("/")}`;
+
+  // The admin page without its cookie goes to its own login; the page asks the backend whether a cookie still holds
+  if (hasLocale(routing.locales, locale) && isAdmin(path) && !request.cookies.has(ADMIN_COOKIE)) {
+    return NextResponse.redirect(new URL(`/${locale}/admin/login`, request.url));
+  }
 
   // Optimistic check: only whether the cookie exists. Pages ask the backend if it's still valid.
   if (hasLocale(routing.locales, locale) && isPrivate(path) && !request.cookies.has(SESSION_COOKIE)) {

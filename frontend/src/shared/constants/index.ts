@@ -6,6 +6,9 @@ export const TIME_ZONE = "Asia/Tashkent";
 /** httpOnly cookie the backend sets on login (the mocks set the same one). */
 export const SESSION_COOKIE = "geo_session";
 
+/** httpOnly cookie of the team's admin page (`backend/app/superadmin.py`, 25 Nov 2026), apart from an account's session. */
+export const ADMIN_COOKIE = "geo_admin";
+
 /**
  * The site's public address: the user's own domain on Vercel, open to everyone since 23 Nov 2026 (Vercel's login
  * covers only the vercel.app addresses). The base of the addresses a shared link's card names (its picture).

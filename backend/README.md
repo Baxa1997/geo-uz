@@ -438,6 +438,23 @@ repository.
   balance is found empty (a check then goes back to the queue), or the night's copy fails (each at most once a day).
   Recorded beside the limits' hits (`limit_hits`, kind `alert:<kind>`); printed in the log either way; never emailed
   from this computer (replay). `python -m app.alerts test` sends one to see them arrive (sent on 24 Nov).
+- **The admin page** (`app/superadmin.py`, 25 Nov 2026: the user asked for a super-admin login and a dashboard of the
+  users, the brands registered and the waiting list, approving a waiting check there, and their reports to read): `/admin`
+  on the site, behind its own login, apart from the accounts' email codes. A name and a password: `ADMIN_USERNAME` and
+  `ADMIN_PASSWORD_HASH` in the server's `.env`; without both the routes answer 404. The password is kept only as a
+  hash (PBKDF2-SHA256, 600,000 rounds, 0.65 s a try on the server); `python -m app.admin password` asks for one twice
+  and prints the line, and a new one ends every admin session. A login is the `geo_admin` cookie (httpOnly, 12 hours),
+  signed with the hash. Wrong logins are counted in `limit_hits` (kind `admin_fail`): 5 an hour from one connection
+  shut it for that connection, 20 an hour from everyone shut it for everyone and email the team (`admin_locked`);
+  `python -m app.admin unlock` opens it again. Routes, each needing the cookie: `GET /admin/me` (the name and how many
+  checks wait), `/admin/overview` (accounts and projects with those of the last 7 days, the day's free checks, the
+  free checks by state, what checks cost), `/admin/projects` (each project's owner, plan, checks, its latest check's
+  buyer answers naming it of all of them, its report's and snapshot's link), `/admin/users` (each account's projects,
+  free check and last login), `/admin/waiting` (the queue in order and the checks being asked), and
+  `POST /admin/waiting/{id}/approve`: the check starts at once, counted among the day's free checks even past their
+  limit, asked as the queue asks one and emailed to its account when done; 409 when it isn't waiting any more. A
+  waiting check is taken in one statement (`queue.claim`), so the 15-minute timer and Approve never both ask it.
+  Everything else on the page is read-only: the reports open by their own link.
 
 ## Not built yet
 

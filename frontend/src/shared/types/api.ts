@@ -1294,3 +1294,97 @@ export interface RunProgress {
   answered: number;
   total: number;
 }
+
+/**
+ * The team's admin page (25 Nov 2026; `backend/app/superadmin.py`), behind its own login (`geo_admin`): who is logged in
+ * and how many free checks wait.
+ */
+export interface AdminMe {
+  username: string;
+  waiting: number;
+}
+
+/** A project, as the admin page lists it: whose, its plan, its checks, and its latest check's headline count. */
+export interface AdminProject {
+  id: string;
+  name: string;
+  domain: string;
+  /** The account's email; null when the account is gone. */
+  owner: string | null;
+  /** One of the team's accounts (`TEAM_EMAILS`): its checks aren't counted in the day's limit. */
+  team: boolean;
+  createdAt: string;
+  plan: Plan;
+  paid: boolean;
+  billingStatus: string | null;
+  country: string;
+  /** Finished checks. */
+  checks: number;
+  latestCheckAt: string | null;
+  /** The latest check's buyer answers, and those naming the business: the report's headline. */
+  answers: number;
+  named: number;
+  /** The free check the project was saved from: its snapshot's address. */
+  firstRunId: string | null;
+}
+
+export interface AdminUser {
+  id: string;
+  email: string;
+  name: string | null;
+  team: boolean;
+  createdAt: string;
+  /** When the latest session began; null once the account logged out of every session. */
+  lastLoginAt: string | null;
+  projects: { id: string; domain: string }[];
+  /** Free checks the account started, and the latest one. */
+  firstChecks: number;
+  freeCheck: { id: string; domain: string; status: FirstRunStatus; at: string } | null;
+}
+
+export interface AdminOverview {
+  users: { total: number; week: number };
+  projects: { total: number; week: number };
+  /** Free checks in the last 24 hours (the team's aren't counted), and the day's limit. */
+  checksToday: number;
+  checksADay: number;
+  firstChecks: { done: number; failed: number; waiting: number; running: number; preparing: number };
+  /** In US dollars: every free check, those of the last 7 days, and the paid plans' checks. */
+  cost: { freeChecks: number; freeChecksWeek: number; planChecks: number };
+  latestProjects: AdminProject[];
+  latestUsers: AdminUser[];
+}
+
+export interface AdminWaitingCheck {
+  id: string;
+  /** Its place in the queue, from 1. */
+  place: number;
+  domain: string;
+  email: string | null;
+  team: boolean;
+  /** When it joined the queue. */
+  since: string;
+  /** The language of its page, and so of the email that tells it the results are ready. */
+  language: PromptLanguage;
+  name: string;
+  questions: number;
+}
+
+export interface AdminRunningCheck {
+  id: string;
+  domain: string;
+  email: string | null;
+  status: "asking" | "reading_answers";
+  answered: number;
+  total: number;
+  since: string;
+}
+
+export interface AdminQueue {
+  waiting: AdminWaitingCheck[];
+  running: AdminRunningCheck[];
+  /** What a check costs, from the latest ones done, in US dollars. */
+  checkUsd: number;
+  checksToday: number;
+  checksADay: number;
+}

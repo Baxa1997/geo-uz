@@ -4838,5 +4838,140 @@
         }
       }
     }
+  },
+  "Admin": {
+    "menu": {
+      "label": "Admin menu",
+      "title": "Seenova AI · Admin",
+      "open": "Open the menu",
+      "badge": "Admin",
+      "overview": "Overview",
+      "waiting": "Waiting list",
+      "projects": "Projects",
+      "users": "Users",
+      "site": "Open the site",
+      "logout": "Log out"
+    },
+    "login": {
+      "title": "Admin login",
+      "text": "For the Seenova AI team. Everything here is read-only, except starting a check from the waiting list.",
+      "username": "Username",
+      "password": "Password",
+      "submit": "Log in",
+      "submitting": "Logging in…",
+      "wrong": "Wrong username or password.",
+      "locked": "Too many wrong tries: the login is closed for an hour.",
+      "off": "The admin login isn't set up on the server.",
+      "failed": "Couldn't log in. Try again."
+    },
+    "overview": {
+      "title": "Overview",
+      "users": "Users",
+      "projects": "Projects",
+      "checksToday": "Free checks today",
+      "waiting": "Waiting",
+      "newThisWeek": "{count} new in 7 days",
+      "ofLimit": "{count} / {limit}",
+      "checksTodayNote": "In the last 24 hours, of the day's limit",
+      "runningNow": "{count} running now",
+      "checksTitle": "Free checks so far",
+      "statuses": {
+        "done": "Done",
+        "failed": "Failed",
+        "waiting": "Waiting",
+        "running": "Running",
+        "preparing": "Not confirmed yet"
+      },
+      "costTitle": "AI cost",
+      "costFree": "Free checks",
+      "costWeek": "Free checks, 7 days",
+      "costPlans": "Paid plans' checks",
+      "costNote": "What the checks cost on ChatGPT and Gemini, as each check recorded it.",
+      "latestProjects": "Newest projects",
+      "latestUsers": "Newest users",
+      "seeAll": "See all"
+    },
+    "waiting": {
+      "title": "Waiting list",
+      "intro": "Free checks past the day's limit wait here. The server starts them by itself every 15 minutes while the day's limit has room. Approve starts one now, even past the limit, and its owner gets the email when it's done.",
+      "today": "Today: {count} of {limit} free checks used · about {usd} a check",
+      "empty": "Nobody is waiting.",
+      "place": "#",
+      "website": "Website",
+      "account": "Account",
+      "since": "Waiting since",
+      "questions": "Questions",
+      "approve": "Approve",
+      "confirm": "Start now · {usd}",
+      "cancel": "Cancel",
+      "starting": "Starting…",
+      "started": "Started",
+      "taken": "It isn't waiting any more: it was started already.",
+      "approveFailed": "Couldn't start it. Try again.",
+      "team": "Team",
+      "emailIn": "Email in {language}",
+      "languages": {
+        "uz": "Uzbek",
+        "ru": "Russian",
+        "en": "English"
+      },
+      "runningTitle": "Running now",
+      "runningEmpty": "No check is running.",
+      "startedAt": "started {date}",
+      "status": {
+        "asking": "Asking the assistants",
+        "reading_answers": "Reading the answers"
+      },
+      "progress": "{answered} of {total} answers"
+    },
+    "projects": {
+      "title": "Projects",
+      "intro": "{count, plural, one {# brand registered} other {# brands registered}}, newest first. Named: in the latest check, the buyer answers that name the business, of all of them. Reports and snapshots open by their link, read-only.",
+      "empty": "No projects yet.",
+      "brand": "Brand",
+      "owner": "Owner",
+      "created": "Created",
+      "plan": "Plan",
+      "checks": "Checks",
+      "named": "Named",
+      "namedValue": "{named} / {answers}",
+      "latest": "latest {date}",
+      "noCheck": "No check yet",
+      "links": "Open",
+      "report": "Report",
+      "snapshot": "Snapshot",
+      "trial": "trial",
+      "paid": "paid",
+      "team": "Team",
+      "plans": {
+        "start": "Standard",
+        "business": "Pro",
+        "agency": "Enterprise"
+      }
+    },
+    "users": {
+      "title": "Users",
+      "intro": "{count, plural, one {# account} other {# accounts}}, newest first. A project opens its report.",
+      "empty": "No users yet.",
+      "email": "Email",
+      "joined": "Joined",
+      "lastLogin": "Last login",
+      "projects": "Projects",
+      "freeCheck": "Free check",
+      "unknown": "No active session",
+      "noCheck": "None yet",
+      "team": "Team",
+      "checksCount": "{count, plural, one {# check} other {# checks}}",
+      "statuses": {
+        "queued": "Starting",
+        "reading_site": "Reading the website",
+        "ready": "Waiting for the owner to confirm",
+        "waiting": "In the queue",
+        "asking": "Asking the assistants",
+        "reading_answers": "Reading the answers",
+        "done": "Done",
+        "failed": "Failed"
+      }
+    }
   }
 }

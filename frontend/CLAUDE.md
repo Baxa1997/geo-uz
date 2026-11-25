@@ -417,7 +417,20 @@ frontend/src/
                           #   statistics); / without a first run goes there; the old wizard and runs/[id] (its
                           #   progress) open on sample data only
       projects/[id]/report/   # client-facing report, public, no sidebar
+      admin/              # the team's admin page (25 Nov 2026): login/ on its own, (panel)/ with its menu: / (overview),
+                          #   waiting, projects, users; behind the `geo_admin` cookie, never an account's session
   features/               # one folder per product area
+    admin/                # the team's admin page (25 Nov 2026: the user asked for a super-admin login and a dashboard of the
+                          #   users, the brands registered and the waiting list, approving there and reading their reports,
+                          #   then "can we make different menu page for each"): AdminShell (the workspace's frame: a menu of Overview,
+                          #   Waiting list with its count, Projects, Users, the site and Log out; a drawer on a phone), its
+                          #   own login (AdminLoginForm: a name and a password; 401 wrong, 429 shut for the hour, 404 not set
+                          #   up on the server), StatCard, ProjectsTable (owner, plan, checks, the latest check's "named /
+                          #   answers", Report and Snapshot by their links in a new tab), UsersTable (joined, last login,
+                          #   projects opening their reports, the free check's state), WaitingTable with ApproveButton (a
+                          #   second press says the cost and starts the check, past the day's limit) and RunningList (asked
+                          #   again every 10 s while a check runs). Read-only but Approve. Calls `adminApi`
+                          #   (shared/api/client.ts), always the backend, never sample data
     marketing/            # landing (components/landing/: one file per section), free check,
                           #   components/layout/: navbar + footer of all public pages; SectionLink (a link to
                           #   "/#section", never prefetched); see "Keeping the landing page fast"
@@ -608,7 +621,8 @@ frontend/src/
                           #   part of the catalog a public page's client components need)
   messages/               # uz.json, ru.json, en.json
   mocks/                  # realistic mock data (Tashkent dental clinics), test accounts, mock session
-  proxy.ts                # locale routing + sends logged-out visitors of private pages to /login?next=…
+  proxy.ts                # locale routing + sends logged-out visitors of private pages to /login?next=…, and the admin
+                          #   page without its cookie to /admin/login
 ```
 
 ## Folder rules
@@ -730,6 +744,12 @@ pages call the backend themselves and forward the cookie (shared/api/client.ts).
 - `GET  /runs/{id}/progress` → RunProgress (polled by the progress screen after onboarding)
 - `POST /demo-requests` → 204 (body: name, phone E.164, sector: clinic|real_estate|education|retail|other)
 - `POST /support-messages` → 204 (body: text; from the in-app help sheet, logged-in user)
+- The team's admin page (25 Nov 2026; `adminApi`, `backend/app/superadmin.py`): `POST /admin/login` (body: username,
+  password; sets the httpOnly `geo_admin` cookie for 12 hours; 401 wrong, 429 shut after wrong ones, 404 when the backend
+  has no admin login), `POST /admin/logout` → 204, `GET /admin/me` → AdminMe, `GET /admin/overview` → AdminOverview,
+  `GET /admin/projects` → AdminProject[], `GET /admin/users` → AdminUser[], `GET /admin/waiting` → AdminQueue,
+  `POST /admin/waiting/{firstRunId}/approve` → 202 (409 when it isn't waiting any more). Server pages pass the cookie on
+  like the session's (`sessionHeaders`)
 
 Types:
 - User { id, name | null, email | null, phone | null, telegramUsername | null } (login is by email: the backend

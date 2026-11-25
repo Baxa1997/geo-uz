@@ -31,6 +31,7 @@ KINDS: Dict[str, Tuple[str, Optional[datetime.timedelta]]] = {
     "weekly_failed": ("a project's check failed", DAY),
     "openai_empty": ("the OpenAI balance is empty", DAY),
     "backup_failed": ("the database copy failed", DAY),
+    "admin_locked": ("the admin login is locked after wrong passwords", HOUR),
     "test": ("alerts are on", None),
 }
 # Kept beside the limits' hits, as the limits' own alerts are
