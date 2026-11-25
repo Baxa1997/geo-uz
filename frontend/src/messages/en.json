@@ -4650,7 +4650,7 @@
       "text": "Today's free checks are taken, so your check of {site} waits its turn. We'll ask exactly what you confirmed and email the report to {email}.",
       "yourEmail": "your email",
       "place": "Your place in the queue",
-      "next": "You can close this page. The email has a link to your results, and logging in again brings you back here.",
+      "next": "You can close this page. The email has a link to your results, and logging in again brings you back here. Left open, it moves on by itself when your check starts.",
       "home": "Back to the home page"
     },
     "opening": "Your check of {site} is done and saved as your project. Opening your dashboard…"

@@ -4650,7 +4650,7 @@
       "text": "Bugungi bepul tekshiruvlar tugadi, shuning uchun {site} tekshiruvi navbatini kutmoqda. Aynan siz tasdiqlagan savollarni beramiz va hisobotni {email} manziliga yuboramiz.",
       "yourEmail": "emailingiz",
       "place": "Navbatdagi oʻrningiz",
-      "next": "Bu sahifani yopishingiz mumkin. Xatda natijalarga havola boʻladi, keyingi safar kirganingizda esa shu yerga qaytasiz.",
+      "next": "Bu sahifani yopishingiz mumkin. Xatda natijalarga havola boʻladi, keyingi safar kirganingizda esa shu yerga qaytasiz. Ochiq qoldirsangiz, tekshiruvingiz boshlanganda sahifa oʻzi davom etadi.",
       "home": "Bosh sahifaga"
     },
     "opening": "{site} tekshiruvi tayyor va loyihangiz sifatida saqlandi. Boshqaruv paneli ochilmoqda…"

@@ -41,6 +41,8 @@ export const PARTIAL_POLL_MS = 3000;
 
 /** How often the progress screen asks how the first run is going. */
 export const RUN_POLL_MS = 1000;
+/** How often an open page of a check in the queue asks whether its check has started (25 Nov 2026). */
+export const QUEUE_POLL_MS = 30_000;
 
 /**
  * The first check's steps, in order (the user's correction, 16 Nov 2026: confirm first, check after): the

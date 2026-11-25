@@ -9,7 +9,7 @@ import { useRouter } from "@/i18n/navigation";
 import { api } from "@/shared/api/client";
 import { queryKeys } from "@/shared/api/query-keys";
 import type { FirstRun } from "@/shared/types/api";
-import { PARTIAL_POLL_MS, RUN_POLL_MS } from "../constants";
+import { PARTIAL_POLL_MS, QUEUE_POLL_MS, RUN_POLL_MS } from "../constants";
 import { FirstRunLive } from "./first-run-live";
 import { FirstRunProgress } from "./first-run-progress";
 import { FirstRunQueued } from "./first-run-queued";
@@ -17,9 +17,8 @@ import { FirstRunResultView } from "./first-run-result";
 import { FirstRunScreen } from "./first-run-screen";
 import { FirstRunSetup } from "./first-run-setup";
 
-/** Nothing changes by itself in these: done and failed for good, `ready` until the owner confirms, `waiting` until
- * the team runs the queue (its report is emailed, so the page isn't asked every second for days). */
-const isResting = (run: FirstRun) => run.status === "done" || run.status === "failed" || run.status === "ready" || run.status === "waiting";
+/** Nothing changes by itself in these: done and failed for good, `ready` until the owner confirms. */
+const isResting = (run: FirstRun) => run.status === "done" || run.status === "failed" || run.status === "ready";
 const BEFORE_CHECK = ["queued", "reading_site", "ready"];
 
 type Frame = { who: string | null; year: number };
@@ -40,7 +39,13 @@ function FirstRunStarted({ initial, ...frame }: Frame & { initial: FirstRun }) {
     queryKey: queryKeys.firstRun(initial.id),
     queryFn: () => api.getFirstRun(initial.id),
     initialData: initial,
-    refetchInterval: (query) => (query.state.data && isResting(query.state.data) ? false : RUN_POLL_MS),
+    refetchInterval: (query) => {
+      const data = query.state.data;
+      // A check in the queue is asked by the server once a place frees (every 15 minutes since 25 Nov 2026): an open
+      // page looks every half minute, so it moves on by itself to the check's progress, then to the project
+      if (data?.status === "waiting") return QUEUE_POLL_MS;
+      return data && isResting(data) ? false : RUN_POLL_MS;
+    },
   });
   // The statistics never change once the run is done
   const result = useQuery({
