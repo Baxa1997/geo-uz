@@ -394,7 +394,9 @@ export type SiteCheck =
   | "no_sitemap"
   | "no_llms_txt"
   | "weak_meta"
-  | "one_language";
+  | "one_language"
+  /** Almost no words read: the pages show their text only with JavaScript, which most AI crawlers don't run (25 Nov 2026). */
+  | "js_only";
 
 /** One check on the brand's website; `passed` false means the problem was found. */
 export interface SiteCheckResult {
@@ -535,8 +537,11 @@ export interface ResearchFinding {
   rival: { name: string; tracked: boolean };
   sentence: string;
   review: "automated" | "founder-reviewed";
-  /** compared; no_page: the answer cited no page of the business's own; unreadable: its page couldn't be read; failed. */
-  status: "compared" | "no_page" | "unreadable" | "failed";
+  /**
+   * compared; no_page: the answer cited no page of the business's own; unreadable: its page couldn't be read;
+   * site_unreadable: the client's own website showed almost no words, so nothing is said about what it lacks; failed.
+   */
+  status: "compared" | "no_page" | "unreadable" | "site_unreadable" | "failed";
   page?: { url: string; title: string | null };
   theirPassage?: string | null;
   missing?: MissingFact[];
@@ -1145,6 +1150,16 @@ export interface FirstRunDraft {
   competitorsSearched: boolean;
   /** Development only: a saved check's business, not the website typed. */
   replayed: boolean;
+  /**
+   * Where the market came from (25 Nov 2026): the owner's pick at step 1, the website's own text, or Uzbekistan for want
+   * of either. A draft from before reads "owner": step 1's list started on Uzbekistan.
+   */
+  countryFrom: "owner" | "site" | "default";
+  /** The country the website's own text shows its customers are in; "" when it shows none. */
+  siteCountry: string;
+  /** How many words the website's pages gave, and whether that was almost none (its text only with JavaScript). */
+  siteWords: number | null;
+  thin: boolean;
 }
 
 /** What a running check has so far, counted from the answers' own words: GET /first-runs/{id}/partial. */

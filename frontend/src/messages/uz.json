@@ -713,8 +713,10 @@
       "status": {
         "no_page": "Javobda {rival} sahifasiga havola yoʻq, solishtiradigan narsa yoʻq: bu savolni kuzatib boring.",
         "unreadable": "{rival} sahifasini bu safar oʻqib boʻlmadi.",
-        "failed": "Bu safar solishtirilmadi; keyingi tekshiruvda solishtiriladi."
-      }
+        "failed": "Bu safar solishtirilmadi; keyingi tekshiruvda solishtiriladi.",
+        "site_unreadable": "Saytingizni oʻqib boʻlmadi (matni faqat JavaScript orqali chiqadi), shuning uchun bu sahifa u bilan solishtirilmadi."
+      },
+      "siteUnreadable": "Saytingizdan deyarli hech narsani oʻqib boʻlmadi: matni faqat JavaScript orqali chiqadi, koʻpchilik AI kraulerlari esa uni ishga tushirmaydi. Shuning uchun quyida har bir savol boʻyicha AI kimni tilga olgani va qaysi sahifani keltirgani solishtirmasdan berilgan. Buni qanday tuzatish — harakatlar rejasida."
     }
   },
   "Headline": {
@@ -890,7 +892,8 @@
       "no_sitemap": "Sayt xaritasini qoʻshing",
       "no_llms_txt": "llms.txt faylini qoʻshing",
       "weak_meta": "Bosh sahifaga aniq sarlavha, tavsif va asosiy sarlavha bering",
-      "one_language": "Saytni oʻzbek va rus tillarida qiling"
+      "one_language": "Saytni oʻzbek va rus tillarida qiling",
+      "js_only": "Sayt matnini JavaScriptsiz oʻqiladigan qiling"
     },
     "why": {
       "listing": "AI {answers} ta javobda {domain} saytiga tayangan. Bu javoblarda {competitors} tilga olingan, siz esa u yerda yoʻqsiz.",
@@ -907,7 +910,8 @@
       "no_sitemap": "Saytingizda sitemap.xml yoʻq — qidiruv tizimlari va AI qidiruv botlari har bir sahifani topish uchun foydalanadigan sahifalar roʻyxati.",
       "no_llms_txt": "Saytingizda llms.txt yoʻq — baʼzi AI vositalari sayt nima haqida ekanini bilish uchun oʻqiydigan qisqa matn fayli. Bu yangilik va hali hamma yordamchilar uni oʻqimaydi, lekin u bir necha daqiqada qilinadi.",
       "weak_meta": "Bosh sahifangizda sarlavha (title), tavsif yoki asosiy sarlavha (H1) yoʻq yoki juda qisqa. Qidiruv tizimlari va AI nima bilan shugʻullanishingizni tushunish uchun avval shularni oʻqiydi.",
-      "one_language": "Oʻzbekistondagi mijozlar AI’dan oʻzbek va rus tillarida soʻraydi, saytingiz esa faqat bitta tilda topildi. AI savol berilgan tildagi sahifalardan iqtibos keltiradi."
+      "one_language": "Oʻzbekistondagi mijozlar AI’dan oʻzbek va rus tillarida soʻraydi, saytingiz esa faqat bitta tilda topildi. AI savol berilgan tildagi sahifalardan iqtibos keltiradi.",
+      "js_only": "Sahifalaringiz matnni faqat JavaScript ishga tushgandan keyin koʻrsatadi. Koʻpchilik AI kraulerlari, jumladan ChatGPT krauleri ham, JavaScriptni ishga tushirmaydi: ular boʻsh sahifani koʻradi va saytingizdan nima taklif qilishingizni bilolmaydi. Gemini tayanadigan Google krauleri esa JavaScriptni ishga tushiradi."
     },
     "steps": {
       "directory": {
@@ -994,6 +998,11 @@
         "s1": "Asosiy sahifalarning yetishmayotgan til versiyasini qoʻshing: bosh sahifa, xizmatlar, narxlar, kontaktlar.",
         "s2": "Har bir sahifa yuqorisiga til almashtirgich qoʻying.",
         "s3": "Faktlarni aniq tarjima qiling: nomlar, narxlar va manzillar ikkala versiyada bir xil boʻlsin."
+      },
+      "js_only": {
+        "s1": "Dasturchidan sahifalarni server matni bilan birga berishini (server tomonda render yoki statik sahifalar) dizaynni oʻzgartirmasdan sozlashni soʻrang.",
+        "s2": "Bu HTMLda asosiy faktlar boʻlsin: nima qilishingiz, xizmatlar, narxlar, kontaktlar va shahar.",
+        "s3": "Tekshiring: sahifa kodini oching (Ctrl+U) va unda oʻz matningizni toping."
       }
     },
     "markDone": "Bajarildi",
@@ -1349,6 +1358,13 @@
           "s2": "Versiyalar orasiga hreflang havolalarini va har birida html’ning lang atributini qoʻshing.",
           "s3": "Saytdagi faktlarni aniq tarjima qiling; asl matnda yoʻq daʼvo qoʻshmang va ifoda meniki boʻlishi kerak boʻlgan joyda TODO qoldiring.",
           "done": "har bir asosiy sahifa ikkala tilda ochiladi va boshqa versiyasiga havola beradi."
+        },
+        "js_only": {
+          "task": "Saytim matnni faqat JavaScript ishga tushgandan keyin koʻrsatadi, shuning uchun AI kraulerlari boʻsh sahifani koʻradi.",
+          "s1": "Sayt nimada qilinganini aniqlang (React, Vue, konstruktor) va sahifalar serverda render boʻladigan yoki oldindan HTML sifatida tayyorlanadigan qiling, dizaynni oʻzgartirmasdan.",
+          "s2": "Bosh sahifa va asosiy sahifalar matni (xizmatlar, narxlar, kontaktlar) server beradigan HTMLda borligini tekshiring.",
+          "s3": "Har bir sahifaning title, meta description va bitta H1 ini shu HTMLda qoldiring.",
+          "done": "https://{domain}/ JavaScript oʻchirilgan holda ochilganda sahifa matni koʻrinadi."
         }
       },
       "page": {
@@ -3227,6 +3243,11 @@
         "ok": "Sayt oʻzbek va rus tillarida javob beradi",
         "bad": "Sayt bitta tilda, mijozlar esa oʻzbek va rus tillarida soʻraydi",
         "fix": "Asosiy sahifalarning yetishmayotgan til versiyasini qoʻshing."
+      },
+      "js_only": {
+        "ok": "Sayt matni sahifalar kodida bor",
+        "bad": "Sayt matni faqat JavaScript orqali chiqadi",
+        "fix": "Server sahifalarni matni bilan birga berishini sozlang — shunda AI kraulerlari uni oʻqiy oladi."
       }
     },
     "directory": {
@@ -4547,7 +4568,7 @@
         "text": "Sayt manzilini kiriting. Uni oʻqib, biznesingiz, raqobatchilaringiz va mijozlar savollarini tayyorlaymiz. Tekshiruvdan oldin hammasini oʻzingiz koʻrib, tuzatasiz."
       },
       "country": "Mijozlaringiz qayerda?",
-      "countryHint": "Yordamchilardan shu davlatdagi mijoz sifatida soʻraymiz, savollar ham shu davlat tilida yoziladi.",
+      "countryHint": "Tanlamasangiz ham boʻladi: saytingizdan aniqlaymiz. Assistentlardan shu mamlakatdagi mijoz sifatida, uning tilida soʻraymiz.",
       "time": "tekshiruv 4–5 daqiqa",
       "next": "Keyingi",
       "readingSite": "Sayt oʻqilmoqda…",
@@ -4609,7 +4630,24 @@
         "tagline": "AI yordamchilar mijozlaringizga siz haqingizda nima deyishini koʻring"
       },
       "queueNote": "Bugungi bepul tekshiruvlar tugadi, shuning uchun tekshiruvingiz navbatga qoʻyiladi. Aynan shu savollarni beramiz va hisobot tayyor boʻlgach, emailingizga yuboramiz.",
-      "joinQueue": "Navbatga turish"
+      "joinQueue": "Navbatga turish",
+      "countryAuto": "Saytim boʻyicha aniqlash",
+      "languagesAuto": "Mijozlaringiz mamlakatiga qarab",
+      "thin": "{site} saytidan faqat {words} ta soʻzni oʻqiy oldik: sayt matni faqat JavaScript orqali chiqadi. Quyidagi tavsif va xizmatlar nomiga qarab taxmin qilingan, iltimos, ularni tuzating.",
+      "market": {
+        "title": "Mijozlaringiz qayerda",
+        "line": "Mijozlar: {country} · savollar: {languages}.",
+        "fromSite": "Saytingizdan aniqlandi.",
+        "unsure": "Buni saytingizdan aniqlab boʻlmadi — iltimos, tekshiring.",
+        "elsewhere": "Saytingiz boshqa mamlakat ({site}) mijozlari uchun koʻrinadi, tekshiruv esa {country} uchun sozlangan.",
+        "useSite": "{site} uchun tekshirish",
+        "confirm": "Savollar va raqobatchilar {country} uchun qaytadan yoziladi. Bu bir daqiqacha vaqt oladi.",
+        "rewrite": "{country} uchun qayta yozish",
+        "starting": "Boshlanmoqda…",
+        "cancel": "Bekor qilish",
+        "failed": "Oʻzgartirib boʻlmadi. Qaytadan urinib koʻring.",
+        "limit": "Bugun bu yerdan juda koʻp sayt oʻqildi. Ertaga urinib koʻring."
+      }
     },
     "saving": "Saqlanmoqda…",
     "saveFailed": "Loyihani saqlab boʻlmadi. Qayta urinib koʻring.",

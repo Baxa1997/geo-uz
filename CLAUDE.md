@@ -230,6 +230,34 @@ that is committed.
 
 ## Done (as of 18 November 2026)
 
+- **Built, waiting for the user's look: the first check measures the customers' market, and says when it can't read a
+  website (25 Nov), on the branch `market-detect`; merged, pushed and deployed the same day, when the user chose "Deploy +
+  fix 2 old reports" (the server's previous `app/` kept as `app.bak-before-market`).** The user asked why projects read "0 / 15", then:
+  "what we can do if website does not include the correct answers, or it cannot find info about project, if it was in
+  uzbekistan even in usa it must measure I think, just check this part". Checked on the server: step 1's "Where are
+  your customers?" started on Uzbekistan and was always sent, and the backend took it as the owner's word, even telling
+  the website's reader "the owner says Uzbekistan": all five recent checks were Uzbek, one of them a website for US
+  trucking (ELD, HOS, IFTA), asked in Uzbek and Russian about Uzbekistan. And our reader takes a page's HTML without
+  JavaScript: that website gave 7 words (its title alone), another 96, against 1,800 to 3,400 for
+  the rest, so its profile was guessed from the name, its report listed 8 "failed" site checks it never read and its
+  research said what the site lacks. Asked, the user chose "Detect the market" and "Handle unreadable sites" (not
+  Chromium on the server). Built: step 1 leaves the country to the website unless the owner picks one; the profile also
+  gives the website's own country (`siteCountry`, one call as before); step 2 opens on where the customers are, with a
+  warning and "Check … instead" when the pick and the website disagree, and another market writes the draft again
+  (`POST /first-runs/{id}/market`, a website read); a reading under 150 words is said so on step 2, the profile writes
+  only what the name shows, the audit fails `js_only` in the place of the checks on the words (a high-impact fix with
+  its texts and AI task), the research compares nothing (`site_unreadable`, no model call) and its section says why;
+  the audit finds US phones ("(415) 555-0134", "+1 …") and prices ("$49"). A readable website without the answers
+  needed no change: the research, the brand questions, the wrong facts and their actions already say what to add.
+  Tests: `pytest` 103 pass (9 new). Looked at on this computer with stand-in drafts (removed after): step 1, step 2's
+  three states in English on desktop and in Russian and Uzbek at 390px, "Check United States instead" writing the draft
+  again, and a local project's report with the unread website's section 6 and fix in English and Russian at 390px (put
+  back after); no console error. Type check and linter clean. No new variable. The two existing projects whose websites
+  we couldn't read had their audit and research run again on the server ($0, no model call): 6 site checks each with
+  `js_only` failed in the place of the checks on the words, their false fixes gone (25 → 22 and 18 → 15 actions), and
+  their research saying nothing about what their sites lack (8 of 10 and 2 of 3 questions `site_unreadable`, the rest
+  with no page cited). Their market stays Uzbekistan until a new check.
+
 - **Built, waiting for the user's look: the team's admin page (25 Nov), on the branch `admin-page`; merged, pushed and
   deployed the same day, when the user chose "Commit, push, deploy" (the server's previous `app/` kept as
   `app.bak-before-admin`, its `.env` as `.env.bak-before-admin`; the admin login answers there). Found on the live site

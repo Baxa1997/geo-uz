@@ -888,10 +888,19 @@ export const mockApi: ApiClient = {
       queue: false,
       competitorsSearched: true,
       replayed: false,
+      // The sample clinic's website is read whole and names Tashkent
+      countryFrom: "site" as const,
+      siteCountry: "UZ",
+      siteWords: 1200,
+      thin: false,
     });
   },
 
   // The mocks keep their sample numbers whatever was corrected: only the asking starts
+  // Sample data reads no website: there is no other market to write its draft for
+  changeFirstRunMarket: async () => {
+    throw new ApiError(501, "Not in sample data");
+  },
   confirmFirstRun: async (id) => {
     const user = await currentUser();
     const run = state.firstRuns.get(id);

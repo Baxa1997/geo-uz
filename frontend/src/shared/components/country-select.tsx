@@ -3,11 +3,14 @@
 import { useLocale } from "next-intl";
 import { useMemo } from "react";
 import { Select } from "@/shared/components/ui/select";
-import { COUNTRY_CODES } from "@/shared/constants/countries";
+import { AUTO_COUNTRY, COUNTRY_CODES } from "@/shared/constants/countries";
 import { countryName } from "@/shared/helpers/labels";
 
-/** Every country, by name in the interface's language. 16px text on phones so iOS doesn't zoom. */
-export function CountrySelect({ id, value, onChange }: { id: string; value: string; onChange: (value: string) => void }) {
+/**
+ * Every country, by name in the interface's language. 16px text on phones so iOS doesn't zoom. `auto`: a first choice
+ * that leaves it to the website (its value `AUTO_COUNTRY`), with this label.
+ */
+export function CountrySelect({ id, value, onChange, auto }: { id: string; value: string; onChange: (value: string) => void; auto?: string }) {
   const locale = useLocale();
   const countries = useMemo(
     // Sorted by the letters' own order, not `localeCompare`: the server and the browser order Uzbek names
@@ -17,6 +20,6 @@ export function CountrySelect({ id, value, onChange }: { id: string; value: stri
   );
 
   return (
-    <Select id={id} value={value} onValueChange={onChange} options={countries.map(({ code, name }) => ({ value: code, label: name }))} />
+    <Select id={id} value={value} onValueChange={onChange} options={[...(auto ? [{ value: AUTO_COUNTRY, label: auto }] : []), ...countries.map(({ code, name }) => ({ value: code, label: name }))]} />
   );
 }
