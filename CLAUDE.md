@@ -104,7 +104,8 @@ beside its count), merged, pushed and deployed; 0.1–0.3 confirmed by the user,
 - A paid request (OpenAI, Gemini) is made only when the user has chosen it, as for the real checks of 16 Nov
   and the one request of 17 Nov. On this computer first checks are replayed (`FIRST_RUN_REPLAY=true`; the user,
   16 Nov: "replay"). Since 22 Nov nothing on the server spends by itself: the paid project is a trial again
-  (below), and free checks are capped at 2 a day (`FREE_CHECKS_A_DAY=2` on the server; the OpenAI balance is about $2).
+  (below), and free checks are capped for everyone at 10 a day since 25 Nov (`FREE_CHECKS_A_DAY=10` on the server; it
+  was 2 from 22 Nov; the OpenAI balance was about $2, and an alert comes when it runs out).
 
 **Go on from here.** Nothing is finished until the user confirms it, and most of "Done" since 15 Nov still
 waits for their look. The open work, in the order the user picks (ask as a short choice):
@@ -147,9 +148,11 @@ waits for their look. The open work, in the order the user picks (ask as a short
 - The paid project on the server: the user's own site, switched to Standard by hand on 16 Nov for the first
   weekly check, and back to a trial on 22 Nov (the user's choice: "Skip it this week", to keep the OpenAI balance of
   about $2 for visitors), so the timer leaves it. Back on: `python -m app.admin plan <id> start` (without `--trial`).
-- (22 Nov) The OpenAI balance is about $2, which the user can't top up for now; free checks are capped at 2 a day on
-  the server (`FREE_CHECKS_A_DAY=2`) until it is. Past the cap a check joins the queue (live since 22 Nov); once the
-  balance is topped up, the queue is run by hand on the server (`python -m app.queue --run N`).
+- (22 Nov) The OpenAI balance is about $2, which the user can't top up for now; free checks were capped at 2 a day on
+  the server, 10 a day since 25 Nov (the user: "need to make daily check 10 not 2"; `FREE_CHECKS_A_DAY=10`, the
+  previous `.env` kept as `.env.bak-before-cap10`). Past the cap a check joins the queue (live since 22 Nov), and when
+  the balance is empty a check goes back to it and the team gets an alert; the queue is run by hand on the server
+  (`python -m app.queue --run N`).
 - New passwords, since all were pasted in chat on 15 Nov: the server's root password (an SSH key is installed,
   so it is no longer needed), the Supabase database password (the same one) and the Gmail app password; each
   goes into `backend/.env.server` (ignored by git), not into chat.
