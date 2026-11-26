@@ -259,7 +259,11 @@ that is committed.
   with no page cited). Their market stays Uzbekistan until a new check. On 26 Nov their two owners were emailed that
   their report was updated, each in the language they used (English, Uzbek), with a button to the report; the text was
   shown to the user first ("Send both as written"), and one email asks the owner to reply if their customers are in
-  another country (a new check for that market would be the user's call, about $0.6).
+  another country (a new check for that market would be the user's call, about $0.6). Found right after: one of the two
+  projects' new fix was tenth in its plan (sorted by impact, then date, behind older listings), past the eight a report lists, so its
+  report didn't show what its email said; asked, the user chose "Put them first": a fix that lets AI read the website at
+  all (`js_only`, `ai_bots_blocked`) now comes first in every plan (`fixes.plan_order`), deployed the same day (the
+  server's previous `app/` kept as `app.bak-before-plan-order`).
 
 - **Built, waiting for the user's look: the team's admin page (25 Nov), on the branch `admin-page`; merged, pushed and
   deployed the same day, when the user chose "Commit, push, deploy" (the server's previous `app/` kept as

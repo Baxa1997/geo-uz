@@ -287,12 +287,23 @@ def _allowed_now(db: Db, project: Project, actions: List[Action], brands: List[B
     return [action for action in actions if action.id not in refused]
 
 
+# What stops AI from reading the website at all comes first in every plan, whatever its date (26 Nov 2026, the user's
+# "Put them first": a website whose text appears only with JavaScript had that fix tenth, past the eight a report lists)
+BLOCKING_CHECKS = ("js_only", "ai_bots_blocked")
+
+
+def plan_order(action: Action) -> Tuple[int, int, Any]:
+    """An action's place in the plan: a fix that lets AI read the website first, then by impact, then the oldest first."""
+    blocking = action.kind == "technical" and (action.details or {}).get("check") in BLOCKING_CHECKS
+    return (0 if blocking else 1, IMPACTS.index(action.impact) if action.impact in IMPACTS else 1, action.created_at)
+
+
 def listed(db: Db, project: Project) -> List[Dict[str, Any]]:
     runs = list(db.scalars(select(Run).where(Run.project_id == project.id, Run.status == "done").order_by(Run.collected_at)))
     brands = projects.brands_of(db, project.id)
     client = next(brand for brand in brands if brand.own)
     actions = _allowed_now(db, project, list(db.scalars(select(Action).where(Action.project_id == project.id))), brands)
-    actions.sort(key=lambda action: (IMPACTS.index(action.impact) if action.impact in IMPACTS else 1, action.created_at))
+    actions.sort(key=plan_order)
     return [action_json(db, project, action, runs, client) for action in actions]
 
 
