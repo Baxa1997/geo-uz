@@ -112,3 +112,18 @@ def test_a_us_website_has_its_phone_and_prices_found() -> None:
     assert checks([{"url": "https://us.example/", "text": "Plans from $49 a month."}], None, languages=("en",))["no_prices"] is True
     assert checks([{"url": "https://us.example/", "text": "Fleet software for trucks."}], None, languages=("en",))["contacts_missing"] is False
 
+
+def test_a_fix_that_lets_ai_read_the_website_comes_first_in_the_plan() -> None:
+    """26 Nov 2026: a website whose text appears only with JavaScript had that fix tenth, past the eight a report lists,
+    behind older listings of the same impact. What stops AI from reading the website at all now comes first."""
+    import datetime
+
+    day = datetime.datetime(2026, 11, 24)
+    listing = Action(kind="listing", details={"domain": "directory.example"}, impact="high", created_at=day)
+    page = Action(kind="content", details={"topic": "prices"}, impact="medium", created_at=day)
+    unread = Action(kind="technical", details={"check": "js_only"}, impact="high", created_at=day + datetime.timedelta(days=2))
+    blocked = Action(kind="technical", details={"check": "ai_bots_blocked"}, impact="high", created_at=day + datetime.timedelta(days=3))
+    faq = Action(kind="technical", details={"check": "no_faq"}, impact="medium", created_at=day - datetime.timedelta(days=1))
+    ordered = sorted([page, listing, faq, blocked, unread], key=fixes.plan_order)
+    assert ordered == [unread, blocked, listing, faq, page]
+
